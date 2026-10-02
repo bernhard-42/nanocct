@@ -86,7 +86,7 @@ def test_ambiguous_constructors_bound_with_unambiguous_arity():
     assert edges.NbItems() == 0 and pts.NbItems() == 0 and pts2.NbItems() == 0
     sigs = [l for l in IntPolyh.IntPolyh_ArrayOfEdges.__init__.__doc__.splitlines() if l.startswith("__init__")]
     assert sigs[:2] == ["__init__(self) -> None", "__init__(self, aN: int, aIncrement: int = 256) -> None"]
-    # a template member whose body does not compile for the element type is skipped by overrides.toml (6c)
+    # a template member whose body does not compile for the element type is skipped by overrides.toml (7c)
     assert not hasattr(IntPolyh.IntPolyh_ArrayOfEdges, "Dump") and hasattr(IntPolyh.IntPolyh_ArrayOfPoints, "Dump")
     lines = REPORT.read_text().splitlines()
     assert any("IntPolyh_Array<IntPolyh_Edge>::IntPolyh_Array<IntPolyh_Edge>(const int): a call with all arguments is ambiguous" in l

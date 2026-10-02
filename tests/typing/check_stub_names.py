@@ -17,7 +17,7 @@ def storage(s: BRepGraphInc.BRepGraphInc_Storage, i: BRepGraphInc.BRepGraph_Edge
 
 
 def vec(rgba: Graphic3d.NCollection_Vec4__unsigned_char) -> None:
-    # a result that is another instantiation of the template (6c follows the members of an instantiation): it used to be
+    # a result that is another instantiation of the template (7c follows the members of an instantiation): it used to be
     # the quoted C++ spelling "NCollection_Vec3<unsigned char>", i.e. Any
     rgb: Graphic3d.NCollection_Vec3__unsigned_char = rgba.xyz()
     wrong: int = rgba.xyz()                                                # error: a Vec3 is not an int

@@ -58,7 +58,7 @@
 namespace nb = nanobind;
 
 // ---------------------------------------------------------------------------------------------
-// Multiple inheritance (Design.md 4.2). nanobind reuses the derived-class pointer as the base
+// Multiple inheritance (Runtime.md 5.2). nanobind reuses the derived-class pointer as the base
 // pointer, so a bound base must live at offset 0 of the derived object (verified: HArray1 bound with
 // base Standard_Transient read myLowerBound as the reference count). For a class S with several
 // bases, nanobind's base is the offset-0 one (mi_traits<S>::base); members of the other base are

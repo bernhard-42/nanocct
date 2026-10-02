@@ -1,12 +1,12 @@
-# 6. Binding rules (1:1 and the documented deviations)
+# 7. Binding rules (1:1 and the documented deviations)
 
-Part of the design documents in `docs/`, which share their section numbers: 2d is [Excluded.md](Excluded.md), all other numbers outside 6 (2a, 4.2, 5.2, …) are [Design.md](Design.md).
+Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.md); their section numbers and the `R-…` rule identifiers are shared across them.
 
-Every rule carries an identifier (`R-OUT`, `R-STREAM-OUT`, …) that the code cites in a comment at the rule's sites: `grep -rn R-COLLISION generator/` finds the implementation of a rule, and a comment in the generator points back here. The rules are grouped by theme; 2a–2c summarise the user-facing ones.
+Every rule carries an identifier (`R-OUT`, `R-STREAM-OUT`, …) that the code cites in a comment at the rule's sites: `grep -rn R-COLLISION generator/` finds the implementation of a rule, and a comment in the generator points back here. The rules are grouped by theme; 3.1, 3.2 and the Python additions of Design.md summarise the user-facing ones.
 
 Each rule is one entry: the **C++ Idiom** it covers, **OCCT examples** from the OCCT 8.0.1 headers, the **Rule** (why the binding does what it does), what the binding does in **Python**, and **Python examples**, which run as part of the test suite (`tests/test_doc_examples.py`). An identifier that covers several idioms has one case per idiom.
 
-## 6.1 The 1:1 baseline
+## 7.1 The 1:1 baseline
 
 ### R-BASELINE
 
@@ -79,9 +79,9 @@ Each rule is one entry: the **C++ Idiom** it covers, **OCCT examples** from the 
     assert vars(Bnd_Range.Bounds)["Min"].__doc__ == "Minimum value of the range"
     ```
 
-## 6.2 Names
+## 7.2 Names
 
-What a member, class or enumerator is called in Python (the user-facing summary is 2a).
+What a member, class or enumerator is called in Python (the user-facing summary is 3.1).
 
 ### R-STATIC-S
 
@@ -99,7 +99,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 
 - **Rule**
 
-    - Code ported from cadquery-ocp keeps every static call unchanged (the porting guide, 8b).
+    - Code ported from cadquery-ocp keeps every static call unchanged (the porting guide, 10).
     - It also retires a whole class of bugs: Python cannot hold a static and an instance method of one name, nanobind refuses the second registration (*"mismatched static/instance method flags in function overloads"*), and without the suffix the collision would have to be decided over whole inheritance chains (`XCAFDoc_NoteBalloon`'s static `Set` against `XCAFDoc_Note`'s instance `Set` two levels up aborts the import of `_TKXCAF`).
     - With every static suffixed a static and an instance method can never share a name.
     - The hand-written binders follow the same rule (`get_type_name_s`, `NCollection_Array2.BeginPosition_s`).
@@ -178,7 +178,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 
 - **Rule**
 
-    - The 6a naming: `<` and `,` → `__`, `>` dropped.
+    - The 7a naming: `<` and `,` → `__`, `>` dropped.
 
 - **Python**
 
@@ -214,7 +214,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 
     - A target in a *later* toolkit is **not** aliased and is reported: the module would have to import a toolkit that imports it back, and the half-initialised module has no submodules registered yet -- aliased, `Font_BRepFont = StdPrs_BRepFont` (TKService → TKV3d) makes `import nanocct._TKV3d` fail on its own.
     - R-CONV skips a forward target for the same reason.
-    - Scalar typedefs (`Standard_Real`) and aliases of unbound types are not exposed (reported when in a namespace, and at package level when the target is a skipped class or a member of one: `OSD_IStreamBuffer`, 5.2).
+    - Scalar typedefs (`Standard_Real`) and aliases of unbound types are not exposed (reported when in a namespace, and at package level when the target is a skipped class or a member of one: `OSD_IStreamBuffer`, 6.2).
     - Deprecated class aliases are kept (they are how 7.x code and docs resolve).
 
 - **Python**
@@ -261,7 +261,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 
 - **Python**
 
-    - Attributes of the package module when the namespace is named like the package, else of the submodule `nanocct.<pkg>.<ns>` (5.1).
+    - Attributes of the package module when the namespace is named like the package, else of the submodule `nanocct.<pkg>.<ns>` (6.1).
 
 - **Python examples**
 
@@ -491,9 +491,9 @@ What a member, class or enumerator is called in Python (the user-facing summary 
     assert Graphic3d_Camera.FrustumVert_LeftBottomNear == 0 and Graphic3d_Camera.FrustumVert_LeftBottomFar == 1
     ```
 
-## 6.3 Parameters and results
+## 7.3 Parameters and results
 
-How arguments go in and results come out (the user-facing summary is 2b).
+How arguments go in and results come out (the user-facing summary is 3.2).
 
 ### R-OUT
 
@@ -1020,7 +1020,7 @@ How arguments go in and results come out (the user-facing summary is 2b).
 
     - Most-derived registered type.
     - Null → `None`.
-    - A parameter accepts `None` (`nb::arg(...).none()`, 4.2).
+    - A parameter accepts `None` (`nb::arg(...).none()`, 5.2).
 
 - **Python examples**
 
@@ -1465,7 +1465,7 @@ How arguments go in and results come out (the user-facing summary is 2b).
 
 - **Python**
 
-    - Bound when `T.hxx` exists in the OCCT install: the emitter includes it (the class behind every parameter/result type is an include candidate, 5.2).
+    - Bound when `T.hxx` exists in the OCCT install: the emitter includes it (the class behind every parameter/result type is an include candidate, 6.2).
 
 - **Python examples**
 
@@ -2050,9 +2050,9 @@ How arguments go in and results come out (the user-facing summary is 2b).
         raise AssertionError("a text file-like must not reach a binary stream")
     ```
 
-## 6.4 Overloads that Python cannot tell apart
+## 7.4 Overloads that Python cannot tell apart
 
-See 2a (3) and 2b.
+See 3.1 (3) and 3.2.
 
 ### R-COLLISION
 
@@ -2078,7 +2078,7 @@ See 2a (3) and 2b.
 
 - **Python**
 
-    - Every overload that has out-parameters is bound as **`Name__<type1>__<type2>…`** — the Python types of its removed out-parameters in C++ order (`float`, `int`, `bool`, `str`; `str`/`bytes` for a stream; an enum or class by its Python name, a container instantiation by its 6a name): `Coord__float__float__float()`, `Parameters__float__float__float(i)` and `Parameters__float__float__float__float(i)`, `Read_s__Geom_Curve(stream)`, `Normal_s__CSLib_NormalStatus(…)`, `Knots__NCollection_HArray1__double()`.
+    - Every overload that has out-parameters is bound as **`Name__<type1>__<type2>…`** — the Python types of its removed out-parameters in C++ order (`float`, `int`, `bool`, `str`; `str`/`bytes` for a stream; an enum or class by its Python name, a container instantiation by its 7a name): `Coord__float__float__float()`, `Parameters__float__float__float(i)` and `Parameters__float__float__float__float(i)`, `Read_s__Geom_Curve(stream)`, `Normal_s__CSLib_NormalStatus(…)`, `Knots__NCollection_HArray1__double()`.
     - An overload **without** out-parameters keeps the plain name and means what it means in C++ (`BRep_Tool.Parameter_s(V, E)` → `float`, `BOPDS_PaveBlock.HasEdge()` → `bool`), `gp_Pnt.Coord()` → `gp_XYZ` next to `Coord__float__float__float()`, `Bnd_Box.Get()` → `Bnd_Box.Limits` next to `Get__float__float__float__float__float__float()` — without exception: the name must follow from the header.
     - The suffix comes after `_s` when both apply (`Name_s__float`).
     - The docstring's first line names the C++ overload.
@@ -2265,8 +2265,8 @@ See 2a (3) and 2b.
     - Class names are judged against `known`.
     - An **NCollection binder instantiation** is judged by its registry key, which parse computes exactly as `_note_instance` records it (`parse._binder_key`; unbound when the registry has none -- raw-pointer elements, `NCollection_IndexedMap<Graphic3d_CStructure *>` -- or skipped it, or for a nested class other than a kind's `Iterator`, `DynamicArray<T>::DynamicIterator`).
     - Comparing spellings instead fails on default arguments (`math_VectorBase<>` vs `<double>`, dropped hashers): 841 members would be skipped wrongly.
-    - Other template instantiations (6c) are not judged; their stubs keep the quoted C++ name.
-    - In a 6c walk the STL-style iterator types have no declaration, so they are recognised by name (`_STL_ITERATORS`, `::iterator`, `::DynamicIterator`): `NCollection_Iterator<Container>::ValueIter()` returns `typename Container::iterator` (R-ITERATOR).
+    - Other template instantiations (7c) are not judged; their stubs keep the quoted C++ name.
+    - In a 7c walk the STL-style iterator types have no declaration, so they are recognised by name (`_STL_ITERATORS`, `::iterator`, `::DynamicIterator`): `NCollection_Iterator<Container>::ValueIter()` returns `typename Container::iterator` (R-ITERATOR).
     - R-DEFAULT-UNBOUND is the older special case for defaults.
     - A **standard-library enum** has no Python type either and makes the member unbindable already in the parse (`param '…': std::X (a standard-library enum, no Python type)`): libstdc++ spells `std::ios_base::openmode` as the enum `std::_Ios_Openmode` where libc++ and MSVC have an integer, so `OSD_OpenFileDescriptor(name, mode)` would be bound on Linux and raise `TypeError`.
 
@@ -2374,9 +2374,9 @@ See 2a (3) and 2b.
     assert signatures[:2] == ["__init__(self) -> None", "__init__(self, aN: int, aIncrement: int = 256) -> None"]
     ```
 
-## 6.5 Operators, conversions, hashing, iteration
+## 7.5 Operators, conversions, hashing, iteration
 
-The Python additions of 2c.
+The Python additions of Design.md, section 2.
 
 ### R-OPERATOR
 
@@ -2625,7 +2625,7 @@ The Python additions of 2c.
     - On all 7 classes "null" means none or empty (no TShape, no label node, no stored entity, an empty path or interval, `!IsValid()`); none of them has `__len__` or `__iter__` to compete.
     - Truthiness is *not null*, not *has children*: an empty compound is true.
     - Without it every object would be true and `if shape:` would hold for a null shape, silently (three sites in the CadQuery port).
-    - A `__bool__` raising `TypeError`, on the grounds that OCCT has no `operator bool`, does not fit: 2c's additions are not limited to C++ operators.
+    - A `__bool__` raising `TypeError`, on the grounds that OCCT has no `operator bool`, does not fit: the Python additions' are not limited to C++ operators.
 
 - **Python**
 
@@ -3266,7 +3266,7 @@ The Python additions of 2c.
     - `nb::call_policy<nanocct::keep_view<R, false, nurse, elem, patients…>>()` (`nanocct_common.h`): the result (`nurse` 0; `elem`: its position in an out-parameter tuple) or the argument written into (`nurse` k) keeps `self` for a method, and every argument whose class, or a pointer in whose own layout, the result's layout can hold -- also for a static method or a free function (`Message_ProgressIndicator::Start_s(progress)` keeps `progress`) -- with `nb::keep_alive_obj`, and what those objects' method slots hold now (`nanocct::keep_view_of`, R-COPY: a producer's next `Initialize` must not free what the result points to).
     - A fresh result holds one call's arguments; an argument written into keeps them for good, nanobind skipping duplicates.
     - R-ITER: `nanocct_def_iter<T, true>`, every element keeps the iterated object.
-    - Decided after the layout probe (`parse._note_views`, `_decide_views`); a dependent spelling of a 6c walk is probed as the class behind it (`std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<…>>>`: `NCollection_Array1<T>::const_reference` hides a reference).
+    - Decided after the layout probe (`parse._note_views`, `_decide_views`); a dependent spelling of a 7c walk is probed as the class behind it (`std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<…>>>`: `NCollection_Array1<T>::const_reference` hides a reference).
     - Only a fresh object collects producers, so no keep-alive cycle can form: a `const T&` that comes back by reference (a class that cannot be copied, decided at compile time in `keep_view`, or `[not_value_copy]`) may be an object Python already has -- `VrmlData_Node::Scene()` hands back the scene the node keeps, which would then keep the node: both would leak -- and keeps none.
     - An argument written into whose class the object keeps elsewhere (a kept constructor or method parameter of that class or a base) does not keep the object back either, reported, category `lifetime` (91, OCCT 8.0.1, 56 of them TopOpeBRepBuild's over-kept `void *` holders).
     - 221 results and 308 arguments written into, 5 iterators (OCCT 8.0.1).
@@ -3333,7 +3333,7 @@ The Python additions of 2c.
 - **C++ Idiom**
 
     - An OCAF object whose owner is known by its type: a `TDF_Label` and every `TDF_Attribute` point into the `TDF_LabelNode` tree of a `TDF_Data`, whose root carries a `TDocStd_Owner` with a raw pointer to the `TDocStd_Document`.
-    - Every result, tuple element (out-handles), argument written into, R-ITER element and binder element (6a) of such a type -- also a handle of one, or one of the ten NCollection kinds holding them -- gets the owners, instead of R-RESULT-KEEP's producers.
+    - Every result, tuple element (out-handles), argument written into, R-ITER element and binder element (7a) of such a type -- also a handle of one, or one of the ten NCollection kinds holding them -- gets the owners, instead of R-RESULT-KEEP's producers.
 
 - **OCCT examples**
 
@@ -3757,8 +3757,8 @@ The Python additions of 2c.
     - The call raises **`BufferError`** (Python's rule for `bytearray` while a buffer is exported).
     - Views are counted per **C++ container address** in **one** table for all extension modules (`nanocct::view_table()`, a capsule on the `nanocct` package like the slot table; two Python wrappers of one container agree), mutex-protected, with an atomic count of all live views as the fast path.
     - A view's count goes when it dies (`nb::keep_alive_cb`; a numpy array: its owner capsule, which also keeps the container's Python object -- nanobind refuses `reference_internal` for an ndarray with an owner).
-    - Which call invalidates which view is OCCT's container code, read once (6a, the R-VIEW-GUARD table): the binder checks its own members exactly (a `Resize` to the same length, an `Assign` of the same size, an append below `Capacity()` pass; a hashed map's insert is checked against its iterators only, which cache the bucket array; `Remove(it)` through the iterator itself is allowed).
-    - **Every generated function** taking a container by **non-const reference or pointer** (`Param.guarded`, parse.py `_mutable_container`; inside a 6c walk from the substituted spelling) checks it, after nanobind converted the arguments: a direct binding goes through `&nanocct::guarded<static_cast<…>(&C::M), k…>::call`, same signature, stubs unchanged; a lambda or constructor body starts with `nanocct::refuse_viewed_argument(x, k)` -- 1 867 parameters in 35 toolkits (1 102 wrapped bindings, 106 lambda checks).
+    - Which call invalidates which view is OCCT's container code, read once (7a, the R-VIEW-GUARD table): the binder checks its own members exactly (a `Resize` to the same length, an `Assign` of the same size, an append below `Capacity()` pass; a hashed map's insert is checked against its iterators only, which cache the bucket array; `Remove(it)` through the iterator itself is allowed).
+    - **Every generated function** taking a container by **non-const reference or pointer** (`Param.guarded`, parse.py `_mutable_container`; inside a 7c walk from the substituted spelling) checks it, after nanobind converted the arguments: a direct binding goes through `&nanocct::guarded<static_cast<…>(&C::M), k…>::call`, same signature, stubs unchanged; a lambda or constructor body starts with `nanocct::refuse_viewed_argument(x, k)` -- 1 867 parameters in 35 toolkits (1 102 wrapped bindings, 106 lambda checks).
     - A **container data member** (by value) gets a setter that checks (`nanocct_def_container_field`, 44).
     - An R-ITER class's constructor or `Init`/`Initialize` taking a container registers the object as an iterator of it (`nanocct::view_of<iterator, …>`, 23 sites: `NCollection_Iterator<…>`, BRepGraph's iterators over a parents vector, `TopOpeBRepDS_InterferenceIterator`).
     - A method handing out a container its object owns by non-const reference is **reported**, category `view-guard` (149, OCCT 8.0.1: `TDF_DataSet::Labels()`, `AIS_ColoredShape::ChangeCustomAspectsMap()`, …).
@@ -3856,19 +3856,19 @@ The Python additions of 2c.
 
 - **OCCT examples**
 
-    `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer`, `Adaptor3d_TopolTool`, the `BRepGraph` iterators; also the seven hand-written binder `Iterator` classes of 6a — `NCollection_List__int.Iterator`, the map iterators yielding `Value()`: the key for `Map`, the value for `DataMap` — and through them `Graphic3d_SequenceOfHClipPlane.Iterator`:
+    `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer`, `Adaptor3d_TopolTool`, the `BRepGraph` iterators; also the seven hand-written binder `Iterator` classes of 7a — `NCollection_List__int.Iterator`, the map iterators yielding `Value()`: the key for `Map`, the value for `DataMap` — and through them `Graphic3d_SequenceOfHClipPlane.Iterator`:
 
     - `const TopoDS_Shape& TopExp_Explorer::Current() const` (with `bool TopExp_Explorer::More() const` and `void TopExp_Explorer::Next()`)
     - `const TopoDS_Shape& TopoDS_Iterator::Value() const`
     - `virtual occ::handle<Adaptor2d_Curve2d> Adaptor3d_TopolTool::Value()` (a handle by value)
-    - `[[nodiscard]] const NodeType& BRepGraph_Iterator::Current() const` (a dependent `const T&` of a 6c instantiation)
+    - `[[nodiscard]] const NodeType& BRepGraph_Iterator::Current() const` (a dependent `const T&` of a 7c instantiation)
     - `Standard_Persistent* Storage_BucketIterator::Value() const` (a Transient pointer: not iterable)
 
 - **Rule**
 
-    - Python addition (2c).
+    - Python addition (Python additions).
     - The element is copied out before `Next()`, so `Value()` results that are Transient pointers/references are excluded (`Storage_BucketIterator`).
-    - **Dependent `const T&` results of a 6c instantiation**: libclang gives the pointee no declaration, so parse says `OTHER`; the emitter accepts `const X &` when `X` is not a Transient according to the manifest's bases (`Emitter._copyable_const_ref`) -- 49 more classes iterable: the `BRepGraph_Iterator<…Def>`, `RefsIterator::RefIterator<…Ref>` and `DefsIterator::DefsOfParent<…>` instantiations (`list(BRepGraph_EdgeIterator(g))`) and the flat maps' `Iterator`.
+    - **Dependent `const T&` results of a 7c instantiation**: libclang gives the pointee no declaration, so parse says `OTHER`; the emitter accepts `const X &` when `X` is not a Transient according to the manifest's bases (`Emitter._copyable_const_ref`) -- 49 more classes iterable: the `BRepGraph_Iterator<…Def>`, `RefsIterator::RefIterator<…Ref>` and `DefsIterator::DefsOfParent<…>` instantiations (`list(BRepGraph_EdgeIterator(g))`) and the flat maps' `Iterator`.
     - A `Key()`-only iterator (`TColStd_PackedMapOfInteger.Iterator`) is not covered.
     - An element of a class holding pointers keeps the iterated object and what its slots hold (R-RESULT-KEEP, `nanocct_def_iter<T, true>`).
     - An element of an owner class (R-COPY) is never copied out, so such a class is not iterable (none, OCCT 8.0.1).
@@ -3976,7 +3976,7 @@ The Python additions of 2c.
     assert len(list(explorer)) == 6                  # R-ITER instead of the range-for adapter
     ```
 
-## 6.6 Classes and members that need special handling, and what is skipped
+## 7.6 Classes and members that need special handling, and what is skipped
 
 ### R-FIELD
 
@@ -4096,12 +4096,12 @@ The Python additions of 2c.
 
 - **Rule**
 
-    - nanobind single inheritance (4.2).
+    - nanobind single inheritance (5.2).
 
 - **Python**
 
     - First base only, others reported.
-    - A **non-public** base is dropped the same way, and costs the class its constructors only when that base provides `operator new` (`Message_LazyProgressScope`, `BRepAlgoAPI_Algo`; 4.2).
+    - A **non-public** base is dropped the same way, and costs the class its constructors only when that base provides `operator new` (`Message_LazyProgressScope`, `BRepAlgoAPI_Algo`; 5.2).
 
 - **Python examples**
 
@@ -4419,7 +4419,7 @@ The Python additions of 2c.
 
 - **C++ Idiom**
 
-    A class whose base another toolkit binds: `NCollection_Shared<T>` wrapping a `T` bound elsewhere (6a, "wraps"), or a class deriving from such an instantiation
+    A class whose base another toolkit binds: `NCollection_Shared<T>` wrapping a `T` bound elsewhere (7a, "wraps"), or a class deriving from such an instantiation
 
 - **OCCT examples**
 
@@ -4434,7 +4434,7 @@ The Python additions of 2c.
 
     - `NCollection_Shared<T>` derives from `T`, so nanobind aborts the import with *"base type … not known to nanobind"* if the base is not registered.
     - OCCT's link graph has no such edge, and ordering `nanocct/all.py` alone is not enough: another module's import chain can reach the wrapper first (`_TKV3d` → `_TKMesh`).
-    - **A signature using an instantiation another toolkit binds** gets the same edge (6a ownership: the first package in emit order that needs an instantiation binds it, every later user only uses it): without it the member is uncallable until something else loads the owner -- `TDataStd_RealList.List()` with only TKLCAF imported would raise *"Unable to convert function return value"* (`NCollection_List<double>` is TKGeomBase's; 63 members in 10 toolkits, OCCT 8.0.1).
+    - **A signature using an instantiation another toolkit binds** gets the same edge (7a ownership: the first package in emit order that needs an instantiation binds it, every later user only uses it): without it the member is uncallable until something else loads the owner -- `TDataStd_RealList.List()` with only TKLCAF imported would raise *"Unable to convert function return value"* (`NCollection_List<double>` is TKGeomBase's; 63 members in 10 toolkits, OCCT 8.0.1).
     - The owner precedes the class using it in emit order, so this edge cannot close a cycle; `tests/test_import.py` imports each toolkit alone and checks that no signature names an instantiation raw that another toolkit binds.
 
 - **Python**
@@ -4554,7 +4554,7 @@ The Python additions of 2c.
 
     - Need a concrete functor type.
     - The classic `math_*` classes are the Python-facing API.
-    - A class template is bound per instantiation (6c): one that no typedef instantiates has no class to bind (`DE_PluginHolder<T>`, reported as `template (not bound)`).
+    - A class template is bound per instantiation (7c): one that no typedef instantiates has no class to bind (`DE_PluginHolder<T>`, reported as `template (not bound)`).
 
 - **Python**
 
@@ -4601,7 +4601,7 @@ The Python additions of 2c.
     - Such spellings are collected during the walk and resolved by a **probe re-parse** — the package umbrella plus one `using nanocct_probe_i = <spelling>;` per base gives each a libclang `Type` to instantiate from (up to four rounds for deeper chains).
     - A base written through a typedef (`BRepExtrema_TriangleSet : BVH_PrimitiveSet3d`) or with defaulted arguments (`BVH_PairTraverse<double, 3>`) is named as the instantiation is (canonical arguments).
     - What still cannot be instantiated — the empty CRTP base `BVH_BaseBox<T, N, BVH_Box>` with its template template parameter and a partial specialisation holding the members, the `rapidjson` bases of `RWGltf_GltfJsonParser` and `RWGltf_GltfOStreamWriter` — is **dropped from the derived class's bases** (reported; the base's members are not inherited: `BVH_Box.Transform/Transformed`) instead of skipping the class; a Transient class whose only path to `Standard_Transient` was such a base is skipped.
-    - `NCollection_UBTree<int, Bnd_Box>::Selector` (a nested class of an instantiation) is bound with its instantiation (6c, nested classes), so the internal `*BndBoxTreeSelector*` classes keep it as their base, with the `Selector` interface.
+    - `NCollection_UBTree<int, Bnd_Box>::Selector` (a nested class of an instantiation) is bound with its instantiation (7c, nested classes), so the internal `*BndBoxTreeSelector*` classes keep it as their base, with the `Selector` interface.
     - The constructors of an instantiation are registered inside `nanocct_if_concrete<T>` (a generic lambda, instantiated only when `!std::is_abstract_v<T>`).
     - This binds the BVH chain end to end: `BRepExtrema_ShapeProximity` with `ProxPntStatus*`, `ElementSet1/2` (`BRepExtrema_TriangleSet`), `OverlapSubShapes1/2`, `BRepExtrema_ProximityDistTool/OverlapTool`, `BOPTools_BoxTree`, `IntPatch_PolyhedronBVH`.
 
@@ -4701,7 +4701,7 @@ The Python additions of 2c.
 
 - **C++ Idiom**
 
-    Raw pointers to primitives (also when they appear as `T*` in a 6c instantiation), references to pointers (`char*&`), pointers to incomplete types (`_xlocale*`), C-array fields that R-FIXED-ARRAY cannot express (R-ARRAY), reference-typed fields, template members, nested class templates, non-public bases, `std::ostream&` *returns* and stream members
+    Raw pointers to primitives (also when they appear as `T*` in a 7c instantiation), references to pointers (`char*&`), pointers to incomplete types (`_xlocale*`), C-array fields that R-FIXED-ARRAY cannot express (R-ARRAY), reference-typed fields, template members, nested class templates, non-public bases, `std::ostream&` *returns* and stream members
 
 - **OCCT examples**
 
@@ -4716,7 +4716,7 @@ The Python additions of 2c.
 - **Rule**
 
     - Reported.
-    - A raw pointer to a primitive in a 6c instantiation — `NCollection_Mat4<float>::Map(float*)`, `math_VectorBase<double>(const double* theTab, …)` — would take a pointer to a temporary.
+    - A raw pointer to a primitive in a 7c instantiation — `NCollection_Mat4<float>::Map(float*)`, `math_VectorBase<double>(const double* theTab, …)` — would take a pointer to a temporary.
 
 - **Python**
 
@@ -4739,7 +4739,7 @@ The Python additions of 2c.
     assert not hasattr(BinTools_IStream, "Stream")
     ```
 
-## 6a. NCollection containers (hand-written binders)
+## 7a. NCollection containers (hand-written binders)
 
 ### Facts
 
@@ -4755,7 +4755,7 @@ The Python additions of 2c.
 
 ### Which instantiations, and their names
 
-- **Which:** every `NCollection_X<…>` (also inside `handle<…>`, also nested) that appears in a bound signature, collected while parsing; nested arguments and `requires` (`Array1<T>` before `HArray1<T>`) are bound first. Over-approximation (unused instantiations) only costs compile time. A template that *is* a binder kind's nested class (`NCollection_TListIterator<T>` = `NCollection_List<T>::Iterator`, `BINDERS[...]["nested_from"]`) registers the owner instantiation instead of a 6c class of its own (`TopOpeBRepDS_HDataStructure::SameDomain` returns `NCollection_List__TopoDS_Shape.Iterator`; binding it twice aborted the import).
+- **Which:** every `NCollection_X<…>` (also inside `handle<…>`, also nested) that appears in a bound signature, collected while parsing; nested arguments and `requires` (`Array1<T>` before `HArray1<T>`) are bound first. Over-approximation (unused instantiations) only costs compile time. A template that *is* a binder kind's nested class (`NCollection_TListIterator<T>` = `NCollection_List<T>::Iterator`, `BINDERS[...]["nested_from"]`) registers the owner instantiation instead of a 7c class of its own (`TopOpeBRepDS_HDataStructure::SameDomain` returns `NCollection_List__TopoDS_Shape.Iterator`; binding it twice aborted the import).
 - **Primary spelling `NCollection_Array1[T]`**: `nanocct.NCollection.NCollection_Array1[gp.gp_Pnt](1, 4)` mirrors the docs' `NCollection_Array1<gp_Pnt>`.
     - `NCollection_Array1` is a small generated class (a subclass of `Generic` in `nanocct/_templates.py`) whose `_instances` table, written into the `NCollection` shim from `manifest.json`, maps the Python element types to the bound classes: `float → double`, `int → int`, `bool → bool`, `str → std::string`, the markers `float32`, `uchar`, `uint`, `ulong`, `ulonglong` for the C++ scalars without a Python type, an OCCT class for itself **and** for `handle<class>`, a bound instantiation for a nested container. **Every bound container instantiation is reachable this way** (`tests/test_NCollection.py` asserts it). The markers are keys only: they live in `nanocct/_templates.py`, subclass `float`/`int` (the values are plain Python floats and ints, converted and range-checked by the bound class), and are aliases of `float`/`int` in the stubs, because precision is not a Python type — every C++ scalar parameter of the bindings is typed by its Python type the same way. So a type checker does not tell `NCollection_HArray1[float32]` from `NCollection_HArray1[float]`; handing the wrong one to OCCT fails at runtime (`TypeError`). A C++ name in the brackets (`NCollection_Array1['double']`) raises a `TypeError` naming the Python spelling. The keys are the types themselves, as Python passes them to `__class_getitem__` (the type for one argument, a tuple for several), so `NCollection_Array1[gp_Pnt]` is one dict lookup and returns `NCollection_Array1__gp_Pnt` itself; a key the generator spelled wrong fails at import instead of degrading into "not bound".
     - **`isinstance(x, NCollection_Array1)`** holds for every instantiation and for everything C++ derives from one: `HArray1<T>` and `Array2<T>` are `Array1<T>`, `HArray2<T>` is `Array2<T>` and `Array1<T>`, `HSequence<T>` is `Sequence<T>`, `NCollection_Shared<T>` is `T` -- one rule for all 15 kinds, decided on the class's MRO by an `abc` `__subclasshook__`, and pinned by `tests/test_NCollection.py` (every instantiation against its own generic, and exactly the C++ bases, nothing else). The relation is virtual: `__mro__` does not list the generic class. A real base is impossible because nanobind allows one base and the four derived kinds already use it for their C++ base (`HArray1<T> : Array1<T>`), which is what lets an `HArray1` be passed where OCCT takes an `Array1&`; tag base classes for the other 11 kinds are not used, for exactly that inconsistency (measured).
@@ -4764,9 +4764,9 @@ The Python additions of 2c.
     - An unbound combination raises `TypeError` naming it (`NCollection_Array1[gp_Pnt, gp_Pnt] is not bound by nanocct`) and `NCollection_Array1.bound()` lists what is; calling the template itself raises `TypeError` with a hint.
 - **Concrete classes:** one per C++ instantiation, named `template__arg1__arg2` (double underscore separates arguments — OCCT names never contain `__`; `handle<X>` → `Handle_X`; nested left to right; defaulted template arguments such as hashers are omitted): `NCollection_DataMap__TopoDS_Shape__Handle_Geom_Surface`. They are what `type()`, `repr` and stubs show.
     - All of them live in **`nanocct.NCollection`** (the doc page's package), bound by the first toolkit that needs them (`manifest.json` records `by`, the binding package, so regeneration is idempotent — verified by running the generator twice).
-    - **`nanocct.NCollection` is the one module a later toolkit writes into**, and the only one: every 6c instantiation is bound by the package that declares it. So `import nanocct` imports nothing, each `nanocct.<pkg>` shim pulls in its own toolkit (which imports what its registration needs), and **importing `nanocct.NCollection` imports every toolkit that binds an instantiation into it** (33, with their dependencies 37 of 45), so every instantiation is an ordinary attribute afterwards. The OCCT design forces it: loading an instantiation's element types does not load the toolkit that binds it (215 of 799 instantiations, e.g. `NCollection_Array1<handle<Geom2d_BSplineCurve>>` is bound after TKG2d), so a lazy table keyed by what is loaded answers differently depending on import order, and the alternative -- a `{class name -> binding toolkit}` table with a module `__getattr__` -- is machinery that would serve only this one package. Measured: `import nanocct.NCollection` ~160 ms (a lazy table: 8 ms); after `import build123d`, which already loads 31 toolkits and imports `NCollection`, +28 ms; `from nanocct.gp import gp_Pnt` does not import `NCollection` and loads `_TKernel` and `_TKMath` alone (13 ms; all 45 toolkits would cost 172 ms and 179 MB). No C++-side state is involved, so nothing here stands in the way of a free-threaded (`abi3t`) build.
+    - **`nanocct.NCollection` is the one module a later toolkit writes into**, and the only one: every 7c instantiation is bound by the package that declares it. So `import nanocct` imports nothing, each `nanocct.<pkg>` shim pulls in its own toolkit (which imports what its registration needs), and **importing `nanocct.NCollection` imports every toolkit that binds an instantiation into it** (33, with their dependencies 37 of 45), so every instantiation is an ordinary attribute afterwards. The OCCT design forces it: loading an instantiation's element types does not load the toolkit that binds it (215 of 799 instantiations, e.g. `NCollection_Array1<handle<Geom2d_BSplineCurve>>` is bound after TKG2d), so a lazy table keyed by what is loaded answers differently depending on import order, and the alternative -- a `{class name -> binding toolkit}` table with a module `__getattr__` -- is machinery that would serve only this one package. Measured: `import nanocct.NCollection` ~160 ms (a lazy table: 8 ms); after `import build123d`, which already loads 31 toolkits and imports `NCollection`, +28 ms; `from nanocct.gp import gp_Pnt` does not import `NCollection` and loads `_TKernel` and `_TKMath` alone (13 ms; all 45 toolkits would cost 172 ms and 179 MB). No C++-side state is involved, so nothing here stands in the way of a free-threaded (`abi3t`) build.
     - Three toolkits link a toolkit that comes *later* in the order and therefore cannot import it at registration time (R-LINK: `TKDE`, `TKDECascade`, `TKDEGLTF` -> `TKXSBase`). Their shims import it afterwards, at Python level, or the members naming those types are uncallable.
-- **The pre-8.0 typedef names are not exposed.** `TColgp_Array1OfPnt`, `TopTools_ListOfShape`, `Graphic3d_Vec3` and the rest of `src/Deprecated/NCollectionAliases` are not bound, and neither are the alias-only modules they would need (`TColgp`, `TColGeom`, `TColGeom2d`). nanocct binds OCCT 8 and code using it spells the 8.0 names — the container itself (`NCollection_Array1[gp_Pnt]`, `nanocct.NCollection.NCollection_List__TopoDS_Shape`). **6c aliases are unaffected**: `TColStd_PackedMapOfInteger`, `BVH_Vec3d` and their kind are typedefs OCCT still declares, bound as real classes under the alias name, not as Python-level aliases.
+- **The pre-8.0 typedef names are not exposed.** `TColgp_Array1OfPnt`, `TopTools_ListOfShape`, `Graphic3d_Vec3` and the rest of `src/Deprecated/NCollectionAliases` are not bound, and neither are the alias-only modules they would need (`TColgp`, `TColGeom`, `TColGeom2d`). nanocct binds OCCT 8 and code using it spells the 8.0 names — the container itself (`NCollection_Array1[gp_Pnt]`, `nanocct.NCollection.NCollection_List__TopoDS_Shape`). **7c aliases are unaffected**: `TColStd_PackedMapOfInteger`, `BVH_Vec3d` and their kind are typedefs OCCT still declares, bound as real classes under the alias name, not as Python-level aliases.
 - **`[instantiate]` override:** instantiations to bind although no bound OCCT signature uses them (`NCollection_Map<int>`, `NCollection_DataMap<int, double>`, …), registered by the `NCollection` package. Used to exercise binders that the current scope does not reach yet, and available for user conveniences.
 
 ### Methods, docstrings, Python additions
@@ -4842,13 +4842,13 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
 
 - `NCollection_LinearVector<T>`, OCCT 8's contiguous 0-based vector with `size_t` indices and BRepGraph's container of choice (`NCollection_LinearVector<BRepGraph_NodeId>` …).
 - `Data()`/`begin()`/`end()` (raw element pointers) are not bound.
-- A typedef of a binder instantiation (`BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>`) is an attribute alias of the concrete class, not a 6c class of its own.
+- A typedef of a binder instantiation (`BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>`) is an attribute alias of the concrete class, not a 7c class of its own.
 - Container-typed **fields** (`MathRoot::MultipleResult::Roots`) and template arguments of instantiated templates (`NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>`) register their instantiations like parameters do.
-- `NCollection_FlatDataMap`/`FlatMap` (BRepGraph's open-addressing maps) are bound as 6c instantiations, with their nested `Iterator`: `for n in NCollection_FlatMap__BRepGraph_NodeId__….Iterator(m)`. Their `Items()` returns an `NCollection_ItemsView::View`, an STL-style range that stays unbound.
+- `NCollection_FlatDataMap`/`FlatMap` (BRepGraph's open-addressing maps) are bound as 7c instantiations, with their nested `Iterator`: `for n in NCollection_FlatMap__BRepGraph_NodeId__….Iterator(m)`. Their `Items()` returns an `NCollection_ItemsView::View`, an STL-style range that stays unbound.
 
-## 6b. Type stubs
+## 7b. Type stubs
 
-- `python -m generator.stubs` (after the build; it imports the extension) runs nanobind's `StubGen` (API, recursive: the CLI refuses `-r` for modules without `__file__`) per package module into `src/nanocct/<pkg>.pyi` — or `<pkg>/__init__.pyi` plus `<pkg>/<ns>.pyi` for a package with namespaces (5.1). Cross-references come out as `nanocct.Standard.X` because of the `__module__` rule.
+- `python -m generator.stubs` (after the build; it imports the extension) runs nanobind's `StubGen` (API, recursive: the CLI refuses `-r` for modules without `__file__`) per package module into `src/nanocct/<pkg>.pyi` — or `<pkg>/__init__.pyi` plus `<pkg>/<ns>.pyi` for a package with namespaces (6.1). Cross-references come out as `nanocct.Standard.X` because of the `__module__` rule.
 - It adds:
     - the deprecated typedef aliases as assignments — stubgen binds them as `from M import A as B`, which is no re-export; it writes that import on one line when it fits in 70 characters and as a parenthesised block otherwise (nanobind `stubgen.py`); both forms are rewritten (`tests/test_typing.py` asserts that no stub binds a class under another name);
     - in `NCollection/__init__.pyi` a hand-written **`Generic[_T]` class per container kind** (`generator/stubs/<kind>.pyi`, kept in step with the binder -- `tests/test_typing.py` checks every stub member against the runtime) and every instantiation as `class NCollection_Array1__double(NCollection_Array1[float]): ...`; the members the binder binds for some element types only (`Change*` for class elements, `List.Contains` where the element has `operator==`) are not in the generic class but lifted from stubgen's concrete class of each instantiation (an H class from its sibling), like `__array__`;
@@ -4858,7 +4858,7 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
     - **names with one leading or trailing underscore are kept** (`StubGen(..., include_private=True)`): stubgen treats them as private, but here they are C++ names -- the R-KEYWORD enum values (`GProp_PEquation.Type.None_`, five `None_` in BRepGraph), OCCT's own `Image_ColorRGB32.a_()`/`Seta_` and `AdvApp2Var_SysBase.mainial_`, and the eight structs `AIS_ViewInputBuffer::_orientation` & co., which the stubs would otherwise reference without defining (nanocct's own `_Generic` machinery stays out of the NCollection stub)
     - a bare class name that a member of the enclosing class shadows, qualified with its module: `BRepGraphInc_Storage` has a method `EdgeCurve3DRep`, so its `-> EdgeCurve3DRep` would mean the method, not the module's class; likewise `def Status(self) -> Status` in `ExtremaPC`/`MathUtils` (`_unshadowed_class_names`, per class body, a nested class checked against its own members only). The same for a builtin type: `LDOM_SBuffer` (bound on Windows only) has a method `str`, so its `xsputn(self, s: str, ...)` is written `s: builtins.str`, and the stub imports `builtins`.
     - `__eq__`/`__ne__` operands typed `object` (`_eq_accepts_object`): nanobind returns `NotImplemented` for an operand no overload takes, so `TopoDS_Shape() == 1` is `False`, and stubgen's C++ operand type would be an incompatible override of `object.__eq__` (200 `[override]` errors); a single definition gets `object`, an overload set keeps its overloads -- they say which types compare by value, `TCollection_AsciiString == str` -- and gains a last `(self, other: object) -> bool`
-- **The 355 per-module stub runs go through a thread pool, one worker per core** (`NANOCCT_JOBS`, 5.2; `=1` is the sequential path): each runs in a subprocess of its own and writes one file nothing else touches — **96.4 s sequentially, 13.7 s pooled, byte-identical at 1, 6 and 18 jobs**. They are 97 % of a sequential run (97.8 s of 100.8 s, 276 ms per module and flat) against 2.9 s for everything after them (the alias assignments, `NCollection.pyi`, the generic rewrite), which reads the files the pool wrote and stays sequential. The `stub <file>` lines keep the sequential order — the futures are awaited in submission order, and `math` is the last of the 355.
+- **The 355 per-module stub runs go through a thread pool, one worker per core** (`NANOCCT_JOBS`, 6.2; `=1` is the sequential path): each runs in a subprocess of its own and writes one file nothing else touches — **96.4 s sequentially, 13.7 s pooled, byte-identical at 1, 6 and 18 jobs**. They are 97 % of a sequential run (97.8 s of 100.8 s, 276 ms per module and flat) against 2.9 s for everything after them (the alias assignments, `NCollection.pyi`, the generic rewrite), which reads the files the pool wrote and stays sequential. The `stub <file>` lines keep the sequential order — the futures are awaited in submission order, and `math` is the last of the 355.
 - Verified with **mypy** and **ty** (`tests/test_typing.py` runs both on every `tests/typing/check_*.py`): `a[2]` is `float`, `h.Value(1)` is `Standard_Persistent`, `def f(arr: NCollection_Array1[float])` accepts every double array, nested classes and namespace modules resolve (`check_namespaces.py`), and the deliberate errors (wrong element type, wrong overload, `HArray1[X]` passed as `Array1[float]`, `Base` assigned to `Full`) are reported by both checkers.
 - **The stubs themselves are checked by a ratchet** (`test_stub_errors_do_not_grow`): mypy over every module of the installed stubs (copied out: mypy silences errors in an installed package), counted per error code against `STUB_ERROR_PINS` -- 761 errors (OCCT 8.0.1), all the C++ shape Python typing cannot express (673 `[override]` from C++ name hiding, operator pairs, overloads Python cannot tell apart, the quoted names of template instantiations). Every other code must stay at zero, and the pinned ones must not grow: real bugs show up exactly that way (`[assignment]` for R-PTR-NULL, `[name-defined]` for the unqualified enum defaults, a growing `[overload-cannot-match]` for base-before-derived). Exact on macOS, where the pins were measured, so a drop has to lower its pin; upper bounds elsewhere, since the stubs differ per platform. About 4 s.
 - Known imprecision: a *returned* null handle is typed as the class, not `X | None` (same as nanobind's own handle stubs); handle *parameters* are `X | None` since `.none()` is emitted.
@@ -4867,12 +4867,12 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
 - **The five marker keys are aliases** (`float32 = float`, `uchar = int`, `uint = int`, `ulong = int`, `ulonglong = int`) in the `NCollection/__init__.pyi` header, and `generator/stubs.py` spells the five C++ scalars with them (`nanocct.NCollection.float32` …), so the 13 instantiations over them collapse into their generic base like every other one and OCCT's 30 signatures that use them get the generic spelling (`Poly_Triangulation.SetNormals(theNormals: NCollection_HArray1[float32] | None)`). Variants that keep precision apart statically (numpy scalar types, distinct marker classes, `float` subclasses with self-type overloads for the 55 write members) were tested and not taken.
 - **The hasher is an optional last type parameter** of the four hashed kinds whose instantiations use a custom one (`NCollection_Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`): `_H = TypeVar('_H', default=object)` (PEP 696, from `typing_extensions`, since `typing.TypeVar` takes `default` only from Python 3.13), and `_IH` for their nested `Iterator`. So `NCollection_Map[TopoDS_Shape, TopTools_ShapeMapHasher]` type-checks as it runs, and `NCollection_Map[int]` is the default hasher. The two are different types, as they are different bound classes. Without it the generic classes would have no parameter for the hasher while the concrete bases and OCCT's signatures pass it — 234 wrong-arity errors when mypy checks the stubs (measured, mypy 2.3.1). `DoubleMap` keeps its two keys only: both bound instantiations use the default hashers.
 
-## 6c. Aliases of OCCT class templates (instantiated from the header)
+## 7c. Aliases of OCCT class templates (instantiated from the header)
 
 ### What they are
 
 - OCCT 8 turned several classic classes into class templates with aliases: `using math_Vector = math_VectorBase<double>;`, `math_IntegerVector`, `Bnd_B2d/B3d/B2f/B3f`, `BVH_Vec3d = BVH::VectorType<double, 3>::Type` (→ `NCollection_Vec3<double>`), `BVH_Builder3d`, `TColStd_PackedMapOfInteger = NCollection_PackedMap<int>`, `NCollection_String`, later `Extrema_ExtPC = Extrema_GGExtPC<Adaptor3d_Curve, …>`, `GeomLProp_CLProps`.
-- These are not containers, so 6a does not apply; they are the one place where the generic option (a) is used.
+- These are not containers, so 7a does not apply; they are the one place where the generic option (a) is used.
 
 ### Rule
 
@@ -4887,19 +4887,19 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
 - A member whose *body* does not compile for the argument (`IntPolyh_Array<IntPolyh_Edge>::Dump()` calls `(*this)[i].Dump()`, but `IntPolyh_Edge::Dump` takes an `int` and `IntPolyh_PointNormal` has none) cannot be seen from the signature: it is listed in `overrides.toml [skip] methods` with the instantiation name (three entries, found as compile errors).
 - Instantiations have no library symbols, so the `nm` check does not apply to them.
 - The same instantiation aliased in several packages is bound once (manifest key = canonical spelling) and aliased elsewhere; the same alias repeated in several headers of one package is bound once.
-- Docstrings come from the template. Stubs: stubgen emits a full concrete class for the alias (no generic class, unlike 6a).
+- Docstrings come from the template. Stubs: stubgen emits a full concrete class for the alias (no generic class, unlike 7a).
 - Verified: `math_Vector` constructors (incl. from `gp_XYZ`), operators, `math_Matrix.Row()` returning `math_Vector`, `BVH_Vec3d`, `Bnd_B3d`, `TColStd_PackedMapOfInteger`.
-- **Names spell every template argument**, unlike 6a, which drops a default hasher: `NCollection_Map<int>` is `NCollection.NCollection_Map__int`, but the OCCT 8 flat maps -- not among the 15 binder kinds, so instantiated here -- are `BRepGraph.NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID` (five such classes, all in BRepGraph/BRepGraphInc, homed in the package that uses them, no `NCollection_FlatMap[...]` accessor), and `NCollection_AliasedArray<>` (every argument defaulted) is `Poly.NCollection_AliasedArray__`. The names are public (released with 8.0.1.0), so they stay; `tests/test_BRepGraph.py` pins them, so an OCCT change to a default argument cannot rename them unnoticed.
+- **Names spell every template argument**, unlike 7a, which drops a default hasher: `NCollection_Map<int>` is `NCollection.NCollection_Map__int`, but the OCCT 8 flat maps -- not among the 15 binder kinds, so instantiated here -- are `BRepGraph.NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID` (five such classes, all in BRepGraph/BRepGraphInc, homed in the package that uses them, no `NCollection_FlatMap[...]` accessor), and `NCollection_AliasedArray<>` (every argument defaulted) is `Poly.NCollection_AliasedArray__`. The names are public (released with 8.0.1.0), so they stay; `tests/test_BRepGraph.py` pins them, so an OCCT change to a default argument cannot rename them unnoticed.
 
 ### On-demand instantiation
 
 - Besides aliases and base classes, every instantiation of an OCCT class template that appears in a bound signature, field or typedef (`BRepGraph_MutGuard<BRepGraphInc::EdgeDef>` returned by `EditorView::EdgeOps::Mut`) is instantiated under its mangled name unless an earlier package or run bound it (manifest); its own template arguments are registered too.
     - The type is stripped of references, pointers and cv-qualifiers first: tested on the *declared* type, whose canonical kind is `LVALUEREFERENCE` for a `const T&` parameter, an instantiation reachable **only** through a reference parameter (`RWPly_PlyWriterContext::WriteVertex(…, const NCollection_Vec4<uint8_t>&)`) would never be instantiated, and the method would be bound with a type nanobind never sees — a `TypeError` for every argument list, unreported, because the parameter itself is bindable.
-- **Template bases of instantiations:** a base spelled only after substitution is instantiated through a probe re-parse, or dropped from the derived class's bases when it cannot be (R-TEMPLATE-BASE, 6.6).
+- **Template bases of instantiations:** a base spelled only after substitution is instantiated through a probe re-parse, or dropped from the derived class's bases when it cannot be (R-TEMPLATE-BASE, 7.6).
 - A private member typedef used in a public signature (`BRepGraph_MutGuard::TypeId`) is spelled by its underlying type.
-- **Instantiations named by the members of an instantiation:** inside a walk a member's type is dependent (`NCollection_Vec4<Element_t>::xyz()` returns `NCollection_Vec3<Element_t>`), libclang gives it no declaration, and without a record the member would be bound with an unregistered type (`Vec4__unsigned_char().xyz()` would raise `TypeError`). `parse._note_dependent_use` records the substituted spelling (`NCollection_Vec3<unsigned char>`) and the R-TEMPLATE-BASE probe instantiates it. Not recorded: binder kinds (6a), `handle`, `std::`, the walked instantiation itself spelled with its arguments (`NCollection_AliasedArray<MyAlignSize>` inside `NCollection_AliasedArray<>` would be bound twice under the keys `<>` and `<16>`, and the module would fail to initialise: nanobind's "already registered"), and the uses of a member that ends up skipped (the `begin()`/`end()` range iterators would add 64 classes).
+- **Instantiations named by the members of an instantiation:** inside a walk a member's type is dependent (`NCollection_Vec4<Element_t>::xyz()` returns `NCollection_Vec3<Element_t>`), libclang gives it no declaration, and without a record the member would be bound with an unregistered type (`Vec4__unsigned_char().xyz()` would raise `TypeError`). `parse._note_dependent_use` records the substituted spelling (`NCollection_Vec3<unsigned char>`) and the R-TEMPLATE-BASE probe instantiates it. Not recorded: binder kinds (7a), `handle`, `std::`, the walked instantiation itself spelled with its arguments (`NCollection_AliasedArray<MyAlignSize>` inside `NCollection_AliasedArray<>` would be bound twice under the keys `<>` and `<16>`, and the module would fail to initialise: nanobind's "already registered"), and the uses of a member that ends up skipped (the `begin()`/`end()` range iterators would add 64 classes).
 
-- **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured over all 297 6c instantiations (OCCT 8.0.1): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 6c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
+- **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured over all 297 7c instantiations (OCCT 8.0.1): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 7c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
 - **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_FlatMap<K, H>::Iterator` → `<outer>.Iterator`, `NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). An STL-style iterator is not instantiated at all (R-ITERATOR), so neither is its helper `NCollection_ForwardRangeIterator::PostfixProxy`.
 
 ### Nested templates and dependent names (BRepGraph)

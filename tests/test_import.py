@@ -1,6 +1,6 @@
 """Every toolkit module must be importable on its own.
 
-`nanocct/__init__.py` imports nothing since 2026-09-24 (Binding-Rules.md 6a), so whichever module a user reaches first is
+`nanocct/__init__.py` imports nothing since 2026-09-24 (Binding-Rules.md 7a), so whichever module a user reaches first is
 the one that has to bring up its own dependencies. Until then the eager import always loaded all 45 in one working
 order, which hid five modules that could not stand alone: `_TKV3d` and `_TKMeshVS` died on a cross-toolkit alias
 that imported back into a half-initialised module, and `_TKXmlL`, `_TKXml` and `_TKXmlXCAF` aborted outright because
@@ -88,7 +88,7 @@ print(json.dumps(sorted(m for m in alone if m not in everything)))
 
 
 def test_a_toolkit_imported_alone_resolves_the_instantiations_it_uses():
-    """6a ownership: the first package in emit order that needs an instantiation binds it, and every later user only uses
+    """7a ownership: the first package in emit order that needs an instantiation binds it, and every later user only uses
     it -- so a toolkit must import the owner's toolkit, or its members that take or return the instantiation are
     uncallable until something else loads it. With only TKLCAF imported `TDataStd_RealList.List()` raised "Unable to
     convert function return value" (TKGeomBase binds NCollection_List<double>): 63 members in 10 toolkits, found by the
@@ -123,7 +123,7 @@ def test_importing_one_package_does_not_load_every_toolkit():
 
 
 def test_ncollection_loads_every_toolkit_that_binds_into_it():
-    """`nanocct.NCollection` is the one module other toolkits bind into (6a), and loading an instantiation's element
+    """`nanocct.NCollection` is the one module other toolkits bind into (7a), and loading an instantiation's element
     types does not load the toolkit that binds it (215 of 799 instantiations, 2026-09-27) -- so importing the
     package loads each of those toolkits, and every instantiation is an ordinary attribute afterwards: no module
     __getattr__, no completion table. The other packages stay lazy: importing gp does not import NCollection."""
@@ -164,7 +164,7 @@ def test_import_all_loads_every_toolkit():
 
 def test_import_nanocct_alone_loads_nothing_but_attribute_access_works():
     """`import nanocct` then `nanocct.gp.gp_Pnt` is the spelling people arrive with from OCP, and it works without
-    giving up laziness: PEP 562 module __getattr__ imports the package on first access (Design.md 5.1). Importing
+    giving up laziness: PEP 562 module __getattr__ imports the package on first access (Generator.md 6.1). Importing
     nanocct itself must load no toolkit at all."""
     out = _import("import re, sys, nanocct\n"
                   "before = len([m for m in sys.modules if re.fullmatch(r'nanocct\\._TK\\w+', m)])\n"

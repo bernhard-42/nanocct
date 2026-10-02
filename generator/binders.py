@@ -1,7 +1,7 @@
 """NCollection container templates: which hand-written binder (src/cpp/common/nanocct_ncollection.h) serves which
 template, which template members it implements and which it knowingly skips (the coverage check in ncollection.py
 reads both), which other instantiations it requires (HSequence<T> needs Sequence<T>), and the defaulted template
-arguments that are dropped from an instantiation's key and name (Binding-Rules.md 6a). Data only: no libclang here, so
+arguments that are dropped from an instantiation's key and name (Binding-Rules.md 7a). Data only: no libclang here, so
 parse.py and the stub generator can import it without a cycle.
 """
 from __future__ import annotations

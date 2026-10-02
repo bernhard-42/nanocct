@@ -124,7 +124,7 @@ def test_unbindable_classes_are_reported_not_bound():
 
 
 def test_occt_iterators_are_python_iterators():
-    # R-ITER (Design.md 2c): More()/Next()/Value() classes are iterable and exhausted afterwards, like a file object
+    # R-ITER (Design.md, Python additions): More()/Next()/Value() classes are iterable and exhausted afterwards, like a file object
     c, v, e = _compound()
     ex = TopExp.TopExp_Explorer(c, TopAbs.TopAbs_ShapeEnum.TopAbs_VERTEX)
     found = [s for s in ex]
@@ -136,7 +136,7 @@ def test_occt_iterators_are_python_iterators():
 
 
 def test_handle_parameters_accept_none():
-    # a handle<T> parameter is nb::arg(...).none(): None is the null handle (Design.md 4.2)
+    # a handle<T> parameter is nb::arg(...).none(): None is the null handle (Runtime.md 5.2)
     tf = BRep.BRep_TFace()
     tf.Surface(None)
     assert tf.Surface() is None

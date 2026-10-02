@@ -87,7 +87,7 @@ def test_value_eq_without_a_hash_is_unhashable():
     with pytest.raises(TypeError, match="unhashable type"):
         {a: 1}                                                                  # noqa: B018 -- the point is the raise
     assert Quantity.Quantity_Date.__hash__ is None                              # a plain value class
-    assert Quantity.NCollection_Vec3__float.__hash__ is None                    # and a 6c instantiation (owned by Quantity)
+    assert Quantity.NCollection_Vec3__float.__hash__ is None                    # and a 7c instantiation (owned by Quantity)
     # a class OCCT *does* give a hash keeps it, value equality and all (the .lxx specialisation above)
     assert TopLoc.TopLoc_Location.__hash__ is not None
     # R-ITERATOR: the ForwardRangeIterator/Sentinel pair -- the one OCCT case of an __eq__ against another type only -- is

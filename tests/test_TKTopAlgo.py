@@ -206,7 +206,7 @@ def test_a_reference_to_a_member_transient_is_never_deleted_by_python():
 
 
 def test_bnd_box_tree_selectors_have_their_template_base():
-    """NCollection_UBTree<int, Bnd_Box>::Selector, a nested class of a 6c instantiation, was not bound, so
+    """NCollection_UBTree<int, Bnd_Box>::Selector, a nested class of a 7c instantiation, was not bound, so
     it was dropped as the base of the three selectors (R-TEMPLATE-BASE) and their Reject/Accept/Stop were not inherited."""
     for cls in (BRepClass3d.BRepClass3d_BndBoxTreeSelectorPoint, BRepClass3d.BRepClass3d_BndBoxTreeSelectorLine,
                 BRepBuilderAPI.BRepBuilderAPI_BndBoxTreeSelector):

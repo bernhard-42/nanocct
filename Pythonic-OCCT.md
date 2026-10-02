@@ -19,7 +19,7 @@
 
 ## NCollections support
 
-**Design: [2a Naming conventions](docs/Design.md#2a-naming-conventions), [6a NCollection containers](docs/Binding-Rules.md#6a-ncollection-containers-hand-written-binders)**
+**Design: [3.1 Naming conventions](docs/Conventions.md#31-naming-conventions), [7a NCollection containers](docs/Binding-Rules.md#7a-ncollection-containers-hand-written-binders)**
 
 ### Generics support
 
@@ -172,7 +172,7 @@ In [4]: del v
 Out[4]: (5, 3)
 ```
 
-A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](docs/Binding-Rules.md#views-a-container-refuses-to-invalidate-r-view-guard).
+A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 7a](docs/Binding-Rules.md#views-a-container-refuses-to-invalidate-r-view-guard).
 
 ### Index access
 
@@ -293,7 +293,7 @@ Out[3]: [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
 
 ## Iterating over OCCT iterators
 
-**Binding rule: R-ITER ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rule: R-ITER ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 Every OCCT class with `More()`, `Next()` and a `Current()` or `Value()` is a Python iterable: `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer` and the other OCCT iterators, and the `Iterator` classes of the NCollections. A `for` loop runs OCCT's own `More()`/`Next()` loop and yields `Current()` (or `Value()`).
 
@@ -409,7 +409,7 @@ A `for` loop or `list()` is about 20–25 % faster than a hand-written `More()`/
 
 ## numpy zero-copy support in detail
 
-**Binding rule: R-VIEW ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rule: R-VIEW ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 ### Support for the numpy array protocol
 
@@ -579,7 +579,7 @@ Out[10]: (1, 1, 1)
 
 ## Handling of primitive types passed by reference
 
-**Binding rules: R-OUT, R-COLLISION ([Design 2a](docs/Design.md#2a-naming-conventions)), R-INOUT ([Design 6](docs/Binding-Rules.md))**
+**Binding rules: R-OUT, R-COLLISION ([Design 3.1](docs/Conventions.md#31-naming-conventions)), R-INOUT ([Design 7](docs/Binding-Rules.md))**
 
 A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an output in OCCT: nanocct drops it from the parameters and returns it, after the C++ return value if there is one. A reference to a class (`gp_Pnt&`) stays a parameter and is filled in place.
 
@@ -594,7 +594,7 @@ A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an outp
 
 ## Mutable primitive references
 
-**Binding rule: R-REF-PRIMITIVE ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rule: R-REF-PRIMITIVE ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 Many OCCT settings are a method that returns a writable reference to a number, e.g. `int& ShapeFix_Face::FixWireMode()`. In C++ the value is set by assigning to the result, `face.FixWireMode() = 0;`. Python has no references to numbers, so nanocct keeps the getter under its OCCT name and adds a setter: `Set<Name>`, with a `Change` prefix dropped (`ChangeValue` → `SetValue`), unless OCCT already has a method of that name. Its docstring starts with "Python addition".
 
@@ -628,7 +628,7 @@ Out[4]: (7.0, 7.0)
 
 ## Operators
 
-**Binding rules: R-OPERATOR, R-IOP, R-FREE-OP, R-STR ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rules: R-OPERATOR, R-IOP, R-FREE-OP, R-STR ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 C++ operators become the matching Python special methods, and they keep OCCT's meaning:
 
@@ -748,7 +748,7 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 
 Every C++ text type of OCCT is a Python `str`: `const char*` (`Standard_CString`), `std::string_view`, the UTF-16 `const char16_t*` (`Standard_ExtString`), and the single characters `char`, `char16_t` and `char32_t`. A `str` goes to C++ as UTF-8 for the 8-bit types and as UTF-16 for `char16_t`.
 
-Where OCCT overloads a method for several of these types, Python cannot tell them apart, and nanobind calls the first overload that accepts a `str`. nanocct registers them in the order C++ itself picks for a narrow string literal `"..."`: `const char*` first, then `std::string_view`, then `const char16_t*`, then the single characters. An overload that can never be reached this way is not bound, and the generator reports it ([Design 6](docs/Binding-Rules.md), R-WIDTH, R-UNREACHABLE).
+Where OCCT overloads a method for several of these types, Python cannot tell them apart, and nanobind calls the first overload that accepts a `str`. nanocct registers them in the order C++ itself picks for a narrow string literal `"..."`: `const char*` first, then `std::string_view`, then `const char16_t*`, then the single characters. An overload that can never be reached this way is not bound, and the generator reports it ([Design 7](docs/Binding-Rules.md), R-WIDTH, R-UNREACHABLE).
 
 For most classes this makes no difference, since all the overloads store the same text. It matters for `TCollection_ExtendedString`: exactly as in C++, its `const char*` constructor reads one byte per character unless `theIsMultiByte` is `True`:
 
@@ -790,7 +790,7 @@ Out[8]: 'ö'
 
 ## Handling of istream and ostream
 
-**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 6](docs/Binding-Rules.md))**
+**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 7](docs/Binding-Rules.md))**
 
 ```python
 In [1]: import json
@@ -936,7 +936,7 @@ Out[10]: TopAbs_ShapeEnum.TopAbs_SOLID
 
 ## Enums
 
-**Binding rules: R-ENUM, R-ANON-ENUM ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rules: R-ENUM, R-ANON-ENUM ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 OCCT's enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), and they are integers. As in C++, the conversion goes one way only: an OCCT parameter of an enum type takes its enumerators, not an `int` or a `bool` (`TypeError`); `TopAbs_ShapeEnum(4)` turns an `int` into the enumerator. An `enum class` stays nested in its class (`gp_Dir.D.NZ`).
 
@@ -963,7 +963,7 @@ Out[5]: (True, False)
 
 ## Exceptions
 
-**Design: [4.2](docs/Design.md#42-three-kinds-of-c-types)**
+**Design: [5.2](docs/Runtime.md#52-three-kinds-of-c-types)**
 
 OCCT's C++ exceptions arrive in Python as exception classes with the same names and the same hierarchy as in C++, with OCCT's own message. `Standard_Failure` is the root of all of them and derives from Python's `RuntimeError`. They are not mapped to Python's built-in categories: `Standard_OutOfRange` is not an `IndexError`, so catch OCCT's classes (or `Standard_Failure`).
 
@@ -1125,7 +1125,7 @@ each sub-shape the transformation that is associated with S.
 
 ## AddOns
 
-**Binding rule: R-ADDON ([Design 2c](docs/Design.md#2c-python-additions))**
+**Binding rule: R-ADDON ([Design 2, Python additions](docs/Design.md#python-additions))**
 
 `nanocct.AddOns` is the one package that is not OCCT. Everything under an OCCT package name is a 1:1 binding; what nanocct adds of its own lives here, so that the 1:1 rule holds everywhere else. There are two reasons for an AddOn: a computation where a loop over OCCT calls in Python would dominate (`AddOns.Tessellator`), and a workaround for an OCCT bug that is reported upstream and not fixed yet (`AddOns.ShapeClean`).
 

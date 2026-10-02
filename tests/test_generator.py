@@ -137,7 +137,7 @@ public:
   operator gp_XYZ&() { return myOrigin; }
   //! A container in the signature registers the instantiation.
   int Count(const NCollection_Array1<gp_Pnt>& thePoles) const { return thePoles.Length(); }
-  //! NCollection_TListIterator<T> is NCollection_List<T>::Iterator: registers the List instantiation, no 6c class (TopOpeBRepDS).
+  //! NCollection_TListIterator<T> is NCollection_List<T>::Iterator: registers the List instantiation, no 7c class (TopOpeBRepDS).
   NCollection_TListIterator<gp_Pnt> Iter(const NCollection_List<gp_Pnt>& theList) const { return NCollection_TListIterator<gp_Pnt>(theList); }
   //! const / non-const twins: only the non-const one is bound (R-CONST-TWIN).
   const gp_XYZ& Origin() const { return myOrigin; }
@@ -330,7 +330,7 @@ public:
   double Steps(const int theN, std::pair<int, int>& theSteps) const { theSteps = {theN, theN}; return 1.0; }
 };
 
-//! 6c: an instantiation reachable ONLY through a reference parameter must still be instantiated. `const T&` has
+//! 7c: an instantiation reachable ONLY through a reference parameter must still be instantiated. `const T&` has
 //! canonical kind LVALUEREFERENCE, so the plain-template check answered False for it and the method bound with a type
 //! nanobind never saw -- RWPly_PlyWriterContext::WriteVertex(..., const NCollection_Vec4<uint8_t>&) was uncallable
 //! (2026-09-23). Rules_TOnly<short> appears nowhere else: no typedef, no field, no by-value parameter.
@@ -431,7 +431,7 @@ public:
   void Coord(double& theX, double& theY) const { theX = 1.0; theY = 2.0; }
   void Coord(float& theX, float& theY) const { theX = 1.0f; theY = 2.0f; }
 };
-//! A 6c instantiation whose default `T(0)` becomes a multi-word builtin (NCollection_Vec3<unsigned long>).
+//! A 7c instantiation whose default `T(0)` becomes a multi-word builtin (NCollection_Vec3<unsigned long>).
 template <class T>
 class Rules_TVec
 {
@@ -454,7 +454,7 @@ private:
   T myX;
 };
 typedef Rules_TVec<unsigned long> Rules_TVecUL;
-//! 6c follows the members of an instantiation: Rules_TWide<T>::Narrow() returns Rules_TNarrow<T>, which
+//! 7c follows the members of an instantiation: Rules_TWide<T>::Narrow() returns Rules_TNarrow<T>, which
 //! is named nowhere else; Same() names the instantiation itself, with its defaulted argument spelled out.
 template <class T>
 class Rules_TNarrow
@@ -472,7 +472,7 @@ public:
   Rules_TWide<T, N> Same() const { return *this; }
 };
 typedef Rules_TWide<short> Rules_TWideS;
-//! 6c, partial specialisations (BVH_Tree<T, N, BVH_BinaryTree>): the primary template is empty, the real
+//! 7c, partial specialisations (BVH_Tree<T, N, BVH_BinaryTree>): the primary template is empty, the real
 //! class is the partial specialisation; an explicit (full) specialisation is reported, not walked; a pattern like
 //! Rules_PTree<T*, ...> is not matched (conservative) -- Rules_PTree<double, 1, Rules_PBin> has no specialisation of its own.
 struct Rules_PBin {};
@@ -500,7 +500,7 @@ public:
 typedef Rules_PTree<double, 3, Rules_PBin> Rules_PTreeD3;
 typedef Rules_PTree<int, 1, Rules_PQuad> Rules_PTreeI1;
 
-//! 6a: a nested class deriving from a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator) is
+//! 7a: a nested class deriving from a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator) is
 //! declared after the templates phase, where the base exists.
 class Rules_PntSeq
 {
@@ -518,7 +518,7 @@ protected:
   NCollection_Sequence<gp_Pnt> myItems;
 };
 
-//! 6a: a class deriving from a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
+//! 7a: a class deriving from a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
 //! handle<Standard_Transient>>): declared after the templates phase too, the base spelled as the manifest key.
 class Rules_Table : public NCollection_DataMap<int, double>
 {
@@ -1673,7 +1673,7 @@ def test_base_import_edges_and_the_import_order():
 
 
 def test_ir_instantiation_reachable_only_through_a_reference_parameter(rules_ir):
-    """6c: `const Rules_TOnly<short>&` has canonical kind LVALUEREFERENCE, so the plain-template check has to run on the
+    """7c: `const Rules_TOnly<short>&` has canonical kind LVALUEREFERENCE, so the plain-template check has to run on the
     stripped declaration type. Until 2026-09-23 it ran on the reference and answered False, and the method was bound
     with a type nanobind never saw -- RWPly_PlyWriterContext::WriteVertex was a TypeError for every argument list, and
     nothing reported it because the parameter itself is perfectly bindable."""
@@ -1815,14 +1815,14 @@ def test_ir_and_emitter_visualization_idioms(rules_ir):
     assert by["Rules_ViaTypedef"].is_transient and by["Rules_ViaTypedef"].bases == ["Rules_TTransient<double>"]
     assert "nb::new_([]() { return opencascade::handle<Rules_ViaTemplate>(new Rules_ViaTemplate()); })" in cpp
     assert "new (self) Rules_ViaTemplate" not in cpp
-    # 6a: the binder-Iterator-derived class is declared in the templates phase, after its base's instantiation
+    # 7a: the binder-Iterator-derived class is declared in the templates phase, after its base's instantiation
     it = by["Rules_PntSeq::Iterator"]
     assert it.after_templates and it.bases == ["NCollection_Sequence<gp_Pnt>::Iterator"]
     assert "NCollection_Sequence<gp_Pnt>" in rules_ir.instances
     templates_fn = cpp[cpp.index("void nanocct_templates_Rules"):cpp.index("void nanocct_define_Rules")]
     decl = 'nb::class_<Rules_PntSeq::Iterator, NCollection_Sequence<gp_Pnt>::Iterator> cls(m.attr("Rules_PntSeq"), "Iterator"'
     assert decl in templates_fn and templates_fn.index("bind_NCollection_Sequence<gp_Pnt>") < templates_fn.index(decl)
-    # 6a: a class deriving from the binder instantiation itself
+    # 7a: a class deriving from the binder instantiation itself
     table = by["Rules_Table"]
     assert table.after_templates and table.bases == ["NCollection_DataMap<int, double>"] and "NCollection_DataMap<int, double>" in rules_ir.instances
     decl = 'nb::class_<Rules_Table, NCollection_DataMap<int, double>> cls(m, "Rules_Table"'
@@ -2020,7 +2020,7 @@ def test_stub_class_names_shadowed_by_a_member_are_qualified():
 
 
 def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
-    """6c follows the members of an instantiation: Rules_TWide<short>::Narrow() returns Rules_TNarrow<short>,
+    """7c follows the members of an instantiation: Rules_TWide<short>::Narrow() returns Rules_TNarrow<short>,
     named nowhere else, so it is instantiated through the probe; Same() returns the instantiation itself spelled with its
     defaulted argument (Rules_TWide<short, 4>), which must not become a second class -- measured: without the self check
     it did, the analogue of NCollection_AliasedArray<> / <16>, after which the extension failed to initialise."""
@@ -2032,7 +2032,7 @@ def test_members_of_an_instantiation_instantiate_what_they_name(rules_ir):
 
 
 def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
-    """a nested class of a 6c instantiation was skipped ("nested class of a class template"), and one of an
+    """a nested class of a 7c instantiation was skipped ("nested class of a class template"), and one of an
     instantiation bound under an alias was not even added to the IR. Rules_TVec<unsigned long>::Cursor must sit in the
     alias's class (Rules_TVecUL.Cursor), and its `const T& Value()` -- dependent, so parse says OTHER -- is copyable,
     so it gets __iter__ (R-ITER)."""
@@ -2047,7 +2047,7 @@ def test_nested_classes_of_an_instantiation_are_bound_into_it(rules_ir):
 
 
 def test_partial_specialisation_is_walked_instead_of_the_empty_primary(rules_ir):
-    """6c: Rules_PTree<double, 3, Rules_PBin> comes from the partial specialisation
+    """7c: Rules_PTree<double, 3, Rules_PBin> comes from the partial specialisation
     Rules_PTree<T, N, Rules_PBin> -- walking the empty primary template bound it without members or base (the four
     BVH_Tree classes). T and N are deduced from the pattern; its base Rules_PBase<T, N> is instantiated through the probe
     (R-TEMPLATE-BASE). An explicit specialisation is a class of its own: bound once, from its declaration, not from the template."""
@@ -2189,7 +2189,7 @@ def test_report_categories_are_complete_for_the_checked_in_reports():
 def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
     """The generator, run with the current manifest, must reproduce src/cpp/TKG2d byte for byte -- the 'clean
     regeneration is canonical' check, automated for the smallest toolkit. Since 2026-09-23 the sources are not
-    tracked (Design.md 5.3), so this compares a fresh run against the working tree's, i.e. it tests idempotence."""
+    tracked (Generator.md 6.3), so this compares a fresh run against the working tree's, i.e. it tests idempotence."""
     (tmp_path / "cpp").mkdir()
     shutil.copy(ROOT / "src" / "cpp" / "manifest.json", tmp_path / "cpp" / "manifest.json")
     subprocess.run([*GEN, "--toolkit", "TKG2d", "--out", str(tmp_path)], check=True, cwd=ROOT,
@@ -2207,7 +2207,7 @@ def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
                     reason="set NANOCCT_AB=1: a serial run costs the whole speedup the parallel one buys")
 def test_a_parallel_run_reproduces_a_serial_one_byte_for_byte(tmp_path):
     """NANOCCT_JOBS>1 parses and emits in a pool, deriving the two inputs a package normally inherits from the packages
-    before it (Design.md 5.2): who already bound which instantiation, and the parser's cross-package state. This is the
+    before it (Generator.md 6.2): who already bound which instantiation, and the parser's cross-package state. This is the
     check that the derivation is right -- six toolkits, because the interesting cases are cross-toolkit (an
     instantiation owned by an earlier toolkit, a class deriving from one).
 
@@ -2381,7 +2381,7 @@ def test_every_byte_buffer_pair_in_occt_is_listed_for_r_bytes():
 
 def test_containers_a_call_may_change_are_guarded(tmp_path_factory):
     """R-VIEW-GUARD: a non-const reference or pointer to an NCollection container is `guarded` -- also as a template
-    parameter of a 6c instantiation, through the substituted spelling -- a const one is not. The emitter wraps a direct
+    parameter of a 7c instantiation, through the substituted spelling -- a const one is not. The emitter wraps a direct
     binding in nanocct::guarded (C++ positions), checks in the body of a lambda (Python positions: a returned out-parameter
     is not passed) and of a constructor, binds a container member with the checked setter, adds an iterator view to the
     constructors and Init of an R-ITER class, and reports a container the object owns that a method hands out."""

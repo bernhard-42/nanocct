@@ -1,0 +1,53 @@
+# 4. Toolchain and third-party dependencies
+
+Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.md); their section numbers and the `R-…` rule identifiers are shared across them.
+
+
+## 4.1 OCCT
+
+- Built locally from the `V8_0_1` tag: sources extracted with `git archive` from a checkout into `deps/occt-src` (the exact tag, not a working tree).
+- Script `deps/build-occt-macos.sh`; install prefix `deps/occt-8.0.1`.
+- **No conda/micromamba anywhere.**
+
+Configuration:
+
+| Option | Value | Why |
+|---|---|---|
+| compiler | Apple clang (`/usr/bin/clang++`), system libc++ | Wheels must not depend on a conda/Homebrew C++ runtime. An OCCT built inside micromamba links `@rpath/libc++.1.dylib` without an `LC_RPATH`, which makes extension modules fail to load. |
+| `BUILD_CPP_STANDARD` | C++17 | OCCT default. |
+| `CMAKE_BUILD_TYPE`, `BUILD_OPT_PROFILE` | Release, Production (`-O3 -flto`) | Optimised release build. |
+| `BUILD_RELEASE_DISABLE_EXCEPTIONS` | **OFF** | OCCT must throw `Standard_Failure` in release builds so Python sees exceptions. |
+| `CMAKE_OSX_DEPLOYMENT_TARGET` | 11.1 | Wheel platform tag `macosx_11_0_arm64`. |
+| `BUILD_MODULE_Draw`, `USE_VTK`, `USE_TBB`, `USE_TK`, `USE_GLES2`, `USE_FFMPEG` | OFF | Not needed in scope. Without FFmpeg the `Media` package is stubs (verified). |
+| `USE_XLIB` | **ON on Linux**, OFF on macOS and Windows | OCCT's own default per platform (`CMakeLists.txt:389`). With it off, Linux goes through EGL, `Xw_Window` is a stub and the viewer never initialises — *"EGL display is unavailable"* even with a GPU. macOS and Windows have no X11. The one flag on which the three builds deliberately differ. |
+| `USE_OPENGL` | **ON** | `libTKOpenGl` (1.5 MB) is in the install and links `OpenGL.framework` plus AppKit/IOKit/CoreGraphics — all macOS system frameworks, never bundled (7). Only `OpenGl_GlFunctions.hxx` is guarded by `HAVE_OPENGL`, and it belongs to that toolkit. |
+| `USE_FREETYPE` | ON, static build from `deps/build-freetype-macos.sh` | Required by the `Font` package (`Font_FTFont.cxx` is entirely `#ifdef HAVE_FREETYPE`). |
+| `USE_RAPIDJSON` | ON (header-only, vendored in `deps/rapidjson`) | glTF reader/writer (`TKDEGLTF`). **Vendored at the pinned tag `v1.1.0` into `deps/rapidjson`**, because a system RapidJSON is not available on every build machine and all platforms need the same version. Header-only, so nothing extra ships in the wheel — but the **include path is needed twice**: an installed OCCT header includes it (`RWGltf_GltfJsonParser.hxx` → `rapidjson/document.h` under `HAVE_RAPIDJSON`), so both the generator's libclang parse (`parse.clang_args`) and the C++ build (`NANOCCT_RAPIDJSON_DIR` in `CMakeLists.txt`) pass it. OCCT's exported targets define `HAVE_RAPIDJSON` but do not carry the path. |
+| `USE_FREEIMAGE` | **ON**, shared build from `deps/build-freeimage-{macos,manylinux,windows}.sh` | Without it `Image_AlienPixMap` reads nothing and `Save` writes PPM whatever the extension. **Shared, not static**: only a shared FreeImage registers its codec plugins, and OCCT never calls `FreeImage_Initialise`. Only `FreeImage_*` is exported (254 symbols), so its bundled libpng/zlib/libjpeg cannot collide with another copy in the process: `-fvisibility=hidden` does that on macOS and Windows; on Linux the libstdc++ symbols need a link-time export list as well (`deps/freeimage-version-script.map`). WebP, OpenEXR, LibRaw and JPEG-XR are off. |
+| `USE_DRACO`, `USE_D3D` | OFF | glTF has no Draco decompression (`libTKDEGLTF` links no external library); D3D builds `TKD3DHost`, the optional Direct3D wrapper of the visualization module (`adm/cmake/vardescr.cmake:188`), which is only offered on Windows (`CMakeLists.txt:396-400`) and not needed in scope. |
+
+## 4.2 Third-party policy
+
+- The compiled third-party libraries for the whole scope are two: **FreeType** (static) and **FreeImage** (shared).
+- FreeType 2.14.3 (sha256 verified against the Homebrew formula) builds in 2 s with its own CMake and `FT_DISABLE_ZLIB/BZIP2/PNG/HARFBUZZ/BROTLI=TRUE` into a static archive that links against nothing but libSystem (verified with a link test loading Helvetica).
+- **FreeImage 3.19.15** (danoli3's fork, the pinned tag in `deps/fetch-freeimage-src.sh`) is the third-party image codec. Unlike FreeType it is **shared**, and it has to be: FreeImage registers its format plugins in `FreeImage_Initialise()`, which only a shared build calls by itself (`DllMain` / `__attribute__((constructor))`, both inside `#ifndef FREEIMAGE_LIB`), and OCCT never calls it — so a static FreeImage links and runs but has **no plugins at all**: measured, `Save()` fails for every extension and `Load()` says "unsupported file format", while `AdjustGamma()` still works. delocate/auditwheel bundle the one library (2.4 MB on macOS). It is built with `-fvisibility=hidden`, which leaves **only its own `FreeImage_*` API exported** (254 symbols) and hides every vendored codec — 0 `png_*`, `jpeg_*`, `TIFF*`, `opj_*`, `crc32`, `deflate`, `inflate` — so Pillow's libpng or zlib in the same process cannot be bound to FreeImage's copy, or the reverse. `BUILD_WEBP/OPENEXR/LIBRAWLITE/JXR=OFF`: the four codecs FreeImage can drop without patching. WebP is off *because* its `WEBP_EXTERN` forces default visibility, the one macro the flag cannot beat.
+- FreeType is linked into `libTKService` (`otool -L libTKService.dylib` names no FreeType library, so there is nothing to bundle). `libTKService` also links AppKit, IOKit, CoreFoundation, CoreGraphics and Foundation (`CSF_Appkit` and `CSF_IOKit` are unconditional entries in `TKService/EXTERNLIB.cmake`) — macOS system frameworks, not bundled.
+- **FreeType's symbols do not leave the library it is linked into** (`deps/occt-unexported-symbols.txt` / `deps/occt-version-script.map`). Being static is not enough: without them `libTKService` re-exports **151** `FT_*` symbols on macOS and **157** in the manylinux build, and ELF has one flat namespace. This is the problem [CadQuery/ocp-build-system#54](https://github.com/CadQuery/ocp-build-system/issues/54) raises.
+    - **On Linux the collision is not hypothetical, and OCCT creates it by itself.** `libTKService` has no `DT_NEEDED` for FreeType — `readelf -d` confirms the static archive is the only copy inside it — but it *does* need `libfontconfig.so.1`, and fontconfig's own `DT_NEEDED` names `libfreetype.so.6`. So every nanocct process on Linux already has **two FreeType implementations loaded**: ours inside `libTKService` and the system one pulled in through fontconfig, with the flat namespace free to bind either. Another library bundling a third (matplotlib, Pillow, Qt) only widens it.
+    - FreeType already builds with `C_VISIBILITY_PRESET hidden` (its own `CMakeLists.txt`), and it makes no difference: each of its **226** `FT_EXPORT` declarations carries an explicit `__attribute__((visibility("default")))` that overrides the preset.
+    - The macro **cannot be redefined from the command line.** The gcc/clang branch of `include/freetype/config/public-macros.h` defines `FT_PUBLIC_FUNCTION_ATTRIBUTE` *unconditionally*, so a `-D` loses to the header — clang reports `macro redefined` and keeps the header's. The `#ifndef` further down is only the fallback for compilers that branch does not recognise.
+    - **MSVC needs nothing** (verified: 0 `FT_*` among `TKService.dll`'s 1 228 exports) — its branch marks `dllexport` only under `DLL_EXPORT`, which a static build never defines
+    - **So it is done at link time, and FreeType is used unmodified**. `CMAKE_SHARED_LINKER_FLAGS` passes `-Wl,-unexported_symbols_list,deps/occt-unexported-symbols.txt` on macOS and `-Wl,--version-script=deps/occt-version-script.map` on Linux, both listing `FT_*`, `FTC_*` and `TT_*` — measured as the complete set the unpatched static `libfreetype.a` exports (203 + 15 + 2). The result: `libTKService` exports **1 846** symbols, **0** of them `FT_*`, and the FreeType code is still inside it (110 `FT_*` at local `t` binding, and its version string). Two reasons against patching FreeType's header instead: a modified dependency has to be re-checked at every bump, and it would have to be declared in `NOTICE` as a modified copy. Windows needs no flag, for the reason in the previous bullet.
+    - **Measured, and FreeType still works on both:** the export list loses exactly the `FT_*` symbols (macOS `libTKService.dylib` 1 996 → 1 845, Linux `libTKService.so` 2 116 → 1 959), and the font manager enumerates and initialises fonts with real metrics on both (2 381 fonts and Helvetica on macOS, the DejaVu family in the container). OCCT uses FreeType only inside `Font_FTFont.cxx` and nanocct binds none of it, so nothing outside the library ever needed those symbols — which the link itself proves.
+    - Cost: a FreeType header change makes ninja relink every dependent toolkit, and the manylinux build is `-flto`, so that takes ~18 minutes on a 32-core 2015 box against 26 s on the laptop, whose OCCT tree is not built with LTO.
+    - **RapidJSON needs nothing**, measured: **0** symbols of its own on macOS and **1** on Linux (`rapidjson::internal::GetDigitsLut()::cDigitsLut`, a read-only digit table that is identical in every version). Header-only, and everything else inlined into OCCT's own functions — the symbols that mention `rapidjson` in their mangled names are OCCT's, not RapidJSON's.
+    - Our own extension modules export exactly one symbol each, `PyInit__<TK>`.
+- vcpkg would replace the two library builds with a bootstrap and a triplet per platform, and builds FreeType with the optional dependencies enabled by default. Revisit if the list grows (Draco, TBB); OCCT 8.0.1 has native `BUILD_USE_VCPKG` support.
+- Linux additionally needs **fontconfig** (used unconditionally under `HAVE_FREETYPE` in `Font_FontMgr.cxx:86,708`): system package in the manylinux image, bundled by auditwheel.
+- Windows enumerates fonts via the registry (*unverified*).
+
+## 4.3 Python side
+
+- Python ≥ 3.12, `uv` project.
+- nanobind ≥ 3.1.0 (the `handle<T>` caster uses `nb::keep_alive_cb`, public since 3.1.0). **Documented API only**: what nanobind's documentation describes (call policies, `keep_alive_obj`/`keep_alive_cb`, `inst_ptr`, `type<T>()`, the custom type-caster contract), because an internal can change in any release; the exceptions are listed with their reason in `tests/test_nanobind_api.py` (today `NB_CALL(nb_type_put)` in the two handle casters -- no documented function returns the bound Python type for a runtime `std::type_info` -- and the MSVC `NB_INLINE` redefinition).
+- scikit-build-core; pip `libclang` (fallback parser, see 6.2); pytest.

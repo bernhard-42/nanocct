@@ -1,4 +1,4 @@
-"""The wheel must carry a licence for everything it bundles (Design.md 7).
+"""The wheel must carry a licence for everything it bundles (Build.md).
 
 nanocct's own code is Apache-2.0, but the binary distribution also ships OCCT, and inside it FreeType,
 RapidJSON and nanobind. Each of those licences requires its text and its attribution to travel with the

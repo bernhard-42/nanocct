@@ -8,7 +8,7 @@ checked. nanocct must be importable (the staged tree or an installed wheel).
 
 1. `from OCP.<pkg> import a, b as c` -> `from nanocct.<pkg> import a, b as c`, the statement left as written when only
    the module path changes. A container (OCP.collections `Array1_gp_Pnt`, OCP 8's `IndexedMap_TopoDS_Shape_...`) becomes
-   the generic spelling throughout the file -- `NCollection_Array1[gp_Pnt]`, Design.md 2a -- with its element types
+   the generic spelling throughout the file -- `NCollection_Array1[gp_Pnt]`, Conventions.md 3.1 -- with its element types
    imported; `import ... as Alias` of one becomes `Alias = NCollection_...[...]`. A namespace module (OCP.TopoDS.TopoDS)
    becomes `import nanocct.TopoDS as TopoDS`; `import OCP.X as y` becomes `import nanocct.X as y`.
 2. `Cls.Name_s` stays: nanocct suffixes every static like OCP (R-STATIC-S). Only where nanocct has no `Name_s` but a
@@ -155,7 +155,7 @@ def port_file(path: Path, maps, todo: list[str]) -> bool:
                     continue
                 if nmod == "nanocct.NCollection" and nname in GENERIC:
                     if a.asname is None:
-                        renames[a.name] = generic_spelling(nname, need)   # Design.md 2a: the generic accessor is primary
+                        renames[a.name] = generic_spelling(nname, need)   # Conventions.md 3.1: the generic accessor is primary
                     else:
                         now: list[tuple[str, str]] = []
                         assigns.append(f"{a.asname} = {generic_spelling(nname, now)}")

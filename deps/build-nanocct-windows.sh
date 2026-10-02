@@ -1,6 +1,6 @@
 #!/bin/bash
 # Compile the extension modules with MSVC and stage them into stage-win. Bash prepares, cmd.exe builds: MSVC is
-# reached by importing vcvars64 in a generated .bat, never through PowerShell (Design.md 7). vswhere needs
+# reached by importing vcvars64 in a generated .bat, never through PowerShell (Build.md). vswhere needs
 # `-products *` because this box has Build Tools rather than a full Visual Studio.
 #
 # Run this from a real session. Launched from an ssh command, cl.exe fails sporadically with 0xC0000142

@@ -1,4 +1,4 @@
-"""Hand-written NCollection binders (Binding-Rules.md 6a), all 15 kinds, instantiated by the generator."""
+"""Hand-written NCollection binders (Binding-Rules.md 7a), all 15 kinds, instantiated by the generator."""
 import gc
 import sys
 
@@ -7,7 +7,7 @@ import pytest
 from nanocct import NCollection, Standard, TColStd
 from nanocct._templates import Generic
 
-A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanocct.NCollection (Binding-Rules.md 6a)
+A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanocct.NCollection (Binding-Rules.md 7a)
 AH = NCollection.NCollection_Array1__Handle_Standard_Persistent
 H = NCollection.NCollection_HArray1__Handle_Standard_Persistent
 
@@ -63,7 +63,7 @@ def test_harray1_is_an_array1_with_transient_members():
     assert h.IsKind("Standard_Transient") is True
     assert h.Length() == 5 and len(h) == 5 and h.Value(5) is None
     assert isinstance(h, AH)                                   # nanobind base = the offset-0 base NCollection_Array1
-    assert not isinstance(h, Standard.Standard_Transient)      # the Transient base is at a non-zero offset (Design.md 4.2)
+    assert not isinstance(h, Standard.Standard_Transient)      # the Transient base is at a non-zero offset (Runtime.md 5.2)
     assert type(h.Array1()) is AH                              # sliced copy of the array part
     assert h.ChangeArray1() is h                               # mutable view = the object itself
 
@@ -85,12 +85,12 @@ def test_harray1_passes_as_array1_and_as_transient_handle():
 def test_the_pre_8_0_typedef_names_are_not_exposed():
     """nanocct is an OCCT 8 binding: the pre-8.0 aliases of src/Deprecated/NCollectionAliases
     (TColStd_Array1OfReal & co) are not bound -- the 8.0 spelling is the container itself
-    (decision 2026-09-24, Binding-Rules.md 6a). 6c aliases that OCCT still declares as real classes stay."""
+    (decision 2026-09-24, Binding-Rules.md 7a). 7c aliases that OCCT still declares as real classes stay."""
     assert not hasattr(TColStd, "TColStd_Array1OfReal")
     a = A(1, 3)
     a.Init(2.5)
     assert list(a) == [2.5, 2.5, 2.5]
-    assert TColStd.TColStd_PackedMapOfInteger is not None      # 6c: bound as a class, not an alias
+    assert TColStd.TColStd_PackedMapOfInteger is not None      # 7c: bound as a class, not an alias
 
 
 def test_docstrings_come_from_the_template_header():

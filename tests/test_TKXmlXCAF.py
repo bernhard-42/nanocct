@@ -78,7 +78,7 @@ def test_every_package_imports(pkg):
 def test_a_product_structure_round_trips_through_xml_bytes(application):
     status, data = application.SaveAs(_assembly_document(application))
     assert status == PCDM_SS_OK
-    assert data.startswith(b'<?xml version="1.0" ')                # bytes whatever the format (2b), XML included
+    assert data.startswith(b'<?xml version="1.0" ')                # bytes whatever the format (3.2), XML included
 
     read_status, reloaded = application.Open(io.BytesIO(data))
     assert read_status == PCDM_RS_OK

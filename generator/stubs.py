@@ -54,7 +54,7 @@ def _generic_spelling(concrete: str, templates: dict[str, dict]) -> str:
     for key, inst in templates.items():
         if inst.get("name") == name:
             kind, args = re.match(r"([\w:]+)<(.*)>$", key).groups()
-            if kind not in BINDERS:            # a 6c instantiation (NCollection_EBTree<int, Bnd_Box2d>): no generic class, the concrete one is the type
+            if kind not in BINDERS:            # a 7c instantiation (NCollection_EBTree<int, Bnd_Box2d>): no generic class, the concrete one is the type
                 return concrete
             return f"{kind}[{', '.join(_stub_arg(a, templates) for a in _split_args(args))}]"
     return concrete
@@ -368,7 +368,7 @@ import re, sys, importlib
 from pathlib import Path
 from nanobind.stubgen import StubGen
 # A stub must name every type a signature mentions, including types other toolkits register -- and since
-# nanocct/__init__.py stopped importing eagerly (Binding-Rules.md 6a) nothing else pulls them in, so a cross-toolkit
+# nanocct/__init__.py stopped importing eagerly (Binding-Rules.md 7a) nothing else pulls them in, so a cross-toolkit
 # parameter would render as a bare name instead of nanocct.<pkg>.<Class>. Load every toolkit first: stub
 # generation is the one place that deliberately wants all of them.
 import nanocct
@@ -491,7 +491,7 @@ def main() -> int:
         body = []
         if "class Iterator(Generic[" in (GENERIC / f"{kind}.pyi").read_text():
             # the generic nested Iterator does not bind the outer arguments (Python nested classes share no type parameters):
-            # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (6b)
+            # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (7b)
             n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap") else 1
             if kind in _HASHED and len(spelled) > n_it:
                 n_it += 1                               # the custom hasher, else Iterator(theMap) rejects its own map
@@ -548,7 +548,7 @@ def main() -> int:
     # generation (129.9 s of 226.8 s, macOS 2026-09-24). The trailing \b already prevents a shorter name from matching
     # a prefix of a longer one (the names are separated by '_', a word character), and longest-first makes it explicit.
     # A nested-class access (X.Iterator as a base class, Graphic3d_SequenceOfHClipPlane::Iterator) keeps the concrete
-    # name: ty rejects the nested class of a specialised generic (6b) -- hence the (?!\.).
+    # name: ty rejects the nested class of a specialised generic (7b) -- hence the (?!\.).
     generic_re = re.compile(r"\bnanocct\.NCollection\.(" + "|".join(
         re.escape(n) for n in sorted(generic_of, key=len, reverse=True)) + r")\b(?!\.)") if len(generic_of) > 0 else None
     for stub in sorted(SRC.rglob("*.pyi")):

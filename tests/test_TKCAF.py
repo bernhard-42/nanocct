@@ -121,4 +121,4 @@ def test_report_has_only_the_expected_omissions():
     # R-VIEW-GUARD (2026-10-02): containers the object owns, handed out by reference -- its own changes are not checked
     assert [line.split("\t")[2].split("(")[0] for line in lines if line.startswith("view-guard")] == ["TNaming_Scope::ChangeValid", "TNaming_ShapesSet::ChangeMap"]
     assert any(line.startswith("copy\tTNaming\tTNaming_NamedShape: no copy constructor") for line in lines)   # R-COPY
-    assert any("TNaming_RefShape *" in line for line in lines)              # the internal shape->RefShape map (2d)
+    assert any("TNaming_RefShape *" in line for line in lines)              # the internal shape->RefShape map (Excluded.md)

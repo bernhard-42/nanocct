@@ -93,7 +93,7 @@ def test_the_writer_context_writes_a_ply_by_hand(tmp_path):
 
 
 def test_the_colour_parameter_is_a_bound_type(tmp_path):
-    """NCollection_Vec4<uint8_t> reaches the bindings only as WriteVertex's `const&` parameter -- the case 6c did not
+    """NCollection_Vec4<uint8_t> reaches the bindings only as WriteVertex's `const&` parameter -- the case 7c did not
     instantiate until 2026-09-23, which made the method a TypeError for every argument list without any report line."""
     assert "theColor: nanocct.Graphic3d.NCollection_Vec4__unsigned_char" in RWPly_PlyWriterContext.WriteVertex.__doc__
     colour = Vec4ub(1, 2, 3, 4)           # NCollection_Vec4<unsigned char>

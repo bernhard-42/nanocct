@@ -95,7 +95,7 @@ def test_a_document_is_written_with_its_colour(tmp_path, meshed_box, quiet_messe
 
 
 def test_the_caf_reader_reads_a_file_and_bytes(tmp_path, meshed_box, quiet_messenger):
-    """VrmlAPI_CafReader derives from RWMesh_CafReader, so it inherits the binary-stream Perform (2b): VRML is text,
+    """VrmlAPI_CafReader derives from RWMesh_CafReader, so it inherits the binary-stream Perform (3.2): VRML is text,
     but the path overload opens the file std::ios_base::binary and hands that stream on, exactly as OBJ does."""
     assert "theStream: typing.BinaryIO" in VrmlAPI_CafReader.Perform.__doc__
 
@@ -117,7 +117,7 @@ def test_the_caf_reader_reads_a_file_and_bytes(tmp_path, meshed_box, quiet_messe
 
 def test_the_vrml_1_nodes_print_themselves():
     """The `Vrml` package is VRML 1.0: 40 node classes whose only output is Print(Standard_OStream&), which returns
-    the stream for chaining -- R-STREAM-OUT drops the chained result and returns the text (2b)."""
+    the stream for chaining -- R-STREAM-OUT drops the chained result and returns the text (3.2)."""
     assert Vrml_Cone().Print() == "Cone {\n}\n"
     material = Vrml_Material().Print()
     assert material.startswith("Material {") and "ambientColor" in material and "diffuseColor" in material

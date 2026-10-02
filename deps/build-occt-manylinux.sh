@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build OCCT 8.0.1 for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the result runs
 # against glibc 2.28 while being compiled by gcc 14. This is the Linux counterpart of deps/build-occt-macos.sh and
-# deps/build-occt-windows.sh, and it is the only Linux build: the container is the Linux platform (Design.md 7),
+# deps/build-occt-windows.sh, and it is the only Linux build: the container is the Linux platform (Build.md),
 # so there is one Linux environment and it is the one CI will use. FreeType comes from
 # deps/build-freetype-manylinux.sh first, exactly as the other two platforms expect `make freetype` before
 # `make occt`.

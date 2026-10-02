@@ -146,7 +146,7 @@ def test_a_virtual_window_gives_a_context_without_a_drawable(driver, quiet_messe
 def test_report_is_the_gl_entry_point_tables():
     """Almost the whole report is the GL loader: OpenGl_GlFunctions' C function pointers (raw-pointer) and the
     OpenGl_Arb*/OpenGl_Ext* structs re-exporting them with `using` (inheritance). Neither has any meaning from
-    Python -- OpenGL is called through the driver (2d).
+    Python -- OpenGL is called through the driver (Excluded.md).
 
     This is the one report whose *portable* categories are not identical across platforms either: the entry-point
     tables are OCCT's own, and a CGL build lists different extensions from an EGL one (macOS 768 raw-pointer and

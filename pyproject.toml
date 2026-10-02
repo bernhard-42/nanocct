@@ -20,7 +20,7 @@ wheel.py-api = "cp312"
 wheel.packages = ["src/nanocct"]
 cmake.build-type = "Release"
 
-# the generated .py/.pyi under src/nanocct are gitignored (Design.md 5.3); scikit-build-core's file selection
+# the generated .py/.pyi under src/nanocct are gitignored (Generator.md 6.3); scikit-build-core's file selection
 # honours .gitignore, so without this the wheel would hold only the .so files
 [tool.scikit-build.sdist]
 include = ["src/nanocct/**/*.py", "src/nanocct/**/*.pyi"]

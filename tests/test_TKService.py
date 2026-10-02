@@ -141,7 +141,7 @@ def test_pixmap_pixel_access_and_image_io(tmp_path):
 
 def test_clip_plane_sequence_iterator_is_declared_after_its_binder_base():
     """Graphic3d_SequenceOfHClipPlane::Iterator derives from NCollection_Sequence<handle<Graphic3d_ClipPlane>>::Iterator, a
-    binder's nested class registered in the templates phase (6a, 2026-09-22); the items are protected, so it is the only way in."""
+    binder's nested class registered in the templates phase (7a, 2026-09-22); the items are protected, so it is the only way in."""
     seq = Graphic3d.Graphic3d_SequenceOfHClipPlane()
     for z in (1.0, 2.0, 3.0):
         assert seq.Append(Graphic3d.Graphic3d_ClipPlane(gp.gp_Pln(gp.gp_Pnt(0, 0, z), gp.gp_Dir(0, 0, 1))))
@@ -235,7 +235,7 @@ def test_the_space_mouse_keeps_its_raw_report_alive():
 
 
 def test_members_of_an_instantiation_return_bound_instantiations():
-    """6c follows the members of an instantiation: NCollection_Vec4<unsigned char>::xyz() returns
+    """7c follows the members of an instantiation: NCollection_Vec4<unsigned char>::xyz() returns
     NCollection_Vec3<unsigned char>, which was not instantiated -- the call raised TypeError (unregistered type)."""
     rgba = Graphic3d.NCollection_Vec4__unsigned_char(1, 2, 3, 4)
     rgb, rg = rgba.xyz(), rgba.xy()
@@ -244,7 +244,7 @@ def test_members_of_an_instantiation_return_bound_instantiations():
 
 
 def test_utf_string_converts_to_utf16_and_back():
-    """NCollection_UtfString<char16_t> is bound since 6c follows the members of NCollection_String."""
+    """NCollection_UtfString<char16_t> is bound since 7c follows the members of NCollection_String."""
     wide = NCollection_String("päx€").ToUtf16()
     assert type(wide).__name__ == "NCollection_UtfString__char16_t"
     assert (wide.Length(), wide.Size()) == (4, 8)          # four characters, two bytes each in UTF-16

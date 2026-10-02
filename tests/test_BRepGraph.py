@@ -1,5 +1,5 @@
 """BRepGraph (OCCT 8's graph-based BRep): typed ids are aliases of class templates nested in a class
-(BRepGraph_NodeId::Typed<Kind::Edge>), iterators of templates nested in namespaces; all instantiated by rule 6c."""
+(BRepGraph_NodeId::Typed<Kind::Edge>), iterators of templates nested in namespaces; all instantiated by rule 7c."""
 import gc
 
 import pytest
@@ -44,7 +44,7 @@ def test_typed_ids_and_iterators():
     assert hash(node) == hash(BRepGraph.BRepGraph_NodeId(eid))    # std::hash<BRepGraph_NodeId>
     assert hash(eid) == hash(ids[0]) and {eid: 1}[BRepGraph.BRepGraph_EdgeId.FromNodeId_s(node)] == 1   # partial std::hash<Typed<K>>
     assert g.Shapes().Shape(eid).IsSame(e)                         # implicit EdgeId -> NodeId conversion at the call
-    guard = g.Editor().Edges().Mut(eid)                            # BRepGraph_MutGuard<BRepGraphInc::EdgeDef>: instantiated from the signature (6c)
+    guard = g.Editor().Edges().Mut(eid)                            # BRepGraph_MutGuard<BRepGraphInc::EdgeDef>: instantiated from the signature (7c)
     assert type(guard).__name__ == "BRepGraph_MutGuard__BRepGraphInc_EdgeDef" and guard.Id() == eid
 
 
@@ -65,7 +65,7 @@ def test_tool_and_ref_iterators():
         refs += 1
         rit.Next()
     assert refs == 2
-    # R-USING: BRepGraph_FacesOfEdge inherits the constructors of its 6c base (`using EdgeParentsOf<...>::EdgeParentsOf;`)
+    # R-USING: BRepGraph_FacesOfEdge inherits the constructors of its 7c base (`using EdgeParentsOf<...>::EdgeParentsOf;`)
     faces = BRepGraph.BRepGraph_FacesOfEdge(g, eid)
     assert faces.More() is False and list(faces) == []
     sigs = [l for l in BRepGraph.BRepGraph_FacesOfEdge.__init__.__doc__.splitlines() if l.startswith("__init__")]
@@ -74,7 +74,7 @@ def test_tool_and_ref_iterators():
 
 def test_graph_iterators_and_flat_maps_are_python_iterables():
     """the Current() of BRepGraph_Iterator<...Def> and the Value() of NCollection_FlatMap<K, H>::Iterator are
-    a dependent `const T&` inside the 6c walk, which R-ITER did not accept, and the flat maps' nested Iterator was not bound
+    a dependent `const T&` inside the 7c walk, which R-ITER did not accept, and the flat maps' nested Iterator was not bound
     at all -- neither could be used in a `for` loop."""
     g = BRepGraph.BRepGraph()
     g.Clear()
@@ -109,7 +109,7 @@ def test_flat_map_contained_returns_the_stored_entries():
 
 
 def test_6c_instantiation_names_spell_every_template_argument():
-    """Design 6c: a 6c instantiation's name spells every template argument, the default hasher included, where the 6a binder
+    """Design 7c: a 7c instantiation's name spells every template argument, the default hasher included, where the 7a binder
     kinds drop it (NCollection_Map<int> is NCollection_Map__int). The OCCT 8 flat maps are not binder kinds, so their names
     carry NCollection_DefaultHasher; kept as released in 8.0.1.0 (the final review's F5, 2026-09-30). Pinned here, so a change
     of a default argument in OCCT, which would rename them, fails a test instead of passing silently."""

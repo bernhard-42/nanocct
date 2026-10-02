@@ -6,7 +6,7 @@ from enum import StrEnum
 
 
 class ResultKind(StrEnum):
-    """How a method's result is handed to Python (parse._result_kind, emit._method); Design.md 4.2 and Binding-Rules.md."""
+    """How a method's result is handed to Python (parse._result_kind, emit._method); Runtime.md 5.2 and Binding-Rules.md."""
     VALUE = "value"                    # copied (nanobind default), also void
     VALUE_TRANSIENT = "value_transient"  # T by value with T Transient: moved into handle<T>(new T(...)), like a constructor
     PTR_TRANSIENT = "ptr_transient"    # T* with T Transient: wrapped in a handle<T>, never owned by nanobind
@@ -160,7 +160,7 @@ class Class:
     scope: tuple[str, ...] = ()       # Python attribute path of the enclosing namespace(s)/class(es), relative to the package module
                                       # (scope + py_name = the full path; recorded in the manifest when parse.py_path cannot derive it)
     outer: str = ""                   # C++ name of the enclosing class for a nested class (declared after it)
-    after_templates: bool = False     # 6a: a base is a binder instantiation's nested Iterator -> declared in the templates phase, after it
+    after_templates: bool = False     # 7a: a base is a binder instantiation's nested Iterator -> declared in the templates phase, after it
     has_declared_ctor: bool = False   # any constructor at any access level (suppresses the implicit default ctor)
     template_key: str = ""            # for an instantiation bound under an alias: canonical key (dedupe across packages)
     constructible: bool = True        # False when operator new is not public (placement new impossible),

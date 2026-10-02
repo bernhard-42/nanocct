@@ -117,5 +117,5 @@ def test_report_categories():
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
     assert counts == {"iterator": 4, "overload-collision": 3, "template": 2, "header": 1, "undefined": 1, "null-bool": 1,   # XCAFDoc_AssemblyItemId (R-NULL-BOOL)
                       "copy": 1}         # XCAFPrs_AISObject, an AIS object (R-COPY, 2026-10-02)
-    # the two template lines are XCAFDoc_AssemblyTool::Traverse (a visitor template); the iterators are the way in (2d)
+    # the two template lines are XCAFDoc_AssemblyTool::Traverse (a visitor template); the iterators are the way in (Excluded.md)
     assert sum("XCAFDoc_AssemblyTool::Traverse" in line for line in lines) == 2

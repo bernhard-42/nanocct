@@ -5,7 +5,7 @@
 #   make generate compile stubs wheel delocate test     the same, step by step -- every step runs once: the wheel is packed
 #                    from what compile and stubs built, and the tests run against the repaired wheel in a fresh venv
 #
-# Design.md 3.1/3.2 describe what the dependencies are and why.
+# Toolchain.md 4.1/4.2 describe what the dependencies are and why.
 #
 # PLATFORMS
 #   macOS    builds natively with Apple clang, driven through `uv`.
@@ -390,7 +390,7 @@ endif
 # A packed wheel is not portable: the extension modules find the OCCT libraries through an rpath into deps/, so the
 # wheel works only on the machine that built it. The repair step copies those libraries in and rewrites the
 # references to point inside the wheel. Each platform has its own tool, and each leaves the
-# system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Design.md 7).
+# system's own libraries alone -- OpenGL and X11 belong to the host, never to the wheel (Build.md).
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 # CI runs exactly these targets: .github/workflows/build-wheels.yml.

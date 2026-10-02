@@ -1,6 +1,6 @@
 #!/bin/bash
 # Stage a build for use through PYTHONPATH: the Python shims from src/nanocct plus the extension modules built
-# into <build-dir>. The same shape on all three platforms (Design.md 7) -- a staged tree is what `make stubs` and
+# into <build-dir>. The same shape on all three platforms (Build.md) -- a staged tree is what `make stubs` and
 # `make test` import, so the development loop never depends on the package being installed.
 #
 #   deps/stage.sh <build-dir> <stage-dir>

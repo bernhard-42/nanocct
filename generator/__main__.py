@@ -65,17 +65,17 @@ def _base_import_edges(tree, parsed: list, templates: dict, classes: dict[str, s
     binding the base -- `nb_type_new` otherwise aborts the whole import with *"base type ... not known to nanobind"*,
     a hard failure with no traceback. OCCT's link graph does not imply those edges in two shapes, and both are here:
 
-    * `NCollection_Shared<T>` derives from T (6a, BINDERS "wraps"): TKMesh binds `Shared<DataMap<TopoDS_Shape, int,
+    * `NCollection_Shared<T>` derives from T (7a, BINDERS "wraps"): TKMesh binds `Shared<DataMap<TopoDS_Shape, int,
       TopTools_ShapeMapHasher>>` while TKBool binds the DataMap, and neither toolkit links the other. It worked until
       2026-09-23 only because the EXTERNLIB order happened to put TKBool first; adding TKBinXCAF reshuffled it and
       every `import nanocct` failed.
-    * a class deriving from an instantiation another toolkit binds (`Class.after_templates`, 6a): `XmlObjMgt_RRelocationTable`
+    * a class deriving from an instantiation another toolkit binds (`Class.after_templates`, 7a): `XmlObjMgt_RRelocationTable`
       derives from `NCollection_DataMap<int, handle<Standard_Transient>>`, which TKBinL binds. Until 2026-09-24 this
       shape had no edge at all, and `import nanocct._TKXmlL` on its own aborted -- invisible while nanocct/__init__.py
       imported every toolkit in an order that happened to work.
 
     And one that does not abort but leaves members uncallable: a signature naming an instantiation another toolkit binds
-    (6a ownership: the first package in emit order that needs it binds it, every later one only uses it). Without the
+    (7a ownership: the first package in emit order that needs it binds it, every later one only uses it). Without the
     edge the type is unregistered until something else happens to load its owner -- with only TKLCAF imported,
     `TDataStd_RealList.List()` raised "Unable to convert function return value" because TKGeomBase binds
     `NCollection_List<double>` (63 members in 10 toolkits, found by the final review 2026-09-30). The owner precedes the
@@ -86,7 +86,7 @@ def _base_import_edges(tree, parsed: list, templates: dict, classes: dict[str, s
     edges: dict[str, list[str]] = {}
 
     def add(consumer: str, base: str) -> None:
-        # An instantiation: the registry is the only trustworthy owner. `classes` maps a 6c instantiation to the LAST
+        # An instantiation: the registry is the only trustworthy owner. `classes` maps a 7c instantiation to the LAST
         # package that had it in its IR (`known[c.name] = ir.name` per package), not to the one that binds it --
         # `BVH_PairTraverse<double, 3, void, double>` reads as BRepExtrema there while IntPatch actually binds it, and
         # trusting that produced a false TKGeomAlgo -> TKTopAlgo edge and a spurious cycle.
@@ -112,7 +112,7 @@ def _base_import_edges(tree, parsed: list, templates: dict, classes: dict[str, s
                         continue
                     base = b[:-len("::Iterator")] if b.endswith("::Iterator") else b
                     # Skip only when this package actually *binds* it: having the key in ir.instances means the
-                    # package uses it, and 6a ownership may still put the binding in another package (Emitter._owns).
+                    # package uses it, and 7a ownership may still put the binding in another package (Emitter._owns).
                     if templates.get(base, {}).get("by") == ir.name:
                         continue         # bound here, in the templates phase before the declare
                     add(tk_name, base)
@@ -678,7 +678,7 @@ def main(argv: list[str]) -> int:
         depends = [d for d in tk.depends if d in generated_toolkits]
         depends += [d for d in manifest.get("links", {}).get(tk_name, [])
                     if d in generated_toolkits and d not in depends and position[d] < position[tk_name]]
-        # R-IMPORT-BASE: the toolkit binding a base (or an instantiation a signature uses) is imported first. 6a:
+        # R-IMPORT-BASE: the toolkit binding a base (or an instantiation a signature uses) is imported first. 7a:
         # NCollection_Shared<T> derives from T, so the toolkit binding T must be *imported* before this module registers
         # the wrapper. Ordering nanocct/all.py is not enough -- another toolkit's import chain can reach this one first
         # (_TKV3d imports _TKMesh, and _TKMesh registers a wrapper over a TKBool DataMap).
@@ -699,7 +699,7 @@ def main(argv: list[str]) -> int:
                                        {n: pk.toolkit for n, pk in tree.packages.items()}))
     # Python shims: one per generated package. The pre-8.0 typedef names (TColgp_Array1OfPnt & co, OCCT's
     # src/Deprecated/NCollectionAliases) are NOT exposed -- nanocct is an OCCT 8 binding and code using it is
-    # expected to spell the 8.0 names (decision 2026-09-24, Binding-Rules.md 6a).
+    # expected to spell the 8.0 names (decision 2026-09-24, Binding-Rules.md 7a).
     generated_packages = set(generated_pkgs)          # every generated package, with or without classes
     # nanocct.AddOns is hand-written (src/cpp/AddOns, built by CMakeLists outside the toolkit loop). Its shim and
     # its entry in _PACKAGES are generated like any other package's, so `make clean_gen` stays correct and
@@ -708,8 +708,8 @@ def main(argv: list[str]) -> int:
     # generated_toolkits, and _topo then looks for a toolkit OCCT has never heard of (KeyError: 'AddOns').
     generated_packages.add(HANDWRITTEN_PACKAGE)
     accessors = _accessors(known, templates)
-    # 6a: which toolkit binds each instantiation that lives in a package other than its own. Only `NCollection`
-    # receives them (every 6c instantiation is bound by the package that declares it), so only that shim imports
+    # 7a: which toolkit binds each instantiation that lives in a package other than its own. Only `NCollection`
+    # receives them (every 7c instantiation is bound by the package that declares it), so only that shim imports
     # those toolkits eagerly -- but it is derived, not assumed, so a second such package would do the same.
     homed_elsewhere: dict[str, dict[str, str]] = {}
     for entry in templates.values():
@@ -717,7 +717,7 @@ def main(argv: list[str]) -> int:
             continue
         if generated_pkgs.get(entry["package"]) != entry["toolkit"]:
             homed_elsewhere.setdefault(entry["package"], {})[entry["name"]] = entry["toolkit"]
-    # R-LINK forward case: a toolkit that links one coming later cannot import it at registration time (8b).
+    # R-LINK forward case: a toolkit that links one coming later cannot import it at registration time.
     position = {tk: i for i, tk in enumerate(_topo(tree, generated_toolkits))}
     late_links = {tk: sorted(e for e in extras if position.get(e, -1) > position.get(tk, 0))
                   for tk, extras in manifest.get("links", {}).items()}
@@ -727,7 +727,7 @@ def main(argv: list[str]) -> int:
         write_package_shims(py_root, pk, tk, namespaces,
                             accessors if pk == "NCollection" else None,
                             homed_elsewhere.get(pk), late_links.get(tk))
-    print(f"6a: {sum(len(v) for v in homed_elsewhere.values())} instantiations bound from other toolkits into "
+    print(f"7a: {sum(len(v) for v in homed_elsewhere.values())} instantiations bound from other toolkits into "
           f"{len(homed_elsewhere)} package(s), imported eagerly; late R-LINK imports: "
           f"{ {k: v for k, v in late_links.items() if v} }", file=sys.stderr)
     total = time.perf_counter() - started
@@ -741,7 +741,7 @@ def main(argv: list[str]) -> int:
         "# extras that precede it and the R-IMPORT-BASE edges (base classes, and the instantiations its signatures\n"
         "# use) -- so registration order holds without a list here.\n"
         "# The one module other toolkits bind into is nanocct.NCollection, and importing it loads every toolkit\n"
-        "# that binds an instantiation into it (Binding-Rules.md 6a).\n"
+        "# that binds an instantiation into it (Binding-Rules.md 7a).\n"
         "\n"
         "# `import nanocct` then `nanocct.gp.gp_Pnt` works: PEP 562 module __getattr__ imports the package on first\n"
         "# access. This is the one place that mechanism earns its keep -- a submodule that genuinely exists, resolved\n"
@@ -782,7 +782,7 @@ want all of it at once:
 It is *not* required for `DE_Wrapper`: nanocct does not bind `DE_PluginHolder<T>`, so a format provider is
 registered by an explicit `wrapper.Bind(DEBREP_ConfigurationNode())` regardless of what has been imported.
 
-Generated by the nanocct generator; the order is the dependency order (Design.md 5.1, Binding-Rules.md 6a).
+Generated by the nanocct generator; the order is the dependency order (Generator.md 6.1, Binding-Rules.md 7a).
 """
 '''
         + "".join(f"import nanocct._{tk}  # noqa: F401\n" for tk in ordered)

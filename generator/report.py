@@ -1,7 +1,7 @@
 """The report of everything the generator did not bind, persisted next to the generated code.
 
 Every skipped class, member, function, namespace or instantiation produces one free-form line ("what: why") in
-PackageIR.report / Emitter.report. This module sorts those lines into the categories of Design.md 8a and writes
+PackageIR.report / Emitter.report. This module sorts those lines into the categories of Coverage.md and writes
 src/cpp/<TK>/report.txt, so a regeneration shows coverage changes in `git diff` and tests can assert that an
 omission is reported. The categories are derived from the message text (first matching pattern wins); a message
 no pattern knows lands in "misc", which is the list to look at when a new OCCT idiom shows up.
@@ -58,7 +58,7 @@ def write_report(path: Path, toolkit: str, entries: list[tuple[str, str]]) -> Co
     rows = sorted((categorize(msg), pkg, msg) for pkg, msg in entries)
     counts: Counter[str] = Counter(cat for cat, _, _ in rows)
     lines = [f"# nanocct generator report for {toolkit}: {len(rows)} report lines. Generated, do not edit.",
-             "# Format: category<TAB>package<TAB>what: why. Categories follow Design.md 8a (generator/report.py)."]
+             "# Format: category<TAB>package<TAB>what: why. Categories follow Coverage.md (generator/report.py)."]
     lines += [f"# {cat}: {n}" for cat, n in sorted(counts.items())]
     lines += [f"{cat}\t{pkg}\t{msg}" for cat, pkg, msg in rows]
     path.write_text("\n".join(lines) + "\n")

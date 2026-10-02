@@ -137,7 +137,7 @@ namespaces = [
                     # Third-party implementation detail with no OCCT or Python meaning (2026-09-22).
     "step",         # the bison/flex STEP parser (step.tab.hxx: step::parser, step::scanner, basic_symbol, context, stack).
                     # Generated internals with no Python meaning; the members of the basic_symbol<by_kind> instantiation are
-                    # also not exported from libTKDESTEP, so the nm check cannot see them (6c: instantiations have no symbols)
+                    # also not exported from libTKDESTEP, so the nm check cannot see them (7c: instantiations have no symbols)
                     # and _TKDESTEP failed to link. StepFile_Read(stream, model, ...) is the public entry point.
 ]
 # Headers not included in the package translation unit: platform-specific internals that OCCT
@@ -216,7 +216,7 @@ methods = [
     # used -- and binding the class is what forces it. NCollection_Vec2<unsigned int> arrived with the reference
     # parameters of OpenGl_FrameBuffer (2026-09-23); the bool instantiations are fine, bool promotes to int.
     "NCollection_Vec2<unsigned int>::cwiseAbs",
-    # Template members whose body does not compile for the instantiation (Binding-Rules.md 6c): IntPolyh_Array<T>::Dump() calls
+    # Template members whose body does not compile for the instantiation (Binding-Rules.md 7c): IntPolyh_Array<T>::Dump() calls
     # (*this)[i].Dump() with no argument, but IntPolyh_Edge/Triangle::Dump take an int and IntPolyh_PointNormal has none.
     # Points, SectionLines and StartPoints (Dump() exists) keep it. Debug printf output, no Python use (2026-09-21).
     "IntPolyh_Array<IntPolyh_Edge>::Dump",
@@ -230,7 +230,7 @@ methods = [
     # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
     "NCollection_Vec3<unsigned long>::cwiseAbs",
     # NCollection_Vec2<unsigned long>: the 2-component results of NCollection_Vec3<unsigned long> (xy(), yx() ...), bound since
-    # 6c follows the members of an instantiation
+    # 7c follows the members of an instantiation
     "NCollection_Vec2<unsigned long>::cwiseAbs",
     # The same instantiation on Windows. `size_t` is `unsigned long` on LP64 (macOS, Linux) and `unsigned long long` on
     # LLP64 (Windows), and these keys are canonical C++ spellings, so one type needs two entries -- the first port

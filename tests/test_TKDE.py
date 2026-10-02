@@ -116,7 +116,7 @@ def test_report_is_the_expected_portable_lines():
                or "DE_ShapeFixConfigurationNode::" in line for line in undefined)
     kinds = sorted(line.split("\t")[0] for line in lines)
     assert kinds == ["std"] + ["stream"] * 4 + ["template"] * 2
-    # the stream nodes hold a stream reference beyond the call, so the stream-based Read/Write overloads stay unusable (2d)
+    # the stream nodes hold a stream reference beyond the call, so the stream-based Read/Write overloads stay unusable (Excluded.md)
     assert sum("StreamNode" in line for line in lines) == 4
     assert sum("DE_PluginHolder" in line or "DE_MultiPluginHolder" in line for line in lines) == 2
     assert any(line.endswith("unsupported std type: std::mutex") for line in lines)

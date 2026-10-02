@@ -1,5 +1,5 @@
 """Generated bindings for TKHLR: hidden-line removal (HLRBRep_Algo + HLRBRep_HLRToShape), Contap, Intrv. New with this toolkit:
-R-PRELUDE applied to the emitted include list (an extra header may not be self-contained), and 6c instantiations with a raw
+R-PRELUDE applied to the emitted include list (an extra header may not be self-contained), and 7c instantiations with a raw
 pointer as template argument stay out (HLRBRep's Extrema/LProp instantiations over void*)."""
 import importlib
 from pathlib import Path

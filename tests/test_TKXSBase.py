@@ -62,7 +62,7 @@ def test_work_session_without_a_norm():
     assert ws.TransferReader() is not None and ws.TransferWriter() is not None
     reader = XSControl_Reader(ws, False)
     assert reader.WS() is ws                                                     # the same Transient comes back
-    # without a model the session has no graph: OCCT throws, and the exception arrives as its C++ type (4.2)
+    # without a model the session has no graph: OCCT throws, and the exception arrives as its C++ type (5.2)
     with pytest.raises(Standard_DomainError, match="Graph not available"):
         reader.NbRootsForTransfer()
 
@@ -107,7 +107,7 @@ def test_the_work_session_closes_tkde_signatures():
 
 def test_the_string_out_parameters_have_named_alternatives():
     """const char*& out-parameters cannot be bound (R-UNSUPPORTED); OCCT has a value-returning twin for the ones a
-    user reaches for (2d)."""
+    user reaches for (Excluded.md)."""
     attrs = MoniTool_AttrList()
     attrs.SetStringAttribute("a", "hello")
     assert attrs.StringAttribute("a") == "hello"

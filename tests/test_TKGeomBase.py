@@ -1,4 +1,4 @@
-"""Generated bindings for TKGeomBase: GC/gce makers, GCPnts, Extrema (6c alias instantiations Extrema_ExtPC/ExtCC),
+"""Generated bindings for TKGeomBase: GC/gce makers, GCPnts, Extrema (7c alias instantiations Extrema_ExtPC/ExtCC),
 GeomLProp_CLProps, BndLib, GeomConvert, IntAna, the ExtremaPC namespace, deprecated GCE2d class aliases."""
 import importlib
 import io
@@ -42,7 +42,7 @@ def test_gcpnts_and_lprops():
     assert GCPnts.GCPnts_AbscissaPoint.Length_s(ad) == pytest.approx(2 * math.pi)
     ap = GCPnts.GCPnts_AbscissaPoint(ad, math.pi / 2, 0.0)
     assert ap.IsDone() and ap.Parameter() == pytest.approx(math.pi / 2)
-    lp = GeomLProp.GeomLProp_CLProps(_circle(), 0.0, 2, 1e-9)         # alias of GeomLProp_CLPropsBase<...> (6c)
+    lp = GeomLProp.GeomLProp_CLProps(_circle(), 0.0, 2, 1e-9)         # alias of GeomLProp_CLPropsBase<...> (7c)
     assert lp.Curvature() == pytest.approx(1.0)
     assert lp.Value().Coord__float__float__float() == (1.0, 0.0, 0.0)
 

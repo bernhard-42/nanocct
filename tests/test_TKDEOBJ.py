@@ -108,7 +108,7 @@ def test_the_reader_streams_are_bytes(tmp_path, document, quiet_messenger):
     that stream to the istream& overload (RWObj_Reader.hxx:53-56,74-77); read() then takes the file length from
     tellg() (RWObj_Reader.cxx:114-116), which only a binary stream reports in bytes. So both are
     overrides.toml [stream] binary_members, although OBJ itself is an ASCII format -- the same question RWStl and
-    RWMesh needed (2b)."""
+    RWMesh needed (3.2)."""
     assert "theStream: typing.BinaryIO" in RWObj_Reader.Read.__doc__
     assert "theStream: typing.BinaryIO" in RWObj_Reader.Probe.__doc__
     assert "theStream: typing.BinaryIO" in RWObj_CafReader.Perform.__doc__     # inherited from RWMesh_CafReader

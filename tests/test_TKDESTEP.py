@@ -190,7 +190,7 @@ def test_report_categories():
     # raw-pointer fell from 12 to 9 and override rose to 4 on 2026-09-23, when StepFile_ReadData was skipped: its
     # inline destructor calls the unexported ClearRecorder, so the class does not link on Windows (overrides.toml)
     # raw-pointer 9 -> 1 and unbound-type 2 -> 0 on 2026-09-30: NCollection_Handle<T> is a caster now (R-NCHANDLE), not a
-    # class template the 6c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
+    # class template the 7c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
     assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
                       "header": 1, "stream": 1,
                       "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER)

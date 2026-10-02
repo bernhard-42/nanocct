@@ -119,7 +119,7 @@ class Emitter:
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
         # NCollection_ForwardRangeIterator/Sentinel pair -- is not value equality and must not land here.
         self.value_eq: set[str] = set()
-        # PARALLEL EMIT (2026-09-24): ownership of a 6c instantiation is normally decided *by* emitting -- the first
+        # PARALLEL EMIT (2026-09-24): ownership of a 7c instantiation is normally decided *by* emitting -- the first
         # package to need it claims it ("if key in self.templates: return"). That makes the emit loop order-dependent
         # and unparallelisable. plan() runs exactly the part of emit() that decides ownership, so the driver can run it
         # over every package in emit order first; with preassigned=True the registry then already carries the owner in
@@ -146,7 +146,7 @@ class Emitter:
         return False
 
     def _claim_template(self, c: Class) -> dict | None:
-        """6c: an un-aliased instantiation is bound by the first package that declares it; every later package aliases
+        """7c: an un-aliased instantiation is bound by the first package that declares it; every later package aliases
         the owner's class instead. Returns the owner's registry entry when this package has to alias, None when it owns
         the class itself. The declare phase calls it to emit the alias; plan() calls it for the decision alone."""
         found = self.templates.get(c.template_key)
@@ -224,7 +224,7 @@ class Emitter:
                 skipped.append((m, m.skip_reason))
         return skipped
 
-    # the binder kinds with a nested Iterator class (6a); every other class nested in a binder instantiation is never bound
+    # the binder kinds with a nested Iterator class (7a); every other class nested in a binder instantiation is never bound
     _KINDS_WITH_ITERATOR = {"NCollection_List", "NCollection_Sequence", "NCollection_Map", "NCollection_DataMap",
                             "NCollection_IndexedMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap"}
 
@@ -278,7 +278,7 @@ class Emitter:
             if p.omitted or p.bytes_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
                 continue
             # R-HANDLE: a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
-            # the caster runs (Design.md 4.2); so does a class pointer, with or without a null default (R-PTR-NULL: without
+            # the caster runs (Runtime.md 5.2); so does a class pointer, with or without a null default (R-PTR-NULL: without
             # .none() a null default is refused)
             arg = f'nb::arg("{p.name}").none()' if p.is_handle or p.ptr_none else f'nb::arg("{p.name}")'
             # R-ENUM-ARG: an enum parameter takes its enumerators only, as in C++. nanobind's enum caster takes any int
@@ -776,7 +776,7 @@ class Emitter:
                     self.report.append(f"{key}: wrapped type {wrapped} is not bound -> instantiation skipped")
                     self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                     return
-            unbound = [a for a in args if a in self.skipped]     # a nested enum/class of a class skipped just before (_base_ok, Design.md 5.2)
+            unbound = [a for a in args if a in self.skipped]     # a nested enum/class of a class skipped just before (_base_ok, Generator.md 6.2)
             if len(unbound) > 0:
                 self.report.append(f"{key}: element type {unbound[0]} is not bound (its class is skipped) -> instantiation skipped")
                 self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
@@ -841,7 +841,7 @@ class Emitter:
         def skip(c: Class) -> None:
             skipped.add(c.name)
             skipped.update(e.name for e in c.enums)     # its nested enums go with it:
-                                                        # no alias, instantiation or manifest entry may name them (Design.md 5.2)
+                                                        # no alias, instantiation or manifest entry may name them (Generator.md 6.2)
         if c.outer in skipped:
             self.report.append(f"{c.name}: outer class {c.outer} is not bound -> nested class skipped")
             skip(c)
@@ -851,7 +851,7 @@ class Emitter:
                 continue
             owner = b[:-len("::Iterator")] if b.endswith("::Iterator") else b
             if c.after_templates and (owner in self.ir.instances or (owner in self.templates and not self.templates[owner].get("skipped", False))):
-                continue                                # 6a: a binder instantiation or its nested Iterator, registered in the templates phase
+                continue                                # 7a: a binder instantiation or its nested Iterator, registered in the templates phase
             if b not in self.known or b in skipped:     # skipped: a base of this package that was skipped just before (bases come first)
                 self.report.append(f"{c.name}: base class {b} is not bound ({'skipped' if b in skipped else 'package not generated'}) -> class skipped")
                 skip(c)
@@ -876,7 +876,7 @@ class Emitter:
         return f'    nanocct_register_exception<{c.name}>(nanocct_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
     def plan(self) -> tuple[list[Class], list[str]]:
-        """The first phase of emit(): which classes survive their bases (5.2) and which 6a instantiations this
+        """The first phase of emit(): which classes survive their bases (6.2) and which 7a instantiations this
         package binds. Returns the surviving classes and the templates-phase lines.
 
         Split out because it is also everything the *registry* needs before the declare phase, so assign_templates()
@@ -901,7 +901,7 @@ class Emitter:
 
         A parallel emit needs the owner of every instantiation decided up front, and in the sequential loop that
         decision *is* the emitting: `_instances()` binds what no earlier package has bound, and the declare phase
-        claims a 6c instantiation or aliases the package that got there first. So the driver runs this over every
+        claims a 7c instantiation or aliases the package that got there first. So the driver runs this over every
         package in emit order, sharing one registry, and the packages can then be emitted independently
         (`preassigned=True`). It runs the real decisions rather than a copy of them.
 
@@ -1106,12 +1106,12 @@ class Emitter:
             if get is not None and get.result_kind in (ResultKind.VALUE, ResultKind.VALUE_TRANSIENT) and get.result != "void":
                 return name
             if get is not None and get.result_kind == ResultKind.OTHER and self._copyable_const_ref(get.result):
-                return name          # a dependent `const TheKeyType&` of a 6c instantiation (NCollection_FlatMap<K, H>::Iterator)
+                return name          # a dependent `const TheKeyType&` of a 7c instantiation (NCollection_FlatMap<K, H>::Iterator)
         return None
 
-    # R-ITER: a dependent const X& Value()/Current() of a 6c instantiation is copied out unless X is a Transient
+    # R-ITER: a dependent const X& Value()/Current() of a 7c instantiation is copied out unless X is a Transient
     def _copyable_const_ref(self, result: str) -> bool:
-        """`const X &` inside a 6c instantiation: libclang gives the dependent pointee no declaration, so parse._result_kind
+        """`const X &` inside a 7c instantiation: libclang gives the dependent pointee no declaration, so parse._result_kind
         says OTHER although nanobind copies it like any const-reference result. Safe to copy unless X is a Transient
         (R-RESULT: a nanobind-owned Transient copy is deleted by the first handle it meets) -- decided from the manifest's
         bases of every bound class."""
@@ -1134,7 +1134,7 @@ class Emitter:
         """Define phase of one class: constructors, methods (collisions resolved), free operators, scalar conversion
         dunders, __hash__, fields, implicit conversions, __iter__."""
         body: list[str] = []
-        ctor_body: list[str] = []     # constructors of a 6c instantiation: guarded at compile time (abstractness is not visible in the template)
+        ctor_body: list[str] = []     # constructors of a 7c instantiation: guarded at compile time (abstractness is not visible in the template)
         self._iterating = self._iter_getter(c) is not None    # R-VIEW-GUARD: constructors and Init/Initialize make iterator views
         self._self = c.bound_type                              # R-KEPT: keep_slot's Self
         unhashable = False            # R-UNHASHABLE: emitted after the body, as a statement of its own
@@ -1204,14 +1204,14 @@ class Emitter:
                 body.append(s)
         body += free_ops.get(c.name, [])
         if c.name in VIEW_CLASSES:
-            # R-VIEW (Design.md 2c): a zero-copy numpy view (__array__), defined per class in
+            # R-VIEW (Design.md, Python additions): a zero-copy numpy view (__array__), defined per class in
             # src/cpp/common/nanocct_views.h. Listed in overrides.toml [views] because which class gets which
             # view is data, not a shape the generator could detect.
             self.report.append(f"{c.name}: zero-copy numpy views added (nanocct_def_views)")
             self.needs_views = True
             define.append(f"    nanocct_def_views<{c.bound_type}>({cls_expr_of(c)});")
         getter = self._iter_getter(c)
-        if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
+        if getter is not None:       # R-ITER (Design.md, Python additions): More()/Next()/Value() classes are their own Python iterator
             self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
             get = next(m for m in c.methods if m.name == getter and len(m.params) == 0 and not m.is_static and m.skip_reason is None)
             value = (f"opencascade::handle<{get.result_class}>(new {self._new_type(get.result_class)}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
@@ -1391,7 +1391,7 @@ class Emitter:
         for td in self.ir.typedefs:
             key = (td.scope, td.py_name)
             if key in seen_aliases or any(c.py_name == td.py_name and c.scope == td.scope for c in classes):
-                continue                           # a 6c alias instantiation is a class of its own
+                continue                           # a 7c alias instantiation is a class of its own
             seen_aliases.add(key)
             inst = self.templates.get(td.target)
             if inst is not None and not inst.get("skipped", False) and inst["package"] != "":
@@ -1400,7 +1400,7 @@ class Emitter:
                 continue
             pkg = self.known.get(td.target)
             if pkg is not None and "<" in td.target and td.target not in self.skipped:
-                # alias of a 6c instantiation bound by an earlier package under its mangled name (BVH_Box3d = BVH_Box<double, 3>,
+                # alias of a 7c instantiation bound by an earlier package under its mangled name (BVH_Box3d = BVH_Box<double, 3>,
                 # bound on demand by Bnd before BVH's typedef): an attribute alias like any other (R-ALIAS)
                 attrs = "".join(f'.attr("{a}")' for a in py_path(td.target, pkg, self.paths).split("."))
                 src = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
@@ -1463,7 +1463,7 @@ _SCALAR_MARKERS = ("float32", "uchar", "uint", "ulong", "ulonglong")
 # Binding-Rules.md R-COLLISION
 def out_suffix(params: list[Param]) -> str:
     """'__float__float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
-    the overload has none. Double underscores separate the parts because OCCT names contain single ones (Design.md 2a)."""
+    the overload has none. Double underscores separate the parts because OCCT names contain single ones (Conventions.md 3.1)."""
     parts = [("bytes" if p.binary else "str") if p.stream == StreamKind.OUT else p.out_py
              for p in params if p.stream == StreamKind.OUT or p.is_out and not p.is_inout]
     return "" if len(parts) == 0 else "__" + "__".join(parts)
@@ -1831,7 +1831,7 @@ def emit_package_shim(package: str, toolkit: str,
                       accessors: dict[str, dict[tuple[tuple[str, str], ...], str]] | None = None,
                       homed_elsewhere: dict[str, str] | None = None, late_links: list[str] | None = None) -> str:
     """Python module nanocct.<package>: it re-exports the package's extension submodule under the name a user
-    writes. homed_elsewhere: instantiations other toolkits bind into this package (6a) -> those toolkits are
+    writes. homed_elsewhere: instantiations other toolkits bind into this package (7a) -> those toolkits are
     imported eagerly. accessors (NCollection only): template -> {element type specs -> bound class name} for the
     NCollection_Xxx[T] spelling."""
     head = f'''"""OCCT package {package} (toolkit {toolkit})."""
@@ -1839,15 +1839,15 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
 '''
     # R-LINK forward case: this toolkit links one that comes *later* in the order, so its module cannot import it at
     # registration time. Import it here, after the extension has initialised, or every member naming one of those
-    # types is uncallable -- which the eager import used to hide (Binding-Rules.md 6a).
+    # types is uncallable -- which the eager import used to hide (Binding-Rules.md 7a).
     for late in late_links or []:
         head += f"import nanocct._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
-    # Eager (6a): other toolkits bind their instantiations into this package -- `nanocct.NCollection` is the one --
+    # Eager (7a): other toolkits bind their instantiations into this package -- `nanocct.NCollection` is the one --
     # and loading their element types does not load them (215 of 799 instantiations, 2026-09-27), so importing the
     # package imports every toolkit that binds into it. Afterwards each instantiation is an ordinary attribute.
     eager_block = ""
     if homed_elsewhere:
-        eager_block = ("\n# Instantiations bound into this package by other toolkits (Binding-Rules.md 6a): importing the package loads\n"
+        eager_block = ("\n# Instantiations bound into this package by other toolkits (Binding-Rules.md 7a): importing the package loads\n"
                        "# every toolkit that binds one, so each of them is an ordinary attribute afterwards.\n"
                        + "".join(f"import nanocct._{tk}  # noqa: E402,F401\n" for tk in sorted(set(homed_elsewhere.values())))
                        + f"from nanocct._{toolkit}.{package} import *  # noqa: E402,F401,F403  (again: now with every instantiation)\n")
@@ -1867,11 +1867,11 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
         def spell(mod: str, qual: str) -> str:
             return qual if mod in ("builtins", own, marker_mod) else f"{alias[mod]}.{qual}"
 
-        parts = ["", "# NCollection_Xxx[T] -> the bound class (Binding-Rules.md 6a): one generic class per template, keyed by the",
+        parts = ["", "# NCollection_Xxx[T] -> the bound class (Binding-Rules.md 7a): one generic class per template, keyed by the",
                  "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
                  "from nanocct._templates import Generic as _Generic  # noqa: E402"]
         if len(markers) > 0:
-            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, Binding-Rules.md 6a)")
+            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, Binding-Rules.md 7a)")
         parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
         for tmpl in sorted(accessors):
             parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]

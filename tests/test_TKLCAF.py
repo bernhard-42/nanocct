@@ -25,7 +25,7 @@ def doc():
 
 def test_new_document_both_overloads_downcast(doc):
     """NewDocument(format, handle<TDocStd_Document>&) and the CDM_Application one (handle<CDM_Document>&) both return the
-    document (R-OUT-HANDLE); the handle caster downcasts to the dynamic type (4.2)."""
+    document (R-OUT-HANDLE); the handle caster downcasts to the dynamic type (5.2)."""
     app = TDocStd.TDocStd_Application()
     assert type(doc) is TDocStd.TDocStd_Document
     assert type(app.NewDocument(TCollection_ExtendedString("BinOcaf"))) is TDocStd.TDocStd_Document
@@ -132,4 +132,4 @@ def test_report_has_only_the_expected_omissions():
     # R-UNBOUND-TYPE (2026-09-30): the TDF_LabelNode* constructor -- TDF_LabelNode is internal and not bound; TDF_Label's stays
     assert [line.split("\t")[2].split("): ")[0] + ")" for line in lines if line.startswith("unbound-type")] == [
         "TDF_AttributeIterator::TDF_AttributeIterator(const TDF_LabelNodePtr, const bool)"]
-    assert any("TDF_Label::FindAttribute: template member" in line for line in lines)    # the non-template overload downcasts (2d)
+    assert any("TDF_Label::FindAttribute: template member" in line for line in lines)    # the non-template overload downcasts (Excluded.md)

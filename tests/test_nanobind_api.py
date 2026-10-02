@@ -1,4 +1,4 @@
-"""Documented nanobind API only (Design.md 3.3): the hand-written C++ may use nanobind's internals only where it is listed
+"""Documented nanobind API only (Toolchain.md 4.3): the hand-written C++ may use nanobind's internals only where it is listed
 below, with the reason. A new use fails here, and so does a removed one (shrink the list then) -- an internal can change in
 any nanobind release without notice, and a list kept by hand would go stale. The generated code uses none at all."""
 from __future__ import annotations

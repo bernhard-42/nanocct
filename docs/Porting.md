@@ -1,0 +1,34 @@
+# 10. Porting from OCP (cadquery-ocp) to nanocct
+
+Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.md); their section numbers and the `R-…` rule identifiers are shared across them.
+
+
+For build123d and CadQuery-style code. OCP is pybind11-based and binds OCCT 7.x/8.x with its own conventions; nanocct is 1:1 with OCCT 8.0.1 and documents every deviation in section 6. What changes (evidence: an inventory of build123d's OCP use, 285 OCP names in 84 packages):
+
+| OCP | nanocct | Note |
+|---|---|---|
+| `from OCP.gp import gp_Pnt` | `from nanocct.gp import gp_Pnt` | package modules are the same; `import nanocct` loads no toolkit at all and `nanocct.gp` resolves on first attribute access (6.1), so reaching `gp_Pnt` costs two toolkits instead of 45 -- `import nanocct.all` is the opt-in for everything |
+| `BRep_Tool.Surface_s(face)` — every static method carries `_s` | the same: every static carries `_s` (R-STATIC-S) | 185 call sites in build123d stay as they are; only functions of a C++ namespace are plain (`TopoDS.Edge`), in OCP too |
+| `BRep_Tool.Curve_s(edge, float(), float())` — `double&` kept as dummy inputs, only the handle returned | `curve, first, last = BRep_Tool.Curve_s(edge)` | non-void functions with out-parameters return a tuple, result first (R-OUT) |
+| `param_min, _ = BRep_Tool.Range_s(edge)` | `param_min, _ = BRep_Tool.Range_s(edge)` | unchanged |
+| `BRepGProp_Face(face).Normal(u, v, pnt, vec)`, `TopExp.Vertices_s(edge, v1, v2)` | the same | class references are mutated in place (R-REF-CLASS) |
+| `wires = TopTools_HSequenceOfShape(); ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges, tol, False, wires)` | `wires = ShapeAnalysis_FreeBounds.ConnectEdgesToWires_s(edges, tol, False)` | a `handle<T>&` parameter is returned (R-OUT-HANDLE); the OCP form used the deprecated overload; nanocct binds deprecated members too (with the note), but the handle& parameter becomes the result there as well |
+| `OCP.collections.Array1_gp_Pnt`, `List_TopoDS_Shape`, `IndexedMap_TopoDS_Shape_TopTools_ShapeMapHasher` (OCP 8) / `TColgp_Array1OfPnt`, `TopTools_ListOfShape` (OCP 7) | `NCollection_Array1[gp_Pnt]`, `NCollection_List[TopoDS_Shape]`, `NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]` | 7a. **The 7.x typedef names do not resolve**: this is an OCCT 8 binding, so `TColgp_Array1OfPnt` becomes `NCollection_Array1[gp_Pnt]`. A custom hasher is the template's last argument, as in C++: `NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]` (measured; leaving it out names a different, unbound instantiation) |
+| a container changed while an element reference, an iterator or a numpy view of it is still referenced (`it = List.Iterator(l)` ... `l.Clear()`) | `BufferError` | release the view first (`del it`), or take a numpy view after the OCCT call that fills the array (R-VIEW-GUARD); changing the container under the view read freed memory |
+| `from OCP.TopoDS import TopoDS; TopoDS.Vertex_s(shape)` | `import nanocct.TopoDS as TopoDS; TopoDS.Vertex(shape)` | `TopoDS` is a C++ namespace in OCCT 8 = the package module (6.1); a wrong type raises `Standard_TypeMismatch` |
+| `TopAbs_FACE`, `GeomAbs_C0`, `Font_FA_Bold`, `Graphic3d_HTA_LEFT` at module level | same (R-ENUM exports unscoped enumerators); `TopAbs_ShapeEnum.TopAbs_FACE` works too | |
+| `if handle is None`, `shape.IsNull()` | unchanged | null handle ↔ `None` (R-HANDLE); `None` is accepted wherever a handle is expected |
+| `if shape:` / `if not label:` (`__bool__` = `not IsNull()`) | unchanged | R-NULL-BOOL: a null shape or label is falsy; an empty compound is true (it is not null) |
+| `except (Standard_Failure, Standard_ConstructionError, StdFail_NotDone)` | `except Standard_Failure` catches all of them | a real hierarchy (5.2); the derived classes still exist |
+| `BinTools.Write_s(shape, io.BytesIO())` / `Read_s(shape, io.BytesIO(data))` (pickling) | `data = BinTools.Write_s(shape)` (`bytes`); `BinTools.Read_s(shape, io.BytesIO(data))` | `std::ostream&` → returned `bytes` for the binary packages, `std::istream&` ← `io.BytesIO` (R-STREAM-OUT/IN); byte-identical to the file form (verified) |
+| `BRepTools.Write_s(shape, path)`, `Read_s(shape, path, builder)` | the same | the path overloads are untouched |
+| `ics.Parameters(i, float(), float(), float())` — dummies for the `double&` of one of two overloads with the same inputs | `u, v, w = ics.Parameters__float__float__float(i)`; `x, y, z = pnt.Coord__float__float__float()`; `pnt.Coord()` is the `gp_XYZ`, as in C++ | R-COLLISION: overloads that differ only in their out-parameters carry a suffix naming those out-parameters' types |
+| `while ex.More(): … ex.Next()` | `for s in ex:` works too, at the same speed | R-ITER: `More`/`Next`/`Value` classes are iterable and exhausted afterwards |
+| `Geom_BSplineCurve.Poles(array)` (deprecated out-into-array form) | still available, docstring starts with `Deprecated in OCCT: use Poles() returning const reference instead` | R-DEPRECATED |
+| `kernel.py`'s workaround for slow `List_TopoDS_Shape` iteration | not needed: `list(NCollection_List[TopoDS_Shape])` measured at 0.2 µs | |
+| `TDF_Label`, XCAF, STEP | generated: `nanocct.TDF`, `nanocct.XCAFDoc`, `nanocct.STEPControl` | `STEPControl_Reader.ReadFile(path)`/`TransferRoots()`/`OneShape()` and `STEPControl_Writer.Transfer(shape, STEPControl_AsIs)`/`Write(path)` as in OCP; `WriteStream()` returns `(status, str)` and `ReadStream(name, io.StringIO(text))` takes a text file-like object instead of OCP's stream objects (R-STREAM-OUT/IN) |
+| IGES | generated: `nanocct.IGESControl` | `IGESControl_Writer("MM", 1).AddShape/ComputeModel/Write(path)` and `IGESControl_Reader.ReadFile/TransferRoots/OneShape` as in OCP; `Write()` without a path returns `(ok, str)`, but IGES cannot read a stream (Excluded.md) |
+| `StlAPI_Writer` | generated: `nanocct.StlAPI` | `StlAPI_Writer().Write(shape, path)` as in OCP (4 call sites in CadQuery); `RWStl.WriteBinary_s(mesh)` returns `(ok, bytes)` and `WriteAscii(mesh)` `(ok, str)` |
+| VRML | generated: `nanocct.VrmlAPI` | `VrmlAPI.Write_s(shape, file, version)` as in OCP's `VrmlAPI.Write_s`; `Write(shape, version)` without a path returns `(ok, str)`. glTF ✓ (`TKDEGLTF`), OBJ ✓ (`TKDEOBJ`) and PLY ✓ (`TKDEPLY`, export only) are in; `TKBinXCAF`/`TKXmlXCAF` are what is left |
+
+Pickling: nanocct objects are not picklable by themselves (like OCP's); build123d's `copyreg` approach keeps working with the `BinTools` change above. For a transition without changing any code, the OCP compatibility shim (`cadquery-ocp-novtk` 8.0.1.0.0, `make shim`) makes `import OCP.*` work on nanocct and applies every convention in this table automatically; it is explicitly non-1:1 and patches nanocct only when `OCP` is imported.

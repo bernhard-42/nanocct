@@ -100,7 +100,7 @@ def _resource_dir() -> str | None:
 # Symbols the pip `clang` bindings register that an older libclang does not export. cindex registers *every* binding
 # on first use and raises LibclangError on the first miss, so the system library has to be probed before it is chosen:
 # Ubuntu 22.04 ships libclang 14, the wheel's bindings are 18.1.1, and `clang_CXXMethod_isDeleted` is missing there
-# ("undefined symbol", banach 2026-09-23). The last two are the generator's own extras (6c, R-USING), which have no
+# ("undefined symbol", banach 2026-09-23). The last two are the generator's own extras (7c, R-USING), which have no
 # cindex wrapper -- if a library lacks them the run would fail later anyway.
 _LIBCLANG_REQUIRED_SYMBOLS = ("clang_CXXMethod_isDeleted", "clang_getSpecializedCursorTemplate",
                               "clang_getNumOverloadedDecls", "clang_getOverloadedDecl")
@@ -301,7 +301,7 @@ def _scope_qualified(decl: cindex.Cursor, need_namespace: bool) -> str | None:
 
 def _out_py_type(t: cindex.Type) -> str:
     """Python type name of an out-parameter (double& -> float, int& -> int, bool& -> bool, char& -> str, an enum or the
-    class behind a handle<T>& -> its 6a/6c Python spelling): the R-COLLISION suffix component."""
+    class behind a handle<T>& -> its 7a/7c Python spelling): the R-COLLISION suffix component."""
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
         canon = canon.get_pointee().get_canonical()
@@ -316,7 +316,7 @@ def _out_py_type(t: cindex.Type) -> str:
     std_name = _std_caster_name(canon)
     if std_name is not None:
         return _STD_PY_NAMES[std_name]              # std::pair<int, int>& -> tuple
-    return _py_identifier(_class_behind(t))        # enum/class name; a container instantiation by its 6a concrete name
+    return _py_identifier(_class_behind(t))        # enum/class name; a container instantiation by its 7a concrete name
 
 
 def _class_behind(t: cindex.Type) -> str:
@@ -363,7 +363,7 @@ def _is_handle(t: cindex.Type) -> bool:
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
         canon = canon.get_pointee().get_canonical()
     if canon.kind != TK.RECORD:
-        # inside a class template (6c walk) handle<BVH_Builder<NumType, Dimension>> is a dependent type without a declaration
+        # inside a class template (7c walk) handle<BVH_Builder<NumType, Dimension>> is a dependent type without a declaration
         return _SUBST.active and re.match(r"^(const )?(opencascade::|occ::)?handle<", _type_spelling(t)) is not None
     decl = canon.get_declaration()
     return decl.kind != K.NO_DECL_FOUND and decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1
@@ -404,7 +404,7 @@ def _std_caster_name(t: cindex.Type) -> str | None:
 
 
 class Substitution:
-    """The 6c walk (Binding-Rules.md): while the definition of a class template is walked to bind one instantiation, every type
+    """The 7c walk (Binding-Rules.md): while the definition of a class template is walked to bind one instantiation, every type
     spelling and default expression is rewritten through this object. Inactive (no template parameters) outside the walk.
     One module-level instance, set up and cleared by _instantiate_template, read by _type_spelling/_default_expr/_class."""
 
@@ -819,7 +819,7 @@ def _is_empty_shared_ptr_default(param: cindex.Cursor, default: str | None) -> b
 
 
 def _stl_iterator_in_6c(t: cindex.Type) -> str | None:
-    """R-ITERATOR inside a 6c walk: a dependent type has no declaration, so _unsupported's STL-iterator test does not see
+    """R-ITERATOR inside a 7c walk: a dependent type has no declaration, so _unsupported's STL-iterator test does not see
     NCollection_Iterator<Container>::ValueIter() -> NCollection_IndexedIterator<...> or a binder's nested DynamicIterator;
     after substitution the spelling names it (25 members bound uncallable until 2026-09-30, final review)."""
     if not _SUBST.active:
@@ -866,7 +866,7 @@ _GUARDED_KINDS = frozenset(k for k in BINDERS if k != "NCollection_Shared")
 def _container_kind(t: cindex.Type) -> str:
     """The NCollection binder kind (NCollection_List, ...) of the container a type names itself -- by value, reference or
     pointer, never through a handle -- or "". A class nested in an instantiation (an Iterator) is not a container. Inside a
-    6c walk a type written with the template's parameters (`TheArray&` in Convert_CompBezierCurvesToBSplineCurveBase) has
+    7c walk a type written with the template's parameters (`TheArray&` in Convert_CompBezierCurvesToBSplineCurveBase) has
     no declaration; the substituted spelling names the instantiation then (as for _stl_iterator_in_6c)."""
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
@@ -920,7 +920,7 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         if reason is None and "type-parameter-" in _type_spelling(p.type):
             reason = "dependent type (unresolved template parameter)"
         if reason is None and _SUBST.active and p.type.get_canonical().kind == TK.POINTER:
-            # 6c: Element_t* becomes float* only after substitution; the libclang type is a pointer to a template parameter,
+            # 7c: Element_t* becomes float* only after substitution; the libclang type is a pointer to a template parameter,
             # so the raw-pointer check above did not see it (NCollection_Mat4<T>::Map(T*), R-UNSUPPORTED)
             spelled = _type_spelling(p.type)
             base = spelled.rstrip("* ").removeprefix("const ").strip()
@@ -1000,12 +1000,12 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
 _derives_cache: dict[tuple[str, str], bool] = {}
 _derives_stack: set[tuple[str, str]] = set()   # keys being resolved (recursion guard for CRTP bases)
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
-_template_uses: list[cindex.Type] = []                      # template instantiations seen in bound signatures (on-demand 6c)
+_template_uses: list[cindex.Type] = []                      # template instantiations seen in bound signatures (on-demand 7c)
 _dependent_bases: list[tuple[str, str, str]] = []           # (derived instantiation, substituted base spelling, header): template bases seen
-                                                            # inside a 6c walk (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>), resolved
+                                                            # inside a 7c walk (BVH_Box<double, 3> : BVH_BaseBox<double, 3, BVH_Box>), resolved
                                                             # through a probe re-parse (R-TEMPLATE-BASE)
 _dependent_uses: list[str] = []                             # substituted spellings of class template instantiations in the member
-                                                            # signatures of a 6c walk (NCollection_Vec4<unsigned char>::xyz() ->
+                                                            # signatures of a 7c walk (NCollection_Vec4<unsigned char>::xyz() ->
                                                             # NCollection_Vec3<unsigned char>): instantiated through the same probe (8.22)
 
 
@@ -1567,7 +1567,7 @@ class _Held:
             if decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) and not _is_dependent(decl.underlying_typedef_type):
                 self.member(decl.underlying_typedef_type, where, mut)
             else:
-                self.spelled(_type_spelling(ft), where, mut)    # inside a class template walked for an alias instantiation (6c)
+                self.spelled(_type_spelling(ft), where, mut)    # inside a class template walked for an alias instantiation (7c)
 
     def record(self, t: cindex.Type, where: str, mut: bool) -> None:
         """A class held by value or as a base: t is its canonical type; mut: inside a mutable member."""
@@ -1664,7 +1664,7 @@ class _Held:
             self.record(bt.get_canonical(), where, mut)
 
     def cursor(self, cls: cindex.Cursor, where: str, mut: bool) -> bool:
-        """A class definition walked through its cursor: a plain class, or the class template of a 6c walk. Returns whether its
+        """A class definition walked through its cursor: a plain class, or the class template of a 7c walk. Returns whether its
         part copies a pointer (R-COPY)."""
         children = list(cls.get_children())
         self._enter(any(ch.kind == K.DESTRUCTOR and _destructor_frees(ch) for ch in children))
@@ -1774,7 +1774,7 @@ def _label_source(t: cindex.Type) -> bool:
 
 def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
     """R-RESULT-KEEP: the class behind a type -- through references, pointers and handles -- and its layout (_Held), one per
-    class and package; None for a scalar or an enum. A dependent type of a 6c walk is read from its substituted spelling
+    class and package; None for a scalar or an enum. A dependent type of a 7c walk is read from its substituted spelling
     (`spelled`), completed by the layout probe."""
     canon = t.get_canonical()
     while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
@@ -2194,7 +2194,7 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
         pointee = _pointee(arg.type)
         if pointee is None:
             continue
-        if _is_dependent(pointee):        # a 6c walk: the parameter is spelled only after substitution
+        if _is_dependent(pointee):        # a 7c walk: the parameter is spelled only after substitution
             if not p.type.rstrip().endswith(("&", "*")):
                 continue
             key, is_class = _core_type(p.type), _core_type(p.type) not in _PRIMITIVE_SPELLINGS
@@ -2315,7 +2315,7 @@ def _base_provides_operator_new(base_type, _depth: int = 0) -> bool:
 
 def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") -> Class:
     cpp_name = _type_spelling(cursor.type)          # 'NCollection_Lerp<gp_Trsf>' for a specialization
-    if cpp_name == "":                              # a class template walked for an alias instantiation (6c)
+    if cpp_name == "":                              # a class template walked for an alias instantiation (7c)
         cpp_name = _SUBST.apply(cursor.spelling)
     path = (py_path(cpp_name, package) if "<" in cpp_name else _ast_py_path(cursor, package)).split(".")
     parent = cursor.semantic_parent
@@ -2412,7 +2412,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             if not _SUBST.active and base_decl.kind != K.NO_DECL_FOUND and base_decl.spelling == "Iterator" \
                     and base_decl.semantic_parent is not None and base_decl.semantic_parent.spelling in BINDERS \
                     and "Iterator" in BINDERS[base_decl.semantic_parent.spelling].get("nested", {}):
-                # 6a: the base is a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator derives from
+                # 7a: the base is a binder instantiation's nested Iterator (Graphic3d_SequenceOfHClipPlane::Iterator derives from
                 # NCollection_Sequence<handle<Graphic3d_ClipPlane>>::Iterator): register the owner instantiation, spell the base
                 # with its manifest key and declare the class after the templates phase, where the base exists
                 owner_t = base_decl.semantic_parent.type
@@ -2424,7 +2424,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.after_templates = True
                 continue
             if not _SUBST.active and base_decl.kind != K.NO_DECL_FOUND and base_decl.spelling in BINDERS:
-                # 6a: the base is a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
+                # 7a: the base is a binder instantiation itself (BinObjMgt_RRelocationTable : NCollection_DataMap<int,
                 # handle<Standard_Transient>>, XmlObjMgt_SRelocationTable : NCollection_IndexedMap<handle<Standard_Transient>>):
                 # same treatment, the manifest key is the C++ spelling nanobind needs (defaults such as the hasher left out)
                 _note_instance(ch.type)
@@ -2571,7 +2571,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 # use (R-ITERATOR)
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
-                # a nested class of a 6c instantiation is walked with the instantiation's substitution still active
+                # a nested class of a 7c instantiation is walked with the instantiation's substitution still active
                 # (NCollection_FlatMap<K, H>::Iterator: without it the BRepGraph flat maps could not be iterated)
                 n = _class(ch, header, package, outer=c.name)
                 if _SUBST.active:
@@ -2617,7 +2617,7 @@ _NESTED_OWNER = {src: kind for kind, info in BINDERS.items() for src in info.get
 
 
 def _note_dependent_use(t: cindex.Type) -> None:
-    """6c inside a 6c walk: a member of an instantiation names another instantiation of a class template
+    """7c inside a 7c walk: a member of an instantiation names another instantiation of a class template
     through the template's parameters -- NCollection_Vec4<Element_t>::xyz() returns NCollection_Vec3<Element_t> -- which
     libclang reports as a dependent type with no declaration, so _note_instance cannot queue it and the member was bound
     with an unregistered type (`Vec4__unsigned_char().xyz()` raised TypeError: 74 stub lines over four Vec instantiations).
@@ -2645,7 +2645,7 @@ def _note_dependent_use(t: cindex.Type) -> None:
 def _note_instance(t: cindex.Type) -> None:
     """If t (or its pointee) is an instantiation of an NCollection template we have a binder for, record it,
     including nested instantiations in its arguments. Any other OCCT class template instantiation in a signature
-    (BRepGraph_MutGuard<...>, BVH_Box<double, 3>) is recorded for on-demand instantiation (6c)."""
+    (BRepGraph_MutGuard<...>, BVH_Box<double, 3>) is recorded for on-demand instantiation (7c)."""
     if _SUBST.active:
         _note_dependent_use(t)
     canon = t.get_canonical()
@@ -2665,8 +2665,8 @@ def _note_instance(t: cindex.Type) -> None:
             _owned_instance_args.add(_canonical_args(arg))
     owner = _NESTED_OWNER.get(decl.spelling)
     if owner is not None:
-        # NCollection_TListIterator<T> is NCollection_List<T>::Iterator, bound by the List binder (6a) as
-        # NCollection_List__T.Iterator: record the owner instantiation instead of a 6c class of its own (TopOpeBRepDS)
+        # NCollection_TListIterator<T> is NCollection_List<T>::Iterator, bound by the List binder (7a) as
+        # NCollection_List__T.Iterator: record the owner instantiation instead of a 7c class of its own (TopOpeBRepDS)
         args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
         for i in range(len(args)):
             _note_instance(canon.get_template_argument_type(i))
@@ -2674,7 +2674,7 @@ def _note_instance(t: cindex.Type) -> None:
         _instances_seen.setdefault(key, TemplateInstance(template=owner, args=instance_args(owner, args), key=key))
         return
     if decl.spelling not in BINDERS:
-        # 6c: queue the *stripped, unqualified* declaration type. `t` may be `const NCollection_Vec4<uint8_t>&`, whose
+        # 7c: queue the *stripped, unqualified* declaration type. `t` may be `const NCollection_Vec4<uint8_t>&`, whose
         # canonical kind is LVALUEREFERENCE, and _is_plain_template_instance would answer False for it -- an
         # instantiation reachable only through a reference parameter was never instantiated, and the method bound with
         # an unregistered type (RWPly_PlyWriterContext::WriteVertex, uncallable; found 2026-09-23). Most were masked by
@@ -2807,11 +2807,11 @@ def _template_default(param: cindex.Cursor) -> str | None:
     return " ".join(toks[toks.index("=") + 1:])
 
 
-# Binding-Rules.md 6c (template aliases and on-demand instantiations), R-TEMPLATE-NAME
+# Binding-Rules.md 7c (template aliases and on-demand instantiations), R-TEMPLATE-NAME
 def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: str, package: str, report: list[str],
                           what: str, py_name: str | None) -> Class | None:
     """The members of a class template instantiated for the arguments of t, walked from the template's definition
-    with argument substitution (Binding-Rules.md 6c). py_name: the alias name, or None for an instantiation that is only a
+    with argument substitution (Binding-Rules.md 7c). py_name: the alias name, or None for an instantiation that is only a
     base class (BRepGraph_WiresOfEdge : EdgeParentsOf<...>) -> the mangled name. NCollection containers (hand-written
     binders) and std types are not handled here. Returns None (with a report line) when it cannot be done."""
     canon = t.get_canonical()
@@ -2878,7 +2878,7 @@ def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: st
         # substitution spells; the whole instantiation stays out
         report.append(f"{what}: template argument {pointer_args[0]} is a raw pointer -> not bound")
         return None
-    # 6c, partial specialisations: BVH_Tree<T, N, BVH_BinaryTree> is the real class, the primary template
+    # 7c, partial specialisations: BVH_Tree<T, N, BVH_BinaryTree> is the real class, the primary template
     # BVH_Tree<T, N, Arity> is empty -- walking the primary bound BVH_Tree<double, 3, BVH_BinaryTree> without a member or a base
     spec = _matching_specialisation(tu, qualified, args)
     walked = tmpl
@@ -2942,7 +2942,7 @@ def _reparent_nested(c: Class) -> None:
 
 
 def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, package: str, report: list[str]) -> Class | None:
-    """using math_Vector = math_VectorBase<double>; -> the template instantiated under the alias name (Binding-Rules.md 6c)."""
+    """using math_Vector = math_VectorBase<double>; -> the template instantiated under the alias name (Binding-Rules.md 7c)."""
     t = cur.underlying_typedef_type
     c = _instantiate_template(tu, t, header, package, report, f"{cur.spelling} = {t.spelling}", cur.spelling)
     if c is not None:
@@ -3165,7 +3165,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                                              written=_type_spelling(cur.underlying_typedef_type), scope=scope))
                 _note_instance(cur.underlying_typedef_type)      # BVH_Array3d = NCollection_LinearVector<...>: bind the instantiation
                 if ns != "":
-                    continue                       # alias instantiation (6c) only at package level
+                    continue                       # alias instantiation (7c) only at package level
                 if not any(c.py_name == cur.spelling for c in ir.classes):     # the same alias appears in several headers
                     inst = _alias_instance(tu, cur, header, pkg.name, ir.report)
                     if inst is not None:
@@ -3173,10 +3173,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 if cur.semantic_parent is not None and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
                     continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class
-                # R-TEMPLATE-SKIP: a package-level template no typedef instantiates (6c) -- not bound, reported
+                # R-TEMPLATE-SKIP: a package-level template no typedef instantiates (7c) -- not bound, reported
                 ir.report.append(f"{cur.spelling}: template (not bound)")
         # bases that are un-aliased template instantiations (BRepGraph_WiresOfEdge : EdgeParentsOf<...>): instantiated
-        # on demand under the mangled name, so that the derived class can be bound (Binding-Rules.md 6c)
+        # on demand under the mangled name, so that the derived class can be bound (Binding-Rules.md 7c)
         seen_uses: set[str] = set()
         while len(_template_bases) > 0 or len(_template_uses) > 0:
             if len(_template_bases) > 0:

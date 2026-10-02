@@ -1,4 +1,4 @@
-// Hand-written binders for the OCCT NCollection container templates (Binding-Rules.md, section 6a).
+// Hand-written binders for the OCCT NCollection container templates (Binding-Rules.md, section 7a).
 // One binder per template kind; the generator instantiates it for every typedef (TColgp_Array1OfPnt =
 // NCollection_Array1<gp_Pnt>, ...) and for every instantiation that appears in a bound signature.
 // Method names, signatures and docstrings are 1:1 with the template header; the docstrings live in
