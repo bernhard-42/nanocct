@@ -51,6 +51,8 @@ class Param:
     instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the type (parse._binder_key), "" if none
     class_ancestors: tuple[str, ...] = ()   # R-OVERLOAD-ORDER: every base of class_name, spelled like class_name (parse._class_ancestors)
     kept: bool = False      # R-CTOR-KEEP / R-METHOD-KEEP: a parameter the object can keep the address of: keep_alive / keep_slot
+    kept_view: bool = False # R-COPY: kept because the object may hold pointers copied out of it (a copy, TDF_ChildIterator(label)):
+                            # it keeps what the argument's slots hold now too (nanocct::keep_view_arg)
     is_enum: bool = False   # R-ENUM-ARG: an enum or std::optional<enum> by value or reference: nb::arg(...).noconvert(), no int in its place
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
@@ -84,6 +86,8 @@ class Method:
     result_view: bool = False         # R-RESULT-KEEP: a class by value/const& whose layout holds pointers: keeps self and result_keeps
     result_keeps: tuple[int, ...] = ()  # ... the parameters (indices) whose objects it may point into
     result_owned: bool = False        # R-OWNER: the result's type has known OCAF owners (TDF_Label, TDF_Attribute, ...): kept instead
+    result_by_reference: bool = False # R-COPY: a `const T&` of an owner class (its copy would free what the original points to): by reference
+    result_on_heap: bool = False      # R-COPY: a `T` by value of an owner class without its own move/copy constructor: new T(call)
 
 
 @dataclass
@@ -118,6 +122,7 @@ class Field:
     doc: str
     array_len: int = 0          # R-FIXED-ARRAY: a C array member T[N]; `type` is the element type; a list property
     is_bitfield: bool = False   # R-FIELD: a bit-field (`unsigned stick : 1`) has no pointer-to-member; a property through lambdas
+    is_pointer: bool = False    # R-FIELD: a raw pointer (a class or `const char*`): read-only, the getter returns a copy of the pointee
 
 
 @dataclass
@@ -155,6 +160,7 @@ class Class:
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
     view: bool = False                # R-CTOR-KEEP: its layout holds pointers, so a copy (sharing them) keeps the original alive
+    copy_owner: str = ""              # R-COPY: where a destructor may free a pointer an implicit copy duplicates: no implicit copy
     dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
                                       # (implicit or defined in the header). R-UNDEFINED checks it: nanobind instantiates
                                       # wrap_destruct<T> for every bound class, so an unexported ~T() is a link error
@@ -196,6 +202,8 @@ class Function:
     result_view: bool = False         # R-RESULT-KEEP, R-OWNER: as for methods
     result_keeps: tuple[int, ...] = ()
     result_owned: bool = False
+    result_by_reference: bool = False # R-COPY: as for methods
+    result_on_heap: bool = False
 
 
 @dataclass
@@ -240,4 +248,5 @@ class PackageIR:
     hashable_templates: set[str] = field(default_factory=set)   # class templates with a partial std::hash<Tmpl<...>> specialisation
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
     owned_args: set[str] = field(default_factory=set)   # R-OWNER: instance arguments with known OCAF owners (TDF_Label, handle<TDF_Attribute>)
+    copy_owner_instances: dict[str, str] = field(default_factory=dict)   # R-COPY: binder instantiations whose elements are owners -> where
     report: list[str] = field(default_factory=list)

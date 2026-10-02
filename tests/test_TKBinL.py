@@ -88,6 +88,7 @@ def test_drivers_and_relocation_tables():
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"operator", "overload-collision", "override", "raw-pointer", "stream", "template"}
+    assert categories <= {"copy", "operator", "overload-collision", "override", "raw-pointer", "stream", "template"}
+    assert any(line.startswith("copy\tBinObjMgt\tBinObjMgt_Persistent: no copy constructor") for line in lines)   # R-COPY: Destroy()
     assert any("SetOStream" in line and "[skip] methods" in line for line in lines)   # stores the stream reference: dangling
     assert not any("RRelocationTable" in line for line in lines)                      # the binder base is bound now

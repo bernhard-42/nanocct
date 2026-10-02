@@ -111,7 +111,8 @@ def test_report_has_only_the_expected_omissions():
     categories = {line.split("\t")[0] for line in lines}
     # "template" appears on Windows only: R-UNDEFINED leaves different members there, which changes what the
     # template machinery still has to report (gauss, 2026-09-24)
-    assert categories <= {"hash", "iterator", "operator", "override", "raw-pointer", "template", "unbound-type", "undefined"}
+    assert categories <= {"copy", "hash", "iterator", "operator", "override", "raw-pointer", "template", "unbound-type", "undefined"}
+    assert any(line.startswith("copy\tLDOM\tLDOM_MemManager: no copy constructor") for line in lines)   # R-COPY: frees its blocks
     assert all(line.split("\t")[1] in {"CDF", "CDM", "LDOM", "PCDM", "UTL"} for line in undefined)
     # LDOM_OSStream derives from std::ostream and is dropped for it either way, but the wording differs: libc++ keeps
     # the typedef ("base class Standard_OStream is not bound"), MSVC resolves it to the template instantiation and the

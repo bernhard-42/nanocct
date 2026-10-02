@@ -1345,6 +1345,42 @@ def _is_dependent(t: cindex.Type) -> bool:
 _OWNING_TEMPLATES = ("opencascade::handle<", "NCollection_Handle<", "std::shared_ptr<", "std::unique_ptr<", "std::weak_ptr<")
 
 
+def _path(where: str) -> str:
+    """A layout path for the report: a probe's or a result's walk starts with the class twice (`X -> X -> Base`)."""
+    parts: list[str] = []
+    for part in where.split(" -> "):
+        if len(parts) == 0 or parts[-1] != part:
+            parts.append(part)
+    return " -> ".join(parts)
+
+
+def _declares_move(t: cindex.Type) -> bool:
+    """R-COPY: the class of t declares its own move or copy constructor, not defaulted -- returning it by value moves it with
+    that one (BRepGraph_MutGuard). Unknown (a dependent type) is no."""
+    decl = t.get_canonical().get_declaration()
+    defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
+    return defn is not None and (_declares_copy(defn) or any(
+        ch.kind == K.CONSTRUCTOR and ch.is_move_constructor() and not ch.is_default_method() and not ch.is_deleted_method()
+        for ch in defn.get_children()))
+
+
+def _declares_copy(defn: cindex.Cursor) -> bool:
+    """R-COPY: the class declares its own copy constructor, not defaulted -- trusted to copy what it owns (NCollection's
+    containers, TCollection_AsciiString, Message_ProgressRange)."""
+    return any(ch.kind == K.CONSTRUCTOR and ch.is_copy_constructor() and not ch.is_default_method() and not ch.is_deleted_method()
+               for ch in defn.get_children())
+
+
+def _destructor_frees(dtor: cindex.Cursor) -> bool:
+    """R-COPY: a user-provided destructor that may free (or use) what the object points to: any body that is not empty, and one
+    the headers do not show (defined in a .cxx) -- `~T() = default` and `~T() {}` free nothing."""
+    if dtor.is_default_method() or dtor.is_deleted_method():
+        return False
+    defn = dtor.get_definition()
+    body = next((ch for ch in (dtor if defn is None else defn).get_children() if ch.kind == K.COMPOUND_STMT), None)
+    return body is None or len(list(body.get_children())) > 0
+
+
 class _Held:
     """What an object keeps pointers or references to, read from its layout (R-CTOR-KEEP): the class types behind every
     pointer or reference data member of any access -- its own, every base's, and those inside members it holds by value,
@@ -1353,18 +1389,29 @@ class _Held:
     (CPnts_UniformDeflection keeps its curve, TopOpeBRepDS_CurveExplorer its data structure as `void*`). `pending`: a base
     or by-value member spelled only after template substitution -- completed by a layout probe at the end of the package
     (_resolve_held_layout). `gaps`: what neither could follow (reported, never guessed). The `mutable_` sets are what a
-    const method can store into (R-METHOD-KEEP): mutable members, and members inside a member that is mutable."""
+    const method can store into (R-METHOD-KEEP): mutable members, and members inside a member that is mutable. The `copy_`
+    sets are what an implicit copy of the object duplicates (R-COPY): `copy_pointers` the raw pointer and reference members
+    of every kind (a `char *` and an `int *` too, not a function pointer), `copy_owners` the classes whose destructor may free
+    such a pointer -- a destructor the headers do not show empty (_destructor_frees) in a class whose own part (members,
+    bases, by-value members) holds one, or may (a part only a probe completes). Both cover the class and what an implicit
+    copy copies member by member -- bases and by-value members, but nothing inside a class that declares its own copy
+    constructor (trusted: it copies what it owns)."""
 
     def __init__(self) -> None:
         self.types: set[str] = set()
         self.anything = False
         self.mutable_types: set[str] = set()         # a subset of types
         self.mutable_anything = False
-        self.pending: list[tuple[str, str, bool]] = []     # (spelling, where, in a mutable member)
+        self.pending: list[tuple[str, str, bool, bool]] = []     # (spelling, where, in a mutable member, inside a trusted copy)
         self.gaps: list[str] = []
         self.probed: set[str] = set()                # spellings a probe already completed: incomplete there means incomplete
         self.constants: set[str] = set()             # constants of the walked class (a non-type template argument: THE_BUFFER_SIZE)
-        self._seen: set[tuple[str, bool]] = set()
+        self.copy_pointers: set[str] = set()         # where an implicit copy duplicates a raw pointer or reference
+        self.copy_owners: set[str] = set()           # where a destructor may free what such a pointer points to
+        self._trusted = 0                            # > 0: walking inside a class with its own copy constructor
+        self._frames: list[list[bool]] = []          # per class being walked: [its destructor may free, its part copies a pointer]
+        self._copies_pointer: dict[str, bool] = {}   # per walked class: its part copies a pointer (a class seen again still counts)
+        self._seen: set[tuple[str, bool, bool]] = set()
 
     def hold(self, key: str, mut: bool) -> None:
         self.types.add(key)
@@ -1375,6 +1422,26 @@ class _Held:
         self.anything = True
         if mut:
             self.mutable_anything = True
+
+    def copied(self, where: str) -> None:
+        """An implicit copy duplicates a pointer here (not inside a trusted copy constructor)."""
+        if self._trusted == 0:
+            self.copy_pointers.add(where)
+            self._part_copies_pointer()
+
+    def _part_copies_pointer(self) -> None:
+        for frame in self._frames:
+            frame[1] = True
+
+    def _enter(self, frees: bool) -> None:
+        self._frames.append([frees and self._trusted == 0, False])
+
+    def _leave(self, where: str) -> bool:
+        """Close the class walked at `where`: an owner when its destructor may free and its part copies a pointer."""
+        frees, copies = self._frames.pop()
+        if frees and copies:
+            self.copy_owners.add(where)
+        return copies
 
     def add_pointee(self, p: cindex.Type, mut: bool) -> None:
         if p.kind == TK.RECORD:
@@ -1388,6 +1455,8 @@ class _Held:
             self.gaps.append(f"{where}: {spelled}")
             return
         core = _core_type(spelled)
+        if spelled.rstrip().endswith(("&", "*")) or core == "Standard_Address":
+            self.copied(where)
         if spelled.rstrip().endswith(("&", "*")):
             if core in ("void", "Standard_Address"):
                 self.hold_anything(mut)
@@ -1402,11 +1471,15 @@ class _Held:
                 if re.fullmatch(r"-?\d+[uUlL]*|true|false", arg) is None and arg not in self.constants:
                     self.spelled(arg, f"{where} -> {core}", mut)
         elif core not in _PRIMITIVE_SPELLINGS and not core.startswith(_OWNING_TEMPLATES):
-            self.pending.append((core, where, mut))
+            self.pending.append((core, where, mut, self._trusted > 0))
+            if self._trusted == 0:
+                self._part_copies_pointer()          # not known before the probe: may (R-COPY, the safe side)
 
     def member(self, ft: cindex.Type, where: str, mut: bool) -> None:
         p = _pointee(ft)
         if p is not None and not _is_dependent(p):
+            if p.kind not in (TK.FUNCTIONPROTO, TK.FUNCTIONNOPROTO):
+                self.copied(where)
             self.add_pointee(p, mut)
             return
         canon = ft.get_canonical()
@@ -1426,9 +1499,13 @@ class _Held:
     def record(self, t: cindex.Type, where: str, mut: bool) -> None:
         """A class held by value or as a base: t is its canonical type; mut: inside a mutable member."""
         key = _record_key(t)
-        if (key, mut) in self._seen or key.startswith(_OWNING_TEMPLATES):
+        if key.startswith(_OWNING_TEMPLATES):
             return
-        self._seen.add((key, mut))
+        if (key, mut, self._trusted > 0) in self._seen:
+            if self._trusted == 0 and self._copies_pointer.get(key, False):
+                self._part_copies_pointer()
+            return
+        self._seen.add((key, mut, self._trusted > 0))
         for i in range(t.get_num_template_arguments()):
             at = t.get_template_argument_type(i)
             if at.kind != TK.INVALID:
@@ -1443,20 +1520,40 @@ class _Held:
             if key in self.probed:
                 self.gaps.append(f"{where}: {key} (incomplete)")
             else:
-                self.pending.append((key, where, mut))  # NCollection_CellFilter<...>::Cell: complete only once named in a probe
+                self.pending.append((key, where, mut, self._trusted > 0))  # NCollection_CellFilter<...>::Cell: complete only once named in a probe
+                if self._trusted == 0:
+                    self._part_copies_pointer()
             return
         if len(list(defn.get_children())) > 0:
-            self.cursor(defn, f"{where} -> {key}", mut)
-            return
-        # an implicit instantiation's cursor has no children: its members come from the instantiated type, its bases from
-        # the template's definition with the template's parameters replaced by this instantiation's arguments
+            trusted = _declares_copy(defn)
+            self._trusted += trusted
+            copies = self.cursor(defn, f"{where} -> {key}", mut)
+            self._trusted -= trusted
+        else:
+            tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(defn)
+            tdef = None if tmpl is None or tmpl.kind == K.NO_DECL_FOUND else tmpl.get_definition()
+            tdef = tmpl if tdef is None else tdef
+            trusted = tdef is not None and tdef.kind != K.NO_DECL_FOUND and _declares_copy(tdef)
+            self._trusted += trusted
+            copies = self._instance(t, key, tdef, where, mut)
+            self._trusted -= trusted
+        if self._trusted == 0:
+            self._copies_pointer[key] = copies
+
+    def _instance(self, t: cindex.Type, key: str, tdef: "cindex.Cursor | None", where: str, mut: bool) -> bool:
+        """An implicit instantiation's cursor has no children: its members come from the instantiated type, its bases (and its
+        destructor) from the template's definition with the template's parameters replaced by this instantiation's arguments.
+        Returns whether its part copies a pointer (R-COPY)."""
+        known = tdef is not None and tdef.kind != K.NO_DECL_FOUND
+        self._enter(known and any(ch.kind == K.DESTRUCTOR and _destructor_frees(ch) for ch in tdef.get_children()))
+        self._instance_parts(t, key, tdef if known else None, where, mut)
+        return self._leave(f"{where} -> {key}")
+
+    def _instance_parts(self, t: cindex.Type, key: str, tdef: "cindex.Cursor | None", where: str, mut: bool) -> None:
         for f in t.get_fields():
             self.member(f.type, f"{where} -> {key}", mut or f.is_mutable_field())
-        tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(defn)
-        if tmpl is None or tmpl.kind == K.NO_DECL_FOUND:
+        if tdef is None:
             return
-        tdef = tmpl.get_definition()
-        tdef = tmpl if tdef is None else tdef
         tparams = [ch for ch in tdef.get_children()
                    if ch.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER, K.TEMPLATE_TEMPLATE_PARAMETER)]
         names = [ch.spelling for ch in tparams]
@@ -1493,16 +1590,24 @@ class _Held:
         elif bt.get_canonical().kind == TK.RECORD:
             self.record(bt.get_canonical(), where, mut)
 
-    def cursor(self, cls: cindex.Cursor, where: str, mut: bool) -> None:
-        """A class definition walked through its cursor: a plain class, or the class template of a 6c walk."""
-        for ch in cls.get_children():
+    def cursor(self, cls: cindex.Cursor, where: str, mut: bool) -> bool:
+        """A class definition walked through its cursor: a plain class, or the class template of a 6c walk. Returns whether its
+        part copies a pointer (R-COPY)."""
+        children = list(cls.get_children())
+        self._enter(any(ch.kind == K.DESTRUCTOR and _destructor_frees(ch) for ch in children))
+        for ch in children:
             if ch.kind == K.FIELD_DECL:
                 self.member(ch.type, f"{where}::{ch.spelling}", mut or ch.is_mutable_field())
             elif ch.kind == K.CXX_BASE_SPECIFIER:
                 self.base(ch.type, where, mut)
+        return self._leave(where)
 
-    def absorb(self, r: "_Held", mut: bool) -> None:
-        """r: the layout of a member or base held in this object (inside a mutable member when mut)."""
+    def absorb(self, r: "_Held", mut: bool, trusted: bool = False) -> None:
+        """r: the layout of a member or base held in this object (inside a mutable member when mut, inside a class with its
+        own copy constructor when trusted)."""
+        if not trusted:
+            self.copy_pointers |= r.copy_pointers
+            self.copy_owners |= r.copy_owners
         self.types |= r.types
         self.anything = self.anything or r.anything
         self.mutable_types |= r.types if mut else r.mutable_types
@@ -1535,10 +1640,16 @@ class _Held:
 _held_by_class: dict[tuple[str, int], _Held] = {}    # (class name, hash of the walked definition): a template is walked per instantiation
 _held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...], bool, "_Held | None"]]]] = []   # (class, held, (param, key, ancestors, const method, the argument's own layout))
 _layout_of_type: dict[str, _Held] = {}               # canonical class spelling (or a substituted spelling) -> its layout
-_views_open: list[tuple[str, "Method | Function", Param | None, str, _Held, list[tuple[int, str, tuple[str, ...], "_Held | None"]], "Class | None"]] = []
+_views_open: list[tuple[str, "Method | Function", Param | None, str, _Held, list[tuple[int, str, tuple[str, ...], "_Held | None"]], "Class | None", str]] = []
 #   (qualified name, method or function, the in-place parameter or None for the result, the class it is, its layout,
-#    candidates: (parameter index, class, its bases, its layout), the method's class (None: static, free))
+#    candidates: (parameter index, class, its bases, its layout), the method's class (None: static, free),
+#    how a result is copied (R-COPY): "cref" a `const T&`, "value" a `T`, "moves" a `T` whose class declares its own move or
+#    copy constructor; "" for an in-place parameter)
 _class_layouts: list[tuple[Class, _Held]] = []      # Class.view: a copy of a class holding pointers keeps the original
+_kept_view_open: list[tuple[Param, _Held, _Held]] = []   # R-COPY: constructor parameters whose layout may share pointees with the object
+_fields_open: list[tuple[Class, Field, _Held | None]] = []   # R-FIELD: raw pointer members, decided once the pointee's layout is complete
+_instance_layouts: dict[str, _Held] = {}             # R-COPY: each binder instantiation's layout -- its elements, which the binder copies
+_instance_owners: dict[str, str] = {}                # R-COPY: the instantiations among them whose elements are owners -> where
 
 
 # Design.md 6 R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_common.h, defined in
@@ -1585,7 +1696,7 @@ def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
             # the probe names the class behind the spelling: a typedef can hide a reference or a pointer
             # (NCollection_Array1<T>::const_reference), which as a member spelling would count as a held pointer
             held = _Held()
-            held.pending.append((f"std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<{core}>>>", core, False))
+            held.pending.append((f"std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<{core}>>>", core, False, False))
             _layout_of_type[core] = held
         return core, _layout_of_type[core]
     if canon.kind == TK.RECORD and _record_key(canon).startswith("opencascade::handle<") and canon.get_num_template_arguments() == 1:
@@ -1633,7 +1744,8 @@ def _note_views(fn: cindex.Cursor, m: "Method | Function", owner: str, cls: Clas
                 or _is_dependent(rt) and not spelled.startswith(("std::", "occ::handle<") + _OWNING_TEMPLATES)):
             lay = _type_layout(rt, m.result)
             if lay is not None:
-                _views_open.append((name, m, None, lay[0], lay[1], cands, cls))
+                how = "cref" if fn.result_type.get_canonical().kind == TK.LVALUEREFERENCE else "moves" if _declares_move(rt) else "value"
+                _views_open.append((name, m, None, lay[0], lay[1], cands, cls, how))
     for p, a in zip(m.params, args):
         if p.is_out or p.is_handle or p.omitted or p.stream != StreamKind.NONE or p.array_len > 0 or p.cstr_none or p.is_bytes:
             continue
@@ -1650,13 +1762,20 @@ def _note_views(fn: cindex.Cursor, m: "Method | Function", owner: str, cls: Clas
             continue
         lay = _type_layout(a.type)
         if lay is not None:
-            _views_open.append((name, m, p, lay[0], lay[1], cands, cls))
+            _views_open.append((name, m, p, lay[0], lay[1], cands, cls, ""))
 
 
 def _decide_views(report: list[str]) -> None:
     """R-RESULT-KEEP, end of package: the results and in-place outputs whose layout holds pointers keep their producers."""
     kept_by: dict[int, set[str]] = {}            # per class: the classes of the arguments its constructors and methods keep
-    for name, m, param, cls, held, cands, owner in _views_open:
+    for name, m, param, cls, held, cands, owner, how in _views_open:
+        if param is None and len(held.copy_owners) > 0 and how != "moves":
+            # R-COPY: the copy (a `const T&`) or the move falling back to a copy (a `T` without its own move or copy
+            # constructor) would share the pointers a destructor frees: the original by reference, the value built in place
+            if how == "cref":
+                m.result_by_reference = True
+            else:
+                m.result_on_heap = True
         if not held.holds_pointers():
             continue
         keeps = tuple(i for i, key, ancestors, lay in cands
@@ -1690,6 +1809,30 @@ def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
     return _held_by_class[key]
 
 
+def _copyable_probe(index: cindex.Index, umbrella: Path, args: list[str], td: str, pointers: list[str]) -> dict[str, bool | None]:
+    """R-FIELD: can the class a pointer type points to be copied? Whether a copy constructor is implicitly deleted (a
+    `std::atomic` member: NCollection_IncAllocator::IBlock) only the compiler knows, so a probe asks it -- an alias that
+    is `int` when std::is_copy_constructible holds and `char` when not, read back as a type. None: did not compile."""
+    if len(pointers) == 0:
+        return {}
+    probe = Path(td) / "nanocct__copyable.hxx"
+    have = umbrella.read_text()
+    headers = sorted({f"{name}.hxx" for s in pointers for name in re.findall(r"\w+", s)
+                      if f"<{name}.hxx>" not in have and (_INCLUDE_DIR / f"{name}.hxx").exists()})
+    probe.write_text(have + "#include <type_traits>\n" + "".join(f"#include <{h}>\n" for h in headers) + "".join(
+        f"using nanocct_copyable_{i} = std::conditional_t<std::is_copy_constructible_v<std::remove_cv_t<std::remove_pointer_t<{s}>>>, "
+        f"int, char>;\n" for i, s in enumerate(pointers)))
+    tu = index.parse(str(probe), args=args + ["-ferror-limit=0"])
+    aliases = {cur.spelling: cur for cur in tu.cursor.get_children()
+               if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanocct_copyable_")}
+    out: dict[str, bool | None] = {}
+    for i, s in enumerate(pointers):
+        cur = aliases.get(f"nanocct_copyable_{i}")
+        kind = None if cur is None else cur.underlying_typedef_type.get_canonical().kind
+        out[s] = True if kind == TK.INT else False if kind in (TK.CHAR_S, TK.CHAR_U) else None
+    return out
+
+
 def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], td: str) -> None:
     """R-CTOR-KEEP, end of package: what the layout walk could only spell (a by-value member or base of a class template
     after substitution: Extrema_GGExtPC's `TheEPC myExtPC`, BVH_Box's base BVH_BaseBox<double, 3, BVH_Box>) gets a probe
@@ -1706,27 +1849,27 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
         """Fold every resolved spelling into the classes that pend on it; a probed layout's own pending entries follow."""
         for held in open_layouts:
             for _ in range(len(resolved) + 1):          # a resolved layout can pend on spellings resolved earlier
-                still: list[tuple[str, str, bool]] = []
+                still: list[tuple[str, str, bool, bool]] = []
                 changed = False
-                for s, where, mut in held.pending:
+                for s, where, mut, trusted in held.pending:
                     if s not in resolved:
-                        still.append((s, where, mut))
+                        still.append((s, where, mut, trusted))
                         continue
                     changed = True
                     r = resolved[s]
                     if r is None:
                         held.gaps.append(f"{where}: {s} (the layout probe did not compile)")
                     else:
-                        held.absorb(r, mut)
+                        held.absorb(r, mut, trusted)
                         held.gaps += [f"{where} -> {g}" for g in r.gaps]
-                        still += [(s2, f"{where} -> {w2}", mut or m2) for s2, w2, m2 in r.pending]
+                        still += [(s2, f"{where} -> {w2}", mut or m2, trusted or t2) for s2, w2, m2, t2 in r.pending]
                 held.pending = still
                 if not changed:
                     break
 
     for _ in range(10):                            # a probed layout can pend in turn (BVH_Distance -> BVH_Traverse -> ... -> BVH_Object)
         absorb()
-        todo = sorted({s for h in open_layouts for s, _, _ in h.pending if s not in resolved})
+        todo = sorted({s for h in open_layouts for s, *_ in h.pending if s not in resolved})
         if len(todo) == 0:
             break
         probe = Path(td) / "nanocct__layout.hxx"
@@ -1761,12 +1904,34 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
                 p.kept = True
             else:
                 missed.append(p.name)
-        open_layout = held.gaps + [f"{w}: {s} (not resolved within the probe rounds)" for s, w, _ in held.pending]
+        open_layout = held.gaps + [f"{w}: {s} (not resolved within the probe rounds)" for s, w, *_ in held.pending]
         if len(missed) > 0 and len(open_layout) > 0:
             c.skipped.append(f"{c.name}: R-CTOR-KEEP could not follow its whole layout ({'; '.join(sorted(set(open_layout)))}): "
                              f"no keep-alive for {', '.join(sorted(set(missed)))}")
     for c, held in _class_layouts:
         c.view = held.holds_pointers()
+        # R-COPY: a class with its own copy constructor is trusted (bound as declared; only the implicit copy is decided here)
+        c.copy_owner = "" if any(k.is_copy for k in c.ctors) else _path(min(held.copy_owners, default=""))
+    for p, held, own in _kept_view_open:
+        p.kept_view = p.kept and held.shares_pointees(own, False)
+    for key, lay in sorted(_instance_layouts.items()):
+        if len(lay.copy_owners) > 0:
+            # R-COPY: a binder copies its elements (Value(), Append, the container's copy; NCollection_Shared<T> a T) -- the
+            # emitter skips such an instantiation, or binds NCollection_Shared<T> without its constructor from T
+            _instance_owners[key] = _path(min(lay.copy_owners))
+    copyable = _copyable_probe(index, umbrella, args, td, sorted({f.type for _, f, _ in _fields_open}))
+    for c, f, lay in _fields_open:
+        if lay is not None and len(lay.copy_owners) > 0:
+            # R-FIELD, R-COPY: a copy of the pointee would share what its destructor frees
+            c.skipped.append(f"{c.name}::{f.name}: field is a raw pointer to {_core_type(f.type)}, whose copy would share the "
+                             f"pointers its destructor frees (R-COPY) -> not bound")
+            c.fields.remove(f)
+        elif copyable.get(f.type) is not True:
+            why = "cannot be copied" if copyable.get(f.type) is False else "the copy probe could not name"
+            c.skipped.append(f"{c.name}::{f.name}: field is a raw pointer to {_core_type(f.type)}, which {why} (R-FIELD) -> not bound")
+            c.fields.remove(f)
+        else:
+            f.is_pointer = True
 
 
 
@@ -1806,6 +1971,8 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
                 c.skipped.append(f"{c.name}::{fn.spelling}: in-out argument {p.name} is copied into the binding, an address "
                                  f"the object keeps would dangle (R-METHOD-KEEP)")
             continue
+        if own is not None:
+            _kept_view_open.append((p, held, own))         # R-COPY: kept_view, decided once the layouts are complete
         if held.holds(key, p.class_ancestors, const_method) or (own is not None and held.shares_pointees(own, const_method)):
             p.kept = True
         else:
@@ -2030,6 +2197,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         if ch.kind == K.CONSTRUCTOR:
             if ch.is_move_constructor() or ch.is_deleted_method():
                 continue
+            if ch.is_copy_constructor() and ch.is_default_method():
+                continue                           # R-COPY: `T(const T&) = default` is the implicit copy, bound as that one
             c.ctors.append(_ctor(ch, c, members))
         elif ch.kind == K.CXX_METHOD:
             mark = len(_dependent_uses)
@@ -2083,6 +2252,22 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             _note_instance(ch.type)                # a container-typed field needs its instantiation like a parameter does
             c.fields.append(Field(name=ch.spelling, type=_type_spelling(ch.type), is_const=ch.type.is_const_qualified(), doc=_doc(ch),
                                   is_bitfield=ch.is_bitfield()))   # R-FIELD: `unsigned stick : 1` (Graphic3d_CStructure) has no pointer-to-member
+            if ch.type.get_canonical().kind == TK.POINTER or c.fields[-1].type.rstrip().endswith("*"):
+                # R-FIELD: a raw pointer member is never written from Python (the object would keep the address of a Python
+                # object it does not keep alive); what it points to is read as a copy, decided with the pointee's layout
+                pointee = ch.type.get_canonical().get_pointee()
+                if pointee.get_canonical().kind in (TK.CHAR_S, TK.CHAR_U):
+                    c.fields[-1].is_pointer = True     # const char* (R-CSTR): a str copy
+                else:
+                    decl = pointee.get_canonical().get_declaration()
+                    defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
+                    if defn is not None and _derives_from(defn, "Standard_Transient"):
+                        c.skipped.append(f"{c.name}::{ch.spelling}: field is a raw pointer to a Transient, which a handle may not own "
+                                         f"(R-FIELD) -> not bound")
+                        c.fields.pop()
+                    else:
+                        lay = _type_layout(ch.type, c.fields[-1].type)
+                        _fields_open.append((c, c.fields[-1], None if lay is None else lay[1]))
         elif ch.kind == K.FRIEND_DECL:
             # R-FREE-OP: a hidden friend operator (`friend NCollection_Vec3 operator+(const NCollection_Vec3&, const NCollection_Vec3&)`
             # in NCollection_Vec2/3/4, math_Matrix, BRepGraph_ItemId) is a free function found by ADL only; it is handed to the
@@ -2241,6 +2426,10 @@ def _note_instance(t: cindex.Type) -> None:
         _note_instance(canon.get_template_argument_type(i))
     key = f"{decl.spelling}<{', '.join(args)}>"
     _instances_seen.setdefault(key, TemplateInstance(template=decl.spelling, args=args, key=key))
+    if key not in _instance_layouts and not _is_dependent(canon):
+        layout = _type_layout(canon)
+        if layout is not None:
+            _instance_layouts[key] = layout[1]
 
 
 def _split_top(text: str) -> list[str]:
@@ -2564,6 +2753,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     _layout_of_type.clear()
     _views_open.clear()
     _class_layouts.clear()
+    _kept_view_open.clear()
+    _fields_open.clear()
+    _instance_layouts.clear()
+    _instance_owners.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -2788,6 +2981,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)
     ir.owned_args = set(_owned_instance_args)
+    ir.copy_owner_instances = dict(_instance_owners)
     if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT/IN: binary formats -> bytes / typing.BinaryIO
         for params in [m.params for c in ir.classes for m in c.methods] + [f.params for f in ir.functions]:
             for prm in params:

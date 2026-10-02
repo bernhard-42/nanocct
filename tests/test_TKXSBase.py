@@ -151,7 +151,7 @@ def test_the_shape_process_flags_are_a_set_of_operations():
 def test_report_categories():
     _, lines, undefined, _ = report("TKXSBase")
     assert all(any(k in line for k in ("IFSelect_", "MoniTool_Element::", "TransferBRep::")) for line in undefined)
-    assert len(lines) == 45
+    assert len(lines) == 49
     counts: dict[str, int] = {}
     for line in lines:
         counts[line.split("\t")[0]] = counts.get(line.split("\t")[0], 0) + 1
@@ -160,7 +160,8 @@ def test_report_categories():
     # Standard_Failure, which is a Python exception type and never a value (R-UNBOUND-TYPE); MoniTool_Timer::Dictionary() returns a map over
     # const char* keys, which no binder instantiates (R-UNBOUND-TYPE for binder instantiations, 2026-09-30)
     assert counts == {"raw-pointer": 19, "overload-collision": 12, "iterator": 5,
-                      "rvalue": 3, "template": 3, "conversion": 1, "unbound-type": 2}
+                      "rvalue": 3, "template": 3, "conversion": 1, "unbound-type": 2,
+                      "copy": 4}         # Interface_FileParameter/MSG/ParamList/ParamSet free their strings (R-COPY, 2026-10-02)
     assert not any("bitset" in line for line in lines)                           # closed by R-BITSET (2026-09-22)
     # the rvalue lines are the && twins of bound const& overloads, so nothing is lost
     assert all("SetShapeFixParameters" in line for line in lines if line.startswith("rvalue"))

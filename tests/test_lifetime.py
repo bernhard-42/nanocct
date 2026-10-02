@@ -774,6 +774,96 @@ def test_a_copy_keeps_the_original():
     assert out == ["True True"]
 
 
+def test_a_copy_keeps_what_the_original_stored_before_it_stores_another():
+    """The copy shares the pointer the original stored through `Initialize` (R-METHOD-KEEP's slot); the original's next
+    `Initialize` drops that argument from its slot. So the copy keeps what the original's slots hold when it is made
+    (R-COPY), not only the original: it computed against freed memory (heap-use-after-free under ASan, a different curve
+    on a release build)."""
+    out = _ok(_run("""
+        from nanocct import Extrema, Geom2d, Geom2dAdaptor, gp
+        def circle(r):
+            return Geom2dAdaptor.Geom2dAdaptor_Curve(Geom2d.Geom2d_Circle(gp.gp_Ax2d(gp.gp_Pnt2d(0, 0), gp.gp_Dir2d(1, 0)), r))
+        def line(y):
+            return Geom2dAdaptor.Geom2dAdaptor_Curve(Geom2d.Geom2d_Line(gp.gp_Pnt2d(0, y), gp.gp_Dir2d(1, 0)), -10.0, 10.0)
+        two_pi = 6.283185307179586
+        ext = Extrema.Extrema_ExtCC2d()
+        ext.Initialize(circle(1.0), 0.0, two_pi, 1e-9, 1e-9)
+        copy = Extrema.Extrema_ExtCC2d(ext)
+        ext.Initialize(circle(2.0), 0.0, two_pi, 1e-9, 1e-9)
+        collect()
+        others = [line(9.0) for _ in range(500)]
+        copy.Perform(circle(5.0), 0.0, two_pi)
+        print(copy.IsDone(), copy.IsParallel())          # concentric circles
+    """))
+    assert out == ["True True"]
+
+
+# ---- R-COPY: no copy of a class whose destructor frees what its pointers point to -------------------------------------
+
+def test_an_owner_cannot_be_copied():
+    """A copy shares the raw pointers, and the second destructor frees them again: `IntPatch_PrmPrmIntersection_T3Bits`
+    deletes its bit array, `BOPAlgo_PaveFiller`/`BOPAlgo_Builder` clear what they own, `IntPatch_Polyhedron` and
+    `LocOpe_CSIntersector` destroy theirs (double free / use after free, all five crashed on release builds). Such a
+    class has no copy constructor in Python -- `Cls(other)` is a TypeError."""
+    out = _ok(_run("""
+        from nanocct import BOPAlgo, BRepPrimAPI, Geom, GeomAdaptor, IntPatch, LocOpe, gp
+        objects = [IntPatch.IntPatch_PrmPrmIntersection_T3Bits(64), BOPAlgo.BOPAlgo_PaveFiller(), BOPAlgo.BOPAlgo_Builder(),
+                   IntPatch.IntPatch_Polyhedron(GeomAdaptor.GeomAdaptor_Surface(Geom.Geom_Plane(gp.gp_Pln())), 4, 4),
+                   LocOpe.LocOpe_CSIntersector(BRepPrimAPI.BRepPrimAPI_MakeBox(2, 2, 2).Shape())]
+        for obj in objects:
+            try:
+                copy = type(obj)(obj)
+                del copy
+                collect()
+                print(type(obj).__name__, "copied")
+            except TypeError:
+                print(type(obj).__name__, "TypeError")
+    """))
+    assert out == [f"{name} TypeError" for name in ("IntPatch_PrmPrmIntersection_T3Bits", "BOPAlgo_PaveFiller", "BOPAlgo_Builder",
+                                                     "IntPatch_Polyhedron", "LocOpe_CSIntersector")]
+
+
+def test_an_owner_returned_by_const_reference_is_not_copied():
+    """`BinObjMgt_Persistent::GetAsciiString(s)` returns `*this` as a `const&`: R-RESULT's copy shared the data blocks, and
+    the copy's destructor (`Destroy()`) freed them under the original. An owner's `const&` comes back by reference."""
+    out = _ok(_run("""
+        from nanocct.BinObjMgt import BinObjMgt_Persistent
+        from nanocct.TCollection import TCollection_AsciiString
+        p = BinObjMgt_Persistent()
+        p.PutAsciiString(TCollection_AsciiString("hello"))
+        r = p.GetAsciiString(TCollection_AsciiString())
+        print(r is p, p.Length())
+        del r
+        collect()
+        p.PutAsciiString(TCollection_AsciiString("world"))
+        print(p.Length())
+    """))
+    assert out == ["True 6", "14"]
+
+
+# ---- R-FIELD: a raw pointer member is read-only; it reads as a copy ------------------------------------------------------
+
+def test_a_pointer_member_cannot_be_assigned():
+    """`BRepMesh_FaceChecker::Segment::Point1` is a `gp_Pnt2d*`, `V3d_ImageDumpOptions::LightName` a `const char*`: the
+    setter stored the address of the Python object (or of the str's buffer) without keeping it, and the next read went
+    through freed memory (heap-use-after-free under ASan). Both are read-only now; a null pointer reads as None."""
+    out = _ok(_run("""
+        from nanocct.BRepMesh import BRepMesh_FaceChecker
+        from nanocct.V3d import V3d_ImageDumpOptions
+        from nanocct.gp import gp_Pnt2d
+        segment, options = BRepMesh_FaceChecker.Segment(), V3d_ImageDumpOptions()
+        for obj, name, value in ((segment, "Point1", gp_Pnt2d(3.0, 4.0)), (options, "LightName", "light-" + str(12345) * 50)):
+            try:
+                setattr(obj, name, value)
+                print(name, "assigned")
+            except AttributeError:
+                print(name, "read-only")
+        collect()
+        print(segment.Point1, repr(options.LightName))
+    """))
+    assert out == ["Point1 read-only", "LightName read-only", "None ''"]
+
+
 # ---- R-OWNER: a TDF_Label, TDF_Attribute or TDF_Data keeps its TDF_Data and that data's TDocStd_Document ---------------
 
 XCAF = BOX + """

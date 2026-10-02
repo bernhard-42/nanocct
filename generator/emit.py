@@ -350,7 +350,7 @@ class Emitter:
         # a `const T&` of a class whose copy drops state comes back by reference (R-RESULT, [not_value_copy]): it may be an object
         # Python already has, which must not collect producers -- it could be one of them (keep_view decides the same at
         # compile time for a class that cannot be copied at all)
-        by_reference = m.result.rstrip().endswith("&") and _names_not_value_copy(m.result)
+        by_reference = m.result.rstrip().endswith("&") and (_names_not_value_copy(m.result) or m.result_by_reference)
         if m.result != "void" and (m.result_owned or m.result_view and not by_reference):
             patients = [] if m.result_owned else ([1] if method else []) + [positions[i] for i in m.result_keeps if i in positions]
             if m.result_owned or len(patients) > 0:
@@ -428,6 +428,16 @@ class Emitter:
             # handle it meets); the prvalue initialises a heap object held by a handle, as in every Transient constructor
             body.append(f"opencascade::handle<{m.result_class}> nanocct_result(new {m.result_class}({callee}));")
             results.append("nanocct_result")
+        elif m.result_by_reference and len(outs) == 0 and not any(p.stream == StreamKind.OUT for p in m.params):
+            # R-COPY: `auto` would copy the result; the reference goes out as it is (reference_internal, _method)
+            body.append(f"return {callee};")
+            return f"[]({', '.join(lam_params)}) -> {m.result} {{ {' '.join(body)} }}"
+        elif m.result_on_heap:
+            # R-COPY: nanobind would move the value into its own object -- for a class without its own move or copy
+            # constructor a copy sharing the pointers the temporary's destructor frees; the prvalue initialises the heap
+            # object instead (guaranteed copy elision), which Python owns (take_ownership)
+            body.append(f"auto *nanocct_result = new std::remove_cv_t<{m.result}>({callee});")
+            results.append("nanocct_result")
         elif m.result != "void":
             body.append(f"auto nanocct_result = {callee};")
             results.append("nanocct_result")
@@ -478,9 +488,10 @@ class Emitter:
             # reference_internal made every call fail ("Unable to convert function return value")
             policy = ", nb::rv_policy::reference"
         if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
-            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h) or
-            # when its copy constructor does not copy the state (overrides.toml [not_value_copy])
-            if _names_not_value_copy(m.result):
+            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h), when its
+            # copy constructor does not copy the state (overrides.toml [not_value_copy]) or when the copy would share what
+            # the destructor frees (R-COPY)
+            if _names_not_value_copy(m.result) or m.result_by_reference:
                 policy = ", nb::rv_policy::reference" if m.is_static else ", nb::rv_policy::reference_internal"
             else:
                 policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
@@ -488,11 +499,21 @@ class Emitter:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._keep_slots(m)}{self._extras(doc, m.params, False, True)})'
-        if has_out or wrap or m.via_using != "" or m.force_lambda or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in m.params):
+        if (m.result_on_heap or m.result_by_reference) and has_out:
+            # R-COPY: the result would sit in a tuple, whose caster takes one return policy for every element (and the
+            # lambda's `auto` copies it)
+            self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): returns {m.result} with out-parameters, and its "
+                               f"copy would share the pointers its destructor frees (R-COPY) -> method skipped")
+            return None
+        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
             ptr_policy = policy if m.result_kind == ResultKind.PTR_CLASS else ""     # a lambda copies class results (auto)
+            if m.result_on_heap:
+                ptr_policy = ", nb::rv_policy::take_ownership"
+            elif m.result_by_reference:
+                ptr_policy = policy
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
                 # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
                 ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
@@ -563,7 +584,10 @@ class Emitter:
         # (nb_class.h, new_::execute): the nurse is the result, 0 -- in __init__ that is None, which keep_alive ignores
         # (nb_type.cpp, keep_alive_py) -- and the arguments count from 2 in both
         nurse = 0 if cls.is_transient else 1
-        keep += "".join(f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
+        # R-COPY: an argument the object may copy pointers out of (a copy constructor, TDF_ChildIterator(label)) is kept with
+        # what its slots hold now (nanocct::keep_view_arg): its next Initialize must not free what the new object points to
+        keep += "".join(f", nb::call_policy<nanocct::keep_view_arg<{nurse}, {2 + i}>>()" if p.kept_view
+                        else f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
         if cls.is_transient:
             fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
         elif special or type_name is not None:
@@ -677,6 +701,19 @@ class Emitter:
                 self.report.append(f"{key}: template argument {pointers[0]} is a raw pointer -> instantiation skipped")
                 self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                 return
+            owner = self.ir.copy_owner_instances.get(key, "")
+            if owner != "" and not BINDERS[template].get("wraps", False):
+                # R-COPY: a container copies its elements (Value(), Append, its own copy) -- each copy would share what the
+                # element's destructor frees
+                self.report.append(f"{key}: its elements' copy would share the pointers the destructor of {owner} may free (R-COPY) "
+                                   f"-> instantiation skipped")
+                self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
+                return
+            flags = ""
+            if owner != "":
+                self.report.append(f"{key}: no constructor from {args[0]} -- the copy would share the pointers the destructor of "
+                                   f"{owner} may free (R-COPY)")
+                flags = ", false"                           # bind_NCollection_Shared<T, CopyT = false>
             if any(a in self.ir.owned_args for a in args):
                 self.needs_ocaf = True                      # R-OWNER: the binder keeps the OCAF owners of these elements
             home = "NCollection"                            # every instantiation lives in nanocct.NCollection
@@ -684,7 +721,7 @@ class Emitter:
                 home = self.ir.name
             name = _py_identifier(key)
             scope = "m" if home == self.ir.name else f'nb::module_::import_("nanocct._{self.toolkit_of[home]}.{home}")'
-            lines.append(f'    {{ nb::module_ home = {scope}; {BINDERS[template]["binder"]}<{", ".join(args)}>(home, "{name}"); }}')
+            lines.append(f'    {{ nb::module_ home = {scope}; {BINDERS[template]["binder"]}<{", ".join(args)}{flags}>(home, "{name}"); }}')
             self.templates[key] = {"toolkit": self.toolkit_of[self.ir.name], "package": home, "name": name, "by": self.ir.name}
             self._note_types(*args)
 
@@ -910,20 +947,27 @@ class Emitter:
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
                 # R-RESULT: no owner to tie a reference to
-                policy = ", nb::rv_policy::reference" if _names_not_value_copy(fn.result) else f", nanocct::cref_policy<{fn.result}, false>{{}}"
+                policy = (", nb::rv_policy::reference" if _names_not_value_copy(fn.result) or fn.result_by_reference
+                          else f", nanocct::cref_policy<{fn.result}, false>{{}}")
             qualified = fn.qualified if fn.qualified != "" else fn.name
             py, doc = py_safe(fn.name), fn.doc
             if fn.suffix != "":
                 py += fn.suffix
                 doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanocct R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
-            if fn.result_kind == ResultKind.VALUE_TRANSIENT or any(
+            if (fn.result_on_heap or fn.result_by_reference) and any(p.is_out or p.stream == StreamKind.OUT for p in fn.params):
+                self.report.append(f"{qualified}({self._sig(fn.params)}): returns {fn.result} with out-parameters, and its "
+                                   f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")
+                continue
+            if fn.result_kind == ResultKind.VALUE_TRANSIENT or fn.result_on_heap or any(
                     p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
                 # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL need the lambda too,
                 # and so does a Transient returned by value (R-RESULT: into a handle, never a nanobind-owned copy)
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
-                                   result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc)
-                ptr_policy = policy if fn.result_kind == ResultKind.PTR_CLASS else ""
+                                   result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc,
+                                   result_on_heap=fn.result_on_heap, result_by_reference=fn.result_by_reference)
+                ptr_policy = (", nb::rv_policy::take_ownership" if fn.result_on_heap
+                              else policy if fn.result_kind == ResultKind.PTR_CLASS or fn.result_by_reference else "")
                 module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{ptr_policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, True, False)});')
                 continue
             module_fns.append(f'    {self._module(fn.scope)}.def("{py}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, False, False)});')
@@ -970,6 +1014,8 @@ class Emitter:
             return None
         for name in ("Value", "Current"):
             get = live.get((name, 0))
+            if get is not None and (get.result_by_reference or get.result_on_heap):
+                return None          # R-COPY: an element whose copy would share what its destructor frees is not copied out
             if get is not None and get.result_kind in (ResultKind.VALUE, ResultKind.VALUE_TRANSIENT) and get.result != "void":
                 return name
             if get is not None and get.result_kind == ResultKind.OTHER and self._copyable_const_ref(get.result):
@@ -1144,8 +1190,13 @@ class Emitter:
         # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
         # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
         if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-            # R-CTOR-KEEP: the copy of a class holding pointers shares them, so it keeps the original alive
-            define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
+            if c.copy_owner != "":
+                # R-COPY: the copy would share the pointers a destructor frees -- the second destructor frees them again
+                self.report.append(f"{c.name}: no copy constructor -- an implicit copy would share the pointers the destructor of "
+                                   f"{c.copy_owner} may free (R-COPY)")
+            else:
+                # R-COPY: the copy of a class holding pointers shares them, so it keeps the original alive (and what its slots hold)
+                define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
         for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
             self._note_types(f.type)
             dd = _cpp_doc(f.doc)
@@ -1163,6 +1214,9 @@ class Emitter:
                 getter = f"[](const {B} &self) {{ return static_cast<{f.type}>(self.{f.name}); }}"
                 setter = f"[]({B} &self, {f.type} v) {{ self.{f.name} = v; }}"
                 define.append(f'    {cls_expr}.def_prop_rw("{py_safe(f.name)}", {getter}, {setter}{", " + dd if dd is not None else ""});')
+                continue
+            if f.is_pointer:               # R-FIELD: a raw pointer member is read-only, a copy of what it points to
+                define.append(f'    nanocct_def_pointer_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
                 continue
             define.append(f'    nanocct_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
         for k in c.statics:                # R-STATIC-DATA: a read-only static property returning the value

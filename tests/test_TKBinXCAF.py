@@ -165,7 +165,10 @@ def test_each_attribute_driver_names_the_attribute_it_persists(driver, attribute
     assert driver(Message.Message.DefaultMessenger_s()).SourceType().Name() == attribute
 
 
-def test_report_is_empty():
+def test_report_is_only_the_drivers_without_a_copy():
     """Two packages, 18 classes, nothing unbound -- the drivers only override AttributeDrivers, and Write/Read come
-    from BinDrivers, which TKBin already binds."""
-    assert [line for line in REPORT.read_text().splitlines() if not line.startswith("#")] == []
+    from BinDrivers, which TKBin already binds. Two have no copy constructor: their BinObjMgt_Persistent frees its data
+    blocks (R-COPY)."""
+    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
+    assert [line.split("\t")[2].split(":")[0] for line in lines] == ["BinXCAFDrivers_DocumentRetrievalDriver", "BinXCAFDrivers_DocumentStorageDriver"]
+    assert all(line.startswith("copy\t") for line in lines)

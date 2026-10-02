@@ -786,15 +786,16 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
 // ---------------------------------------------------------------------------------------------------
 // NCollection_Shared<T> (: Standard_Transient, T): T made a Standard_Transient. nanobind base = T, which
 // is NOT at offset 0 -> the stored pointer is the T subobject (mi_traits); T's API is inherited,
-// the Transient part is bound through adjusting downcasts.
-template <typename T> void bind_NCollection_Shared(nb::module_ &m, const char *name) {
+// the Transient part is bound through adjusting downcasts. CopyT = false (R-COPY, decided by the generator): T's copy
+// would share what T's destructor frees (NCollection_EBTree's nodes), so there is no constructor from a T.
+template <typename T, bool CopyT = true> void bind_NCollection_Shared(nb::module_ &m, const char *name) {
     static_assert(owners_not_supported<T>, "R-OWNER: the Shared binder does not keep the owners of what it wraps");
     using S = NCollection_Shared<T>;
     namespace D = nanocct_doc::NCollection_Shared;
     nb::class_<S, T> c(m, name, D::class_doc);
     if constexpr (std::is_default_constructible_v<T>)
         c.def(nb::new_([]() { return opencascade::handle<S>(new S()); }), D::ctor);
-    if constexpr (std::is_copy_constructible_v<T>)          // NCollection_Shared<Standard_Mutex>: a mutex cannot be copied
+    if constexpr (CopyT && std::is_copy_constructible_v<T>)  // NCollection_Shared<Standard_Mutex>: a mutex cannot be copied
         c.def(nb::new_([](const T &t) { return opencascade::handle<S>(new S(t)); }), nb::arg("theOther"), D::ctor);
     def_transient_members<S, T>(c);
 }

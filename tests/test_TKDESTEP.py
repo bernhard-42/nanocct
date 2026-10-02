@@ -194,8 +194,9 @@ def test_report_categories():
     assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
                       "header": 1, "stream": 1,
                       "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER)
-                      "null-bool": 1}             # StepData_SelectType (R-NULL-BOOL, 2026-09-30)
-    assert len(lines) == 16
+                      "null-bool": 1,             # StepData_SelectType (R-NULL-BOOL, 2026-09-30)
+                      "copy": 1}                  # STEPCAFControl_Reader: its destructor frees what it points to (R-COPY, 2026-10-02)
+    assert len(lines) == 17
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
     # only the package is asserted here; the portable categories above are what this test is really about
     assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound

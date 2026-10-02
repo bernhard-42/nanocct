@@ -22,6 +22,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("null-bool", r"__bool__ = not IsNull\(\) added"),
     ("view", r"zero-copy numpy views added"),
     ("lifetime", r"R-CTOR-KEEP could not follow|\(R-RESULT-KEEP\)"),
+    ("copy", r"\(R-COPY\)"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
     ("stream", r"iostream type|not bound as __str__"),
     ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),

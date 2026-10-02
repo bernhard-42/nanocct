@@ -838,6 +838,90 @@ private:
   TDF_Label myLabel;
 };
 
+//! R-COPY: a destructor that frees what a pointer member points to (IntPatch_PrmPrmIntersection_T3Bits deletes p) makes
+//! the class an owner -- itself, or as a by-value member of another class: no implicit copy, a `const&` result by reference,
+//! a value result built on the heap. A class with its own copy constructor is trusted; an empty destructor frees nothing; a
+//! destructor in a .cxx (Adaptor3d_Curve's) counts only for a class whose own part holds a pointer.
+class Rules_Owner
+{
+public:
+  Rules_Owner() : myData(new int[4]()) {}
+  ~Rules_Owner() { delete[] myData; }
+  int First() const { return myData[0]; }
+
+private:
+  int* myData;
+};
+
+class Rules_OwnerMember
+{
+public:
+  Rules_OwnerMember() = default;
+
+private:
+  Rules_Owner myOwner;
+};
+
+class Rules_OwnerTrusted
+{
+public:
+  Rules_OwnerTrusted() : myData(new int[4]()) {}
+  Rules_OwnerTrusted(const Rules_OwnerTrusted&) : myData(new int[4]()) {}
+  ~Rules_OwnerTrusted() { delete[] myData; }
+
+private:
+  int* myData;
+};
+
+class Rules_EmptyDtor
+{
+public:
+  Rules_EmptyDtor() = default;
+  ~Rules_EmptyDtor() {}
+
+private:
+  const gp_Pnt* myPnt = nullptr;
+};
+
+class Rules_Interface
+{
+public:
+  Rules_Interface() = default;
+  virtual ~Rules_Interface();
+  virtual int Id() const { return 0; }
+};
+
+class Rules_ViewImpl : public Rules_Interface
+{
+public:
+  Rules_ViewImpl() = default;
+
+private:
+  const gp_Pnt* myPnt = nullptr;
+};
+
+class Rules_OwnerSource
+{
+public:
+  Rules_OwnerSource() = default;
+  const Rules_Owner& Ref() const { return myOwner; }
+  Rules_Owner Make() const { return Rules_Owner(); }
+
+private:
+  Rules_Owner myOwner;
+};
+
+//! R-FIELD: a raw pointer member is read-only, a copy of what it points to; a Transient, an owner (R-COPY) and a class
+//! that cannot be copied are not bound.
+struct Rules_Fields
+{
+  const gp_Pnt*        Pnt    = nullptr;
+  const char*          Name   = nullptr;
+  Rules_Owner*         Owner  = nullptr;
+  Standard_Transient*  Any    = nullptr;
+  Rules_NoCopyInner*   NoCopy = nullptr;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -910,7 +994,9 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper",
                                "Rules_KeepBase", "Rules_KeepViaBase", "Rules_KeepViaTypedef", "Rules_KeepViaMember", "Rules_KeepVoid",
                                "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepMethods", "Rules_KeepViaPack",
-                               "Rules_View", "Rules_ViewSource", "Rules_ViewHolder", "Rules_Ocaf"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_View", "Rules_ViewSource", "Rules_ViewHolder", "Rules_Ocaf",
+                               "Rules_Owner", "Rules_OwnerMember", "Rules_OwnerTrusted", "Rules_EmptyDtor", "Rules_Interface",
+                               "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1043,12 +1129,49 @@ def test_views_keep_their_producers_and_ocaf_types_their_owners(tmp_path_factory
     assert "keep_view" not in lines["Copy"]
     assert "nanocct_def_iter<Rules_ViewSource, true>(" in cpp
     assert "nanocct_implicit_copy_ctor<Rules_View, true>(" in cpp
-    assert "nb::init<const Rules_View &>(), nb::keep_alive<1, 2>()" in cpp
+    assert "nb::init<const Rules_View &>(), nb::call_policy<nanocct::keep_view_arg<1, 2>>()" in cpp     # R-COPY: and its slots
     lines = bindings("Rules_Ocaf")
     assert "nb::call_policy<nanocct::keep_view<TDF_Label, true, 0, -1>>()" in lines["Label"]
     assert "nb::call_policy<nanocct::keep_view<NCollection_Sequence<TDF_Label> &, true, 2, -1>>()" in lines["Labels"]
     assert re.search(r"nb::call_policy<nanocct::keep_view<(occ|opencascade)::handle<TDF_Attribute>, true, 0, -1>>\(\)", lines["Attribute"])
     assert '#include "nanocct_ocaf.h"' in cpp
+
+
+def test_copies_of_owners_are_never_made(tmp_path_factory):
+    """R-COPY: a class whose implicit copy would share a pointer a destructor may free gets no copy constructor, a `const&`
+    of it comes back by reference and a value is built on the heap; a view keeps its copy (which keeps the original and
+    what its slots hold). R-FIELD: a raw pointer member is a read-only copy -- not bound for a Transient, an owner or a class
+    the compiler cannot copy (the copyability probe)."""
+    ir = rules_ir_of(tmp_path_factory, "occt_copy")
+    owners = {c.name: c.copy_owner for c in ir.classes
+              if c.name.startswith(("Rules_Owner", "Rules_EmptyDtor", "Rules_Interface", "Rules_ViewImpl"))}
+    assert owners == {"Rules_Owner": "Rules_Owner", "Rules_OwnerMember": "Rules_OwnerMember::myOwner -> Rules_Owner",
+                      "Rules_OwnerTrusted": "", "Rules_EmptyDtor": "", "Rules_Interface": "", "Rules_ViewImpl": "",
+                      "Rules_OwnerSource": "Rules_OwnerSource::myOwner -> Rules_Owner"}
+    ref, make = _method(ir, "Rules_OwnerSource", "Ref"), _method(ir, "Rules_OwnerSource", "Make")
+    assert (ref.result_by_reference, ref.result_on_heap, make.result_by_reference, make.result_on_heap) == (True, False, False, True)
+    fields = {f.name: f.is_pointer for f in next(c for c in ir.classes if c.name == "Rules_Fields").fields}
+    assert fields == {"Pnt": True, "Name": True}
+    assert "Rules_Fields::Owner: field is a raw pointer to Rules_Owner, whose copy would share the pointers its destructor frees (R-COPY) -> not bound" in ir.report
+    assert "Rules_Fields::Any: field is a raw pointer to a Transient, which a handle may not own (R-FIELD) -> not bound" in ir.report
+    assert "Rules_Fields::NoCopy: field is a raw pointer to Rules_NoCopyInner, which cannot be copied (R-FIELD) -> not bound" in ir.report
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules",
+                                "Rules_Interface": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    for cls in ("Rules_Owner", "Rules_OwnerMember", "Rules_OwnerSource"):
+        assert f"nanocct_implicit_copy_ctor<{cls}" not in cpp
+        line = next(line for line in em.report if line.startswith(f"{cls}: no copy constructor"))
+        assert categorize(line) == "copy"
+    for cls in ("Rules_EmptyDtor", "Rules_ViewImpl"):
+        assert f"nanocct_implicit_copy_ctor<{cls}, true>(" in cpp
+    assert "nanocct_implicit_copy_ctor<Rules_OwnerTrusted" not in cpp and "nb::init<const Rules_OwnerTrusted &>()" in cpp
+    assert re.search(r'\.def\("Ref", static_cast<[^\n]*>\(&Rules_OwnerSource::Ref\), nb::rv_policy::reference_internal', cpp)
+    assert ('.def("Make", [](const Rules_OwnerSource &self) { auto *nanocct_result = new std::remove_cv_t<Rules_Owner>(self.Make()); '
+            'return nanocct_result; }, nb::rv_policy::take_ownership') in cpp
+    assert 'nanocct_def_pointer_field(nb::borrow<nb::class_<Rules_Fields>>(m.attr("Rules_Fields")), "Pnt", &Rules_Fields::Pnt)' in cpp
+    assert 'nanocct_def_pointer_field(nb::borrow<nb::class_<Rules_Fields>>(m.attr("Rules_Fields")), "Name", &Rules_Fields::Name)' in cpp
+    assert '"Owner"' not in cpp and '"Any"' not in cpp and '"NoCopy"' not in cpp
 
 
 def test_kept_constructor_arguments_follow_the_whole_layout(tmp_path_factory):
@@ -1269,7 +1392,7 @@ def test_ir_records_mangled_names(rules_ir):
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
-             "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules", "Rules_KeepBase": "Rules",
+             "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules", "Rules_KeepBase": "Rules", "Rules_Interface": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},

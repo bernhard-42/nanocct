@@ -41,4 +41,7 @@ def test_feature_prism_cut_and_fuse():
     assert BRepFeat.BRepFeat_OK is BRepFeat.BRepFeat_StatusError.BRepFeat_OK and hasattr(LocOpe, "LocOpe_Prism")
     assert type(BRepFeat.BRepFeat_SplitShape(box)).__name__ == "BRepFeat_SplitShape"
     rows = read_report(REPORT)
+    # R-COPY (2026-10-02): the builders and LocOpe_CSIntersector free what their pointers point to -- no copy constructor
+    assert [msg.split(":")[0] for cat, _, msg in rows if cat == "copy"] == ["BRepFeat_Builder", "BRepFeat_MakeCylindricalHole", "LocOpe_CSIntersector"]
+    rows = [row for row in rows if row[0] != "copy"]
     assert all(cat == "undefined" for cat, _, _ in rows) and len(rows) == 5          # only declared-but-undefined members (R-UNDEFINED)

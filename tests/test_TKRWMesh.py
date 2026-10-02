@@ -114,10 +114,14 @@ def test_node_attributes_and_the_name_format():
     assert len(list(RWMesh_NameFormat)) == 7
 
 
-def test_report_is_only_abstract_constructors():
+def test_report_is_only_abstract_constructors_and_copies():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     _, portable, undefined, _ = report("TKRWMesh")
-    assert len(portable) == 0
+    # R-COPY (2026-10-02): no copy constructor where the destructor frees what a pointer points to -- the shape iterators
+    # hold a TopExp_Explorer, whose destructor frees its stack
+    assert [line.split("\t")[2].split(":")[0] for line in portable] == [
+        "RWMesh_EdgeIterator", "RWMesh_FaceIterator", "RWMesh_TriangulationSource", "RWMesh_VertexIterator"]
+    assert all(line.startswith("copy\t") for line in portable)
     assert all(line.startswith("undefined\tRWMesh") for line in undefined)
     # all three are abstract classes: clang emits no complete-object constructor for them
     for cls in (RWMesh_CafReader, RWMesh_TriangulationReader):

@@ -134,7 +134,7 @@ def test_the_de_provider():
     assert DEGLTF_Provider().GetVendor().ToCString() == "OCC"
 
 
-def test_report_is_nine_lines():
+def test_report_is_seventeen_lines():
     """RapidJSON is third-party plumbing: RWGltf_GltfJsonParser derives from rapidjson::GenericDocument, which pulled
     the library's Writer/MemoryPoolAllocator/UTF8 into the package until the namespace was skipped."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
@@ -143,7 +143,10 @@ def test_report_is_nine_lines():
     # 9 since 2026-09-30: FormatParseError(rapidjson::ParseErrorCode) is not bound, no Python value of the type exists (R-UNBOUND-TYPE)
     # 14 since 2026-10-02: RWGltf_GltfMaterialMap keeps the writer it is handed (R-METHOD-KEEP), so the writer, written into,
     # does not keep the map back -- that would be a keep-alive cycle (R-RESULT-KEEP)
-    assert len(lines) == 14
+    # 17 since 2026-10-02: three classes whose destructor frees what their pointers point to have no copy constructor (R-COPY)
+    assert len(lines) == 17
+    assert [line.split("\t")[2].split(":")[0] for line in lines if line.startswith("copy")] == [
+        "RWGltf_GltfLatePrimitiveArray", "RWGltf_GltfMaterialMap", "RWGltf_TriangulationReader"]
     assert sum(line.startswith("lifetime") and "RWGltf_GltfMaterialMap::" in line and "theWriter" in line for line in lines) == 5
     assert sum("rapidjson" in line and "namespace skipped" in line for line in lines) == 4
     assert sum("R-TEMPLATE-BASE" in line for line in lines) == 2   # the two rapidjson bases, dropped

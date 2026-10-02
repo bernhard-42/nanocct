@@ -167,7 +167,9 @@ def test_report_is_the_expected_portable_lines():
     declaration without a symbol."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     _, lines, undefined, _ = report("TKDEOBJ")
-    assert len(lines) == 4        # 3 until RWObj_MtlReader was skipped (overrides.toml, 2026-09-23)
+    assert len(lines) == 6        # 3 until RWObj_MtlReader was skipped (overrides.toml, 2026-09-23); 4 until R-COPY
+    # R-COPY (2026-10-02): both hold a FILE* their destructor closes
+    assert [line.split("\t")[2].split(":")[0] for line in lines if line.startswith("copy")] == ["RWObj_ObjMaterialMap", "RWObj_ObjWriterContext"]
     assert all("RWObj_Reader::RWObj_Reader()" in line for line in undefined)
     assert sum(line.startswith("raw-pointer") and "reference to pointer" in line for line in lines) == 2
     assert any("RWObj_CafReader: non-public base RWObj_IShapeReceiver dropped; its members are not bound" in line

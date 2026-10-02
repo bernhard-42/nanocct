@@ -78,5 +78,8 @@ def test_storage_driver_options_and_named_shape_driver():
     assert named_driver.IsWithTriangles() is False
 
 
-def test_report_is_empty():
-    assert [line for line in REPORT.read_text().splitlines() if not line.startswith("#")] == []
+def test_report_is_only_the_drivers_without_a_copy():
+    """R-COPY: the drivers hold a BinObjMgt_Persistent, whose destructor frees its data blocks -- no copy constructor."""
+    lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
+    assert [line.split("\t")[2].split(":")[0] for line in lines] == ["BinDrivers_DocumentRetrievalDriver", "BinDrivers_DocumentStorageDriver"]
+    assert all(line.startswith("copy\t") for line in lines)

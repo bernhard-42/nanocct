@@ -76,6 +76,9 @@ def test_ais_objects_dimensions_and_a_driverless_viewer():
 def test_report_is_small_and_known():
     lines = [l for l in REPORT.read_text().splitlines() if not l.startswith("#")]
     cats = {l.split("\t")[0] for l in lines}
-    assert "misc" not in cats and len(lines) < 60
+    # R-COPY (2026-10-02): 63 classes without a copy constructor -- the AIS objects (SelectMgr_SelectableObject frees
+    # its selections), the Select3D sets, V3d_View, ...
+    assert "misc" not in cats and len([l for l in lines if not l.startswith("copy")]) < 60
+    assert any(l.startswith("copy\tAIS\tAIS_Shape: no copy constructor") for l in lines)
     assert any(l.startswith("raw-pointer\tV3d\tV3d_CircularGrid::V3d_CircularGrid(): param 'aViewer': reference to pointer") for l in lines)
     assert any(l.startswith("template\tPrs3d\tPrs3d_Point: template (not bound)") for l in lines)

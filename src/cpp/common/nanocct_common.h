@@ -45,6 +45,7 @@
 #include <string>
 #include <typeinfo>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <Standard_Failure.hxx>
@@ -69,29 +70,32 @@ struct mi_entry {
     void *(*from_transient)(Standard_Transient *);       // Transient subobject of an S -> stored pointer
 };
 
-// ONE registry for all extension modules. Every toolkit is its own shared library, and an inline function's static is
-// one per library there (hidden visibility): a type registered by _TKMath (NCollection_HArray1<int>) was unknown to the
-// caster of every other toolkit, so it was refused where a handle<Standard_Transient> is expected (2026-09-30). The
-// first module to need it creates the registry and leaves it on the `nanocct` package as a capsule; every module finds
-// the same one there. All modules are built by the same compiler with the same flags, so the layout agrees; the
-// registry is never freed (the modules are never unloaded). Called with the GIL held (module init, the casters).
+// ONE object of type T for all extension modules. Every toolkit is its own shared library, and an inline function's
+// static is one per library there (hidden visibility): a type registered by _TKMath (NCollection_HArray1<int>) was
+// unknown to the caster of every other toolkit, so it was refused where a handle<Standard_Transient> is expected
+// (2026-09-30). The first module to need it creates the object and leaves it on the `nanocct` package as a capsule
+// (attribute `attr`); every module finds the same one there. All modules are built by the same compiler with the same
+// flags, so the layout agrees; the object is never freed (the modules are never unloaded). The first call of each
+// module needs the GIL (it imports `nanocct`); later calls only read the cached pointer.
+template <typename T> T &nanocct_shared(const char *attr, const char *capsule) {
+    static T *obj = nullptr;
+    if (obj == nullptr) {
+        nb::object pkg = nb::module_::import_("nanocct");
+        if (nb::hasattr(pkg, attr))
+            obj = static_cast<T *>(PyCapsule_GetPointer(pkg.attr(attr).ptr(), capsule));
+        else {
+            obj = new T();
+            pkg.attr(attr) = nb::steal(PyCapsule_New(obj, capsule, nullptr));
+        }
+    }
+    return *obj;
+}
+// ONE MI registry for all extension modules (nanocct_shared). Called with the GIL held (module init, the casters).
 struct mi_registry {
     std::unordered_map<std::string, mi_entry> by_name;   // key: typeid(S).name()
     std::vector<mi_entry> list;
 };
-inline mi_registry &nanocct_mi_registry() {
-    static mi_registry *reg = nullptr;
-    if (reg == nullptr) {
-        nb::object pkg = nb::module_::import_("nanocct");
-        if (nb::hasattr(pkg, "_mi_registry"))
-            reg = static_cast<mi_registry *>(PyCapsule_GetPointer(pkg.attr("_mi_registry").ptr(), "nanocct._mi_registry"));
-        else {
-            reg = new mi_registry();
-            pkg.attr("_mi_registry") = nb::steal(PyCapsule_New(reg, "nanocct._mi_registry", nullptr));
-        }
-    }
-    return *reg;
-}
+inline mi_registry &nanocct_mi_registry() { return nanocct_shared<mi_registry>("_mi_registry", "nanocct._mi_registry"); }
 inline std::unordered_map<std::string, mi_entry> &nanocct_mi_by_name() { return nanocct_mi_registry().by_name; }
 inline std::vector<mi_entry> &nanocct_mi_list() { return nanocct_mi_registry().list; }
 
@@ -270,6 +274,80 @@ template <typename T> struct owner_target { using type = T; };
 template <typename T> struct owner_target<opencascade::handle<T>> { using type = T; };
 template <typename R>
 using owner_target_t = typename owner_target<std::remove_cv_t<std::remove_pointer_t<std::remove_cv_t<std::remove_reference_t<R>>>>>::type;
+
+// R-METHOD-KEEP: a method argument the object can keep the address of (Extrema_ExtPS::Initialize(S, ...) stores &S) lives
+// in a slot of the object -- one slot per (declaration, parameter). A call stores its argument there and releases what the
+// slot held, so `for s in surfaces: ext.Initialize(s, ...)` keeps one surface, not all of them (nb::keep_alive would keep
+// every one, and its duplicate check walks the whole list on each call). The slots of all objects are in ONE table for all
+// extension modules (nanocct_shared: a copy made by one toolkit must see the slots a method of another toolkit filled,
+// R-COPY), found by the object's PyObject*, created on first use; the entry, and with it the arguments, goes through
+// nb::keep_alive_cb, which nanobind runs after the object's C++ destructor (that destructor still sees its arguments). A
+// slot is named by the address of a variable of the generated file (slot_tag<Tag>, Tag: the file's own type) and the
+// slot's number in that file. A mutex protects the table, not the GIL (free-threading).
+using slot_key = std::pair<const void *, size_t>;
+struct slot_registry {
+    std::mutex mutex;
+    std::unordered_map<PyObject *, std::vector<std::pair<slot_key, PyObject *>>> slots;   // owner -> (slot, argument)
+};
+inline slot_registry &slots() { return nanocct_shared<slot_registry>("_slot_registry", "nanocct._slot_registry"); }
+template <typename Tag> struct slot_tag {
+    static inline char id = 0;                            // not const: never merged with another file's
+};
+inline void release_slots(void *owner) noexcept {
+    std::vector<std::pair<slot_key, PyObject *>> held;
+    {
+        slot_registry &reg = slots();
+        std::lock_guard<std::mutex> lock(reg.mutex);
+        auto it = reg.slots.find(static_cast<PyObject *>(owner));
+        if (it != reg.slots.end()) {
+            held.swap(it->second);
+            reg.slots.erase(it);
+        }
+    }
+    for (auto &entry : held)                              // outside the lock: an argument's release can run Python code
+        Py_DECREF(entry.second);
+}
+// R-COPY / R-RESULT-KEEP: the nurse may hold pointers copied out of the patient -- a copy of it, a view it produced --
+// and those may point into what the patient's slots hold now. A slot drops its argument when the patient stores the next
+// one (ext.Initialize(c2) after cp = Extrema_ExtCC2d(ext)), so keeping the patient is not enough: the nurse keeps the
+// arguments themselves (accumulating, nb::keep_alive_obj; never itself).
+inline void keep_slots_of(PyObject *nurse, PyObject *patient) {
+    std::vector<PyObject *> held;
+    {
+        slot_registry &reg = slots();
+        std::lock_guard<std::mutex> lock(reg.mutex);
+        auto it = reg.slots.find(patient);
+        if (it == reg.slots.end())
+            return;
+        for (auto &entry : it->second) {
+            Py_INCREF(entry.second);
+            held.push_back(entry.second);
+        }
+    }
+    for (PyObject *argument : held) {
+        if (argument != nurse)
+            nb::keep_alive_obj(nurse, argument);
+        Py_DECREF(argument);
+    }
+}
+// keep_alive_obj and keep_slots_of together: the nurse may point into the patient and into what the patient points to
+inline void keep_view_of(PyObject *nurse, PyObject *patient) {
+    if (patient == nurse)
+        return;
+    nb::keep_alive_obj(nurse, patient);
+    keep_slots_of(nurse, patient);
+}
+// R-COPY: keep_view_of as a call policy, numbered like nb::keep_alive (0 is the result, 1 self, nb::new_'s arguments count
+// from 2): a copy keeps its original, a constructor an argument it copies pointers out of (TDF_ChildIterator(label)). A
+// None nurse (nb::new_'s no-op __init__) keeps nothing.
+template <size_t Nurse, size_t Patient> struct keep_view_arg {
+    static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
+    static void postcall(PyObject **args, size_t, nb::handle ret) {
+        PyObject *nurse = Nurse == 0 ? ret.ptr() : args[Nurse - 1];
+        if (nurse != nullptr && nurse != Py_None)
+            keep_view_of(nurse, args[Patient - 1]);
+    }
+};
 } // namespace nanocct
 
 // R-ITER (Design.md 2c): a class with More()/Next() and a parameterless Value() or Current() is its own Python
@@ -302,7 +380,7 @@ template <typename T, bool View, typename Get> struct nanocct_iter_cursor {
             E value = get(*obj);
             nb::object element = nb::cast(value, nb::rv_policy::copy);
             if constexpr (View)
-                nb::keep_alive_obj(element, owner);
+                nanocct::keep_view_of(element.ptr(), owner);
             if constexpr (nanocct::owners<E>::active)
                 nanocct::owners<E>::keep(element.ptr(), value);
             return nb::typed<nb::object, E>(std::move(element));
@@ -337,17 +415,19 @@ template <typename T> void nanocct_implicit_default_ctor(nb::class_<T> cls) {
 }
 
 // The implicit copy constructor (none declared by the class): bound when it exists (deleted for classes with a
-// reference or non-copyable member). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
-// View (R-CTOR-KEEP): the class holds pointers, which the copy shares, so the copy keeps the original alive
-// (keep_alive<0, 2> through nb::new_, as for R-CTOR-KEEP).
+// reference or non-copyable member) and the generator found it safe (R-COPY: never for a class whose destructor may free
+// a pointer the copy would share). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
+// View (R-COPY): the class holds pointers, which the copy shares, so the copy keeps the original alive and what the
+// original's slots hold now (keep_view_arg<0, 2> through nb::new_, as for R-CTOR-KEEP).
 template <typename T, bool View = false> void nanocct_implicit_copy_ctor(nb::class_<T> cls) {
     if constexpr (std::is_copy_constructible_v<T>) {
         if constexpr (std::is_base_of_v<Standard_Transient, T> && View)
-            cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"), nb::keep_alive<0, 2>());
+            cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"),
+                    nb::call_policy<nanocct::keep_view_arg<0, 2>>());
         else if constexpr (std::is_base_of_v<Standard_Transient, T>)
             cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"));
         else if constexpr (View)
-            cls.def(nb::init<const T &>(), nb::arg("theOther"), nb::keep_alive<1, 2>());
+            cls.def(nb::init<const T &>(), nb::arg("theOther"), nb::call_policy<nanocct::keep_view_arg<1, 2>>());
         else
             cls.def(nb::init<const T &>(), nb::arg("theOther"));
     }
@@ -389,6 +469,26 @@ void nanocct_def_field(nb::class_<C> cls, const char *name, D T::*p, const Extra
         cls.def_rw(name, p, extra...);
     else
         cls.def_ro(name, p, extra...);
+}
+
+// R-FIELD: a raw pointer member (a class, or a `const char*` / `const char16_t*` string) is read-only -- a setter would
+// store the address of a Python object nothing keeps alive -- and reads as a copy of what it points to: a str for a
+// string, an independent object for a class (the generator binds none whose copy would share what its destructor frees),
+// None for a null pointer.
+template <typename C, typename T, typename D, typename... Extra>
+void nanocct_def_pointer_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {
+    static_assert(std::is_pointer_v<D>, "R-FIELD: nanocct_def_pointer_field takes a raw pointer member");
+    using P = std::remove_cv_t<std::remove_pointer_t<D>>;
+    if constexpr (std::is_same_v<P, char> || std::is_same_v<P, char16_t>) {
+        cls.def_prop_ro(name, [p](const C &self) -> const P * { return self.*p; }, extra...);
+    } else {
+        static_assert(std::is_copy_constructible_v<P>, "R-FIELD: the pointee of a bound pointer member must be copyable");
+        cls.def_prop_ro(name, [p](const C &self) -> std::optional<P> {
+            if (self.*p == nullptr)
+                return std::nullopt;
+            return *(self.*p);
+        }, extra...);
+    }
 }
 
 // fallback: the Python type for Standard_Failure, or nullptr to pass unknown exceptions on
@@ -464,53 +564,33 @@ struct KeepOwnerUnlessSelf {
 // generated translation unit (Tag, the file's own type), found by the object's PyObject*, created on first use; the entry,
 // and with it the arguments, goes through nb::keep_alive_cb, which nanobind runs after the object's C++ destructor (that
 // destructor still sees its arguments). A mutex protects the table, not the GIL (free-threading).
-struct slot_table {
-    std::mutex mutex;
-    std::unordered_map<PyObject *, PyObject *> lists;    // owner -> the list of its slots
-};
-template <typename Tag> slot_table &slot_table_of() {
-    static slot_table *table = new slot_table();          // never destroyed: an owner may die during interpreter shutdown
-    return *table;
-}
-template <typename Tag> void release_slots(void *owner) noexcept {
-    PyObject *list = nullptr;
-    {
-        slot_table &table = slot_table_of<Tag>();
-        std::lock_guard<std::mutex> lock(table.mutex);
-        auto it = table.lists.find(static_cast<PyObject *>(owner));
-        if (it != table.lists.end()) {
-            list = it->second;
-            table.lists.erase(it);
-        }
-    }
-    Py_XDECREF(list);                                     // outside the lock: an argument's release can run Python code
-}
-// Patient: the argument's position as in nb::keep_alive (1 is self); Slot: the declaration and parameter, numbered per file
+// R-METHOD-KEEP (the table: nanocct::slots above). Patient: the argument's position as in nb::keep_alive (1 is self);
+// Slot: the declaration and parameter, numbered per file. An object passed to itself is not kept by itself (a reference
+// the garbage collector cannot see).
 template <typename Tag, size_t Patient, size_t Slot> struct keep_slot {
     static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
     static void postcall(PyObject **args, size_t, nb::handle) {
         PyObject *owner = args[0];
-        PyObject *list = nullptr;
-        {
-            slot_table &table = slot_table_of<Tag>();
-            std::lock_guard<std::mutex> lock(table.mutex);
-            auto it = table.lists.find(owner);
-            if (it != table.lists.end()) {
-                list = it->second;
-            } else {
-                list = PyList_New(0);
-                if (list == nullptr)
-                    nb::raise_python_error();
-                table.lists.emplace(owner, list);
-                nb::keep_alive_cb(owner, owner, &release_slots<Tag>);
-            }
-        }
-        while (PyList_Size(list) <= static_cast<Py_ssize_t>(Slot))
-            if (PyList_Append(list, Py_None) != 0)
-                nb::raise_python_error();
         PyObject *argument = args[Patient - 1];          // the converted object when an implicit conversion took place
+        if (argument == owner)
+            return;
+        PyObject *previous = nullptr;
         Py_INCREF(argument);
-        PyList_SetItem(list, static_cast<Py_ssize_t>(Slot), argument);   // steals it, releases what the slot held
+        {
+            slot_registry &reg = slots();
+            std::lock_guard<std::mutex> lock(reg.mutex);
+            auto [it, created] = reg.slots.try_emplace(owner);
+            if (created)
+                nb::keep_alive_cb(owner, owner, &release_slots);
+            const slot_key key{&slot_tag<Tag>::id, Slot};
+            auto &held = it->second;
+            auto entry = std::find_if(held.begin(), held.end(), [&](const auto &e) { return e.first == key; });
+            if (entry != held.end())
+                previous = std::exchange(entry->second, argument);
+            else
+                held.emplace_back(key, argument);
+        }
+        Py_XDECREF(previous);                             // outside the lock: an argument's release can run Python code
     }
 };
 // R-RESULT-KEEP / R-OWNER (Design.md 6): a result, or an argument the call writes into, of a class that holds pointers
@@ -518,7 +598,8 @@ template <typename Tag, size_t Patient, size_t Slot> struct keep_slot {
 // against nanocct::owners, so the two cannot disagree silently; Nurse: 0 = the result, k = argument k (1 is self); Elem:
 // the result's position in a returned tuple (out-parameters), -1 if none; Patients: the arguments it may point into.
 // keep_alive_obj on a fresh result keeps one call's arguments; an argument written into keeps them for good, nanobind
-// skipping duplicates. A nurse that is also a patient (a method returning *this) keeps nothing of itself. A `const T&` of
+// skipping duplicates. The nurse also keeps what the patients' slots hold now (keep_slots_of: it may point there too).
+// A nurse that is also a patient (a method returning *this) keeps nothing of itself. A `const T&` of
 // a class that cannot be copied comes back by reference (cref_policy) and may be an object Python already has -- one of the
 // patients, even (VrmlData_Node::Scene() of the scene the node keeps): it keeps no producers, which could make a cycle.
 template <typename R, bool Owned, size_t Nurse, int Elem, size_t... Patients> struct keep_view {
@@ -534,7 +615,7 @@ template <typename R, bool Owned, size_t Nurse, int Elem, size_t... Patients> st
         if (nurse == nullptr || nurse == Py_None)
             return;
         if constexpr (keeps_producers)
-            ((args[Patients - 1] != nurse ? nb::keep_alive_obj(nurse, args[Patients - 1]) : void()), ...);
+            (keep_view_of(nurse, args[Patients - 1]), ...);
         if constexpr (Owned)
             owners<T>::keep(nurse, nb::cast<const T &>(nb::handle(nurse)));
     }
