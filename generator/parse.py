@@ -34,8 +34,10 @@ _PRIMITIVE_KINDS = {
 # object behind them is what gets bound, a null one is None -- opencascade::handle<T> for Transients and
 # NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object
 _SMART_HANDLES = ("handle", "NCollection_Handle")
-# R-ITERATOR: the STL-style iterator templates; members taking or returning them are skipped
-_STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_IndexedIterator", "NCollection_StlIterator", "NCollection_UtfIterator"}
+# R-ITERATOR: the STL-style iterator templates, and the end marker of a forward range (the result of every end() next to
+# a NCollection_ForwardRangeIterator begin()); members taking or returning them are skipped
+_STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_ForwardRangeSentinel", "NCollection_IndexedIterator",
+                  "NCollection_StlIterator", "NCollection_UtfIterator"}
 _PRIMITIVE_SPELLINGS = {"double", "float", "int", "bool", "char", "long", "short", "size_t", "unsigned", "unsigned int", "unsigned long",
                         "long long", "unsigned long long", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t",
                         "char16_t", "char32_t", "wchar_t", "Standard_Real", "Standard_Integer", "Standard_Boolean", "Standard_ShortReal",
@@ -953,7 +955,9 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
                                 is_bytes=bytes_role[i] == "", bytes_of=bytes_role[i]))
             continue
         if reason is not None:
-            return params, f"param '{p.spelling}': {reason}"
+            # an unnamed parameter (`operator==(const X&, NCollection_ForwardRangeSentinel)`) by its position and type
+            who = f"'{p.spelling}'" if p.spelling != "" else f"{i + 1} ({_type_spelling(p.type)})"
+            return params, f"param {who}: {reason}"
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         default = _default_expr(p, scope, members)

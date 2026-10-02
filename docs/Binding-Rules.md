@@ -3892,9 +3892,10 @@ The Python additions of 2c.
 
 - **OCCT examples**
 
-    `NCollection_ForwardRangeIterator`, `NCollection_IndexedIterator`, `NCollection_StlIterator`, `NCollection_UtfIterator`, `NCollection_DynamicArray::DynamicIterator`:
+    `NCollection_ForwardRangeIterator`, `NCollection_IndexedIterator`, `NCollection_StlIterator`, `NCollection_UtfIterator`, `NCollection_DynamicArray::DynamicIterator`, and the end marker of a forward range, `NCollection_ForwardRangeSentinel`:
 
     - `NCollection_ForwardRangeIterator<TopExp_Explorer> TopExp_Explorer::begin()`
+    - `NCollection_ForwardRangeSentinel TopExp_Explorer::end() const`
     - `iterator NCollection_Array1::begin()` (`iterator` = `NCollection_IndexedIterator<std::random_access_iterator_tag, …>`)
     - `iterator NCollection_Map::begin() const` (`iterator` = `NCollection_StlIterator<std::forward_iterator_tag, Iterator, TheKeyType, true>`)
     - `NCollection_UtfIterator<Type> NCollection_UtfString::Iterator() const`
@@ -3920,7 +3921,7 @@ The Python additions of 2c.
     assert not hasattr(values, "begin") and not hasattr(values, "end")
     assert len(list(values)) == 3                    # __iter__ instead
     explorer = TopExp_Explorer(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), TopAbs_ShapeEnum.TopAbs_FACE)
-    assert not hasattr(explorer, "begin")
+    assert not hasattr(explorer, "begin") and not hasattr(explorer, "end")
     assert len(list(explorer)) == 6                  # R-ITER instead of the range-for adapter
     ```
 
