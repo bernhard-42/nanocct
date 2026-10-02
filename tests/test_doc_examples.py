@@ -24,7 +24,7 @@ def _entries() -> list[tuple[str, list[str]]]:
     """(label, lines) per rule entry, or per case of a rule with cases, in document order."""
     out: list[tuple[str, list[str]]] = []
     rule = None
-    for line in DOC.read_text().split("\n"):
+    for line in DOC.read_text(encoding="utf-8").split("\n"):   # not the locale's: cp1252 on Windows
         m = RULE.match(line)
         if m is not None:
             rule = m.group(1)

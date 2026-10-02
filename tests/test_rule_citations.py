@@ -21,7 +21,7 @@ MENTIONS = [*IMPLEMENTATION, *sorted((ROOT / "generator" / "stubs").glob("*.pyi"
             *sorted((ROOT / "tools").rglob("*.py")), *sorted((ROOT / "shim").rglob("*.py")),
             *sorted((ROOT / "nanocctbuild").rglob("*.py"))]
 
-RULES = set(ENTRY.findall(DOC.read_text()))
+RULES = set(ENTRY.findall(DOC.read_text(encoding="utf-8")))
 
 
 def _tokens(paths: list[Path]) -> dict[str, list[str]]:

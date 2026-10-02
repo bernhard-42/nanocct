@@ -1836,6 +1836,7 @@ How arguments go in and results come out (the user-facing summary is 2b).
 - **OCCT examples**
 
     - `std::pair<double, double> BRepMesh_ConeRangeSplitter::GetSplitSteps(const IMeshTools_Parameters& theParameters, std::pair<int, int>& theStepsNb) const` (a non-const reference: an out-parameter)
+    - `static std::pair<ShapeProcess::Operation, bool> ShapeProcess::ToOperationFlag(const char* theName)`
     - `std::optional<int> BOPDS_Interf::GetIndexNew() const`
     - `bool TCollection_AsciiString::EndsWith(const std::string_view& theEndString) const`
     - `virtual bool OSD_FileSystem::IsOpenIStream(const std::shared_ptr<std::istream>& theStream) const = 0` (skipped, reported)
@@ -1847,7 +1848,7 @@ How arguments go in and results come out (the user-facing summary is 2b).
 - **Python**
 
     - Native Python objects via nanobind's STL casters.
-    - A **non-const reference** to one (`BRepMesh_ConeRangeSplitter::GetSplitSteps(…, std::pair<int, int>&)`) is an out-parameter like `double&` (R-OUT; suffix type `tuple`/`list`/`dict`/`str`) because the caster hands the callee a temporary.
+    - A **non-const reference** to one (`BRepMesh_ConeRangeSplitter::GetSplitSteps(…, std::pair<int, int>&)`) is an out-parameter like `double&` (R-OUT; suffix type `tuple`/`list`/`dict`/`str`) because the caster hands the callee a temporary. It is the only one in OCCT 8.0.1, and its header does not export it (no `Standard_EXPORT`): bound on macOS and Linux, skipped on Windows (R-UNDEFINED).
 
 - **Python examples**
 
@@ -1865,23 +1866,11 @@ How arguments go in and results come out (the user-facing summary is 2b).
     ```
 
     ```python
-    from nanocct.BRepMesh import BRepMesh_ConeRangeSplitter, BRepMesh_ModelBuilder
-    from nanocct.BRepPrimAPI import BRepPrimAPI_MakeCone
-    from nanocct.gp import gp_Pnt2d
-    from nanocct.IMeshTools import IMeshTools_Parameters
+    from nanocct.ShapeProcess import ShapeProcess
 
-    params = IMeshTools_Parameters()
-    params.Deflection, params.Angle = 0.1, 0.5
-    model = BRepMesh_ModelBuilder().Perform(BRepPrimAPI_MakeCone(1.0, 0.5, 2.0).Shape(), params)
-    face = model.GetFace(0)                      # the conical face
-    face.SetDeflection(0.1)
-    splitter = BRepMesh_ConeRangeSplitter()
-    splitter.Reset(face, params)
-    splitter.AddPoint(gp_Pnt2d(0.0, 0.0))
-    splitter.AddPoint(gp_Pnt2d(6.283185307179586, 2.0))
-    steps, counts = splitter.GetSplitSteps(params)   # the std::pair result, then the std::pair<int, int>& out-parameter
-    assert len(steps) == 2 and all(isinstance(n, int) and n > 0 for n in counts)
-    del splitter, face                           # mesh data lives in the model's allocator: released before the model
+    operation, found = ShapeProcess.ToOperationFlag_s("FixShape")   # std::pair<Operation, bool> -> a tuple
+    assert found and operation == ShapeProcess.Operation.FixShape
+    assert ShapeProcess.ToOperationFlag_s("NoSuchOperation")[1] is False
     ```
 ### R-BITSET
 
