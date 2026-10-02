@@ -922,6 +922,50 @@ struct Rules_Fields
   Rules_NoCopyInner*   NoCopy = nullptr;
 };
 
+//! R-VIEW-GUARD: a container taken by non-const reference or pointer may be changed by the call, which is checked against
+//! the container's views; a const one is not. A container member's setter is checked; a container the object owns, handed
+//! out by reference, is reported. An iterator class built from a container is an iterator view of it.
+class Rules_Guard
+{
+public:
+  Rules_Guard() = default;
+  Rules_Guard(NCollection_List<int>& theFill) { theFill.Append(1); }
+  void Fill(NCollection_List<int>& theList) { theList.Append(1); }
+  void FillPtr(NCollection_Sequence<gp_Pnt>* theSeq) { (void)theSeq; }
+  int  Read(const NCollection_List<int>& theList) const { return theList.Extent(); }
+  void Count(int& theOut, NCollection_Array1<double>& theArr) const { theOut = theArr.Length(); }
+  static void Grow(NCollection_Array1<double>& theArr) { theArr.Resize(1, 3, false); }
+  NCollection_List<int>& Owned() { return myList; }
+  NCollection_List<int> Items;
+
+private:
+  NCollection_List<int> myList;
+};
+
+class Rules_GuardIter
+{
+public:
+  Rules_GuardIter(const NCollection_Sequence<gp_Pnt>& theSeq) { Init(theSeq); }
+  void   Init(const NCollection_Sequence<gp_Pnt>& theSeq) { mySeq = &theSeq; myIndex = 1; }
+  bool   More() const { return myIndex <= mySeq->Length(); }
+  void   Next() { ++myIndex; }
+  gp_Pnt Value() const { return mySeq->Value(myIndex); }
+
+private:
+  const NCollection_Sequence<gp_Pnt>* mySeq = nullptr;
+  int                                 myIndex = 1;
+};
+
+template <class TheArray>
+class Rules_GuardT
+{
+public:
+  Rules_GuardT() = default;
+  void Fill(TheArray& theArr) const { (void)theArr; }
+  int  Read(const TheArray& theArr) const { return theArr.Length(); }
+};
+typedef Rules_GuardT<NCollection_Array1<gp_Pnt>> Rules_GuardArray;
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -996,7 +1040,8 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepMethods", "Rules_KeepViaPack",
                                "Rules_View", "Rules_ViewSource", "Rules_ViewHolder", "Rules_Ocaf",
                                "Rules_Owner", "Rules_OwnerMember", "Rules_OwnerTrusted", "Rules_EmptyDtor", "Rules_Interface",
-                               "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields",
+                               "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1301,7 +1346,7 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double), registered before it -> not bound (unreachable)" in em.report
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
-    assert cpp.count("nanocct_def_iter<") == 3 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor, Rules_ViewSource
+    assert cpp.count("nanocct_def_iter<") == 4 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor, Rules_ViewSource, Rules_GuardIter
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
@@ -2242,3 +2287,37 @@ def test_every_byte_buffer_pair_in_occt_is_listed_for_r_bytes():
     assert len(found) > 0
     assert sorted(found - listed - set(not_a_buffer_pair)) == []
     assert sorted(listed - found) == []                                    # and no stale entry
+
+
+def test_containers_a_call_may_change_are_guarded(tmp_path_factory):
+    """R-VIEW-GUARD: a non-const reference or pointer to an NCollection container is `guarded` -- also as a template
+    parameter of a 6c instantiation, through the substituted spelling -- a const one is not. The emitter wraps a direct
+    binding in nanocct::guarded (C++ positions), checks in the body of a lambda (Python positions: a returned out-parameter
+    is not passed) and of a constructor, binds a container member with the checked setter, adds an iterator view to the
+    constructors and Init of an R-ITER class, and reports a container the object owns that a method hands out."""
+    ir = rules_ir_of(tmp_path_factory, "occt_guard")
+    guarded = {m.name: [p.guarded for p in m.params] for m in next(c for c in ir.classes if c.name == "Rules_Guard").methods}
+    assert guarded == {"Fill": [True], "FillPtr": [True], "Read": [False], "Count": [False, True], "Grow": [True], "Owned": []}
+    assert [p.guarded for p in next(c for c in ir.classes if c.name == "Rules_Guard").ctors[1].params] == [True]
+    assert _method(ir, "Rules_Guard", "Owned").result_container is True
+    template = {m.name: [p.guarded for p in m.params] for m in next(c for c in ir.classes if c.name.startswith("Rules_GuardT<")).methods}
+    assert template == {"Fill": [True], "Read": [False]}
+    assert [(f.name, f.is_container) for f in next(c for c in ir.classes if c.name == "Rules_Guard").fields] == [("Items", True)]
+    assert [p.container for p in next(c for c in ir.classes if c.name == "Rules_GuardIter").ctors[0].params] == [True]
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert ".def(\"Fill\", &nanocct::guarded<static_cast<void (Rules_Guard::*)(NCollection_List<int> &)>(&Rules_Guard::Fill), 0>::call" in cpp
+    assert "&nanocct::guarded<static_cast<void (Rules_Guard::*)(NCollection_Sequence<gp_Pnt> *)>(&Rules_Guard::FillPtr), 0>::call" in cpp
+    assert "&nanocct::guarded<static_cast<void (*)(NCollection_Array1<double> &)>(&Rules_Guard::Grow), 0>::call" in cpp
+    assert "&nanocct::guarded<static_cast<void (Rules_GuardT<NCollection_Array1<gp_Pnt>>::*)(NCollection_Array1<gp_Pnt> &) const>" in cpp
+    assert ".def(\"Read\", static_cast<int (Rules_Guard::*)(const NCollection_List<int> &) const>(&Rules_Guard::Read)" in cpp
+    count = next(line for line in cpp.splitlines() if '.def("Count"' in line and "Rules_Guard" in line)
+    assert count.count("nanocct::refuse_viewed_argument(theArr, 1);") == 1       # theOut is returned, not passed
+    ctor = next(line for line in cpp.splitlines() if "NCollection_List<int> & theFill" in line)
+    assert "nanocct::refuse_viewed_argument(theFill, 1); new (self) Rules_Guard(theFill);" in ctor
+    assert 'nanocct_def_container_field(nb::borrow<nb::class_<Rules_Guard>>(m.attr("Rules_Guard")), "Items", &Rules_Guard::Items)' in cpp
+    views = [line for line in cpp.splitlines() if "nanocct::view_of<nanocct::view_kind::iterator, 1, 2>" in line]
+    assert len(views) == 2 and any("nb::init<const NCollection_Sequence<gp_Pnt> &>()" in v for v in views) and any('"Init"' in v for v in views)
+    line = next(line for line in em.report if line.startswith("Rules_Guard::Owned()"))
+    assert line.endswith("(R-VIEW-GUARD)") and categorize(line) == "view-guard"

@@ -60,6 +60,10 @@ class Param:
     out_view: bool = False  # R-RESULT-KEEP: a non-const reference/pointer to a class holding pointers, which the call writes into:
     out_keeps: tuple[int, ...] = ()  # ... it keeps self (a method) and these parameters (indices) alive
     owned: bool = False     # R-OWNER: an argument written into, or a returned out-handle, of a type whose OCAF owners are known
+    guarded: bool = False   # R-VIEW-GUARD: a non-const reference/pointer to an NCollection container: the call may change it, so it
+                            # refuses (BufferError) while the container has live views (nanocct::guarded, nanocct_common.h)
+    container: bool = False # R-VIEW-GUARD: a reference/pointer to an NCollection container, any constness: an iterator class (R-ITER)
+                            # constructed or initialised from it is an iterator view of it
 
 
 @dataclass
@@ -88,6 +92,8 @@ class Method:
     result_owned: bool = False        # R-OWNER: the result's type has known OCAF owners (TDF_Label, TDF_Attribute, ...): kept instead
     result_by_reference: bool = False # R-COPY: a `const T&` of an owner class (its copy would free what the original points to): by reference
     result_on_heap: bool = False      # R-COPY: a `T` by value of an owner class without its own move/copy constructor: new T(call)
+    result_container: bool = False    # R-VIEW-GUARD: a non-const reference/pointer to an NCollection container the object owns:
+                                      # its own changes to it are not checked against the container's views (reported)
 
 
 @dataclass
@@ -123,6 +129,7 @@ class Field:
     array_len: int = 0          # R-FIXED-ARRAY: a C array member T[N]; `type` is the element type; a list property
     is_bitfield: bool = False   # R-FIELD: a bit-field (`unsigned stick : 1`) has no pointer-to-member; a property through lambdas
     is_pointer: bool = False    # R-FIELD: a raw pointer (a class or `const char*`): read-only, the getter returns a copy of the pointee
+    is_container: bool = False  # R-VIEW-GUARD: an NCollection container held by value: assigning it refuses while it has live views
 
 
 @dataclass

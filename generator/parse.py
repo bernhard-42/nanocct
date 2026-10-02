@@ -847,6 +847,38 @@ def _binder_key(t: cindex.Type) -> str:
     return ""
 
 
+# R-VIEW-GUARD (Design.md 6): containers the binder guards -- every binder kind except NCollection_Shared, whose bound
+# object is the wrapped container at a non-zero offset (a guard on the Shared's own address would never see its views)
+_GUARDED_KINDS = frozenset(k for k in BINDERS if k != "NCollection_Shared")
+
+
+def _container_kind(t: cindex.Type) -> str:
+    """The NCollection binder kind (NCollection_List, ...) of the container a type names itself -- by value, reference or
+    pointer, never through a handle -- or "". A class nested in an instantiation (an Iterator) is not a container. Inside a
+    6c walk a type written with the template's parameters (`TheArray&` in Convert_CompBezierCurvesToBSplineCurveBase) has
+    no declaration; the substituted spelling names the instantiation then (as for _stl_iterator_in_6c)."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind == TK.RECORD:
+        decl = canon.get_declaration()
+        return decl.spelling if decl.spelling in _GUARDED_KINDS else ""
+    if _SUBST.active:
+        spelled = re.sub(r"^(const\s+)?(typename\s+)?|\s*[&*]+\s*$", "", _type_spelling(t)).strip()
+        m = re.match(r"^(NCollection_\w+)\s*<.*>$", spelled)
+        if m is not None and m.group(1) in _GUARDED_KINDS:
+            return m.group(1)
+    return ""
+
+
+def _mutable_container(t: cindex.Type) -> bool:
+    """R-VIEW-GUARD: a parameter OCCT may change a container through -- a non-const reference or pointer to one."""
+    canon = t.get_canonical()
+    if canon.kind not in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        return False
+    return not canon.get_pointee().is_const_qualified() and _container_kind(t) != ""
+
+
 def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members: set[str] | None = None,
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
@@ -931,7 +963,8 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
                             out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,
                             instance_key=_binder_key(p.type),
                             binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type),
-                            is_enum=_is_enum(p.type)))
+                            is_enum=_is_enum(p.type), guarded=_mutable_container(p.type),
+                            container=canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER) and _container_kind(p.type) != ""))
     if cursor.type.kind == TK.FUNCTIONPROTO and cursor.type.is_function_variadic():
         return params, "variadic"
     return params, None
@@ -1139,7 +1172,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
                is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
-               result_instance_key=_binder_key(cursor.result_type))
+               result_instance_key=_binder_key(cursor.result_type), result_container=_mutable_container(cursor.result_type))
     result_stream = _stream_kind(cursor.result_type)
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:
@@ -2251,7 +2284,9 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 continue
             _note_instance(ch.type)                # a container-typed field needs its instantiation like a parameter does
             c.fields.append(Field(name=ch.spelling, type=_type_spelling(ch.type), is_const=ch.type.is_const_qualified(), doc=_doc(ch),
-                                  is_bitfield=ch.is_bitfield()))   # R-FIELD: `unsigned stick : 1` (Graphic3d_CStructure) has no pointer-to-member
+                                  is_bitfield=ch.is_bitfield(),    # R-FIELD: `unsigned stick : 1` (Graphic3d_CStructure) has no pointer-to-member
+                                  is_container=ch.type.get_canonical().kind not in (TK.POINTER, TK.LVALUEREFERENCE, TK.RVALUEREFERENCE)
+                                  and _container_kind(ch.type) != ""))
             if ch.type.get_canonical().kind == TK.POINTER or c.fields[-1].type.rstrip().endswith("*"):
                 # R-FIELD: a raw pointer member is never written from Python (the object would keep the address of a Python
                 # object it does not keep alive); what it points to is read as a copy, decided with the pointee's layout

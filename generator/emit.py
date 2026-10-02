@@ -107,6 +107,7 @@ class Emitter:
         self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self.slots = 0                         # R-METHOD-KEEP: the slots of this file (one per kept method parameter)
+        self._iterating = False                # R-VIEW-GUARD: the class being defined is an iterator class (R-ITER)
         self.needs_ocaf = False               # R-OWNER: this file applies nanocct::owners to an OCAF type (nanocct_ocaf.h)
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
@@ -320,6 +321,52 @@ class Emitter:
                 self.slots += 1
         return out
 
+    # Design.md 6 R-VIEW-GUARD
+    def _report_owned_container(self, cls: Class, m: Method) -> None:
+        """The residual: a container the object owns, handed out by reference. Its views are checked against the
+        container's own members and every bound call taking it, not against what its owner does to it in C++."""
+        if m.result_container:
+            self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): returns {m.result}, a container the object owns -- "
+                               f"its own changes to it are not checked against the container's views (R-VIEW-GUARD)")
+
+    def _iterator_views(self, params: list[Param], positions: dict[int, int], self_pos: int) -> str:
+        """An iterator class (R-ITER: More/Next/Value) constructed or initialised from a container iterates it -- an iterator
+        view of each container argument (nanocct::view_of; over-counting one it only copies is the safe side). self_pos: the
+        object's position as in nb::keep_alive (1 = self, 0 = the result of nb::new_)."""
+        if not self._iterating:
+            return ""
+        return "".join(f", nb::call_policy<nanocct::view_of<nanocct::view_kind::iterator, {self_pos}, {positions[i]}>>()"
+                       for i, p in enumerate(params) if p.container and i in positions)
+
+    def _iterator_init(self, m: Method) -> str:
+        """R-VIEW-GUARD: Init/Initialize of an iterator class re-targets it (OCCT's iterator protocol, as More/Next/Value)."""
+        if m.is_static or m.name not in ("Init", "Initialize"):
+            return ""
+        return self._iterator_views(m.params, self._positions(m, True), 1)
+
+    @staticmethod
+    def _guarded(fn: str, params: list[Param]) -> str:
+        """A directly bound function taking a container it may change goes through nanocct::guarded: same signature, the
+        check runs after nanobind converted the arguments (a call policy's precall runs before, and raised for the wrong
+        overload). The positions are the C++ parameters', which a direct binding shows all of."""
+        positions = [str(i) for i, p in enumerate(params) if p.guarded]
+        if len(positions) == 0:
+            return fn
+        return f"&nanocct::guarded<{fn}, {', '.join(positions)}>::call"
+
+    @staticmethod
+    def _guard_checks(params: list[Param]) -> list[str]:
+        """The same check as the first statements of a lambda: each container parameter it may change, by name, with its
+        position among the parameters Python passes (self not counted) for the message."""
+        out, position = [], 0
+        for p in params:
+            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+                continue
+            position += 1
+            if p.guarded:
+                out.append(f"nanocct::refuse_viewed_argument({p.name}, {position});")
+        return out
+
     @staticmethod
     def _positions(m: Method | Function, method: bool) -> dict[int, int]:
         """Python position of each parameter the signature shows (1 is self for a method), as _keep_slots counts them."""
@@ -385,8 +432,9 @@ class Emitter:
                        else f"nanocct::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
                        else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
-        body: list[str] = [f"{p.type} {p.name}[{p.array_len}]{{}};" if p.array_len > 0 else f"{_strip_ref(p.type)} {p.name}{{}};"
-                           for p in outs if not p.is_inout]
+        body: list[str] = self._guard_checks(m.params)          # R-VIEW-GUARD
+        body += [f"{p.type} {p.name}[{p.array_len}]{{}};" if p.array_len > 0 else f"{_strip_ref(p.type)} {p.name}{{}};"
+                 for p in outs if not p.is_inout]
         # R-FIXED-ARRAY: a const T[N] parameter is copied from the std::array into a C array for the call
         body += [f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0]
         # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
@@ -497,7 +545,8 @@ class Emitter:
                 policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
-            lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
+            checks = "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
+            lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ {checks}self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._keep_slots(m)}{self._extras(doc, m.params, False, True)})'
         if (m.result_on_heap or m.result_by_reference) and has_out:
             # R-COPY: the result would sit in a tuple, whose caster takes one return policy for every element (and the
@@ -517,14 +566,18 @@ class Emitter:
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
                 # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
                 ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
-            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._keep_views(m, not m.is_static)}{self._extras(doc, m.params, True, m.is_operator)})'
+            if m.result_kind == ResultKind.PTR_CLASS:      # a reference result is copied here (auto), a pointer is not
+                self._report_owned_container(cls, m)
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, not m.is_static)}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
+        if m.result_kind in (ResultKind.PTR_CLASS, ResultKind.REF_MUTABLE):
+            self._report_owned_container(cls, m)
         if m.is_static:
-            fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"
+            fn = self._guarded(f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})", m.params)
             return f'.def_static("{py}", {fn}{policy}{self._keep_views(m, False)}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
-        fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
-        return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
+        fn = self._guarded(f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})", m.params)
+        return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
 
     # Design.md 6 R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
@@ -536,7 +589,8 @@ class Emitter:
         sep = ", " if len(m.params) > 0 else ""
         args = ", ".join(p.name for p in m.params)
         keep = self._keep_slots(m)
-        getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ return self.{m.name}({args}); }}{keep}{self._extras(m.doc, m.params, False, m.is_operator)})'
+        checks = "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
+        getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ {checks}return self.{m.name}({args}); }}{keep}{self._extras(m.doc, m.params, False, m.is_operator)})'
         note = f"Python addition: sets the value {m.name}({args}) returns by reference in C++."
         if m.is_operator:
             if len(m.params) == 1:
@@ -551,7 +605,7 @@ class Emitter:
             if any(o.name == setter and o.skip_reason is None for o in cls.methods):
                 lines = [getter]                # gp_XYZ::ChangeCoord(i): SetCoord(i, v) exists in OCCT
             else:
-                lines = [getter, f'.def("{setter}", []({B} &self{sep}{params}, {m.result} theValue) {{ self.{m.name}({args}) = theValue; }}{keep}{self._args(m.params, False)}, nb::arg("theValue"), "{note}")']
+                lines = [getter, f'.def("{setter}", []({B} &self{sep}{params}, {m.result} theValue) {{ {checks}self.{m.name}({args}) = theValue; }}{keep}{self._args(m.params, False)}, nb::arg("theValue"), "{note}")']
         self._note_types(m.result)
         return "\n        ".join(lines)
 
@@ -562,12 +616,14 @@ class Emitter:
         self._note_types(*(p.class_name for p in params))
         T = type_name if type_name is not None else cls.bound_type
         # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL / R-BYTES: nb::init cannot drop or convert
-        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in params)
+        # R-VIEW-GUARD: a container argument the constructor may change is checked in the body, after nanobind's conversion
+        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.guarded for p in params)
         ins = [p for p in params if not p.omitted and p.bytes_of == ""]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
                                else f"nanocct::OptionalCString {p.name}" if p.cstr_none
                                else f"const nb::bytes &{p.name}" if p.is_bytes else f"{p.type} {p.name}" for p in ins)
-        pre = " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
+        pre = "".join(c + " " for c in self._guard_checks(params))
+        pre += " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
         call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none
                          else f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes         # R-BYTES: the buffer ...
                          else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
@@ -588,6 +644,7 @@ class Emitter:
         # what its slots hold now (nanocct::keep_view_arg): its next Initialize must not free what the new object points to
         keep += "".join(f", nb::call_policy<nanocct::keep_view_arg<{nurse}, {2 + i}>>()" if p.kept_view
                         else f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
+        keep += self._iterator_views(ins, {i: 2 + i for i in range(len(ins))}, nurse)     # R-VIEW-GUARD
         if cls.is_transient:
             fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
         elif special or type_name is not None:
@@ -970,7 +1027,8 @@ class Emitter:
                               else policy if fn.result_kind == ResultKind.PTR_CLASS or fn.result_by_reference else "")
                 module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{ptr_policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, True, False)});')
                 continue
-            module_fns.append(f'    {self._module(fn.scope)}.def("{py}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, False, False)});')
+            direct = self._guarded(f"static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified})", fn.params)
+            module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {direct}{policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, False, False)});')
         return free_ops, module_fns
 
     def _declare_class(self, c: Class, declare: list[str], wrappers: list[str]) -> bool:
@@ -1047,6 +1105,7 @@ class Emitter:
         dunders, __hash__, fields, implicit conversions, __iter__."""
         body: list[str] = []
         ctor_body: list[str] = []     # constructors of a 6c instantiation: guarded at compile time (abstractness is not visible in the template)
+        self._iterating = self._iter_getter(c) is not None    # R-VIEW-GUARD: constructors and Init/Initialize make iterator views
         unhashable = False            # R-UNHASHABLE: emitted after the body, as a statement of its own
         def cls_expr_of(cc: Class) -> str:
             return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
@@ -1218,7 +1277,9 @@ class Emitter:
             if f.is_pointer:               # R-FIELD: a raw pointer member is read-only, a copy of what it points to
                 define.append(f'    nanocct_def_pointer_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
                 continue
-            define.append(f'    nanocct_def_field({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
+            # R-VIEW-GUARD: assigning a container member frees or reallocates what its views point into
+            helper = "nanocct_def_container_field" if f.is_container else "nanocct_def_field"
+            define.append(f'    {helper}({cls_expr}, "{py_safe(f.name)}", &{c.name}::{f.name}{", " + dd if dd is not None else ""});')
         for k in c.statics:                # R-STATIC-DATA: a read-only static property returning the value
             why = self._unbound_reason(k.type_class)
             if why is not None:            # an enum no binding registers: the cast would abort the module import

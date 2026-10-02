@@ -101,13 +101,15 @@ NANOCCT_VIEW_ELEM(NCollection_Vec4<int>, int32_t, 4, true)
 //! dimension when it has more than one -- (N,) for double, (N, 3) for gp_Pnt, (rows, cols, 3) for an
 //! Array2 of gp_Pnt. Writability follows the element's entry in the table above.
 //!
-//! The array is created with no owner: the caller's `nb::rv_policy::reference_internal` on the `.def()` is
-//! what ties it to the object, as in nanocct_views.h. nanobind copies the shape, so the local is fine.
+//! Without an owner the caller's `nb::rv_policy::reference_internal` is what ties the array to the object, as in
+//! nanocct_views.h; an NCollection container passes its own owner (R-VIEW-GUARD: one that also counts the view).
+//! nanobind copies the shape, so the local is fine.
 //!
 //! @param theFirst  address of element 0, or nullptr when the array is empty
 //! @param theShape  the leading dimensions -- one for Array1, two for Array2
+//! @param theOwner  the object the array keeps alive, or none
 template <class T, size_t NDim>
-auto elem_view(void *theFirst, const size_t (&theShape)[NDim]) {
+auto elem_view(void *theFirst, const size_t (&theShape)[NDim], nb::handle theOwner = nb::handle()) {
     using E = view_elem<T>;
     using S = typename E::scalar;
 
@@ -118,9 +120,9 @@ auto elem_view(void *theFirst, const size_t (&theShape)[NDim]) {
     const size_t ndim = E::components == 1 ? NDim : NDim + 1;
 
     if constexpr (E::writable)
-        return nb::ndarray<nb::numpy, S>(theFirst, ndim, shape, nb::handle());
+        return nb::ndarray<nb::numpy, S>(theFirst, ndim, shape, theOwner);
     else
-        return nb::ndarray<nb::numpy, const S>(theFirst, ndim, shape, nb::handle());
+        return nb::ndarray<nb::numpy, const S>(theFirst, ndim, shape, theOwner);
 }
 
 //! The result of numpy's `__array__(dtype=None, copy=None)` for a view over `theOwner`'s memory.

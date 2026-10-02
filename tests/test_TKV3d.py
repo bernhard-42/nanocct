@@ -78,7 +78,9 @@ def test_report_is_small_and_known():
     cats = {l.split("\t")[0] for l in lines}
     # R-COPY (2026-10-02): 63 classes without a copy constructor -- the AIS objects (SelectMgr_SelectableObject frees
     # its selections), the Select3D sets, V3d_View, ...
-    assert "misc" not in cats and len([l for l in lines if not l.startswith("copy")]) < 60
+    assert "misc" not in cats and len([l for l in lines if not l.startswith(("copy", "view-guard"))]) < 60
+    # R-VIEW-GUARD (2026-10-02): containers an object owns and hands out by reference (ChangeCustomAspectsMap, Presentations, ...)
+    assert sum(l.startswith("view-guard") for l in lines) == 6
     assert any(l.startswith("copy\tAIS\tAIS_Shape: no copy constructor") for l in lines)
     assert any(l.startswith("raw-pointer\tV3d\tV3d_CircularGrid::V3d_CircularGrid(): param 'aViewer': reference to pointer") for l in lines)
     assert any(l.startswith("template\tPrs3d\tPrs3d_Point: template (not bound)") for l in lines)

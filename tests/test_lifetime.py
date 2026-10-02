@@ -1012,3 +1012,245 @@ def test_a_guard_handed_back_to_its_editor_is_released():
         print(g.Topo().Edges().Definition(BRepGraph.BRepGraph_EdgeId(0)).Tolerance)
     """))
     assert out == ["0.5"]
+
+
+# ---- R-VIEW-GUARD: a container refuses to invalidate its live views (BufferError, as bytearray) -------------------------
+
+GUARD = """
+def attempt(call):
+    try:
+        call()
+        return "done"
+    except BufferError:
+        return "BufferError"
+"""
+
+
+def test_an_element_view_blocks_what_would_reallocate_its_array():
+    """`a.ChangeValue(1)` is a view into the array's buffer; `Resize` to another length reallocates it, and the view read
+    freed memory (heap-use-after-free, 8.27 audit c6). While the view lives such a call raises; one that keeps the buffer
+    (the same length, an `Assign` of the same size, NCollection_Array1.hxx) goes through and the view sees it."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_Array1
+        from nanocct.gp import gp_Pnt
+        a = NCollection_Array1[gp_Pnt](1, 2)
+        a.SetValue(1, gp_Pnt(7, 8, 9))
+        p = a.ChangeValue(1)
+        print(attempt(lambda: a.Resize(1, 100000, True)), attempt(lambda: a.Assign(NCollection_Array1[gp_Pnt](1, 5))))
+        a.Resize(5, 6, True)
+        same = NCollection_Array1[gp_Pnt](1, 2)
+        same.SetValue(1, gp_Pnt(1, 2, 3))
+        a.Assign(same)
+        print(a.Lower(), p.X())
+        del p
+        collect()
+        a.Resize(1, 100000, True)
+        print(a.Length())
+    """, GUARD))
+    assert out == ["BufferError BufferError", "1 1.0", "100000"]
+
+
+def test_a_numpy_view_blocks_what_would_reallocate_its_array():
+    """`np.asarray(a)` is a zero-copy view (R-VIEW): its owner counts as a view of the array until every array derived from
+    it is gone. `np.array(a)` is a copy and blocks nothing."""
+    out = _ok(_run("""
+        import numpy as np
+        from nanocct.NCollection import NCollection_Array1
+        a = NCollection_Array1[float](1, 4)
+        for i in range(1, 5):
+            a.SetValue(i, float(i))
+        v = np.asarray(a)
+        w = v[1:]
+        del v
+        collect()
+        print(attempt(lambda: a.Resize(1, 100000, True)))
+        c = np.array(a)
+        zeros = NCollection_Array1[float](1, 4)
+        zeros.Init(0.0)
+        a.Assign(zeros)
+        print(w.tolist(), c.tolist())
+        del w
+        collect()
+        a.Resize(1, 100000, True)
+        print(a.Length())
+    """, GUARD))
+    assert out == ["BufferError", "[0.0, 0.0, 0.0] [1.0, 2.0, 3.0, 4.0]", "100000"]
+
+
+def test_views_into_lists_and_sequences_block_what_frees_or_moves_their_nodes():
+    """Removing or clearing frees nodes; `Append(other)` moves `other`'s nodes into the list, `Exchange` both ways
+    (NCollection_BaseList.cxx). Inserting an item never moves a node, so it is allowed while a view lives."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_List, NCollection_Sequence
+        from nanocct.gp import gp_Pnt
+        L, S = NCollection_List[gp_Pnt], NCollection_Sequence[gp_Pnt]
+        s = S()
+        s.Append(gp_Pnt(1, 2, 3))
+        s.Append(gp_Pnt(4, 5, 6))
+        p = s.ChangeValue(1)
+        print(attempt(lambda: s.Remove(1)), attempt(lambda: s.Clear()), attempt(lambda: s.Split(1, S())))
+        s.Append(gp_Pnt(7, 8, 9))
+        l = L()
+        q = l.Append(gp_Pnt(1, 2, 3))
+        other, viewed = L(), L()
+        other.Append(gp_Pnt(4, 5, 6))
+        r = viewed.Append(gp_Pnt(5, 6, 7))
+        print(attempt(lambda: l.Clear()), attempt(lambda: l.Append(viewed)), attempt(lambda: other.Exchange(l)))
+        l.Append(other)
+        collect()
+        print(p.X(), q.X(), r.X(), s.Length(), l.Extent(), other.Extent())
+        del p, q, r
+        collect()
+        s.Remove(1)
+        l.Clear()
+        print(s.Length(), l.Extent())
+    """, GUARD))
+    assert out == ["BufferError BufferError BufferError", "BufferError BufferError BufferError", "1.0 1.0 5.0 3 2 0", "2 0"]
+
+
+def test_an_iterator_blocks_what_would_free_its_node():
+    """An iterator holds a node pointer (OCCT's `Iterator` and the Python one of `for`): `Clear()` freed it and the next
+    `Value()`/`next()` read freed memory (heap-use-after-free, 2026-10-02). Removing through the iterator itself -- OCCT's
+    removal loop -- moves it on and stays allowed; a re-initialised iterator no longer blocks its old list."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_List
+        from nanocct.gp import gp_Pnt
+        L = NCollection_List[gp_Pnt]
+        l, l2 = L(), L()
+        for i in range(3):
+            l.Append(gp_Pnt(i, 0, 0))
+            l2.Append(gp_Pnt(i, 0, 0))
+        it = L.Iterator(l)
+        print(attempt(lambda: l.Clear()))
+        while it.More():
+            if it.Value().X() == 1.0:
+                l.Remove(it)
+            else:
+                it.Next()
+        it.Initialize(l2)
+        l.Clear()
+        print(l.Extent(), attempt(lambda: l2.Clear()))
+        del it
+        collect()
+        try:
+            for x in l2:
+                l2.Clear()
+        except BufferError:
+            print("BufferError")
+        l2.Clear()
+        print(l2.Extent())
+    """, GUARD))
+    assert out == ["BufferError", "0 BufferError", "BufferError", "0"]
+
+
+def test_a_map_iterator_blocks_growth_its_element_views_only_removal():
+    """A hashed map's iterator caches the bucket array, which an insert that grows the table frees (`Bind`/`Add`,
+    NCollection_BaseMap.hxx `Iterator::PNext`: heap-use-after-free, 2026-10-02); a value handed out by `ChangeFind` lives
+    in its node, which only a removal frees. An indexed map's iterator holds the map and an index and survives growth."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_DataMap, NCollection_IndexedMap, NCollection_Map
+        from nanocct import BRepPrimAPI, TopTools, TopoDS
+        M = NCollection_DataMap[TopoDS.TopoDS_Shape, TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]
+        shapes = [BRepPrimAPI.BRepPrimAPI_MakeBox(1.0 + i, 1.0, 1.0).Shape() for i in range(300)]
+        m = M()
+        m.Bind(shapes[0], shapes[0])
+        v = m.ChangeFind(shapes[0])
+        for s in shapes[1:]:
+            m.Bind(s, s)
+        print(m.Extent(), attempt(lambda: m.UnBind(shapes[0])), v.IsSame(shapes[0]))
+        it = M.Iterator(m)
+        print(attempt(lambda: m.Bind(shapes[0], shapes[1])), attempt(lambda: m.ReSize(5000)))
+        del it, v
+        collect()
+        print(m.UnBind(shapes[0]))
+        keys = NCollection_Map[int]()
+        keys.Add(0)
+        try:
+            for k in keys:
+                keys.Add(k + 1)
+        except BufferError:
+            print("BufferError")
+        im = NCollection_IndexedMap[float]()
+        im.Add(1.0)
+        n = 0
+        for k in im:
+            n += 1
+            if k < 2000.0:
+                im.Add(k + 1.0)
+        print(n)
+    """, GUARD))
+    assert out == ["300 BufferError True", "BufferError BufferError", "True", "BufferError", "2000"]
+
+
+def test_a_vector_refuses_to_grow_past_its_capacity_while_viewed():
+    """`NCollection_LinearVector` is contiguous: `Append` at `Size() == Capacity()` reallocates (`grow`), below it the
+    buffer stays (NCollection_LinearVector.hxx)."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_LinearVector
+        from nanocct.BRepGraph import BRepGraph_NodeId
+        v = NCollection_LinearVector[BRepGraph_NodeId]()
+        v.Reserve(2)
+        p = v.Append(BRepGraph_NodeId())
+        v.Append(BRepGraph_NodeId())
+        print(v.Size(), v.Capacity(), attempt(lambda: v.Append(BRepGraph_NodeId())), attempt(lambda: v.Reserve(100)))
+        del p
+        collect()
+        v.Append(BRepGraph_NodeId())
+        print(v.Size())
+    """, GUARD))
+    assert out == ["2 2 BufferError BufferError", "3"]
+
+
+def test_a_call_that_may_change_a_viewed_container_refuses():
+    """A generated function taking a container by non-const reference may change it -- OCCT does resize arrays passed in
+    (Graphic3d_Camera.cxx:1743) and fills maps, which can grow them. While the container is viewed the call raises
+    (`nanocct::guarded`, checked after argument conversion); a container it takes by const reference does not matter."""
+    out = _ok(_run("""
+        import numpy as np
+        from nanocct import BRepPrimAPI, NCollection, PLib, TopAbs, TopExp, TopTools, TopoDS
+        from nanocct.gp import gp_Pnt
+        box = BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
+        m = NCollection.NCollection_IndexedMap[TopoDS.TopoDS_Shape, TopTools.TopTools_ShapeMapHasher]()
+        TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE, m)
+        keys = iter(m)
+        next(keys)
+        print(attempt(lambda: TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)))
+        del keys
+        collect()
+        TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
+        print(m.Extent())
+        A, P = NCollection.NCollection_Array1[float], NCollection.NCollection_Array1[gp_Pnt]
+        poles, weights, fp = P(1, 2), A(1, 2), A(1, 8)
+        poles.SetValue(1, gp_Pnt(1, 2, 3))
+        poles.SetValue(2, gp_Pnt(4, 5, 6))
+        weights.Init(2.0)
+        fp.Init(0.0)
+        w = np.asarray(weights)
+        PLib.PLib.SetPoles_s(poles, weights, fp)
+        f = np.asarray(fp)
+        print(attempt(lambda: PLib.PLib.SetPoles_s(poles, weights, fp)), f.tolist())
+    """, GUARD))
+    assert out == ["BufferError", "18", "BufferError [2.0, 4.0, 6.0, 2.0, 8.0, 10.0, 12.0, 2.0]"]
+
+
+def test_a_container_member_refuses_assignment_while_viewed():
+    """Assigning a container data member frees or reallocates what its views point into (`MathRoot::MultipleResult::Roots`,
+    an `NCollection_DynamicArray<double>`): the setter raises while it is iterated."""
+    out = _ok(_run("""
+        from nanocct.MathRoot import MultipleResult
+        from nanocct.NCollection import NCollection_DynamicArray
+        r = MultipleResult()
+        for x in (1.0, 2.0):
+            r.Roots.Append(x)
+        values = iter(r.Roots)
+        replacement = NCollection_DynamicArray[float]()
+        replacement.Append(5.0)
+        def assign():
+            r.Roots = replacement
+        print(next(values), attempt(assign))
+        del values
+        collect()
+        assign()
+        print(r.Roots.Length(), r.Roots.Value(0))
+    """, GUARD))
+    assert out == ["1.0 BufferError", "1 5.0"]

@@ -155,7 +155,24 @@ array([[1., 0., 0.],
        [0., 0., 1.]])
 ```
 
-This accesses the C++ values from Python without copying them (zero-copy access). A view, like an element reference from `ChangeValue()`, points into the container's storage, which it keeps alive but cannot keep in place: after `Resize()` (or `Remove()` of that element) it reads freed memory, as a pointer would in C++. Take a new view after changing the container's size.
+This accesses the C++ values from Python without copying them (zero-copy access). A view, like an element reference from `ChangeValue()` or an iterator, points into the container's storage, which it keeps alive but cannot keep in place. So the container refuses every call that would move or free what a live view points to, as a `bytearray` does while a buffer is exported: a `Resize()` to another length, a `Remove()`, a `Clear()`, or an OCCT function that takes the container to fill it raises `BufferError`. Release the view first, or take it after the change:
+
+```python
+In [3]: v = np.asarray(a)
+   ...: try:
+   ...:     a.Resize(1, 5, True)
+   ...: except BufferError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[3]: 'Resize: 1 live view(s) of this container (element references, iterators or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a buffer is exported)'
+
+In [4]: del v
+   ...: a.Resize(1, 5, True)
+   ...: np.asarray(a).shape
+Out[4]: (5, 3)
+```
+
+A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](Design.md#views-a-container-refuses-to-invalidate-r-view-guard-2026-10-02).
 
 ### Index access
 
@@ -317,6 +334,35 @@ In [6]: edges = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
    ...: TopExp.MapShapes_s(box, EDGE, edges)
    ...: len(list(TopExp_Explorer(box, EDGE))), edges.Size()
 Out[6]: (24, 12)
+```
+
+An iterator over an NCollection holds a position inside it. While the iterator is referenced, the container refuses what would free that position -- a `Clear()`, a `Remove()`, and for a hashed map (`NCollection_Map`, `DataMap`, `DoubleMap`) an insert, which can grow the table -- with `BufferError`, like the views [above](#numpy-zero-copy-support). In a `for` loop that is the loop itself; an `Iterator` kept in a variable blocks until it is deleted. Removing through the iterator itself, OCCT's own removal loop, stays allowed:
+
+```python
+In [7]: from nanocct.NCollection import NCollection_List
+   ...: l = NCollection_List[int]()
+   ...: for i in range(4):
+   ...:     l.Append(i)
+   ...: it = NCollection_List[int].Iterator(l)
+   ...: while it.More():
+   ...:     if it.Value() % 2 == 1:
+   ...:         l.Remove(it)
+   ...:     else:
+   ...:         it.Next()
+   ...: list(l)
+Out[7]: [0, 2]
+
+In [8]: try:
+   ...:     l.Clear()
+   ...: except BufferError as e:
+   ...:     err = type(e).__name__
+   ...: err
+Out[8]: 'BufferError'
+
+In [9]: del it
+   ...: l.Clear()
+   ...: l.Size()
+Out[9]: 0
 ```
 
 ### Timings

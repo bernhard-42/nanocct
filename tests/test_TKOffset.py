@@ -60,9 +60,10 @@ def test_loft_pipe_and_wire_offset():
     offset.Perform(1.0)
     assert sum(1 for _ in TopExp.TopExp_Explorer(offset.Shape(), TopAbs.TopAbs_EDGE)) == 8   # 4 lines + 4 arcs
     rows = read_report(REPORT)
-    # every row is an R-UNDEFINED skip; how many depends on what the platform's libTKOffset exports (macOS 2, Windows 3)
-    assert all(cat != "misc" for cat, _, _ in rows) and all(cat == "undefined" for cat, _, _ in rows)
-    assert len(rows) >= 2
+    # every other row is an R-UNDEFINED skip; how many depends on what the platform's libTKOffset exports (macOS 2, Windows 3)
+    assert [msg.split("(")[0] for cat, _, msg in rows if cat == "view-guard"] == ["BRepOffset_Inter3d::NewEdges", "BRepOffset_Inter3d::TouchedFaces"]
+    assert all(cat in ("undefined", "view-guard") for cat, _, _ in rows)
+    assert sum(cat == "undefined" for cat, _, _ in rows) >= 2
 
 
 def test_optional_pointer_parameters_are_dropped():

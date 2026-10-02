@@ -22,6 +22,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("null-bool", r"__bool__ = not IsNull\(\) added"),
     ("view", r"zero-copy numpy views added"),
     ("lifetime", r"R-CTOR-KEEP could not follow|\(R-RESULT-KEEP\)"),
+    ("view-guard", r"\(R-VIEW-GUARD\)"),
     ("copy", r"\(R-COPY\)"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
     ("stream", r"iostream type|not bound as __str__"),
