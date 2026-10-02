@@ -416,13 +416,13 @@ def main(argv: list[str]) -> int:
     if jobs > 1:
         print(f"parallel: {jobs} jobs over {n_packages} packages ({how})", file=sys.stderr)
         t0 = time.perf_counter()
-        state = {"noncopyable": set(), "derives": {}}
+        state = {"noncopyable": set(), "derives": {}, "ancestors": {}}
         elsewhere = _known_elsewhere_sets(selected, {}, known)      # round 1: the manifest alone
         rounds = 0
         with mp.Pool(jobs, initializer=_parallel.init, initargs=(tree.src, tree.install)) as pool:
             while True:
                 rounds += 1
-                merged = {"noncopyable": set(state["noncopyable"]), "derives": dict(state["derives"])}
+                merged = {"noncopyable": set(state["noncopyable"]), "derives": dict(state["derives"]), "ancestors": dict(state["ancestors"])}
                 classes_of: dict[tuple[str, str], list[str]] = {}
                 prefetched.clear()
                 jobs_in = [(tk, pkg.name, sorted(elsewhere[(tk, pkg.name)]), state) for tk, pkgs in selected for pkg in pkgs]
@@ -434,12 +434,14 @@ def main(argv: list[str]) -> int:
                     for k, v in st["derives"].items():
                         if v or k not in merged["derives"]:
                             merged["derives"][k] = v
+                    merged["ancestors"].update(st["ancestors"])     # read from definitions only: every process agrees
                 derived = _known_elsewhere_sets(selected, classes_of, known)
                 # The fixpoint test is on the *inputs*: this round was given what its own result says it should have
                 # been given, so another round would repeat it exactly and these IRs are the answer.
                 stable = derived == elsewhere and merged == state
                 state, elsewhere = merged, derived
                 print(f"  round {rounds}: noncopyable {len(state['noncopyable'])}, derives {len(state['derives'])}, "
+                      f"ancestors {len(state['ancestors'])}, "
                       f"instantiations {sum(1 for names in classes_of.values() for n in names if '<' in n)}"
                       f"{' (stable)' if stable else ''}", file=sys.stderr)
                 if stable:

@@ -994,7 +994,9 @@ def _is_noexcept(cursor: cindex.Cursor) -> bool:
 # PARALLELISATION (2026-09-24): these two accumulate *across* packages, so a sequential run lets a late package profit
 # from what earlier ones discovered while a worker process only sees its own share -- which made one binding of 65000
 # differ (BRepClass3d_SolidExplorer::Intersector). carry_state()/collect_state() make them an explicit input/output so
-# a parallel driver can merge them at a barrier and re-parse to a fixpoint.
+# a parallel driver can merge them at a barrier and re-parse to a fixpoint. _ancestors_cache (R-OVERLOAD-ORDER) travels the
+# same way. Both hold only what a definition showed: a translation unit that merely forward-declares a class reads them
+# and never writes, or the pool's order would decide which answer a later one is handed.
 _derives_cache: dict[tuple[str, str], bool] = {}
 _derives_stack: set[tuple[str, str]] = set()   # keys being resolved (recursion guard for CRTP bases)
 _template_bases: list[tuple[str, cindex.Type, str]] = []   # (derived class, base type, header): bases that are template instantiations
@@ -1055,9 +1057,18 @@ def _class_ancestors(t: cindex.Type) -> tuple[str, ...]:
     if decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1:
         return _class_ancestors(canon.get_template_argument_type(0))
     defn = decl.get_definition()     # the declaration may be a forward one (`class TopoDS_Face;`), which has no bases
-    if defn is not None:
-        decl = defn
     key = _canonical_args(canon)
+    if defn is None:
+        # only a forward declaration in this translation unit: what a translation unit with the definition found holds (this
+        # process's, or carried in by carry_state); without that the bases are unknown here, and the answer is not cached --
+        # the cache outlives the package, and a later translation unit that sees the definition must not be handed it
+        # (which package a worker parses first is the pool's choice: R-CTOR-KEEP kept an argument in some runs only)
+        if key in _ancestors_cache:
+            return _ancestors_cache[key]
+        found: list[str] = []
+        _collect_ancestors(decl, canon, found, set())
+        return tuple(found)
+    decl = defn
     if key not in _ancestors_cache:
         found: list[str] = []
         _collect_ancestors(decl, canon, found, set())
@@ -1119,6 +1130,14 @@ def _derives_from(cls: cindex.Cursor, root: str) -> bool:
     name = cls.spelling
     if name == root:
         return True
+    if not cls.is_definition():
+        defn = cls.get_definition()
+        if defn is None:
+            # only a forward declaration in this translation unit: what a translation unit with the definition found holds
+            # (cached under the same USR, or carried in by carry_state); without that False, never cached -- a later
+            # translation unit that sees the definition must not be handed it
+            return _derives_cache.get((cls.get_usr() or name, root), False)
+        cls = defn
     key = (cls.get_usr() or name, root)
     if key in _derives_cache:
         return _derives_cache[key]
@@ -2546,7 +2565,7 @@ _owned_instance_args: set[str] = set()                # R-OWNER: their arguments
 
 def collect_state() -> dict:
     """The cross-package state this process accumulated while parsing (see the note at _derives_cache)."""
-    return {"noncopyable": set(_DETECTED_NONCOPYABLE), "derives": dict(_derives_cache)}
+    return {"noncopyable": set(_DETECTED_NONCOPYABLE), "derives": dict(_derives_cache), "ancestors": dict(_ancestors_cache)}
 
 
 def carry_state(state: dict) -> None:
@@ -2556,6 +2575,8 @@ def carry_state(state: dict) -> None:
         # a True was computed in a translation unit where the base was visible; never let a False overwrite it
         if v or k not in _derives_cache:
             _derives_cache[k] = v
+    # every cached ancestor list was read from a definition (_class_ancestors), so all processes agree on each of them
+    _ancestors_cache.update(state.get("ancestors", {}))
 
 
 def _canonical_args(t: cindex.Type) -> str:

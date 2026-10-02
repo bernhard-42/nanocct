@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from clang import cindex
 
 from generator import parse
 from generator.binders import BINDERS
@@ -2407,3 +2408,42 @@ def test_containers_a_call_may_change_are_guarded(tmp_path_factory):
     assert len(views) == 2 and any("nb::init<const NCollection_Sequence<gp_Pnt> &>()" in v for v in views) and any('"Init"' in v for v in views)
     line = next(line for line in em.report if line.startswith("Rules_Guard::Owned()"))
     assert line.endswith("(R-VIEW-GUARD)") and categorize(line) == "view-guard"
+
+
+# Binding-Rules.md R-OVERLOAD-ORDER, R-CTOR-KEEP
+def test_a_forward_declaration_seen_first_does_not_hide_the_bases():
+    """_class_ancestors' cache outlives a package, and which package a worker parses first is the pool's choice. A class
+    met first as a forward declaration has no bases in that translation unit; cached, that () would answer for every
+    later one too -- R-CTOR-KEEP then misses the Adaptor3d_Surface* that IntTools_BeanFaceIntersector holds, and drops
+    the keep of its BRepAdaptor_Surface argument in some runs and not in others."""
+    parse.configure_libclang()
+    index = cindex.Index.create()
+
+    def param(code: str) -> tuple[cindex.TranslationUnit, cindex.Type]:
+        tu = index.parse("probe.hxx", args=["-x", "c++", "-std=c++17"], unsaved_files=[("probe.hxx", code)])
+        fn = next(c for c in tu.cursor.get_children() if c.spelling == "probe_f")
+        return tu, next(fn.get_arguments()).type
+
+    parse._ancestors_cache.clear()
+    tu_fwd, fwd = param("class Rules_Derived;\nvoid probe_f(const Rules_Derived&);\n")
+    assert parse._class_ancestors(fwd) == ()
+    tu_def, full = param("class Rules_Base {};\nclass Rules_Derived : public Rules_Base {};\nvoid probe_f(const Rules_Derived&);\n")
+    assert parse._class_ancestors(full) == ("Rules_Base",)
+
+
+def test_a_forward_declaration_seen_first_does_not_hide_a_transient():
+    """The same for _derives_from, cached by USR, which a forward declaration shares with the definition: a pointer result
+    to a class the translation unit only declares (R-PTR-INCOMPLETE) asks whether it is a Transient, and a cached False
+    would make a later translation unit bind that class's T& results as a plain class instead of R-RESULT's handle."""
+    parse.configure_libclang()
+    index = cindex.Index.create()
+
+    def declaration(code: str) -> tuple[cindex.TranslationUnit, cindex.Cursor]:
+        tu = index.parse("probe.hxx", args=["-x", "c++", "-std=c++17"], unsaved_files=[("probe.hxx", code)])
+        fn = next(c for c in tu.cursor.get_children() if c.spelling == "probe_f")
+        return tu, next(fn.get_arguments()).type.get_pointee().get_declaration()
+
+    tu_fwd, fwd = declaration("class Rules_Leaf;\nvoid probe_f(const Rules_Leaf*);\n")
+    assert not parse._derives_from(fwd, "Rules_Root")
+    tu_def, full = declaration("class Rules_Root {};\nclass Rules_Leaf : public Rules_Root {};\nvoid probe_f(const Rules_Leaf*);\n")
+    assert parse._derives_from(full, "Rules_Root")
