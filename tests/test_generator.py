@@ -18,7 +18,7 @@ from generator.model import Class, Constructor, ConversionKind, Method, PackageI
 from generator.occt import OcctTree, Package, load_tree
 from generator.occt import _cmake_list
 from generator.stubs import _capsule_for_every_python
-from generator.__main__ import HANDWRITTEN_NAMESPACES, _topo, _base_import_edges
+from generator.__main__ import HANDWRITTEN_NAMESPACES, _decide_kept_classes, _topo, _base_import_edges
 from generator.report import CATEGORIES, categorize
 
 ROOT = Path(__file__).parents[1]
@@ -966,6 +966,52 @@ public:
 };
 typedef Rules_GuardT<NCollection_Array1<gp_Pnt>> Rules_GuardArray;
 
+//! R-KEPT: a Transient whose bound members keep an argument -- or a bound base's do -- is constructed as nanocct::Kept<T>,
+//! and an argument it keeps lives in a slot of its C++ object; unless the argument can own the object (the scene holds its
+//! nodes by handle), which stays kept by the Python object. A final class cannot be derived from.
+class Rules_KeptBase : public Standard_Transient
+{
+public:
+  void SetXYZ(const gp_XYZ& theXYZ) { myXYZ = &theXYZ; }
+
+protected:
+  const gp_XYZ* myXYZ = nullptr;
+};
+
+class Rules_KeptScene;
+
+class Rules_KeptNode : public Rules_KeptBase
+{
+public:
+  Rules_KeptNode(const Rules_KeptScene& theScene, const gp_Pnt& thePnt) : myScene(&theScene), myPnt(&thePnt) {}
+
+private:
+  const Rules_KeptScene* myScene;
+  const gp_Pnt*          myPnt;
+};
+
+class Rules_KeptScene
+{
+public:
+  Rules_KeptScene() = default;
+  void Add(const opencascade::handle<Rules_KeptNode>& theNode) { myNodes.Append(theNode); }
+
+private:
+  NCollection_List<opencascade::handle<Rules_KeptNode>> myNodes;
+};
+
+class Rules_KeptChild : public Rules_KeptBase
+{
+public:
+  Rules_KeptChild() = default;
+};
+
+class Rules_KeptFinal final : public Rules_KeptBase
+{
+public:
+  Rules_KeptFinal() = default;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -1041,7 +1087,8 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_View", "Rules_ViewSource", "Rules_ViewHolder", "Rules_Ocaf",
                                "Rules_Owner", "Rules_OwnerMember", "Rules_OwnerTrusted", "Rules_EmptyDtor", "Rules_Interface",
                                "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields",
-                               "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>",
+                               "Rules_KeptBase", "Rules_KeptNode", "Rules_KeptScene", "Rules_KeptChild", "Rules_KeptFinal"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1135,6 +1182,44 @@ def test_kept_method_arguments_get_a_slot(tmp_path_factory):
     slots = [int(n) for n in re.findall(r"keep_slot<nanocct_slots, \d+, (\d+)>", cpp)]
     assert sorted(slots) == list(range(len(slots)))                                 # one slot per (declaration, parameter)
     assert "namespace { struct nanocct_slots {}; }" in cpp
+
+
+def test_transients_that_keep_arguments_are_constructed_as_kept(tmp_path_factory):
+    """R-KEPT: a kept parameter of a Transient follows the C++ object (kept_cpp) unless its argument can own the object --
+    the scene holds handles to its nodes, so a node's C++ object keeping its scene would be a cycle (reported, with the
+    path). The driver makes every constructible Transient whose bound members, or a bound base's, keep a kept_cpp argument
+    a nanocct::Kept<T>, except one it cannot derive from; the emitter constructs it as one, registers it for the handle
+    caster and stores its kept arguments on the C++ object."""
+    ir = rules_ir_of(tmp_path_factory, "occt_kept")
+    node = next(c for c in ir.classes if c.name == "Rules_KeptNode")
+    assert [(p.name, p.kept, p.kept_cpp) for p in node.ctors[0].params] == [("theScene", True, False), ("thePnt", True, True)]
+    assert [(p.kept, p.kept_cpp) for p in _method(ir, "Rules_KeptBase", "SetXYZ").params] == [(True, True)]
+    assert any(line.startswith("Rules_KeptNode::Rules_KeptNode: argument theScene can own the object (Rules_KeptScene::myNodes -> "
+                               "NCollection_List<opencascade::handle<Rules_KeptNode>> -> opencascade::handle<Rules_KeptNode> -> "
+                               "Rules_KeptNode)") and line.endswith("(R-KEPT)") for line in ir.report)
+    assert next(c for c in ir.classes if c.name == "Rules_KeptFinal").kept_blocker == "the class is final"
+    keepers: set[str] = set()
+    kept: set[str] = set()
+    _decide_kept_classes([("TKRules", [ir])], {c.name: list(c.bases) for c in ir.classes}, keepers, kept, lambda: None)
+    assert keepers == {"Rules_KeptBase", "Rules_KeptNode"}          # the node: thePnt; the child only inherits SetXYZ
+    assert kept == {"Rules_KeptBase", "Rules_KeptNode", "Rules_KeptChild"}
+    assert any(line.startswith("Rules_KeptFinal: the class is final -> constructed as itself") for line in ir.report)
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules",
+                                "Rules_KeptBase": "Rules", "Rules_KeptNode": "Rules"},    # in-package bases: known, or skipped
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {}, kept=kept)
+    cpp = em.emit()
+    for name in ("Rules_KeptBase", "Rules_KeptNode", "Rules_KeptChild"):
+        assert f"nanocct::register_kept<{name}>(" in cpp
+    assert "new nanocct::Kept<Rules_KeptNode>(theScene, thePnt)" in cpp
+    assert re.search(r"nanocct::keep_arg<nanocct_slots, Rules_KeptNode, 2, \d+, false, false>", cpp) is not None   # the scene: Python
+    assert re.search(r"nanocct::keep_arg<nanocct_slots, Rules_KeptNode, 3, \d+, false, true>", cpp) is not None    # the point: C++
+    assert re.search(r"nanocct::keep_slot<nanocct_slots, 2, \d+, Rules_KeptBase, true>", cpp) is not None          # SetXYZ
+    assert "nanocct_implicit_default_ctor<Rules_KeptBase, true>" in cpp
+    assert "Kept<Rules_KeptFinal>" not in cpp and "register_kept<Rules_KeptFinal>" not in cpp
+    assert "nanocct_implicit_copy_ctor<Rules_KeptBase, true, true, false, nanocct_slots, " in cpp   # the copy: a Kept<T> too
+    slots = [int(n) for n in re.findall(r"keep_(?:slot|arg)<nanocct_slots, (?:\w+, )?\d+, (\d+)", cpp)]
+    slots += [int(n) for n in re.findall(r"nanocct_implicit_copy_ctor<\w+, \w+, true, \w+, nanocct_slots, (\d+)>", cpp)]
+    assert sorted(slots) == list(range(len(slots)))                                 # constructors take slot numbers too
 
 
 def test_views_keep_their_producers_and_ocaf_types_their_owners(tmp_path_factory):
@@ -1439,7 +1524,8 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
              "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules", "Rules_KeepBase": "Rules", "Rules_Interface": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
-             "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
+             "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules",
+             "Rules_KeptBase": "Rules", "Rules_KeptNode": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()

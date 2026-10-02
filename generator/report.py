@@ -14,6 +14,7 @@ from pathlib import Path
 
 # (category, pattern on the message). Order matters: the first match wins.
 CATEGORIES: list[tuple[str, str]] = [
+    ("kept", r"\(R-KEPT\)"),            # first: its lines quote type paths, which other patterns would match
     ("deprecated", r"\bdeprecated\b"),
     ("override", r"overrides\.toml"),
     ("undefined", r"no definition in lib"),

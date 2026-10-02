@@ -68,13 +68,13 @@ def parse_one(job):
 _EMIT = {}
 
 
-def init_emit(src, install, known, templates, paths, toolkit_order, bases):
+def init_emit(src, install, known, templates, paths, toolkit_order, bases, kept):
     global _TREE
     configure_libclang()
     _TREE = load_tree(src, install)
     from .parse import clang_args, include_prelude
     cargs = clang_args(_TREE)
-    _EMIT.update(known=known, templates=templates, paths=paths, toolkit_order=toolkit_order, bases=bases,
+    _EMIT.update(known=known, templates=templates, paths=paths, toolkit_order=toolkit_order, bases=bases, kept=kept,
                  toolkit_of={name: pk.toolkit for name, pk in _TREE.packages.items()},
                  prelude=lambda headers: include_prelude(headers, _TREE.include_dir, cargs))
 
@@ -84,7 +84,8 @@ def emit_one(job):
     from .emit import Emitter
     tk_name, pkg_name, ir = job
     em = Emitter(ir, _TREE.include_dir, _EMIT["known"], _EMIT["toolkit_of"], dict(_EMIT["templates"]),
-                 _EMIT["toolkit_order"], _EMIT["paths"], prelude_check=_EMIT["prelude"], bases_of=_EMIT["bases"])
+                 _EMIT["toolkit_order"], _EMIT["paths"], prelude_check=_EMIT["prelude"], bases_of=_EMIT["bases"],
+                 kept=_EMIT["kept"])
     em.preassigned = True                       # the owner of every instantiation is already recorded
     t0 = time.perf_counter()
     text = em.emit()

@@ -64,6 +64,8 @@ class Param:
                             # refuses (BufferError) while the container has live views (nanocct::guarded, nanocct_common.h)
     container: bool = False # R-VIEW-GUARD: a reference/pointer to an NCollection container, any constness: an iterator class (R-ITER)
                             # constructed or initialised from it is an iterator view of it
+    kept_cpp: bool = False  # R-KEPT: a kept argument of a Transient that cannot own the object (parse._cycle_path): the C++ object
+                            # of a nanocct::Kept<T> keeps it; one that can stays kept by the Python object (a cycle no GC sees)
 
 
 @dataclass
@@ -171,6 +173,12 @@ class Class:
     dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
                                       # (implicit or defined in the header). R-UNDEFINED checks it: nanobind instantiates
                                       # wrap_destruct<T> for every bound class, so an unexported ~T() is a link error
+    kept: bool = False                # R-KEPT: the bindings construct it as nanocct::Kept<T> (decided by the driver over all packages:
+                                      # its bound constructors or methods, or a bound base's, keep an argument with kept_cpp)
+    kept_blocker: str = ""            # R-KEPT: why nanocct::Kept<T> cannot be derived from it ("" if it can): final, a private
+                                      # destructor, a final Delete(), a multiple-inheritance H-collection
+    virtual_symbols: list[str] = field(default_factory=list)   # R-KEPT: the linker symbols of its virtual functions that the
+                                      # headers do not define (the final overriders); Kept<T>'s own vtable names each of them
 
     @property
     def bound_type(self) -> str:

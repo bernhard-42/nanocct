@@ -1254,3 +1254,133 @@ def test_a_container_member_refuses_assignment_while_viewed():
         print(r.Roots.Length(), r.Roots.Value(0))
     """, GUARD))
     assert out == ["1.0 BufferError", "1 5.0"]
+
+
+# ---- R-KEPT: a Transient keeps what it was given as long as its C++ object lives ---------------------------------------
+
+POLY = """
+import sys
+from nanocct import Geom, GeomAdaptor, IntPatch, NCollection, Standard, gp
+def polyhedron():
+    return IntPatch.IntPatch_Polyhedron(GeomAdaptor.GeomAdaptor_Surface(Geom.Geom_SphericalSurface(gp.gp_Ax3(), 2.0)), 6, 6)
+def centres(bvh):       # the polyhedron's points, read through the BVH: freed and scribbled memory reads as garbage
+    return [round(bvh.Center(i, a), 9) for i in range(bvh.Size()) for a in range(3)]
+seq = NCollection.NCollection_HSequence[Standard.Standard_Transient]()
+"""
+
+
+def test_a_transient_keeps_its_constructor_argument_while_cpp_holds_it():
+    """A8 of the 2026-10-01 audit: IntPatch_PolyhedronBVH(poly) keeps &poly (IntPatch_PolyhedronBVH.hxx). An OCCT sequence
+    holds the BVH after Python dropped it and the polyhedron: the argument lives as long as the C++ object, and the object
+    comes back as its own class through a handle<Standard_Transient> (nanocct::Kept<T> is never seen)."""
+    out = _ok(_run("""
+        poly = polyhedron()
+        bvh = IntPatch.IntPatch_PolyhedronBVH(poly)
+        before = centres(bvh)
+        seq.Append(bvh)
+        del bvh, poly
+        collect()
+        again = seq.Value(1)
+        print(type(again).__name__, len(before) > 0, centres(again) == before)
+    """, POLY))
+    assert out == ["IntPatch_PolyhedronBVH True True"]
+
+
+def test_a_transient_keeps_its_method_argument_while_cpp_holds_it():
+    """The same through a method: `IntPatch_PolyhedronBVH()` then `Init(poly)` -- the slot lives on the C++ object too."""
+    out = _ok(_run("""
+        poly = polyhedron()
+        bvh = IntPatch.IntPatch_PolyhedronBVH()
+        bvh.Init(poly)
+        before = centres(bvh)
+        seq.Append(bvh)
+        del bvh, poly
+        collect()
+        print(centres(seq.Value(1)) == before)
+    """, POLY))
+    assert out == ["True"]
+
+
+def test_a_transient_releases_what_it_keeps_with_its_cpp_object():
+    """The argument is held exactly as long as the C++ object: one reference while only the sequence holds the BVH, none
+    once the sequence lets go of it."""
+    out = _ok(_run("""
+        poly = polyhedron()
+        base = sys.getrefcount(poly)
+        bvh = IntPatch.IntPatch_PolyhedronBVH(poly)
+        seq.Append(bvh)
+        del bvh
+        collect()
+        held = sys.getrefcount(poly)
+        seq.Clear()
+        collect()
+        print(held - base, sys.getrefcount(poly) - base)
+    """, POLY))
+    assert out == ["1 0"]
+
+
+def test_a_slot_on_the_cpp_object_is_replaced_by_any_python_object_of_it():
+    """`Init` stores into the C++ object's slot, whichever Python object calls it: the one the sequence hands back after the
+    first is gone replaces the earlier argument, which is then released -- one argument held, not one per call."""
+    out = _ok(_run("""
+        polys = [polyhedron() for _ in range(3)]
+        bases = [sys.getrefcount(p) for p in polys]
+        bvh = IntPatch.IntPatch_PolyhedronBVH()
+        bvh.Init(polys[0])
+        seq.Append(bvh)
+        del bvh
+        collect()
+        seq.Value(1).Init(polys[1])
+        collect()
+        seq.Value(1).Init(polys[2])
+        collect()
+        now = [sys.getrefcount(p) for p in polys]       # the same expression as for bases (a zip tuple would hold p too)
+        print([n - b for n, b in zip(now, bases)])
+    """, POLY))
+    assert out == ["[0, 0, 1]"]
+
+
+def test_a_base_method_finds_the_cpp_slots_of_a_derived_kept_object():
+    """`RWMesh_TriangulationSource` (TKRWMesh) is a nanocct::Kept<T> through its base's `Poly_Triangulation::SetCachedMinMax`
+    (TKMath): the base's binding finds the derived object's slots across two extension modules (a cross-cast whose RTTI
+    must agree between them, as for OCCT's own down_cast of an object nanocct created)."""
+    out = _ok(_run("""
+        from nanocct import Bnd, RWMesh
+        box = Bnd.Bnd_Box(gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(1, 1, 1))
+        base = sys.getrefcount(box)
+        tri = RWMesh.RWMesh_TriangulationSource()
+        tri.SetCachedMinMax(box)
+        seq.Append(tri)
+        del tri
+        collect()
+        print(type(seq.Value(1)).__name__, sys.getrefcount(box) - base)
+    """, POLY))
+    assert out == ["RWMesh_TriangulationSource 1"]
+
+def test_a_python_subclass_of_a_kept_class_keeps_its_argument():
+    out = _ok(_run("""
+        class Mine(IntPatch.IntPatch_PolyhedronBVH):
+            pass
+        poly = polyhedron()
+        mine = Mine(poly)
+        before = centres(mine)
+        del poly
+        collect()
+        print(type(mine).__name__, centres(mine) == before)
+    """, POLY))
+    assert out == ["Mine True"]
+
+
+def test_an_argument_that_owns_the_object_stays_kept_by_the_python_object():
+    """A VRML node points to its scene, and the scene holds its nodes: a scene kept by the node's C++ object would keep
+    itself alive (a cycle no garbage collector sees, nanobind's leak report at exit). The cycle check leaves the scene to
+    the node's Python object, as before R-KEPT."""
+    _ok(_run("""
+        from nanocct import VrmlData
+        for _ in range(3):
+            scene = VrmlData.VrmlData_Scene()
+            box = VrmlData.VrmlData_Box(scene, "box")
+            scene.AddNode(box)
+            del scene, box
+            collect()
+    """))

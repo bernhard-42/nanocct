@@ -100,13 +100,16 @@ def test_the_buffer_converts_to_float_and_int():
     assert isinstance(float(buffer), float) and isinstance(int(buffer), int)
 
 
-def test_report_is_six_lines_and_three_copies():
+def test_report_is_six_lines_three_copies_and_one_kept():
     """All six are `void*`: MeshVS_DataSource hands out raw addresses for the application's own mesh objects
     (`GetAddr`, `GetGroupAddr`, `MeshVS_MeshEntityOwner::Owner`) and MeshVS_Buffer casts itself to one. Three classes
     have no copy constructor: their destructor frees what their pointers point to (R-COPY, 2026-10-02)."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     copies = [line.split("\t")[2].split(":")[0] for line in lines if line.startswith("copy")]
     assert copies == ["MeshVS_Buffer", "MeshVS_CommonSensitiveEntity", "MeshVS_Mesh"]
-    lines = [line for line in lines if not line.startswith("copy")]
+    # R-KEPT (2026-10-02): the selectable object an owner is made for holds its owners (selections -> sensitive entities)
+    kept = [line.split("\t")[2].split(": ")[0] for line in lines if line.startswith("kept")]
+    assert kept == ["MeshVS_MeshOwner::MeshVS_MeshOwner"]
+    lines = [line for line in lines if not line.startswith(("copy", "kept"))]
     assert len(lines) == 6
     assert all("void pointer" in line or "operator void *" in line for line in lines)

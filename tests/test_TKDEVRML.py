@@ -177,6 +177,12 @@ def test_report_is_the_vrmldata_raw_pointers():
     nowhere in OCCT, which the nm check caught before the linker did."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     all_lines, lines, undefined, _ = report("TKDEVRML")
+    # R-KEPT (2026-10-02): every node constructor's scene stays kept by the node's Python object -- the scene holds its
+    # nodes, so a scene kept by a node's C++ object would be a cycle no garbage collector sees
+    kept = [line for line in lines if line.startswith("kept")]
+    assert len(kept) == 22
+    assert all("argument theScene can own the object (VrmlData_Scene::" in line for line in kept)
+    lines = [line for line in lines if not line.startswith("kept")]
     # 25 until R-STR bound the two scene stream operators (8.14); 25 again since R-UNBOUND-TYPE judges binder instantiations
     # (2026-09-30): NamedNodesIterator() and InfoIterator() return Iterators of maps/lists no binder instantiates
     assert len(lines) == 25

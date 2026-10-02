@@ -1968,6 +1968,147 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
 
 
 
+# Design.md 6 R-KEPT: per package, the kept parameters of Transient classes waiting for the cycle check (end of package),
+# and what each class reached by the check can own
+_cycle_open: list[tuple[Class, cindex.Cursor, str, Param, cindex.Type]] = []   # (class, declaring class, function, param, its type)
+_strong_edges_of: dict[str, list[tuple[cindex.Type, str, bool]]] = {}         # class -> (owned class, how, it is a handle's target)
+_MI_COLLECTIONS = ("NCollection_HArray1<", "NCollection_HArray2<", "NCollection_HSequence<", "NCollection_Shared<")
+
+
+def _owned_class(ft: cindex.Type, how: str, edges: list[tuple[cindex.Type, str, bool]]) -> None:
+    """The class behind a member or template argument type -- by value, through arrays, pointers and references."""
+    canon = ft.get_canonical()
+    while canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY, TK.POINTER, TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        canon = (canon.element_type if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY)
+                 else canon.get_pointee()).get_canonical()
+    if canon.kind == TK.RECORD and not _is_dependent(canon):
+        edges.append((canon, how, False))
+
+
+def _strong_edges(t: cindex.Type) -> list[tuple[cindex.Type, str, bool]]:
+    """R-KEPT: the classes an object of class t can own, one step: its bases, its members (by value, and behind typed
+    pointers -- TDF_Data owns its label nodes through one; a back-pointer only adds a path), the arguments of a class
+    template (a container's elements), and the target of a handle (marked) or of another owning smart pointer. Not
+    followed: `void *`, a function pointer, a class the headers only declare, a dependent type (Design.md R-KEPT)."""
+    key = _record_key(t)
+    if key in _strong_edges_of:
+        return _strong_edges_of[key]
+    edges: list[tuple[cindex.Type, str, bool]] = []
+    _strong_edges_of[key] = edges                  # a class reached again through itself adds nothing new
+    n = t.get_num_template_arguments()
+    if key.startswith(_OWNING_TEMPLATES):
+        if not key.startswith("std::weak_ptr<") and n >= 1 and t.get_template_argument_type(0).kind != TK.INVALID:
+            edges.append((t.get_template_argument_type(0).get_canonical(), "", key.startswith("opencascade::handle<")))
+        return edges
+    for i in range(n):
+        if t.get_template_argument_type(i).kind != TK.INVALID:
+            _owned_class(t.get_template_argument_type(i), "", edges)
+    if key.startswith("std::") or key.split("<")[0] in BINDERS:
+        return edges                               # a container or std:: type: its arguments (its storage is its own)
+    decl = t.get_declaration()
+    defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
+    if defn is None:
+        return edges
+    children = list(defn.get_children())
+    if len(children) == 0:                         # an implicit instantiation: members from the type, bases from the template
+        for f in t.get_fields():
+            _owned_class(f.type, f"::{f.spelling}", edges)
+        tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(defn)
+        tdef = None if tmpl is None or tmpl.kind == K.NO_DECL_FOUND else tmpl.get_definition()
+        children = [] if tdef is None else [b for b in tdef.get_children() if b.kind == K.CXX_BASE_SPECIFIER]
+    for ch in children:
+        if ch.kind == K.FIELD_DECL:
+            _owned_class(ch.type, f"::{ch.spelling}", edges)
+        elif ch.kind == K.CXX_BASE_SPECIFIER and not _is_dependent(ch.type) and ch.type.get_canonical().kind == TK.RECORD:
+            edges.append((ch.type.get_canonical(), " (base)", False))
+    return edges
+
+
+def _cycle_path(t: cindex.Type, owner: cindex.Cursor) -> str | None:
+    """R-KEPT: can an argument of type t own an object of class `owner` -- reach, through what it owns (_strong_edges), a
+    handle whose target class is related to owner (a base of it, or derived from it)? Then an argument the C++ object keeps
+    would be a reference cycle no garbage collector sees: the path, else None. A dependent type is answered with a path
+    too (nothing is known about it: it stays kept by the Python object, as before)."""
+    start = _pointee(t)
+    start = t.get_canonical() if start is None else start
+    if _is_dependent(start) or _is_dependent(owner.type):
+        return f"{_type_spelling(t)} (a dependent type, not followed)"
+    if start.kind != TK.RECORD:
+        return None
+    owner_key = _record_key(owner.type)
+    related = {owner_key, *_class_ancestors(owner.type)}
+    first = _record_key(start)
+    todo, seen = [(start, first)], {first}
+    while len(todo) > 0:
+        cur, path = todo.pop(0)
+        for child, how, target in _strong_edges(cur):
+            ck = _record_key(child)
+            step = f"{path}{how} -> {ck}"
+            if target and (ck in related or owner_key in _class_ancestors(child)):
+                return step
+            if ck not in seen:
+                seen.add(ck)
+                todo.append((child, step))
+    return None
+
+
+def _decide_cycles() -> None:
+    """R-KEPT, end of package: a kept parameter of a Transient class follows the C++ object (kept_cpp) unless its argument
+    can own the object (_cycle_path) -- reported, it stays kept by the Python object."""
+    for c, owner, fn, p, t in _cycle_open:
+        if not p.kept:
+            continue
+        path = _cycle_path(t, owner)
+        p.kept_cpp = path is None
+        if path is not None:
+            c.skipped.append(f"{c.name}::{fn}: argument {p.name} can own the object ({path}), a cycle no garbage collector sees "
+                             f"-> kept by the Python object, not by nanocct::Kept<T> (R-KEPT)")
+
+
+def _kept_facts(cursor: cindex.Cursor, c: Class) -> tuple[str, list[str]]:
+    """R-KEPT: why nanocct::Kept<T> cannot derive from the class ("" if it can), and the linker symbols its own vtable
+    needs: the final overrider of every virtual function of the class and its bases that the headers do not define (a
+    plain `new T` uses T's vtable from the library instead; on Windows only Standard_EXPORT members are exported). Class
+    templates define their members in the headers; their non-template bases are still walked."""
+    children = list(cursor.get_children())
+    if any(ch.kind == K.CXX_FINAL_ATTR for ch in children):
+        return "the class is final", []
+    if any(ch.kind == K.DESTRUCTOR and ch.access_specifier == Access.PRIVATE for ch in children):
+        return "its destructor is private", []
+    if any(a.startswith(_MI_COLLECTIONS) for a in (c.name, *_class_ancestors(cursor.type))):
+        return "a multiple-inheritance H-collection (its Transient base is not at offset 0)", []
+    finals: dict[tuple[str, tuple[str, ...], bool], cindex.Cursor | None] = {}
+    seen: set[str] = set()
+
+    def visit(cls: cindex.Cursor, template: bool) -> None:
+        kids = list(cls.get_children())
+        if len(kids) == 0 and cls.kind != K.NO_DECL_FOUND:          # an implicit instantiation: the template's definition
+            tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(cls)
+            tdef = None if tmpl is None or tmpl.kind == K.NO_DECL_FOUND else tmpl.get_definition()
+            if tdef is not None:
+                visit(tdef, True)
+            return
+        for ch in kids:
+            if ch.kind == K.CXX_METHOD and ch.is_virtual_method():
+                sig = (ch.spelling, tuple(_canonical_args(a.type) for a in ch.get_arguments()), ch.is_const_method())
+                finals.setdefault(sig, None if template else ch)   # a template's member is defined in the header
+        for ch in kids:
+            if ch.kind == K.CXX_BASE_SPECIFIER and not _is_dependent(ch.type):
+                d = ch.type.get_canonical().get_declaration()
+                dd = None if d.kind == K.NO_DECL_FOUND else d.get_definition()
+                if dd is not None and (dd.get_usr() or dd.spelling) not in seen:
+                    seen.add(dd.get_usr() or dd.spelling)
+                    visit(dd, template)
+
+    visit(cursor, "<" in c.name or _SUBST.active)
+    delete = finals.get(("Delete", (), True))
+    if delete is not None and any(ch.kind == K.CXX_FINAL_ATTR for ch in delete.get_children()):
+        return "Delete() is final", []
+    symbols = sorted({m.mangled_name for m in finals.values() if m is not None and not m.is_pure_virtual_method()
+                      and not (m.is_definition() or m.get_definition() is not None or m.is_default_method())})
+    return "", symbols
+
+
 def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bool, const_method: bool) -> None:
     """R-CTOR-KEEP / R-METHOD-KEEP: mark the parameters of a constructor or method that the object can keep the address of --
     taken by reference or pointer (not a handle, a primitive, a stream, bytes or a returned out-parameter), of a class that
@@ -1992,6 +2133,8 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
             key, is_class = _record_key(pointee), pointee.kind == TK.RECORD
         if not is_class or key.startswith(_OWNING_TEMPLATES):
             continue
+        if c.is_transient:
+            _cycle_open.append((c, fn.semantic_parent, fn.spelling, p, arg.type))   # R-KEPT, decided once p.kept is
         lay = _type_layout(arg.type, p.type)
         # a pointer copied out of the argument (shares_pointees): constructors only. A new object has no pointers of its own
         # yet, so one it copies points where the argument's does; a method's object already points into what produced it,
@@ -2123,6 +2266,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                                             or ch.is_default_method() or ch.is_deleted_method()):
             c.dtor_mangled = ch.mangled_name
             break
+    if c.is_transient:
+        c.kept_blocker, c.virtual_symbols = _kept_facts(cursor, c)     # R-KEPT
     # a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot, defined in
     # the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed
     for ch in cursor.get_children():
@@ -2792,6 +2937,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     _fields_open.clear()
     _instance_layouts.clear()
     _instance_owners.clear()
+    _cycle_open.clear()
+    _strong_edges_of.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -2990,6 +3137,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     add_class(inst)
         _resolve_held_layout(index, umbrella, args, td)       # R-CTOR-KEEP: layout spelled only after substitution
         _decide_views(ir.report)                                # R-RESULT-KEEP: once every layout is complete
+        _decide_cycles()                                        # R-KEPT: once every parameter's kept is
         # a template base that could not be instantiated is dropped from its derived classes (R-TEMPLATE-BASE): the class binds
         # without the base's members. A Transient class whose only path to Standard_Transient is that base cannot be bound at all.
         names = {c.name for c in ir.classes}

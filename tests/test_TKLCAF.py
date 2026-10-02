@@ -122,7 +122,9 @@ def test_keyword_parameter_names_are_suffixed():
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     categories = {line.split("\t")[0] for line in lines}
-    assert categories <= {"copy", "iterator", "not-constructible", "null-bool", "operator", "overload-collision", "raw-pointer", "stream", "template", "unbound-type", "view-guard"}
+    assert categories <= {"copy", "iterator", "kept", "not-constructible", "null-bool", "operator", "overload-collision", "raw-pointer", "stream", "template", "unbound-type", "view-guard"}
+    # R-KEPT (2026-10-02): the document an owner attribute points to holds the attribute (TDF_Data -> label nodes -> attributes)
+    assert [line.split("\t")[2].split(": ")[0] for line in lines if line.startswith("kept")] == ["TDocStd_Owner::SetDocument"]
     # R-VIEW-GUARD (2026-10-02): the data set's and relocation table's maps, the HDataMaps' ChangeMap(), ...
     assert sum(line.startswith("view-guard") for line in lines) == 15
     # R-COPY (2026-10-02): a copy of a TDF_Data would share its label tree, which its destructor frees

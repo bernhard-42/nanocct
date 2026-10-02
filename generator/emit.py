@@ -89,8 +89,11 @@ def _names_not_value_copy(result: str) -> bool:
 class Emitter:
     def __init__(self, ir: PackageIR, include_dir: Path, known_classes: dict[str, str], toolkit_of: dict[str, str],
                  known_templates: dict[str, dict], toolkit_order: list[str] | None = None, paths: dict[str, str] | None = None,
-                 prelude_check: Callable[[list[str]], list[str]] | None = None, bases_of: dict[str, list[str]] | None = None):
+                 prelude_check: Callable[[list[str]], list[str]] | None = None, bases_of: dict[str, list[str]] | None = None,
+                 kept: set[str] | None = None):
         self.ir = ir
+        self.kept = kept if kept is not None else set()   # R-KEPT: every class the bindings construct as nanocct::Kept<T> (manifest "kept")
+        self._self = ""                                   # R-KEPT: the bound type of the class being defined (keep_slot's Self)
         self.bases_of = bases_of if bases_of is not None else {}   # R-OVERLOAD-ORDER: every bound class -> its direct bases (manifest "bases")
         self._ancestor_cache: dict[tuple[str, tuple[str, ...]], set[str]] = {}
         self.prelude_check = prelude_check    # R-PRELUDE for the emitted include list (parse.include_prelude); None in unit tests
@@ -305,6 +308,11 @@ class Emitter:
             s += ", nb::is_operator()"
         return s
 
+    # Design.md 6 R-KEPT
+    def _new_type(self, cls_name: str) -> str:
+        """What `new` constructs for a Transient the bindings create: nanocct::Kept<T> for a class whose bindings keep arguments."""
+        return f"nanocct::Kept<{cls_name}>" if cls_name in self.kept else cls_name
+
     # Design.md 6 R-METHOD-KEEP
     def _keep_slots(self, m: Method) -> str:
         """One nanocct::keep_slot call policy per method parameter the object can keep the address of: the argument's
@@ -316,7 +324,10 @@ class Emitter:
             if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
                 continue
             position += 1
-            if p.kept:
+            if p.kept and p.kept_cpp:      # R-KEPT: on the C++ object of a Kept<T>
+                out += f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}, {self._self}, true>>()"
+                self.slots += 1
+            elif p.kept:
                 out += f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}>>()"
                 self.slots += 1
         return out
@@ -474,7 +485,7 @@ class Emitter:
         elif m.result_kind == ResultKind.VALUE_TRANSIENT:
             # R-RESULT for `T` by value, T Transient: never a nanobind-owned copy (reference count 0, deleted by the first
             # handle it meets); the prvalue initialises a heap object held by a handle, as in every Transient constructor
-            body.append(f"opencascade::handle<{m.result_class}> nanocct_result(new {m.result_class}({callee}));")
+            body.append(f"opencascade::handle<{m.result_class}> nanocct_result(new {self._new_type(m.result_class)}({callee}));")
             results.append("nanocct_result")
         elif m.result_by_reference and len(outs) == 0 and not any(p.stream == StreamKind.OUT for p in m.params):
             # R-COPY: `auto` would copy the result; the reference goes out as it is (reference_internal, _method)
@@ -642,11 +653,20 @@ class Emitter:
         nurse = 0 if cls.is_transient else 1
         # R-COPY: an argument the object may copy pointers out of (a copy constructor, TDF_ChildIterator(label)) is kept with
         # what its slots hold now (nanocct::keep_view_arg): its next Initialize must not free what the new object points to
-        keep += "".join(f", nb::call_policy<nanocct::keep_view_arg<{nurse}, {2 + i}>>()" if p.kept_view
-                        else f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
+        if cls.kept:
+            # R-KEPT: the object is a nanocct::Kept<T>; an argument that cannot own it lives in a slot of its C++ object
+            for i, p in enumerate(ins):
+                if p.kept:
+                    keep += (f", nb::call_policy<nanocct::keep_arg<nanocct_slots, {T}, {2 + i}, {self.slots}, "
+                             f"{'true' if p.kept_view else 'false'}, {'true' if p.kept_cpp else 'false'}>>()")
+                    self.slots += 1
+        else:
+            keep += "".join(f", nb::call_policy<nanocct::keep_view_arg<{nurse}, {2 + i}>>()" if p.kept_view
+                            else f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
         keep += self._iterator_views(ins, {i: 2 + i for i in range(len(ins))}, nurse)     # R-VIEW-GUARD
         if cls.is_transient:
-            fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {T}({call})); }})"
+            new_t = f"nanocct::Kept<{T}>" if cls.kept else T
+            fn = f"nb::new_([]({lam_params}) {{ {pre}return opencascade::handle<{T}>(new {new_t}({call})); }})"
         elif special or type_name is not None:
             self_param = f"{T} *self" + (", " if len(ins) > 0 else "")
             fn = f'"__init__", []({self_param}{lam_params}) {{ {pre}new (self) {T}({call}); }}'
@@ -1106,6 +1126,7 @@ class Emitter:
         body: list[str] = []
         ctor_body: list[str] = []     # constructors of a 6c instantiation: guarded at compile time (abstractness is not visible in the template)
         self._iterating = self._iter_getter(c) is not None    # R-VIEW-GUARD: constructors and Init/Initialize make iterator views
+        self._self = c.bound_type                              # R-KEPT: keep_slot's Self
         unhashable = False            # R-UNHASHABLE: emitted after the body, as a statement of its own
         def cls_expr_of(cc: Class) -> str:
             return f'nb::borrow<nb::class_<{cc.bound_type}>>({self._attr(cc.scope)}.attr("{cc.py_name}"))'
@@ -1181,7 +1202,7 @@ class Emitter:
         if getter is not None:       # R-ITER (Design.md 2c): More()/Next()/Value() classes are their own Python iterator
             self.report.append(f"{c.name}: __iter__ added (More/Next/{getter})")
             get = next(m for m in c.methods if m.name == getter and len(m.params) == 0 and not m.is_static and m.skip_reason is None)
-            value = (f"opencascade::handle<{get.result_class}>(new {get.result_class}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
+            value = (f"opencascade::handle<{get.result_class}>(new {self._new_type(get.result_class)}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
                      if get.result_kind == ResultKind.VALUE_TRANSIENT else f"self.{getter}()")
             # R-RESULT-KEEP: an element of a class holding pointers keeps the iterated object; R-OWNER: an OCAF one its owners
             view = ", true" if get.result_view else ""
@@ -1230,8 +1251,11 @@ class Emitter:
             self.report.append(f"{c.name}: __hash__ = None added (value __eq__ without a hash)")
             unhashable = True
         cls_expr = cls_expr_of(c)
+        if c.kept:
+            # R-KEPT: the handle caster shows a nanocct::Kept<T> as T (before any constructor can hand one to Python)
+            define.append(f'    nanocct::register_kept<{c.bound_type}>({cls_expr});')
         if implicit_default:
-            define.append(f'    nanocct_implicit_default_ctor<{c.bound_type}>({cls_expr});')
+            define.append(f'    nanocct_implicit_default_ctor<{c.bound_type}{", true" if c.kept else ""}>({cls_expr});')
         if len(ctor_body) > 0:
             # a template instantiation may be abstract through pure virtuals of its bases (BVH_PrimitiveSet<double, 3> via BVH_Set):
             # libclang cannot tell inside the template, the compiler can (R-TEMPLATE-BASE)
@@ -1255,7 +1279,14 @@ class Emitter:
                                    f"{c.copy_owner} may free (R-COPY)")
             else:
                 # R-COPY: the copy of a class holding pointers shares them, so it keeps the original alive (and what its slots hold)
-                define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
+                if c.kept:
+                    # R-KEPT: the copy is a Kept<T> too; the original it shares pointers with stays kept by the copy's Python object
+                    # (an argument of the class's own type can own the copy, which the cycle check of a constructor parameter
+                    # would have to show first)
+                    define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}, {"true" if c.view else "false"}, true, false, nanocct_slots, {self.slots}>({cls_expr});')
+                    self.slots += 1
+                else:
+                    define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
         for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
             self._note_types(f.type)
             dd = _cpp_doc(f.doc)
@@ -1334,7 +1365,8 @@ class Emitter:
                 attrs = "".join(f'.attr("{a}")' for a in path.split("."))
                 target = (f'nb::module_::import_("nanocct._{self.toolkit_of[pkg]}.{pkg}"){attrs}' if pkg != self.ir.name else f"m{attrs}")
                 helper = "nanocct_conversion_handle" if conv.kind == ConversionKind.HANDLE else "nanocct_conversion"
-                conversions.append(f'    {helper}<{c.name}, {conv.target}>({target}, {"false" if conv.is_explicit else "true"});')
+                kept_target = ", true" if helper == "nanocct_conversion" and conv.target_class in self.kept else ""   # R-KEPT
+                conversions.append(f'    {helper}<{c.name}, {conv.target}{kept_target}>({target}, {"false" if conv.is_explicit else "true"});')
                 self._note_types(conv.target)
         return conversions
 
