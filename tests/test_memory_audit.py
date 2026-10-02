@@ -1,4 +1,4 @@
-"""The targeted scenarios of the 2026-10-01 memory audit (Design.md 6: R-CTOR-KEEP, R-METHOD-KEEP, R-KEPT, R-RESULT,
+"""The targeted scenarios of the 2026-10-01 memory audit (Binding-Rules.md: R-CTOR-KEEP, R-METHOD-KEEP, R-KEPT, R-RESULT,
 R-RESULT-KEEP, R-OWNER, R-COPY, R-FIELD, R-VIEW-GUARD), each asserting the safe outcome.
 
 Every scenario drops one side of a relation a static scan of the headers found -- an argument an object keeps the address

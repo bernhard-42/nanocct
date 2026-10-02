@@ -35,7 +35,7 @@ def test_transient_curves_and_polymorphic_handles():
 
 def test_class_typed_out_params_are_mutated_in_place():
     p, v = gp.gp_Pnt2d(), gp.gp_Vec2d()
-    _circle().D1(math.pi / 2, p, v)                                # gp_Pnt2d& / gp_Vec2d& stay parameters (Design.md 6)
+    _circle().D1(math.pi / 2, p, v)                                # gp_Pnt2d& / gp_Vec2d& stay parameters (Binding-Rules.md)
     assert p.Coord__float__float() == pytest.approx((0.0, 2.0))
     assert v.Coord() == pytest.approx((-2.0, 0.0))
 
@@ -65,7 +65,7 @@ def test_bezier_from_ncollection_array():
     assert bz.Value(0.5).Coord__float__float() == (1.0, 0.5)
     assert bz.Poles().Length() == 3                                # const Array1& result
     assert not hasattr(bz, "Poles_s")
-    # the deprecated out-into-array overload is bound too, with OCCT's message as the docstring's first line (Design.md 6 R-DEPRECATED)
+    # the deprecated out-into-array overload is bound too, with OCCT's message as the docstring's first line (Binding-Rules.md R-DEPRECATED)
     poles = NCollection.NCollection_Array1[gp.gp_Pnt2d](1, 3)
     bz.Poles(poles)
     assert poles[3].Coord__float__float() == bz.Pole(3).Coord__float__float()

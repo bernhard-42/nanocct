@@ -1,4 +1,4 @@
-"""std::ostream& / std::istream& parameters (Design.md 6): an output stream comes back as a str, an input stream is a
+"""std::ostream& / std::istream& parameters (Binding-Rules.md): an output stream comes back as a str, an input stream is a
 text file-like object (io.StringIO, an open file) so that it cannot be confused with a file-path overload."""
 import io
 import os

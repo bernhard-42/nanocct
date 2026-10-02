@@ -41,7 +41,7 @@ NB_MODULE(_AddOns, m) {
     nanocct_def_Tessellator(m_Tess);
 
     // a workaround for an OCCT bug, not an addition: it carries OCCT's class name so that dropping it is an import
-    // change (Design.md R-ADDON, OCCT issue #1541)
+    // change (Binding-Rules.md R-ADDON, OCCT issue #1541)
     nb::module_ m_Clean = m_AddOns.def_submodule("ShapeClean", "Workarounds for OCCT shape-cleaning bugs");
     m_Clean.attr("__name__") = "nanocct.AddOns.ShapeClean";
     sys_modules["nanocct.AddOns.ShapeClean"] = m_Clean;

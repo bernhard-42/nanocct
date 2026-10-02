@@ -1,4 +1,4 @@
-"""A ratchet on the lifetime rules (Design.md 6; the 2026-10-01 memory audit's categories as generator output): how many
+"""A ratchet on the lifetime rules (Binding-Rules.md; the 2026-10-01 memory audit's categories as generator output): how many
 bindings each rule touched, counted in the generated sources and in the generator's reports. An OCCT update, a generator
 change or a new rule moves these numbers; the test then fails with the whole table, pinned and found, and the pins are
 updated on purpose -- nothing appears or vanishes unseen. Python and stubs see none of it, so only this shows it.

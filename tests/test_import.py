@@ -1,6 +1,6 @@
 """Every toolkit module must be importable on its own.
 
-`nanocct/__init__.py` imports nothing since 2026-09-24 (Design.md 6a), so whichever module a user reaches first is
+`nanocct/__init__.py` imports nothing since 2026-09-24 (Binding-Rules.md 6a), so whichever module a user reaches first is
 the one that has to bring up its own dependencies. Until then the eager import always loaded all 45 in one working
 order, which hid five modules that could not stand alone: `_TKV3d` and `_TKMeshVS` died on a cross-toolkit alias
 that imported back into a half-initialised module, and `_TKXmlL`, `_TKXml` and `_TKXmlXCAF` aborted outright because

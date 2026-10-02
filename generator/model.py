@@ -6,7 +6,7 @@ from enum import StrEnum
 
 
 class ResultKind(StrEnum):
-    """How a method's result is handed to Python (parse._result_kind, emit._method); Design.md 4.2 and 6."""
+    """How a method's result is handed to Python (parse._result_kind, emit._method); Design.md 4.2 and Binding-Rules.md."""
     VALUE = "value"                    # copied (nanobind default), also void
     VALUE_TRANSIENT = "value_transient"  # T by value with T Transient: moved into handle<T>(new T(...)), like a constructor
     PTR_TRANSIENT = "ptr_transient"    # T* with T Transient: wrapped in a handle<T>, never owned by nanobind
@@ -18,14 +18,14 @@ class ResultKind(StrEnum):
 
 
 class StreamKind(StrEnum):
-    """A std::ostream& / std::istream& parameter (Design.md 6)."""
+    """A std::ostream& / std::istream& parameter (Binding-Rules.md)."""
     NONE = ""
     OUT = "out"      # std::ostream&: dropped from the signature, the written text is returned as a str
     IN = "in"        # std::istream& / Standard_SStream&: a text file-like object (typing.TextIO, nanocct::TextInput), never a str
 
 
 class ConversionKind(StrEnum):
-    """operator T() const (Design.md 6): a Python dunder for a scalar target, a constructor of T from this class otherwise."""
+    """operator T() const (Binding-Rules.md): a Python dunder for a scalar target, a constructor of T from this class otherwise."""
     BOOL = "bool"
     INT = "int"
     FLOAT = "float"

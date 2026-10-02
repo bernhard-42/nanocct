@@ -156,7 +156,7 @@ def collision_siblings(obj, source: str, ocp: list) -> dict[int, str]:
     """{argument count: nanocct member} where an OCP call means nanocct's R-COLLISION sibling rather than the plain name.
 
     nanocct binds the out-parameter form of a colliding overload as `<name>__<type>__…` and keeps the plain name for the
-    overload without out-parameters (Design.md 6 R-COLLISION): since 2026-09-27 `gp_Pnt.Coord()` returns the gp_XYZ
+    overload without out-parameters (Binding-Rules.md R-COLLISION): since 2026-09-27 `gp_Pnt.Coord()` returns the gp_XYZ
     and `Coord__float__float__float()` the numbers. OCP binds both under one name, and where every OCP overload that
     fits an argument count takes the same argument types, pybind always calls the first -- so where that first one
     returns a tuple, the call means the sibling with the same parameters and the same tuple length."""

@@ -115,7 +115,7 @@ def test_lxx_hash_and_free_functions_are_bound():
 
 
 def test_messages_are_collected_not_subclassed():
-    """Design.md 2d: Python cannot subclass Message_Printer/Message_ProgressIndicator (no trampolines, 8.5 not
+    """Excluded.md: Python cannot subclass Message_Printer/Message_ProgressIndicator (no trampolines, 8.5 not
     planned), but OCCT's own Message_PrinterToReport collects messages for reading back."""
     from nanocct.Message import (Message, Message_Fail, Message_Printer, Message_PrinterOStream, Message_PrinterToReport,
                                  Message_ProgressIndicator, Message_Warning)

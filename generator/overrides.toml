@@ -171,7 +171,7 @@ methods = [
     # through `const double& PolynomialCoeff`; BSplCLib::BuildEval does `double *pole = &LP; pole[i] = ...`,
     # BSplCLib_2.cxx:59-70). The header cannot tell it from a scalar, so it was bound as one -- and OCCT then reads and
     # writes past a single double. Omitted (2026-09-30): low-level helpers; CAD code uses Geom_BSplineCurve/
-    # Surface, GeomAPI_Interpolate/PointsToBSpline, and numpy for polynomials (Design.md 2d). Exact signatures (the
+    # Surface, GeomAPI_Interpolate/PointsToBSpline, and numpy for polynomials (Excluded.md). Exact signatures (the
     # same names have safe overloads that stay), from the generator's own parse of PLib and BSplCLib.
     "PLib::RationalDerivative(const int, const int, const int, double &, double &, const bool)",
     "PLib::RationalDerivatives(const int, const int, double &, double &, double &)",
@@ -215,7 +215,7 @@ methods = [
     # used -- and binding the class is what forces it. NCollection_Vec2<unsigned int> arrived with the reference
     # parameters of OpenGl_FrameBuffer (2026-09-23); the bool instantiations are fine, bool promotes to int.
     "NCollection_Vec2<unsigned int>::cwiseAbs",
-    # Template members whose body does not compile for the instantiation (Design.md 6c): IntPolyh_Array<T>::Dump() calls
+    # Template members whose body does not compile for the instantiation (Binding-Rules.md 6c): IntPolyh_Array<T>::Dump() calls
     # (*this)[i].Dump() with no argument, but IntPolyh_Edge/Triangle::Dump take an int and IntPolyh_PointNormal has none.
     # Points, SectionLines and StartPoints (Dump() exists) keep it. Debug printf output, no Python use (2026-09-21).
     "IntPolyh_Array<IntPolyh_Edge>::Dump",
@@ -312,7 +312,7 @@ Cocoa = ["Darwin"]
 extra = { TKService = ["TKGeomBase"] }
 
 # Packages whose stream parameters carry a binary format: a std::ostream& result is returned as bytes and a
-# std::istream& parameter takes a binary file-like object (io.BytesIO), instead of str / typing.TextIO (Design.md 6,
+# std::istream& parameter takes a binary file-like object (io.BytesIO), instead of str / typing.TextIO (Binding-Rules.md,
 # R-STREAM-OUT/IN). Everything else OCCT streams is text (Dump, DumpJson, BRepTools::Write, ...).
 [stream]
 binary_packages = [

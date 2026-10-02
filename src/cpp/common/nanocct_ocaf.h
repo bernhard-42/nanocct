@@ -1,4 +1,4 @@
-// R-OWNER (Design.md 6): who owns an OCAF object, for nanocct::owners (nanocct_common.h). Included by the generated files
+// R-OWNER (Binding-Rules.md): who owns an OCAF object, for nanocct::owners (nanocct_common.h). Included by the generated files
 // that apply the rule -- the toolkits that link TKLCAF -- and nowhere else.
 #pragma once
 

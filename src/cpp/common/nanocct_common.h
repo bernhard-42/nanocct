@@ -154,7 +154,7 @@ inline nb::object nanocct_new_exception(nb::handle m, const char *name, const ch
 }
 
 // ---------------------------------------------------------------------------------------------
-// R-OWNER (Design.md 6): the owner of an OCAF object, known by its type. A TDF_Label and a TDF_Attribute point into the
+// R-OWNER (Binding-Rules.md): the owner of an OCAF object, known by its type. A TDF_Label and a TDF_Attribute point into the
 // TDF_LabelNode tree a TDF_Data owns; the root of a document's data carries a TDocStd_Owner whose raw pointer is the
 // TDocStd_Document. owners<T>::keep(nurse, value) keeps the TDF_Data and the TDocStd_Document of `value` alive as long as
 // the Python object `nurse` -- for a handle, of its object; for a container, of every element. The definitions need the
@@ -310,7 +310,7 @@ inline void release_slots(void *owner) noexcept {
         Py_DECREF(entry.second);
 }
 
-// R-KEPT (Design.md 6): a Transient keeps what it was given as long as its C++ object lives, not only as long as its
+// R-KEPT (Binding-Rules.md): a Transient keeps what it was given as long as its C++ object lives, not only as long as its
 // Python object. An OCCT container or document can hold the object after Python dropped it (IntPatch_PolyhedronBVH(poly)
 // appended to an NCollection_HSequence, `del bvh, poly`): kept by the Python object, the argument went with it and the
 // object read freed memory. So the bindings construct such a class -- one whose constructors or methods keep arguments
@@ -773,7 +773,7 @@ template <typename Tag, size_t Patient, size_t Slot, typename Self = void, bool 
         store_slot(owner, k, slot_key{&slot_tag<Tag>::id, Slot}, argument);
     }
 };
-// R-RESULT-KEEP / R-OWNER (Design.md 6): a result, or an argument the call writes into, of a class that holds pointers
+// R-RESULT-KEEP / R-OWNER (Binding-Rules.md): a result, or an argument the call writes into, of a class that holds pointers
 // keeps alive what it may point into. R: its C++ type; Owned: the generator found that R's OCAF owners are known -- checked
 // against nanocct::owners, so the two cannot disagree silently; Nurse: 0 = the result, k = argument k (1 is self); Elem:
 // the result's position in a returned tuple (out-parameters), -1 if none; Patients: the arguments it may point into.
@@ -811,11 +811,11 @@ using cref_policy = nb::rv_policy::policy_tag<
     std::is_copy_constructible_v<std::remove_cv_t<std::remove_reference_t<R>>> ? nb::rv_policy::copy_v
     : HasOwner ? nb::rv_policy::reference_internal_v : nb::rv_policy::reference_v>;
 
-// R-VIEW-GUARD (Design.md 6): an NCollection container refuses a call that would invalidate one of its live views, with
+// R-VIEW-GUARD (Binding-Rules.md): an NCollection container refuses a call that would invalidate one of its live views, with
 // BufferError -- Python's own rule for bytearray, which refuses to resize while a buffer is exported. A view is anything
 // that points into a container's storage: an element reference (ChangeValue, a List's Append result, a map's ChangeFind or
 // ChangeSeek, ...), a numpy array over it, an iterator (OCCT's Iterator classes and the Python ones of __iter__). Which call
-// invalidates which kind of view is OCCT's container code, read once (Design.md 6, the R-VIEW-GUARD table): the binder
+// invalidates which kind of view is OCCT's container code, read once (Binding-Rules.md, the R-VIEW-GUARD table): the binder
 // (nanocct_ncollection.h) checks its own members, nanocct::guarded checks every generated function that takes a container
 // by non-const reference or pointer -- OCCT may change it -- and a container data member checks before it is assigned.
 // Views are counted per C++ container address, so two Python wrappers of one container agree, in ONE table for all
@@ -1037,7 +1037,7 @@ void nanocct_def_container_field(nb::class_<C> cls, const char *name, D T::*p, c
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
-// Design.md 6 R-BITSET: an std::bitset<N> is a set of flags indexed by an enumerator
+// Binding-Rules.md R-BITSET: an std::bitset<N> is a set of flags indexed by an enumerator
 // (ShapeProcess::OperationsFlags = std::bitset<ShapeProcess::Operation::Last + 1>), so Python sees the set of the
 // indices whose bit is set: proc.ProcessShape(shape, {ShapeProcess.FixShape, ShapeProcess.SameParameter}).
 // nanobind's arithmetic enums are Python IntEnums, so the enumerators go in as ints and the plain ints that come
@@ -1244,7 +1244,7 @@ NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
 // Type caster for char32_t (Standard_Utf32Char: the code-point API of Font_FTFont, Font_TextFormatter, NCollection_UtfString):
-// a 1-character Python str, like char and char16_t (Design.md R-CHAR16).
+// a 1-character Python str, like char and char16_t (Binding-Rules.md R-CHAR16).
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 

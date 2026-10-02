@@ -19,7 +19,7 @@
 
 ## NCollections support
 
-**Design: [2a Naming conventions](docs/Design.md#2a-naming-conventions), [6a NCollection containers](docs/Design.md#6a-ncollection-containers-hand-written-binders)**
+**Design: [2a Naming conventions](docs/Design.md#2a-naming-conventions), [6a NCollection containers](docs/Binding-Rules.md#6a-ncollection-containers-hand-written-binders)**
 
 ### Generics support
 
@@ -172,7 +172,7 @@ In [4]: del v
 Out[4]: (5, 3)
 ```
 
-A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](docs/Design.md#views-a-container-refuses-to-invalidate-r-view-guard).
+A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](docs/Binding-Rules.md#views-a-container-refuses-to-invalidate-r-view-guard).
 
 ### Index access
 
@@ -579,7 +579,7 @@ Out[10]: (1, 1, 1)
 
 ## Handling of primitive types passed by reference
 
-**Binding rules: R-OUT, R-COLLISION ([Design 2a](docs/Design.md#2a-naming-conventions)), R-INOUT ([Design 6](docs/Design.md#6-binding-rules-11-and-the-documented-deviations))**
+**Binding rules: R-OUT, R-COLLISION ([Design 2a](docs/Design.md#2a-naming-conventions)), R-INOUT ([Design 6](docs/Binding-Rules.md))**
 
 A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an output in OCCT: nanocct drops it from the parameters and returns it, after the C++ return value if there is one. A reference to a class (`gp_Pnt&`) stays a parameter and is filled in place.
 
@@ -748,7 +748,7 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 
 Every C++ text type of OCCT is a Python `str`: `const char*` (`Standard_CString`), `std::string_view`, the UTF-16 `const char16_t*` (`Standard_ExtString`), and the single characters `char`, `char16_t` and `char32_t`. A `str` goes to C++ as UTF-8 for the 8-bit types and as UTF-16 for `char16_t`.
 
-Where OCCT overloads a method for several of these types, Python cannot tell them apart, and nanobind calls the first overload that accepts a `str`. nanocct registers them in the order C++ itself picks for a narrow string literal `"..."`: `const char*` first, then `std::string_view`, then `const char16_t*`, then the single characters. An overload that can never be reached this way is not bound, and the generator reports it ([Design 6](docs/Design.md#6-binding-rules-11-and-the-documented-deviations), R-WIDTH, R-UNREACHABLE).
+Where OCCT overloads a method for several of these types, Python cannot tell them apart, and nanobind calls the first overload that accepts a `str`. nanocct registers them in the order C++ itself picks for a narrow string literal `"..."`: `const char*` first, then `std::string_view`, then `const char16_t*`, then the single characters. An overload that can never be reached this way is not bound, and the generator reports it ([Design 6](docs/Binding-Rules.md), R-WIDTH, R-UNREACHABLE).
 
 For most classes this makes no difference, since all the overloads store the same text. It matters for `TCollection_ExtendedString`: exactly as in C++, its `const char*` constructor reads one byte per character unless `theIsMultiByte` is `True`:
 
@@ -790,7 +790,7 @@ Out[8]: 'ö'
 
 ## Handling of istream and ostream
 
-**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 6](docs/Design.md#6-binding-rules-11-and-the-documented-deviations))**
+**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 6](docs/Binding-Rules.md))**
 
 ```python
 In [1]: import json

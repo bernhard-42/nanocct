@@ -54,7 +54,7 @@ def _strip_ref(t: str) -> str:
     return s
 
 
-# Design.md 6 R-OPERATOR, R-IOP, R-STR
+# Binding-Rules.md R-OPERATOR, R-IOP, R-STR
 def _py_name(m: Method) -> str | None:
     """Python attribute name for a method; None when the operator has no Python counterpart."""
     if not m.is_operator:
@@ -172,7 +172,7 @@ class Emitter:
             for ident in _IDENT_RE.findall(t):
                 self._idents.add(ident)
 
-    # Design.md 6 R-DEFAULT-UNBOUND
+    # Binding-Rules.md R-DEFAULT-UNBOUND
     def _unbound_default(self, params: list[Param]) -> str | None:
         """The type of a defaulted parameter that no binding knows: nanobind converts defaults to Python objects at
         .def time, so such a member would abort the module import (nb::cast -> std::bad_cast)."""
@@ -184,7 +184,7 @@ class Emitter:
             return p.class_name
         return None
 
-    # Design.md 6 R-UNBOUND-TYPE
+    # Binding-Rules.md R-UNBOUND-TYPE
     def _unbound_reason(self, name: str) -> str | None:
         """Why the class/enum `name` has no nanobind registration a signature could use, or None when it has one.
         Besides "bound nowhere": a Standard_Failure descendant is a Python exception type, not a value type, and a
@@ -308,12 +308,12 @@ class Emitter:
             s += ", nb::is_operator()"
         return s
 
-    # Design.md 6 R-KEPT
+    # Binding-Rules.md R-KEPT
     def _new_type(self, cls_name: str) -> str:
         """What `new` constructs for a Transient the bindings create: nanocct::Kept<T> for a class whose bindings keep arguments."""
         return f"nanocct::Kept<{cls_name}>" if cls_name in self.kept else cls_name
 
-    # Design.md 6 R-METHOD-KEEP
+    # Binding-Rules.md R-METHOD-KEEP
     def _keep_slots(self, m: Method) -> str:
         """One nanocct::keep_slot call policy per method parameter the object can keep the address of: the argument's
         Python position (1 is self) counts the parameters the signature shows, as _args does with skip_out."""
@@ -332,7 +332,7 @@ class Emitter:
                 self.slots += 1
         return out
 
-    # Design.md 6 R-VIEW-GUARD
+    # Binding-Rules.md R-VIEW-GUARD
     def _report_owned_container(self, cls: Class, m: Method) -> None:
         """The residual: a container the object owns, handed out by reference. Its views are checked against the
         container's own members and every bound call taking it, not against what its owner does to it in C++."""
@@ -389,7 +389,7 @@ class Emitter:
             out[i] = position
         return out
 
-    # Design.md 6 R-RESULT-KEEP, R-OWNER
+    # Binding-Rules.md R-RESULT-KEEP, R-OWNER
     def _keep_views(self, m: Method | Function, method: bool) -> str:
         """nanocct::keep_view call policies: a result, an argument the call writes into, or a returned out-handle of a class
         that holds pointers keeps the objects it may point into (self for a method, and the parameters the parser found);
@@ -428,7 +428,7 @@ class Emitter:
         return ", ".join(f"{p.type}[{p.array_len}]" if p.array_len > 0 else p.type for p in params)
 
     # ---- members -------------------------------------------------------------------------------
-    # Design.md 6 R-OUT, R-OUT-HANDLE, R-INOUT, R-STREAM-OUT, R-STREAM-IN, R-RESULT
+    # Binding-Rules.md R-OUT, R-OUT-HANDLE, R-INOUT, R-STREAM-OUT, R-STREAM-IN, R-RESULT
     def _lambda_call(self, cls: str | None, m: Method, self_type: str | None = None) -> str:
         """Lambda that maps out-params to a returned tuple (also handles static methods). self_type: the bound
         type when it differs from cls (non-copyable wrapper)."""
@@ -513,7 +513,7 @@ class Emitter:
             body.append(f"return std::make_tuple({', '.join(results)});")
         return f"[]({', '.join(lam_params)}) {{ {' '.join(body)} }}"
 
-    # Design.md 6 R-STATIC-S, R-RESULT, R-REF-PRIMITIVE
+    # Binding-Rules.md R-STATIC-S, R-RESULT, R-REF-PRIMITIVE
     def _method(self, cls: Class, m: Method) -> str | None:
         if m.skip_reason is not None:
             return None
@@ -590,7 +590,7 @@ class Emitter:
         fn = self._guarded(f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})", m.params)
         return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
 
-    # Design.md 6 R-REF-PRIMITIVE
+    # Binding-Rules.md R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
         """double& Value(i, j): a getter under the C++ name (returns the value) and, as a Python addition, a setter:
         Set<Name> with the Change prefix dropped (ChangeValue -> SetValue, Value -> SetValue, IsCopyMesh -> SetIsCopyMesh)
@@ -674,7 +674,7 @@ class Emitter:
             fn = f"nb::init<{self._sig(params)}>()"
         return f".def({fn}{keep}{self._extras(doc, params, False, False)})"
 
-    # Design.md 6 R-STR
+    # Binding-Rules.md R-STR
     def _print_operator(self, fn: Function) -> tuple[str, str] | str:
         """`operator<<(Standard_OStream&, const T&)` as T.__str__, or the reason it is not one. It is OCCT's print-me idiom
         only when it is declared in T's own header (X.hxx or its X.lxx) and the stream is text: BinTools declares
@@ -698,7 +698,7 @@ class Emitter:
                f"return nanocct_stream_text(nanocct_stream); }}")
         return cls.name, f'.def("__str__", {lam}) /* free {fn.name} (R-STR) */'
 
-    # Design.md 6 R-FREE-OP
+    # Binding-Rules.md R-FREE-OP
     def _free_operator(self, fn: Function) -> tuple[str, str] | None:
         """Bind a free binary operator as a (reflected) method on the class of its class-typed operand."""
         entry = _BINARY_OPS.get(fn.name)
@@ -719,7 +719,7 @@ class Emitter:
             return tb, f'.def("{reflected}", {lam}, nb::is_operator()) /* free {fn.name} */'
         return None
 
-    # Design.md 6 R-ENUM, R-ANON-ENUM
+    # Binding-Rules.md R-ENUM, R-ANON-ENUM
     def _enum(self, e: Enum, scope: str) -> list[str]:
         if e.is_anonymous:      # C++ integer constants: enum { X = 1 };  -> scope.X = 1
             return [f'{scope}.attr("{py}") = nb::int_(static_cast<long long>({cpp}));' for py, cpp in e.values]
@@ -1244,7 +1244,7 @@ class Emitter:
                 body.append(f'.def("__hash__", [](const {c.bound_type} &self) {{ return static_cast<Py_ssize_t>(std::hash<{c.name}>{{}}(self)); }})')
         elif c.name in self.value_eq or any(m.name == "operator==" and len(m.params) == 1
                                             and _strip_ref(m.params[0].type) == c.name for m in bound):
-            # R-UNHASHABLE (Design.md 6): the class has a value __eq__ and OCCT gives no hash for it. nanobind never
+            # R-UNHASHABLE (Binding-Rules.md): the class has a value __eq__ and OCCT gives no hash for it. nanobind never
             # touches tp_hash, and Python's "define __eq__ -> __hash__ becomes None" rule fires only at type creation,
             # so the class would keep object.__hash__ and `a == b` with `hash(a) != hash(b)` would make a dict or set
             # lookup by an equal value fail silently. Python's own answer for such a class is to be unhashable.
@@ -1334,7 +1334,7 @@ class Emitter:
                         seen.add(src)
                         define.append(f"    nb::implicitly_convertible<std::decay_t<{src}>, {c.bound_type}>();")
 
-    # Design.md 6 R-CONV
+    # Binding-Rules.md R-CONV
     def _conversions(self, classes: list[Class]) -> list[str]:
         """operator T() const with a bound class T: T gets a constructor from this class, plus the implicit conversion when
         the operator is not explicit (TopoDS_Shape s = aMakeShape; BRepGraph_NodeId(anEdgeId)). Emitted in a phase of its
@@ -1441,7 +1441,7 @@ class Emitter:
         return includes
 
 
-# Design.md 6 R-COLLISION
+# Binding-Rules.md R-COLLISION
 # the C++ scalars without a Python type of their own (nanocct/_templates.py; the stub header in stubs.py declares the same five)
 _SCALAR_MARKERS = ("float32", "uchar", "uint", "ulong", "ulonglong")
 
@@ -1488,7 +1488,7 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
     return result
 
 
-# Design.md 6 R-CONST-TWIN
+# Binding-Rules.md R-CONST-TWIN
 def skip_const_twins(overloads: list) -> list:
     """Overloads that differ only in constness -- of the method (const T& Value(i) const / T& Value(i)) or of a
     parameter (TopoDS::Vertex(const TopoDS_Shape&) / (TopoDS_Shape&)) -- look identical from Python, whose objects are
@@ -1516,7 +1516,7 @@ def skip_const_twins(overloads: list) -> list:
     return skipped
 
 
-# Design.md 6 R-WIDTH
+# Binding-Rules.md R-WIDTH
 _WIDTH_RANK = {"double": ("float", 0), "Standard_Real": ("float", 0), "float": ("float", 1), "Standard_ShortReal": ("float", 1),
                "int": ("int", 0), "Standard_Integer": ("int", 0)}
 _WIDE_INTS = {"size_t", "Standard_Size", "unsigned", "unsigned int", "long", "unsigned long", "long long", "unsigned long long",
@@ -1563,7 +1563,7 @@ def _covers(x: Param, y: Param) -> bool:
     return rx == ry
 
 
-# Design.md 6 R-UNREACHABLE
+# Binding-Rules.md R-UNREACHABLE
 def drop_unreachable(overloads: list) -> list[tuple[object, object]]:
     """An overload that an earlier-registered one of the same name takes over for every call it accepts is never reached
     from Python: nanobind calls the first overload that accepts the arguments. Such an overload is not bound
@@ -1629,7 +1629,7 @@ def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
     return ordered, demoted
 
 
-# Design.md 6 R-OVERLOAD-ORDER
+# Binding-Rules.md R-OVERLOAD-ORDER
 def _py_params(m) -> list[Param]:
     """The parameters a Python call passes (out-params, dropped optional pointers and R-BYTES lengths are not)."""
     return [p for p in m.params if not p.omitted and p.bytes_of == "" and not (p.is_out and not p.is_inout)
@@ -1675,7 +1675,7 @@ def order_by_derivation(overloads: list, ancestors_of: Callable[[Param], set[str
     return ordered, moved
 
 
-# Design.md 6 R-CTOR-AMBIGUOUS
+# Binding-Rules.md R-CTOR-AMBIGUOUS
 def ctor_call_ambiguous(ctors: list[Constructor], k: Constructor, n: int) -> bool:
     """Whether a C++ call of constructor k with its first n parameters is ambiguous with another (not skipped)
     constructor: one that is viable with n arguments of the same types (required(o) <= n <= len(o.params))."""
@@ -1810,7 +1810,7 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
 '''
     # R-LINK forward case: this toolkit links one that comes *later* in the order, so its module cannot import it at
     # registration time. Import it here, after the extension has initialised, or every member naming one of those
-    # types is uncallable -- which the eager import used to hide (Design.md 6a).
+    # types is uncallable -- which the eager import used to hide (Binding-Rules.md 6a).
     for late in late_links or []:
         head += f"import nanocct._{late}  # noqa: F401,E402  (R-LINK: linked but later in the order)\n"
     # Eager (6a): other toolkits bind their instantiations into this package -- `nanocct.NCollection` is the one --
@@ -1818,7 +1818,7 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
     # package imports every toolkit that binds into it. Afterwards each instantiation is an ordinary attribute.
     eager_block = ""
     if homed_elsewhere:
-        eager_block = ("\n# Instantiations bound into this package by other toolkits (Design.md 6a): importing the package loads\n"
+        eager_block = ("\n# Instantiations bound into this package by other toolkits (Binding-Rules.md 6a): importing the package loads\n"
                        "# every toolkit that binds one, so each of them is an ordinary attribute afterwards.\n"
                        + "".join(f"import nanocct._{tk}  # noqa: E402,F401\n" for tk in sorted(set(homed_elsewhere.values())))
                        + f"from nanocct._{toolkit}.{package} import *  # noqa: E402,F401,F403  (again: now with every instantiation)\n")
@@ -1838,11 +1838,11 @@ from nanocct._{toolkit}.{package} import *  # noqa: F401,F403
         def spell(mod: str, qual: str) -> str:
             return qual if mod in ("builtins", own, marker_mod) else f"{alias[mod]}.{qual}"
 
-        parts = ["", "# NCollection_Xxx[T] -> the bound class (Design.md 6a): one generic class per template, keyed by the",
+        parts = ["", "# NCollection_Xxx[T] -> the bound class (Binding-Rules.md 6a): one generic class per template, keyed by the",
                  "# element types as Python passes them to __class_getitem__ (the type, or a tuple for several)",
                  "from nanocct._templates import Generic as _Generic  # noqa: E402"]
         if len(markers) > 0:
-            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, Design.md 6a)")
+            parts.append(f"from nanocct._templates import {', '.join(markers)}  # noqa: E402,F401  (C++ scalars without a Python type, Binding-Rules.md 6a)")
         parts += [f"import {m} as {alias[m]}  # noqa: E402" for m in modules]
         for tmpl in sorted(accessors):
             parts += ["", "", f"class {tmpl}(_Generic):", "    _instances = {"]

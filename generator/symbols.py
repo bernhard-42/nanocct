@@ -2,7 +2,7 @@
 (they would be link errors). Compared by mangled name (libclang's Cursor.mangled_name uses the platform mangling,
 so the leading underscore of Darwin symbols matches nm's output), which makes the check overload-aware.
 macOS: nm -gU; Linux: nm -D --defined-only; Windows: dumpbin /EXPORTS on the import library (Standard_EXPORT is
-__declspec(dllexport), so the .lib export list answers the same question). Design.md 6 R-UNDEFINED."""
+__declspec(dllexport), so the .lib export list answers the same question). Binding-Rules.md R-UNDEFINED."""
 from __future__ import annotations
 
 import os

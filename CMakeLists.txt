@@ -39,14 +39,14 @@ foreach(tk IN LISTS NANOCCT_TOOLKITS)
   if(EXISTS "${NANOCCT_RAPIDJSON_DIR}")
     target_include_directories(_${tk} PRIVATE "${NANOCCT_RAPIDJSON_DIR}")
   endif()
-  # deprecated OCCT members are bound on purpose (their deprecation message becomes the docstring, Design.md 6)
+  # deprecated OCCT members are bound on purpose (their deprecation message becomes the docstring, Binding-Rules.md)
   if(MSVC)
     target_compile_options(_${tk} PRIVATE /wd4996)
   else()
     target_compile_options(_${tk} PRIVATE -Wno-deprecated-declarations)
   endif()
   # ${tk} brings OCCT's own EXTERNLIB closure; NANOCCT_<tk>_EXTRA_LIBS adds the toolkits whose types the
-  # generated code names but OCCT does not link (typeinfo for the handle caster, Design.md 6 R-LINK).
+  # generated code names but OCCT does not link (typeinfo for the handle caster, Binding-Rules.md R-LINK).
   target_link_libraries(_${tk} PRIVATE ${tk} ${NANOCCT_${tk}_EXTRA_LIBS})
   # dev builds: find the OCCT libraries where they are; wheels get relinked by delocate/auditwheel
   set_target_properties(_${tk} PROPERTIES INSTALL_RPATH "${NANOCCT_OCCT_DIR}/lib")
@@ -56,7 +56,7 @@ endforeach()
 # nanocct._AddOns: hand-written, not generated and not a binding of an OCCT toolkit, so it is built outside the
 # loop above and tracked in git (src/cpp/AddOns, kept by .gitignore and untouched by `make clean_gen`). It holds
 # the helpers that zero-copy views cannot express because they are computations rather than data,
-# and, rarely, a workaround for an OCCT bug that is not fixed upstream (Design.md R-ADDON).
+# and, rarely, a workaround for an OCCT bug that is not fixed upstream (Binding-Rules.md R-ADDON).
 nanobind_add_module(_AddOns STABLE_ABI NB_DOMAIN nanocct "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/_AddOns.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/Tessellator.cpp"
                     "${CMAKE_SOURCE_DIR}/src/cpp/AddOns/ShapeClean.cpp")

@@ -100,7 +100,7 @@ def test_the_driver_constructs_and_initialises(driver):
 def test_displaying_a_shape_no_longer_segfaults(driver, display, quiet_messenger):
     """Until TKOpenGl was generated, V3d_Viewer(None) was the only viewer available and anything that builds a
     Graphic3d_Structure -- AIS_InteractiveContext.Display, TPrsStd_AISPresentation.Display -- dereferenced the null
-    driver and crashed the process (a row in Design.md 2d). With a real driver it simply works."""
+    driver and crashed the process (a row in Excluded.md). With a real driver it simply works."""
     viewer = V3d_Viewer(driver)
     viewer.SetDefaultLights()
     viewer.SetLightOn()

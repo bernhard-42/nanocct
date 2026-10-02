@@ -112,7 +112,7 @@ def test_edge_segments_needs_a_mesh():
     assert len(per_edge) == 0 and len(seg) == 0 and len(edge_types) == 0
 
 
-# ---- AddOns.ShapeClean: a workaround for OCCT issue #1541, removed once OCCT is fixed (Design.md R-ADDON) ------------
+# ---- AddOns.ShapeClean: a workaround for OCCT issue #1541, removed once OCCT is fixed (Binding-Rules.md R-ADDON) ------------
 #
 # The reproducer is build123d's `Box(1, 1, 1) - Pos(...) * Sphere(0.5)`: the sphere's centre lies outside the box, so
 # the cut circle on the face x = -0.5 is a full circle, and the sphere's seam splits it into two arcs. Unifying the two
@@ -164,7 +164,7 @@ def _volume(shape):
 
 def test_occt_still_breaks_the_closed_circle(closed_circle_cut):
     """The canary. When this fails, OCCT has fixed #1541: switch build123d back to
-    nanocct.ShapeUpgrade.ShapeUpgrade_UnifySameDomain and delete AddOns.ShapeClean (Design.md R-ADDON)."""
+    nanocct.ShapeUpgrade.ShapeUpgrade_UnifySameDomain and delete AddOns.ShapeClean (Binding-Rules.md R-ADDON)."""
     result = _unify(_OCCT, closed_circle_cut).Shape()
     broken = not BRepCheck.BRepCheck_Analyzer(result).IsValid() or _max_edge_tolerance(result) > 1e-3
     assert broken, ("OCCT issue #1541 looks fixed: ShapeUpgrade_UnifySameDomain now cleans the closed-circle "

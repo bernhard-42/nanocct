@@ -1,4 +1,4 @@
-// nanocct.AddOns.Tessellator -- bulk helpers for tessellation (Design.md R-ADDON).
+// nanocct.AddOns.Tessellator -- bulk helpers for tessellation (Binding-Rules.md R-ADDON).
 //
 // Why it exists. Zero-copy views (R-VIEW) bring the *data* side of tessellation to the speed
 // of a C++ extension -- measured against ocp-addons' NativeTessellator, vertices/triangles/UVs and their

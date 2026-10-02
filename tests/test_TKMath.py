@@ -228,7 +228,7 @@ def test_inout_parameters_read_their_incoming_value():
 def test_arrays_passed_by_their_first_element_are_not_bound():
     """overrides.toml [skip] methods (2026-09-30): PLib/BSplCLib functions whose `double&` is really the first element of
     an array made OCCT read and write past a single double. They are not bound; the NCollection_Array1 overloads of the
-    same names stay (Design.md 2d)."""
+    same names stay (Excluded.md)."""
     assert not hasattr(PLib.PLib, "EvalPolynomial_s") and not hasattr(PLib.PLib, "EvalLagrange_s")
     assert not hasattr(PLib.PLib_JacobiPolynomial, "MaxError") and hasattr(PLib.PLib_JacobiPolynomial, "ToCoefficients")
     assert "NCollection_Array1" in BSplCLib.BSplCLib.Eval_s.__doc__             # the array overloads of Eval remain

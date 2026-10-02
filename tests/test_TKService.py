@@ -1,7 +1,7 @@
 """Generated bindings for TKService (Visualization: Aspect, Graphic3d, Image, Font, Media, the window packages): the font
 manager and FreeType fonts (build123d's text path), materials, vectors with their hidden-friend operators, pixmaps, clip-plane
 iteration, the enum aliases OCCT keeps for 7.x code, the in/out FindFont aspect. Images are read and written through
-FreeImage, also from and to memory; the OCCT build has no FFmpeg, so the Media package is stubs (Design.md 2d)."""
+FreeImage, also from and to memory; the OCCT build has no FFmpeg, so the Media package is stubs (Excluded.md)."""
 import importlib
 import io
 import platform

@@ -22,7 +22,7 @@
 //
 // Removal: the class carries OCCT's name and the members build123d uses, with OCCT's signatures, so reverting is
 // changing the import back to nanocct.ShapeUpgrade. tests/test_AddOns.py holds the canary that fails once OCCT
-// produces a valid shape on the reproducer -- that is the signal to delete this file (Design.md R-ADDON).
+// produces a valid shape on the reproducer -- that is the signal to delete this file (Binding-Rules.md R-ADDON).
 #include "nanocct_common.h"
 
 #include <BRepAdaptor_Curve.hxx>

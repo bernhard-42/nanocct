@@ -367,7 +367,7 @@ import re, sys, importlib
 from pathlib import Path
 from nanobind.stubgen import StubGen
 # A stub must name every type a signature mentions, including types other toolkits register -- and since
-# nanocct/__init__.py stopped importing eagerly (Design.md 6a) nothing else pulls them in, so a cross-toolkit
+# nanocct/__init__.py stopped importing eagerly (Binding-Rules.md 6a) nothing else pulls them in, so a cross-toolkit
 # parameter would render as a bare name instead of nanocct.<pkg>.<Class>. Load every toolkit first: stub
 # generation is the one place that deliberately wants all of them.
 import nanocct

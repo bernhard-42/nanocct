@@ -1,4 +1,4 @@
-"""Lifetime tests for the ownership rules: what happens when Python lets go (Design.md 6 R-RESULT).
+"""Lifetime tests for the ownership rules: what happens when Python lets go (Binding-Rules.md R-RESULT).
 
 The rest of the suite tests that an API works while its objects are alive. These tests drop one side and use the other,
 in both directions, for every row of R-RESULT / R-PTR-REF / R-PTR-INCOMPLETE:

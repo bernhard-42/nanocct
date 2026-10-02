@@ -1,4 +1,4 @@
-// Hand-written binders for the OCCT NCollection container templates (Design.md, section 6a).
+// Hand-written binders for the OCCT NCollection container templates (Binding-Rules.md, section 6a).
 // One binder per template kind; the generator instantiates it for every typedef (TColgp_Array1OfPnt =
 // NCollection_Array1<gp_Pnt>, ...) and for every instantiation that appears in a bound signature.
 // Method names, signatures and docstrings are 1:1 with the template header; the docstrings live in
@@ -37,7 +37,7 @@ template <typename T, typename = void> struct has_equal : std::false_type {};
 template <typename T>
 struct has_equal<T, std::void_t<decltype(std::declval<const T &>() == std::declval<const T &>())>> : std::true_type {};
 
-// R-VIEW-GUARD (nanocct_common.h, Design.md 6): what a member hands out that points into the container. A view of self
+// R-VIEW-GUARD (nanocct_common.h, Binding-Rules.md): what a member hands out that points into the container. A view of self
 // (an element reference, LinearVector::ToArray1's aliasing array), an iterator over self (__iter__), an iterator
 // constructed or initialised on its argument, an element reference handed out by such an iterator.
 using elem_view_of_self = nb::call_policy<view_of<view_kind::element>>;
@@ -67,7 +67,7 @@ auto container_array(void *first, const size_t (&shape)[NDim], Cls &self, std::o
     return elem_view<T>(first, shape, export_view(&self, nb::find(&self))).cast(nb::rv_policy::reference);
 }
 
-// R-OWNER (Design.md 6): elements whose OCAF owners are known (a TDF_Label, a handle of a TDF_Attribute -- nanocct::owners).
+// R-OWNER (Binding-Rules.md): elements whose OCAF owners are known (a TDF_Label, a handle of a TDF_Attribute -- nanocct::owners).
 // A container keeps the owners of every element Python puts into it (own, own_all), an element copied out keeps its own
 // (owned), and an argument a lookup writes into keeps those of what it received (own_out) -- whoever filled the container.
 // For every other element type these compile to nothing.

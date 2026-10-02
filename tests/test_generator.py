@@ -1,4 +1,4 @@
-"""Generator unit tests: the IR that parse_package builds from synthetic headers (one per Design.md 6 rule), the
+"""Generator unit tests: the IR that parse_package builds from synthetic headers (one per Binding-Rules.md rule), the
 overload-collision resolver, the report categories, and the reproducibility of a regeneration against a previous one
 sources. No compiler is involved except the regeneration test's libclang parse (TKG2d, ~5 s)."""
 import filecmp
@@ -81,7 +81,7 @@ public:
   DEFINE_STANDARD_RTTI_INLINE(Rules_Thing, Standard_Transient)
 };
 
-//! A value class exercising one Design.md section 6 rule per member.
+//! A value class exercising one Binding-Rules.md rule per member.
 class Rules_Value
 {
 public:
@@ -2256,7 +2256,7 @@ def test_incremental_run_refuses_to_rehome_an_instantiation(tmp_path):
     assert "NCollection_Array1<gp_Pnt2d>" in (tmp_path / "cpp" / "TKG2d" / "Geom2d.cpp").read_text()
 
 
-# Design.md 6 R-LINK
+# Binding-Rules.md R-LINK
 def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
     """A toolkit module links every OCCT toolkit whose types it names, not only OCCT's own EXTERNLIB closure: the
     handle caster instantiates typeid(T), so a forward-declared class of another toolkit (DE_Provider names
@@ -2298,7 +2298,7 @@ def test_unsupported_std_types_are_reported_by_name(rules_ir):
     assert any("Dump" not in r or "iostream" not in r for r in rules_ir.report)   # the ostream& member is a stream, not skipped
 
 
-# Design.md 6 R-DEFAULT
+# Binding-Rules.md R-DEFAULT
 def test_a_braced_default_is_list_initialised(rules_ir):
     """`= {}` in the header (XSAlgo_ShapeProcessor's DE_ShapeFixParameters, the ParameterMap of SetShapeFixParameters,
     3 more in TKXSBase) must be emitted as std::decay_t<T>{} -- static_cast from a braced-init-list does not compile
@@ -2311,7 +2311,7 @@ def test_a_braced_default_is_list_initialised(rules_ir):
     assert "static_cast<std::decay_t<const gp_XYZ &>>({ })" not in cpp
 
 
-# Design.md 6 R-BITSET
+# Binding-Rules.md R-BITSET
 def test_a_bitset_is_a_set_of_indices(rules_ir):
     """std::bitset<N> is cast to a Python set of the indices whose bit is set, so it is not reported as an unsupported
     std type; its size is a non-type template argument (libclang gives an INVALID type, which the std check skips)."""
@@ -2324,7 +2324,7 @@ def test_a_bitset_is_a_set_of_indices(rules_ir):
     assert '.def("Flags"' in cpp and '.def("GetFlags"' in cpp
 
 
-# Design.md 6 R-OUT
+# Binding-Rules.md R-OUT
 def test_the_lambda_temporary_cannot_collide_with_a_parameter(rules_ir):
     """99 OCCT parameters are called `result` (IGESConvGeom::SplineCurveFromIGES(..., handle<Geom_BSplineCurve>&
     result)); when such a parameter is an out-parameter of a non-void method, a bare `result` for the C++ return value

@@ -193,7 +193,7 @@ def _doc(cursor: cindex.Cursor) -> str:
     return "\n".join(lines)
 
 
-# Design.md 6 R-DEPRECATED
+# Binding-Rules.md R-DEPRECATED
 def _deprecation_message(cursor: cindex.Cursor) -> str | None:
     """The message of Standard_DEPRECATED("...") / [[deprecated("...")]] on a declaration, "" when deprecated without a
     message, None when not deprecated. cindex exposes only Cursor.availability, so clang_getCursorPlatformAvailability
@@ -220,7 +220,7 @@ def _deprecation_message(cursor: cindex.Cursor) -> str | None:
 
 def _doc_with_deprecation(cursor: cindex.Cursor) -> str:
     """The docstring of a member; a deprecated member (Standard_DEPRECATED) keeps its binding and gets OCCT's deprecation
-    message as the first line, so the OCCT documentation's advice reaches the Python user (Design.md 6)."""
+    message as the first line, so the OCCT documentation's advice reaches the Python user (Binding-Rules.md)."""
     doc = _doc(cursor)
     message = _deprecation_message(cursor)
     if message is None:
@@ -229,7 +229,7 @@ def _doc_with_deprecation(cursor: cindex.Cursor) -> str:
     return note if doc == "" else f"{note}\n\n{doc}"
 
 
-# Design.md 6 R-DEFAULT, R-DEFAULT-QUAL
+# Binding-Rules.md R-DEFAULT, R-DEFAULT-QUAL
 def _default_expr(param: cindex.Cursor, scope: str, members: set[str]) -> str | None:
     """Default value as written, with unqualified references to static members / enumerators of the
     enclosing class qualified (the expression is emitted outside the class scope)."""
@@ -333,7 +333,7 @@ def _class_behind(t: cindex.Type) -> str:
     return _canonical_args(canon).replace("const ", "")
 
 
-# Design.md 6 R-ENUM-ARG (nb::arg(...).noconvert() emitted in emit._args)
+# Binding-Rules.md R-ENUM-ARG (nb::arg(...).noconvert() emitted in emit._args)
 def _is_enum(t: cindex.Type) -> bool:
     """An enum or a std::optional of one, possibly behind const/& (not behind a pointer). The optional too: nanobind's
     optional caster hands the convert flag to the enum caster, and BRepGraph_ChildExplorer(g, typed root, Kind.Edge,
@@ -351,7 +351,7 @@ def _is_enum(t: cindex.Type) -> bool:
     return canon.kind == TK.ENUM
 
 
-# Design.md 6 R-HANDLE (nb::arg(...).none() emitted in emit._args)
+# Binding-Rules.md R-HANDLE (nb::arg(...).none() emitted in emit._args)
 def _is_handle(t: cindex.Type) -> bool:
     """opencascade::handle<T>, possibly behind const/&."""
     canon = t.get_canonical()
@@ -364,7 +364,7 @@ def _is_handle(t: cindex.Type) -> bool:
     return decl.kind != K.NO_DECL_FOUND and decl.spelling in _SMART_HANDLES and canon.get_num_template_arguments() == 1
 
 
-# Design.md 6 R-OUT, R-OUT-HANDLE; R-INOUT is decided in _params from overrides.toml
+# Binding-Rules.md R-OUT, R-OUT-HANDLE; R-INOUT is decided in _params from overrides.toml
 def _is_out_param(t: cindex.Type) -> bool:
     """Non-const lvalue reference to a primitive or to a handle<T>: the callee writes it, Python gets it back in the
     result tuple. A handle<T>& is an out-parameter because the caster hands the callee a temporary handle, so a
@@ -397,7 +397,7 @@ def _std_caster_name(t: cindex.Type) -> str | None:
 
 
 class Substitution:
-    """The 6c walk (Design.md): while the definition of a class template is walked to bind one instantiation, every type
+    """The 6c walk (Binding-Rules.md): while the definition of a class template is walked to bind one instantiation, every type
     spelling and default expression is rewritten through this object. Inactive (no template parameters) outside the walk.
     One module-level instance, set up and cleared by _instantiate_template, read by _type_spelling/_default_expr/_class."""
 
@@ -570,7 +570,7 @@ def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
     return ".".join(reversed(parts))
 
 
-# Design.md 6 R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
+# Binding-Rules.md R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
 def _is_cstring(t: cindex.Type) -> bool:
     """const char* (Standard_CString): the pointer the char caster maps to str."""
     canon = t.get_canonical()
@@ -691,9 +691,9 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     return None
 
 
-# Design.md 6 R-RESULT
+# Binding-Rules.md R-RESULT
 def _result_kind(t: cindex.Type) -> tuple[str, str]:
-    """How a returned pointer/reference must be treated (see Design.md section 6)."""
+    """How a returned pointer/reference must be treated (see Binding-Rules.md)."""
     canon = t.get_canonical()
     if canon.kind == TK.RECORD:
         # R-RESULT for `T` by value, T Transient (Geom2dGcc_QualifiedCurve::Qualified() -> Geom2dAdaptor_Curve): a nanobind-
@@ -719,7 +719,7 @@ def _result_kind(t: cindex.Type) -> tuple[str, str]:
     return ResultKind.VALUE, name
 
 
-# Design.md 6 R-STREAM-OUT, R-STREAM-IN
+# Binding-Rules.md R-STREAM-OUT, R-STREAM-IN
 def _stream_kind(t: cindex.Type) -> str:
     """'out' for a mutable std::ostream& (Dump, DumpJson, Print, Write: the text is returned as a str), 'in' for a
     std::istream& or a std::stringstream (const or not: InitFromJson, Read: a text file-like object is read into a stringstream, nanocct::TextInput), else ''."""
@@ -748,7 +748,7 @@ def _stream_kind(t: cindex.Type) -> str:
     return ""
 
 
-# Design.md 6 R-STR
+# Binding-Rules.md R-STR
 def _is_print_operator(name: str, params: list[Param], result_type: cindex.Type) -> bool:
     """`Standard_OStream& operator<<(Standard_OStream&, const T&)`, free or hidden friend: OCCT's "print me" idiom. The
     stream is the first operand, so it is no member of T in Python terms; it becomes T.__str__ (emit._free_operator),
@@ -764,7 +764,7 @@ def _is_print_operator(name: str, params: list[Param], result_type: cindex.Type)
 _OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "reference to pointer", "iostream type")
 
 
-# Design.md 6 R-FIXED-ARRAY
+# Binding-Rules.md R-FIXED-ARRAY
 def _fixed_array(t: cindex.Type) -> tuple[str, int, bool] | None:
     """(element type spelling, N, is_const) for a C array parameter or member of a primitive or class type -- gp_Pnt theP[8]
     (Bnd_OBB::GetVertex), int (&theNodes)[3] (BRepMesh_Triangle), double myPeriod[3] -- else None (unknown size, arrays of
@@ -847,7 +847,7 @@ def _binder_key(t: cindex.Type) -> str:
     return ""
 
 
-# R-VIEW-GUARD (Design.md 6): containers the binder guards -- every binder kind except NCollection_Shared, whose bound
+# R-VIEW-GUARD (Binding-Rules.md): containers the binder guards -- every binder kind except NCollection_Shared, whose bound
 # object is the wrapped container at a non-zero offset (a guard on the Shared's own address would never see its views)
 _GUARDED_KINDS = frozenset(k for k in BINDERS if k != "NCollection_Shared")
 
@@ -1017,7 +1017,7 @@ def _is_plain_template_instance(t: cindex.Type) -> bool:
     return not (parent is not None and parent.kind == K.NAMESPACE and (parent.spelling == "std" or parent.spelling.startswith("__")))
 
 
-# Design.md 6 R-OVERLOAD-ORDER
+# Binding-Rules.md R-OVERLOAD-ORDER
 _ancestors_cache: dict[str, tuple[str, ...]] = {}
 
 
@@ -1132,7 +1132,7 @@ def _derives_from(cls: cindex.Cursor, root: str) -> bool:
     return result
 
 
-# Design.md 6 R-KEYWORD
+# Binding-Rules.md R-KEYWORD
 def py_safe(name: str) -> str:
     """Python name for a C++ identifier: keywords get a trailing underscore (GProp_PEquation::Type::None -> None_)."""
     if keyword.iskeyword(name):
@@ -1140,7 +1140,7 @@ def py_safe(name: str) -> str:
     return name
 
 
-# Design.md 6 R-ENUM, R-ANON-ENUM
+# Binding-Rules.md R-ENUM, R-ANON-ENUM
 def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
     qual = f"{scope}::{cursor.spelling}" if scope is not None else cursor.spelling
     values: list[tuple[str, str]] = []
@@ -1159,7 +1159,7 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("), aliases=aliases)
 
 
-# Design.md 6 R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
+# Binding-Rules.md R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
     name = cursor.spelling
     if name.startswith("operator") and name in ("operator=", "operator new", "operator delete", "operator new[]", "operator delete[]"):
@@ -1207,7 +1207,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                 m.force_lambda = True
         if m.skip_reason == "reference to primitive" and rc0.kind == TK.LVALUEREFERENCE and not cursor.is_const_method():
             # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
-            # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Design.md 6, Python addition)
+            # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Binding-Rules.md, Python addition)
             m.skip_reason = None
             m.result_kind, m.result = ResultKind.REF_PRIMITIVE, _type_spelling(rc0.get_pointee()).replace("const ", "")
         if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
@@ -1274,7 +1274,7 @@ def _incomplete_in(t: cindex.Type) -> str | None:
 _INT_KINDS = {TK.INT, TK.UINT, TK.LONG, TK.ULONG, TK.LONGLONG, TK.ULONGLONG, TK.SHORT, TK.USHORT}
 
 
-# Design.md 6 R-CONV, R-CONV-SCALAR
+# Binding-Rules.md R-CONV, R-CONV-SCALAR
 def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     """operator bool/int/double() -> __bool__/__int__/__float__; operator T()/operator handle<T>() for a class or
     enum T -> a constructor T(self) (plus an implicit conversion when not explicit)."""
@@ -1309,7 +1309,7 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     return None
 
 
-# Design.md 6 R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
+# Binding-Rules.md R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
 _DETECTED_NONCOPYABLE: set[str] = set()     # classes found non-copyable while parsing this run (CellFilter members), by canonical name
 
 
@@ -1345,7 +1345,7 @@ def _members(cursor: cindex.Cursor) -> set[str]:
     return members
 
 
-# Design.md 6 R-CTOR-KEEP
+# Binding-Rules.md R-CTOR-KEEP
 def _core_type(spelling: str) -> str:
     """'const NCollection_LinearVector<int> &' -> 'NCollection_LinearVector<int>': the type behind the outer const and
     pointer/reference declarators, spelled as _type_spelling spells it."""
@@ -1685,7 +1685,7 @@ _instance_layouts: dict[str, _Held] = {}             # R-COPY: each binder insta
 _instance_owners: dict[str, str] = {}                # R-COPY: the instantiations among them whose elements are owners -> where
 
 
-# Design.md 6 R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_common.h, defined in
+# Binding-Rules.md R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_common.h, defined in
 # nanocct_ocaf.h); nanocct::keep_view checks this verdict against the C++ trait at compile time
 _OWNED_ROOTS = ("TDF_Label", "TDF_Data")
 _OWNED_BASE = "TDF_Attribute"
@@ -1744,7 +1744,7 @@ def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
     return key, _layout_of_type[key]
 
 
-# Design.md 6 R-RESULT-KEEP, R-OWNER
+# Binding-Rules.md R-RESULT-KEEP, R-OWNER
 def _note_views(fn: cindex.Cursor, m: "Method | Function", owner: str, cls: Class | None) -> None:
     """A result, or an argument the call writes into, of a class whose layout holds pointers (a TDF_Label, an LDOMString, a
     Message_Messenger::StreamBuffer) may point into the object that produced it: the result keeps that object -- self for
@@ -1968,7 +1968,7 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
 
 
 
-# Design.md 6 R-KEPT: per package, the kept parameters of Transient classes waiting for the cycle check (end of package),
+# Binding-Rules.md R-KEPT: per package, the kept parameters of Transient classes waiting for the cycle check (end of package),
 # and what each class reached by the check can own
 _cycle_open: list[tuple[Class, cindex.Cursor, str, Param, cindex.Type]] = []   # (class, declaring class, function, param, its type)
 _strong_edges_of: dict[str, list[tuple[cindex.Type, str, bool]]] = {}         # class -> (owned class, how, it is a handle's target)
@@ -1989,7 +1989,7 @@ def _strong_edges(t: cindex.Type) -> list[tuple[cindex.Type, str, bool]]:
     """R-KEPT: the classes an object of class t can own, one step: its bases, its members (by value, and behind typed
     pointers -- TDF_Data owns its label nodes through one; a back-pointer only adds a path), the arguments of a class
     template (a container's elements), and the target of a handle (marked) or of another owning smart pointer. Not
-    followed: `void *`, a function pointer, a class the headers only declare, a dependent type (Design.md R-KEPT)."""
+    followed: `void *`, a function pointer, a class the headers only declare, a dependent type (Binding-Rules.md R-KEPT)."""
     key = _record_key(t)
     if key in _strong_edges_of:
         return _strong_edges_of[key]
@@ -2180,7 +2180,7 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     return ctor
 
 
-# Design.md 6 R-USING
+# Binding-Rules.md R-USING
 def _using_methods(using: cindex.Cursor, c: Class) -> None:
     """`using Base::name;` in a public section: the base's overloads of `name` become members of this class -- needed when
     the base is non-public (BRepAlgoAPI_Algo : protected BOPAlgo_Options re-exports SetFuzzyValue, HasErrors, ...) and when the
@@ -2721,11 +2721,11 @@ def _template_default(param: cindex.Cursor) -> str | None:
     return " ".join(toks[toks.index("=") + 1:])
 
 
-# Design.md 6c (template aliases and on-demand instantiations), R-TEMPLATE-NAME
+# Binding-Rules.md 6c (template aliases and on-demand instantiations), R-TEMPLATE-NAME
 def _instantiate_template(tu: cindex.TranslationUnit, t: cindex.Type, header: str, package: str, report: list[str],
                           what: str, py_name: str | None) -> Class | None:
     """The members of a class template instantiated for the arguments of t, walked from the template's definition
-    with argument substitution (Design.md 6c). py_name: the alias name, or None for an instantiation that is only a
+    with argument substitution (Binding-Rules.md 6c). py_name: the alias name, or None for an instantiation that is only a
     base class (BRepGraph_WiresOfEdge : EdgeParentsOf<...>) -> the mangled name. NCollection containers (hand-written
     binders) and std types are not handled here. Returns None (with a report line) when it cannot be done."""
     canon = t.get_canonical()
@@ -2856,7 +2856,7 @@ def _reparent_nested(c: Class) -> None:
 
 
 def _alias_instance(tu: cindex.TranslationUnit, cur: cindex.Cursor, header: str, package: str, report: list[str]) -> Class | None:
-    """using math_Vector = math_VectorBase<double>; -> the template instantiated under the alias name (Design.md 6c)."""
+    """using math_Vector = math_VectorBase<double>; -> the template instantiated under the alias name (Binding-Rules.md 6c)."""
     t = cur.underlying_typedef_type
     c = _instantiate_template(tu, t, header, package, report, f"{cur.spelling} = {t.spelling}", cur.spelling)
     if c is not None:
@@ -2880,7 +2880,7 @@ def _missing_headers(errors: list, include_dir: Path, have: list[str]) -> list[s
 _STD_PRELUDE = ["<cstddef>", "<cstdint>", "<cstring>", "<string>"]   # some OCCT headers use size_t with only <limits> included
 
 
-# Design.md 6 R-PRELUDE
+# Binding-Rules.md R-PRELUDE
 def include_prelude(headers: list[str], include_dir: Path, args: list[str]) -> list[str]:
     """Headers ('X.hxx') that must precede the given OCCT headers so that the list compiles: the R-PRELUDE loop applied to an
     emitted include list, whose identifier-based extra headers may not be self-contained (Contap_Line.hxx names
@@ -3080,7 +3080,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class
                 ir.report.append(f"{cur.spelling}: template (not bound)")
         # bases that are un-aliased template instantiations (BRepGraph_WiresOfEdge : EdgeParentsOf<...>): instantiated
-        # on demand under the mangled name, so that the derived class can be bound (Design.md 6c)
+        # on demand under the mangled name, so that the derived class can be bound (Binding-Rules.md 6c)
         seen_uses: set[str] = set()
         while len(_template_bases) > 0 or len(_template_uses) > 0:
             if len(_template_bases) > 0:

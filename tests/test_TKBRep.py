@@ -148,7 +148,7 @@ def test_handle_parameters_accept_none():
 
 
 def test_handle_out_parameters_are_returned():
-    # handle<T>& out-parameters come back in the result tuple, like double& (Design.md 6)
+    # handle<T>& out-parameters come back in the result tuple, like double& (Binding-Rules.md)
     b = BRep.BRep_Builder()
     e = TopoDS.TopoDS_Edge()
     b.MakeEdge(e, Geom.Geom_Line(gp.gp_Pnt(), gp.gp_Dir(1.0, 0.0, 0.0)), 1e-7)
@@ -169,7 +169,7 @@ def test_handle_out_parameters_are_returned():
 
 
 def test_unscoped_enumerators_are_exported_to_the_enclosing_scope():
-    # C++ puts TopAbs_FACE next to TopAbs_ShapeEnum; export_values() does the same (Design.md 6)
+    # C++ puts TopAbs_FACE next to TopAbs_ShapeEnum; export_values() does the same (Binding-Rules.md)
     assert TopAbs.TopAbs_FACE is TopAbs.TopAbs_ShapeEnum.TopAbs_FACE
     assert int(TopAbs.TopAbs_FACE) == 4
     assert TopoDS.TopoDS_TShape.Bits_Reserved is TopoDS.TopoDS_TShape.BitLayout.Bits_Reserved   # nested unscoped enum -> class attribute

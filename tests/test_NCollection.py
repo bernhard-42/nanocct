@@ -1,4 +1,4 @@
-"""Hand-written NCollection binders (Design.md 6a), all 15 kinds, instantiated by the generator."""
+"""Hand-written NCollection binders (Binding-Rules.md 6a), all 15 kinds, instantiated by the generator."""
 import gc
 import sys
 
@@ -7,7 +7,7 @@ import pytest
 from nanocct import NCollection, Standard, TColStd
 from nanocct._templates import Generic
 
-A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanocct.NCollection (Design.md 6a)
+A = NCollection.NCollection_Array1__double                         # every instantiation lives in nanocct.NCollection (Binding-Rules.md 6a)
 AH = NCollection.NCollection_Array1__Handle_Standard_Persistent
 H = NCollection.NCollection_HArray1__Handle_Standard_Persistent
 
@@ -85,7 +85,7 @@ def test_harray1_passes_as_array1_and_as_transient_handle():
 def test_the_pre_8_0_typedef_names_are_not_exposed():
     """nanocct is an OCCT 8 binding: the pre-8.0 aliases of src/Deprecated/NCollectionAliases
     (TColStd_Array1OfReal & co) are not bound -- the 8.0 spelling is the container itself
-    (decision 2026-09-24, Design.md 6a). 6c aliases that OCCT still declares as real classes stay."""
+    (decision 2026-09-24, Binding-Rules.md 6a). 6c aliases that OCCT still declares as real classes stay."""
     assert not hasattr(TColStd, "TColStd_Array1OfReal")
     a = A(1, 3)
     a.Init(2.5)
@@ -99,7 +99,7 @@ def test_docstrings_come_from_the_template_header():
     assert "Python addition" in A.__len__.__doc__
 
 
-# R-DEPRECATED (Design.md 6) in the hand-written binders: NCollection_Map is the only one of the 15 templates whose
+# R-DEPRECATED (Binding-Rules.md) in the hand-written binders: NCollection_Map is the only one of the 15 templates whose
 # header carries Standard_DEPRECATED, on all 11 set operations. The note came only from the generated path until
 # 2026-09-25, so these two assertions are what keeps ncollection.py reading the availability attribute.
 DEPRECATED_MAP_MEMBERS = ("Union", "Unite", "HasIntersection", "Intersection", "Intersect",

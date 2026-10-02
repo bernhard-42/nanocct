@@ -34,7 +34,7 @@ def template_docs(include_dir: Path, args: list[str]) -> tuple[str, list[str]]:
         # overloads share one docstring constant (first non-empty wins). When they disagree about deprecation the
         # shared one must stay undeprecated for the sake of the others, so the deprecated overload gets a constant
         # of its own (<name>_deprecated) and the binder points that overload at it -- nanobind renders a docstring
-        # per overload as soon as they differ. Design.md 6 R-DEPRECATED.
+        # per overload as soon as they differ. Binding-Rules.md R-DEPRECATED.
         deprecated_docs: dict[str, str] = {}      # member name -> doc of its first deprecated overload
         plain_docs: dict[str, str] = {}           # member name -> doc of its first overload that is not deprecated
         class_doc = ""

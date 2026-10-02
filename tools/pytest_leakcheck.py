@@ -2,7 +2,7 @@
 
 nanobind prints `nanobind: leaked N instances!` (and types, functions) to stderr when the interpreter shuts down with
 objects it created still alive -- after pytest has reported, so no test can see it. A leak there is a reference cycle no
-garbage collector sees, or a C++ object keeping a Python one past the end (Design.md R-KEPT); the suite has none, and this
+garbage collector sees, or a C++ object keeping a Python one past the end (Binding-Rules.md R-KEPT); the suite has none, and this
 keeps it that way. Usage: python tools/pytest_leakcheck.py <pytest arguments>. Exit code: pytest's, or 1 on a leak report
 after a passing run.
 """
