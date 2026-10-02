@@ -749,6 +749,23 @@ private:
 };
 typedef Rules_KeepHiddenT<gp_Pnt> Rules_KeepHiddenPnt;
 
+//! R-METHOD-KEEP: a method that can store an argument's address gets a slot; a const method only for a mutable member, a
+//! static method never; a returned out-parameter is not in the Python signature, so the next argument's position moves up.
+class Rules_KeepMethods
+{
+public:
+  Rules_KeepMethods() = default;
+  void Init(const gp_XYZ& theXYZ) { myXYZ = &theXYZ; }
+  void Fill(int& theCount, const gp_XYZ& theXYZ) { myXYZ = &theXYZ; theCount = 1; }
+  bool Same(const gp_XYZ& theXYZ) const { return myXYZ == &theXYZ; }
+  void Peek(const gp_Pnt& thePnt) const { myCache = &thePnt; }
+  static void Use(const gp_XYZ& theXYZ) { (void)theXYZ; }
+
+private:
+  const gp_XYZ*         myXYZ   = nullptr;
+  mutable const gp_Pnt* myCache = nullptr;
+};
+
 template <class... TheItems> class Rules_KeepPack : public Rules_KeepHolderT<TheItems>...
 {
 };
@@ -833,7 +850,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
                                "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper",
                                "Rules_KeepBase", "Rules_KeepViaBase", "Rules_KeepViaTypedef", "Rules_KeepViaMember", "Rules_KeepVoid",
-                               "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepViaPack"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepMethods", "Rules_KeepViaPack"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -903,6 +920,30 @@ def test_ir_and_emitter_keep_alive_for_a_kept_constructor_argument(tmp_path_fact
     cpp = em.emit()
     assert "nb::init<const gp_XYZ &, const gp_Pnt &>(), nb::keep_alive<1, 2>(), nb::arg(\"theKept\")" in cpp
     assert "keep_alive<1, 3>" not in cpp
+
+
+def test_kept_method_arguments_get_a_slot(tmp_path_factory):
+    """R-METHOD-KEEP: the same layout rule as R-CTOR-KEEP decides which method arguments can be stored; a const method
+    can only store into a mutable member, a static method has no object. The emitter attaches one keep_slot per such
+    parameter at its Python position (an out-parameter is returned, not passed) and declares the file's slot tag."""
+    ir = rules_ir_of(tmp_path_factory, "occt_keep_methods")
+    cls = next(c for c in ir.classes if c.name == "Rules_KeepMethods")
+    kept = {m.name: [p.kept for p in m.params] for m in cls.methods}
+    assert kept == {"Init": [True], "Fill": [False, True], "Same": [False], "Peek": [True], "Use": [False]}
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    block = cpp[cpp.index('m.attr("Rules_KeepMethods"))'):]
+    block = block[:re.search(r"\n    (nb::borrow|nanocct_|\})", block).start()]     # up to the next class's bindings
+    chunks = re.split(r'(?=\.def(?:_static)?\(")', block)                          # one chunk per binding (a lambda spans lines)
+    lines = {re.match(r'\.def(?:_static)?\("(\w+)"', c).group(1): c for c in chunks if re.match(r'\.def(?:_static)?\("', c)}
+    assert re.search(r"nb::call_policy<nanocct::keep_slot<nanocct_slots, 2, \d+>>\(\)", lines["Init"]) is not None
+    assert re.search(r"nb::call_policy<nanocct::keep_slot<nanocct_slots, 2, \d+>>\(\)", lines["Fill"]) is not None   # theXYZ, after the returned count
+    assert re.search(r"nb::call_policy<nanocct::keep_slot<nanocct_slots, 2, \d+>>\(\)", lines["Peek"]) is not None
+    assert "keep_slot" not in lines["Same"] and "keep_slot" not in lines["Use_s"]
+    slots = [int(n) for n in re.findall(r"keep_slot<nanocct_slots, \d+, (\d+)>", cpp)]
+    assert sorted(slots) == list(range(len(slots)))                                 # one slot per (declaration, parameter)
+    assert "namespace { struct nanocct_slots {}; }" in cpp
 
 
 def test_kept_constructor_arguments_follow_the_whole_layout(tmp_path_factory):

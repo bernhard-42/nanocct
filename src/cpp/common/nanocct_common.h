@@ -40,6 +40,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <typeinfo>
@@ -303,6 +304,62 @@ struct KeepOwnerUnlessSelf {
     static void postcall(PyObject **args, size_t, PyObject *&ret) {
         if (ret != nullptr && ret != args[0])
             nb::keep_alive_obj(ret, args[0]);   // the result (nurse) keeps self (patient) alive
+    }
+};
+// R-METHOD-KEEP: a method argument the object can keep the address of (Extrema_ExtPS::Initialize(S, ...) stores &S) lives
+// in a slot of the object -- one slot per (declaration, parameter). A call stores its argument there and releases what the
+// slot held, so `for s in surfaces: ext.Initialize(s, ...)` keeps one surface, not all of them (nb::keep_alive would keep
+// every one, and its duplicate check walks the whole list on each call). The slots of an object are a list in a table per
+// generated translation unit (Tag, the file's own type), found by the object's PyObject*, created on first use; the entry,
+// and with it the arguments, goes through nb::keep_alive_cb, which nanobind runs after the object's C++ destructor (that
+// destructor still sees its arguments). A mutex protects the table, not the GIL (free-threading).
+struct slot_table {
+    std::mutex mutex;
+    std::unordered_map<PyObject *, PyObject *> lists;    // owner -> the list of its slots
+};
+template <typename Tag> slot_table &slot_table_of() {
+    static slot_table *table = new slot_table();          // never destroyed: an owner may die during interpreter shutdown
+    return *table;
+}
+template <typename Tag> void release_slots(void *owner) noexcept {
+    PyObject *list = nullptr;
+    {
+        slot_table &table = slot_table_of<Tag>();
+        std::lock_guard<std::mutex> lock(table.mutex);
+        auto it = table.lists.find(static_cast<PyObject *>(owner));
+        if (it != table.lists.end()) {
+            list = it->second;
+            table.lists.erase(it);
+        }
+    }
+    Py_XDECREF(list);                                     // outside the lock: an argument's release can run Python code
+}
+// Patient: the argument's position as in nb::keep_alive (1 is self); Slot: the declaration and parameter, numbered per file
+template <typename Tag, size_t Patient, size_t Slot> struct keep_slot {
+    static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
+    static void postcall(PyObject **args, size_t, nb::handle) {
+        PyObject *owner = args[0];
+        PyObject *list = nullptr;
+        {
+            slot_table &table = slot_table_of<Tag>();
+            std::lock_guard<std::mutex> lock(table.mutex);
+            auto it = table.lists.find(owner);
+            if (it != table.lists.end()) {
+                list = it->second;
+            } else {
+                list = PyList_New(0);
+                if (list == nullptr)
+                    nb::raise_python_error();
+                table.lists.emplace(owner, list);
+                nb::keep_alive_cb(owner, owner, &release_slots<Tag>);
+            }
+        }
+        while (PyList_Size(list) <= static_cast<Py_ssize_t>(Slot))
+            if (PyList_Append(list, Py_None) != 0)
+                nb::raise_python_error();
+        PyObject *argument = args[Patient - 1];          // the converted object when an implicit conversion took place
+        Py_INCREF(argument);
+        PyList_SetItem(list, static_cast<Py_ssize_t>(Slot), argument);   // steals it, releases what the slot held
     }
 };
 // R-RESULT: a `const T&` result is copied (nanobind's default) -- unless T cannot be copied (a deleted copy constructor

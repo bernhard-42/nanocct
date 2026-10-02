@@ -106,6 +106,7 @@ class Emitter:
         self.includes: list[str] = []         # OCCT headers the emitted file includes; the caller derives the link libraries (R-LINK)
         self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
+        self.slots = 0                         # R-METHOD-KEEP: the slots of this file (one per kept method parameter)
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
         # NCollection_ForwardRangeIterator/Sentinel pair -- is not value equality and must not land here.
@@ -302,6 +303,22 @@ class Emitter:
             s += ", nb::is_operator()"
         return s
 
+    # Design.md 6 R-METHOD-KEEP
+    def _keep_slots(self, m: Method) -> str:
+        """One nanocct::keep_slot call policy per method parameter the object can keep the address of: the argument's
+        Python position (1 is self) counts the parameters the signature shows, as _args does with skip_out."""
+        if m.is_static:
+            return ""
+        out, position = "", 1
+        for p in m.params:
+            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+                continue
+            position += 1
+            if p.kept:
+                out += f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}>>()"
+                self.slots += 1
+        return out
+
     def _sig(self, params: list[Param]) -> str:
         return ", ".join(f"{p.type}[{p.array_len}]" if p.array_len > 0 else p.type for p in params)
 
@@ -421,7 +438,7 @@ class Emitter:
         if m.name in _INPLACE_OPS:
             # OCCT in-place operators return void; Python expects self back
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
-            return f'.def("{py}", {lam}, nb::rv_policy::reference{self._extras(doc, m.params, False, True)})'
+            return f'.def("{py}", {lam}, nb::rv_policy::reference{self._keep_slots(m)}{self._extras(doc, m.params, False, True)})'
         if has_out or wrap or m.via_using != "" or m.force_lambda or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
@@ -430,14 +447,14 @@ class Emitter:
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
                 # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
                 ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
-            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._extras(doc, m.params, True, m.is_operator)})'
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
             fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"
             return f'.def_static("{py}", {fn}{policy}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
         fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
-        return f'.def("{py}", {fn}{policy}{self._extras(doc, m.params, False, m.is_operator)})'
+        return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._extras(doc, m.params, False, m.is_operator)})'
 
     # Design.md 6 R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
@@ -448,7 +465,8 @@ class Emitter:
         params = ", ".join(f"{p.type} {p.name}" for p in m.params)
         sep = ", " if len(m.params) > 0 else ""
         args = ", ".join(p.name for p in m.params)
-        getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ return self.{m.name}({args}); }}{self._extras(m.doc, m.params, False, m.is_operator)})'
+        keep = self._keep_slots(m)
+        getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ return self.{m.name}({args}); }}{keep}{self._extras(m.doc, m.params, False, m.is_operator)})'
         note = f"Python addition: sets the value {m.name}({args}) returns by reference in C++."
         if m.is_operator:
             if len(m.params) == 1:
@@ -463,7 +481,7 @@ class Emitter:
             if any(o.name == setter and o.skip_reason is None for o in cls.methods):
                 lines = [getter]                # gp_XYZ::ChangeCoord(i): SetCoord(i, v) exists in OCCT
             else:
-                lines = [getter, f'.def("{setter}", []({B} &self{sep}{params}, {m.result} theValue) {{ self.{m.name}({args}) = theValue; }}{self._args(m.params, False)}, nb::arg("theValue"), "{note}")']
+                lines = [getter, f'.def("{setter}", []({B} &self{sep}{params}, {m.result} theValue) {{ self.{m.name}({args}) = theValue; }}{keep}{self._args(m.params, False)}, nb::arg("theValue"), "{note}")']
         self._note_types(m.result)
         return "\n        ".join(lines)
 
@@ -751,6 +769,7 @@ class Emitter:
             '#include "nanocct_common.h"',
             *self._includes(len(instances) > 0),
             "",
+            *(["namespace { struct nanocct_slots {}; }   // R-METHOD-KEEP: this file's slot table", ""] if self.slots > 0 else []),
             *(wrappers + [""] if len(wrappers) > 0 else []),
 
             f"void nanocct_declare_{ir.name}(nb::module_ &m) {{",

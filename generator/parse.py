@@ -1352,24 +1352,37 @@ class _Held:
     to), and for a container (BINDERS) or a std:: type only they do. `anything`: a `void *` member may hold any object
     (CPnts_UniformDeflection keeps its curve, TopOpeBRepDS_CurveExplorer its data structure as `void*`). `pending`: a base
     or by-value member spelled only after template substitution -- completed by a layout probe at the end of the package
-    (_resolve_held_layout). `gaps`: what neither could follow (reported, never guessed)."""
+    (_resolve_held_layout). `gaps`: what neither could follow (reported, never guessed). The `mutable_` sets are what a
+    const method can store into (R-METHOD-KEEP): mutable members, and members inside a member that is mutable."""
 
     def __init__(self) -> None:
         self.types: set[str] = set()
         self.anything = False
-        self.pending: list[tuple[str, str]] = []     # (spelling, where)
+        self.mutable_types: set[str] = set()         # a subset of types
+        self.mutable_anything = False
+        self.pending: list[tuple[str, str, bool]] = []     # (spelling, where, in a mutable member)
         self.gaps: list[str] = []
         self.probed: set[str] = set()                # spellings a probe already completed: incomplete there means incomplete
         self.constants: set[str] = set()             # constants of the walked class (a non-type template argument: THE_BUFFER_SIZE)
-        self._seen: set[str] = set()
+        self._seen: set[tuple[str, bool]] = set()
 
-    def add_pointee(self, p: cindex.Type) -> None:
+    def hold(self, key: str, mut: bool) -> None:
+        self.types.add(key)
+        if mut:
+            self.mutable_types.add(key)
+
+    def hold_anything(self, mut: bool) -> None:
+        self.anything = True
+        if mut:
+            self.mutable_anything = True
+
+    def add_pointee(self, p: cindex.Type, mut: bool) -> None:
         if p.kind == TK.RECORD:
-            self.types.add(_record_key(p))
+            self.hold(_record_key(p), mut)
         elif p.kind == TK.VOID:
-            self.anything = True
+            self.hold_anything(mut)
 
-    def spelled(self, spelled: str, where: str) -> None:
+    def spelled(self, spelled: str, where: str, mut: bool) -> None:
         """A type known only by its spelling (substituted): a pointer or reference to it is held, a class by value is probed."""
         if "type-parameter-" in spelled:
             self.gaps.append(f"{where}: {spelled}")
@@ -1377,49 +1390,49 @@ class _Held:
         core = _core_type(spelled)
         if spelled.rstrip().endswith(("&", "*")):
             if core in ("void", "Standard_Address"):
-                self.anything = True
+                self.hold_anything(mut)
             elif core not in _PRIMITIVE_SPELLINGS:
-                self.types.add(core)
+                self.hold(core, mut)
         elif core == "Standard_Address":
-            self.anything = True
+            self.hold_anything(mut)
         elif "<" in core and (core.startswith("std::") or core.split("<")[0] in BINDERS):
             # a container counts by its arguments only (record): read them from the spelling, no probe -- one may be a
             # class constant the probe could not name (math_VectorBase's private THE_BUFFER_SIZE in std::array<T, THE_BUFFER_SIZE>)
             for arg in _split_top(core[core.index("<") + 1 : core.rindex(">")]):
                 if re.fullmatch(r"-?\d+[uUlL]*|true|false", arg) is None and arg not in self.constants:
-                    self.spelled(arg, f"{where} -> {core}")
+                    self.spelled(arg, f"{where} -> {core}", mut)
         elif core not in _PRIMITIVE_SPELLINGS and not core.startswith(_OWNING_TEMPLATES):
-            self.pending.append((core, where))
+            self.pending.append((core, where, mut))
 
-    def member(self, ft: cindex.Type, where: str) -> None:
+    def member(self, ft: cindex.Type, where: str, mut: bool) -> None:
         p = _pointee(ft)
         if p is not None and not _is_dependent(p):
-            self.add_pointee(p)
+            self.add_pointee(p, mut)
             return
         canon = ft.get_canonical()
         for t in (ft, canon):
             if t.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY, TK.DEPENDENTSIZEDARRAY):
-                self.member(t.element_type, where)
+                self.member(t.element_type, where, mut)
                 return
         if canon.kind == TK.RECORD and not _is_dependent(canon):
-            self.record(canon, where)
+            self.record(canon, where, mut)
         elif _is_dependent(ft):
             decl = ft.get_declaration()
             if decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) and not _is_dependent(decl.underlying_typedef_type):
-                self.member(decl.underlying_typedef_type, where)
+                self.member(decl.underlying_typedef_type, where, mut)
             else:
-                self.spelled(_type_spelling(ft), where)    # inside a class template walked for an alias instantiation (6c)
+                self.spelled(_type_spelling(ft), where, mut)    # inside a class template walked for an alias instantiation (6c)
 
-    def record(self, t: cindex.Type, where: str) -> None:
-        """A class held by value or as a base: t is its canonical type."""
+    def record(self, t: cindex.Type, where: str, mut: bool) -> None:
+        """A class held by value or as a base: t is its canonical type; mut: inside a mutable member."""
         key = _record_key(t)
-        if key in self._seen or key.startswith(_OWNING_TEMPLATES):
+        if (key, mut) in self._seen or key.startswith(_OWNING_TEMPLATES):
             return
-        self._seen.add(key)
+        self._seen.add((key, mut))
         for i in range(t.get_num_template_arguments()):
             at = t.get_template_argument_type(i)
             if at.kind != TK.INVALID:
-                self.member(at, f"{where} -> {key}")
+                self.member(at, f"{where} -> {key}", mut)
         if key.startswith("std::") or key.split("<")[0] in BINDERS:
             # a container owns its storage (NCollection_Array1<gp_Circ2d>'s `gp_Circ2d* myData` points into its own buffer,
             # not at an argument), and the standard library's layout differs per implementation: the arguments only
@@ -1430,15 +1443,15 @@ class _Held:
             if key in self.probed:
                 self.gaps.append(f"{where}: {key} (incomplete)")
             else:
-                self.pending.append((key, where))  # NCollection_CellFilter<...>::Cell: complete only once named in a probe
+                self.pending.append((key, where, mut))  # NCollection_CellFilter<...>::Cell: complete only once named in a probe
             return
         if len(list(defn.get_children())) > 0:
-            self.cursor(defn, f"{where} -> {key}")
+            self.cursor(defn, f"{where} -> {key}", mut)
             return
         # an implicit instantiation's cursor has no children: its members come from the instantiated type, its bases from
         # the template's definition with the template's parameters replaced by this instantiation's arguments
         for f in t.get_fields():
-            self.member(f.type, f"{where} -> {key}")
+            self.member(f.type, f"{where} -> {key}", mut or f.is_mutable_field())
         tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(defn)
         if tmpl is None or tmpl.kind == K.NO_DECL_FOUND:
             return
@@ -1460,42 +1473,52 @@ class _Held:
             if b.kind != K.CXX_BASE_SPECIFIER:
                 continue
             if not _is_dependent(b.type):
-                self.base(b.type, f"{where} -> {key}")
+                self.base(b.type, f"{where} -> {key}", mut)
             elif len(names) == len(values):
                 spelled = b.type.spelling
                 for name, value in zip(names, values):
                     spelled = re.sub(rf"(?<![:\w]){re.escape(name)}\b", value, spelled)
-                self.spelled(spelled, f"{where} -> {key}: base")
+                self.spelled(spelled, f"{where} -> {key}: base", mut)
             else:
                 self.gaps.append(f"{where} -> {key}: base {b.type.spelling}")
 
-    def base(self, bt: cindex.Type, where: str) -> None:
+    def base(self, bt: cindex.Type, where: str, mut: bool) -> None:
         if _is_dependent(bt):
             # the template's parameters only: Substitution.apply would also expand the injected class name, which here can be a
             # template template argument (BVH_Box<T, N> : BVH_BaseBox<T, N, BVH_Box>)
             spelled = bt.spelling
             for name, value in _SUBST.params.items():
                 spelled = re.sub(rf"(?<![:\w]){re.escape(name)}\b", value, spelled)
-            self.spelled(spelled, f"{where}: base")
+            self.spelled(spelled, f"{where}: base", mut)
         elif bt.get_canonical().kind == TK.RECORD:
-            self.record(bt.get_canonical(), where)
+            self.record(bt.get_canonical(), where, mut)
 
-    def cursor(self, cls: cindex.Cursor, where: str) -> None:
+    def cursor(self, cls: cindex.Cursor, where: str, mut: bool) -> None:
         """A class definition walked through its cursor: a plain class, or the class template of a 6c walk."""
         for ch in cls.get_children():
             if ch.kind == K.FIELD_DECL:
-                self.member(ch.type, f"{where}::{ch.spelling}")
+                self.member(ch.type, f"{where}::{ch.spelling}", mut or ch.is_mutable_field())
             elif ch.kind == K.CXX_BASE_SPECIFIER:
-                self.base(ch.type, where)
+                self.base(ch.type, where, mut)
 
-    def holds(self, key: str, ancestors: tuple[str, ...]) -> bool:
-        return self.anything or key in self.types or any(a in self.types for a in ancestors)
+    def absorb(self, r: "_Held", mut: bool) -> None:
+        """r: the layout of a member or base held in this object (inside a mutable member when mut)."""
+        self.types |= r.types
+        self.anything = self.anything or r.anything
+        self.mutable_types |= r.types if mut else r.mutable_types
+        self.mutable_anything = self.mutable_anything or (r.anything if mut else r.mutable_anything)
+
+    def holds(self, key: str, ancestors: tuple[str, ...], const_method: bool) -> bool:
+        """Can a constructor or method store an argument of this class (and these bases) here? A const method only into
+        mutable members."""
+        types, anything = (self.mutable_types, self.mutable_anything) if const_method else (self.types, self.anything)
+        return anything or key in types or any(a in types for a in ancestors)
 
 
 # R-CTOR-KEEP state of the package being parsed (reset per package): the held state of each class, shared by its
 # constructors, and the constructor parameters still undecided because part of the layout waits for the probe
 _held_by_class: dict[tuple[str, int], _Held] = {}    # (class name, hash of the walked definition): a template is walked per instantiation
-_held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...]]]]] = []
+_held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...], bool]]]] = []   # (class, held, (param, key, ancestors, const method))
 
 
 def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
@@ -1507,7 +1530,7 @@ def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
         held = _Held()
         held.constants = {ch.spelling for ch in cls.get_children() if ch.kind in (K.VAR_DECL, K.ENUM_CONSTANT_DECL)} | {
             v.spelling for e in cls.get_children() if e.kind == K.ENUM_DECL for v in e.get_children()}
-        held.cursor(cls, c.name)
+        held.cursor(cls, c.name, False)
         _held_by_class[key] = held
     return _held_by_class[key]
 
@@ -1523,28 +1546,27 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
         """Fold every resolved spelling into the classes that pend on it; a probed layout's own pending entries follow."""
         for _, held, _ in _held_open:
             for _ in range(len(resolved) + 1):          # a resolved layout can pend on spellings resolved earlier
-                still: list[tuple[str, str]] = []
+                still: list[tuple[str, str, bool]] = []
                 changed = False
-                for s, where in held.pending:
+                for s, where, mut in held.pending:
                     if s not in resolved:
-                        still.append((s, where))
+                        still.append((s, where, mut))
                         continue
                     changed = True
                     r = resolved[s]
                     if r is None:
                         held.gaps.append(f"{where}: {s} (the layout probe did not compile)")
                     else:
-                        held.types |= r.types
-                        held.anything = held.anything or r.anything
+                        held.absorb(r, mut)
                         held.gaps += [f"{where} -> {g}" for g in r.gaps]
-                        still += [(s2, f"{where} -> {w2}") for s2, w2 in r.pending]
+                        still += [(s2, f"{where} -> {w2}", mut or m2) for s2, w2, m2 in r.pending]
                 held.pending = still
                 if not changed:
                     break
 
     for _ in range(10):                            # a probed layout can pend in turn (BVH_Distance -> BVH_Traverse -> ... -> BVH_Object)
         absorb()
-        todo = sorted({s for _, h, cands in _held_open if len(cands) > 0 for s, _ in h.pending if s not in resolved})
+        todo = sorted({s for _, h, cands in _held_open if len(cands) > 0 for s, _, _ in h.pending if s not in resolved})
         if len(todo) == 0:
             break
         probe = Path(td) / "nanocct__layout.hxx"
@@ -1562,22 +1584,62 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
             h = _Held()
             h.probed.add(s)
             if t.kind == TK.RECORD:
-                h.record(t, s)
+                h.record(t, s, False)
             else:
-                h.member(t, s)                     # a builtin or enum holds nothing; a pointer typedef holds its pointee
+                h.member(t, s, False)              # a builtin or enum holds nothing; a pointer typedef holds its pointee
             resolved[s] = h
     absorb()
     for c, held, cands in _held_open:
         missed = []
-        for p, key, ancestors in cands:
-            if held.holds(key, ancestors):
+        for p, key, ancestors, const_method in cands:
+            if held.holds(key, ancestors, const_method):
                 p.kept = True
             else:
                 missed.append(p.name)
-        open_layout = held.gaps + [f"{w}: {s} (not resolved within the probe rounds)" for s, w in held.pending]
+        open_layout = held.gaps + [f"{w}: {s} (not resolved within the probe rounds)" for s, w, _ in held.pending]
         if len(missed) > 0 and len(open_layout) > 0:
             c.skipped.append(f"{c.name}: R-CTOR-KEEP could not follow its whole layout ({'; '.join(sorted(set(open_layout)))}): "
                              f"no keep-alive for {', '.join(sorted(set(missed)))}")
+
+
+
+def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bool, const_method: bool) -> None:
+    """R-CTOR-KEEP / R-METHOD-KEEP: mark the parameters of a constructor or method that the object can keep the address of --
+    taken by reference or pointer (not a handle, a primitive, a stream, bytes or a returned out-parameter), of a class that
+    the object, by its layout (_Held), holds a pointer or reference to. What waits for the layout probe is decided at the
+    end of the package (_resolve_held_layout). A method's out-parameters are returned, not passed; an in-out parameter is
+    copied into the binding's lambda, so an address the object keeps would dangle whatever the binding does -- reported."""
+    held = _held_types(fn.semantic_parent, c)
+    undecided: list[tuple[Param, str, tuple[str, ...], bool]] = []
+    for p, arg in zip(params, fn.get_arguments()):
+        if p.omitted or p.is_handle or p.is_bytes or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
+            continue
+        pointee = _pointee(arg.type)
+        if pointee is None:
+            continue
+        if _is_dependent(pointee):        # a 6c walk: the parameter is spelled only after substitution
+            if not p.type.rstrip().endswith(("&", "*")):
+                continue
+            key, is_class = _core_type(p.type), _core_type(p.type) not in _PRIMITIVE_SPELLINGS
+        else:
+            key, is_class = _record_key(pointee), pointee.kind == TK.RECORD
+        if not is_class or key.startswith(_OWNING_TEMPLATES):
+            continue
+        if is_method and p.is_inout:
+            if held.holds(key, p.class_ancestors, const_method):
+                c.skipped.append(f"{c.name}::{fn.spelling}: in-out argument {p.name} is copied into the binding, an address "
+                                 f"the object keeps would dangle (R-METHOD-KEEP)")
+            continue
+        if held.holds(key, p.class_ancestors, const_method):
+            p.kept = True
+        else:
+            undecided.append((p, key, p.class_ancestors, const_method))
+    if len(undecided) > 0:
+        entry = next((e for e in _held_open if e[0] is c and e[1] is held), None)
+        if entry is None:
+            _held_open.append((c, held, undecided))
+        else:
+            entry[2].extend(undecided)
 
 
 def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
@@ -1591,32 +1653,7 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
     if not ch.is_copy_constructor() and not ch.is_move_constructor() and reason is None:
-        held = _held_types(ch.semantic_parent, c)
-        undecided: list[tuple[Param, str, tuple[str, ...]]] = []
-        for p, arg in zip(params, ch.get_arguments()):
-            if p.omitted or p.is_handle or p.is_bytes:
-                continue
-            pointee = _pointee(arg.type)
-            if pointee is None:
-                continue
-            if _is_dependent(pointee):        # a 6c walk: the parameter is spelled only after substitution
-                if not p.type.rstrip().endswith(("&", "*")):
-                    continue
-                key, is_class = _core_type(p.type), _core_type(p.type) not in _PRIMITIVE_SPELLINGS
-            else:
-                key, is_class = _record_key(pointee), pointee.kind == TK.RECORD
-            if not is_class or key.startswith(_OWNING_TEMPLATES):
-                continue
-            if held.holds(key, p.class_ancestors):
-                p.kept = True
-            else:
-                undecided.append((p, key, p.class_ancestors))
-        if len(undecided) > 0:
-            entry = next((e for e in _held_open if e[0] is c), None)
-            if entry is None:
-                _held_open.append((c, held, undecided))
-            else:
-                entry[2].extend(undecided)
+        _decide_kept(ch, c, params, False, False)
     if ctor.skip_reason is None and 0 < _MAX_PARAMS < len(params):
         ctor.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     if ctor.skip_reason is not None:
@@ -1660,6 +1697,8 @@ def _using_methods(using: cindex.Cursor, c: Class) -> None:
         m.defined_in_header = True                 # its symbol lives in the base's library; the base's own binding runs the nm check
         if m.skip_reason is not None:
             c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}) (using {base}::{m.name}): {m.skip_reason}")
+        elif not m.is_static:
+            _decide_kept(d, c, m.params, True, m.is_const)       # R-METHOD-KEEP: the base's layout, inside this object
         c.methods.append(m)
 
 
@@ -1823,6 +1862,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 continue
             if m.skip_reason is not None:
                 c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}): {m.skip_reason}")
+            elif not m.is_static:
+                _decide_kept(ch, c, m.params, True, m.is_const)      # R-METHOD-KEEP
             c.methods.append(m)
         elif ch.kind == K.VAR_DECL:
             # R-STATIC-DATA: a static data member (a VAR_DECL inside a class; FIELD_DECL is the instance kind). Until

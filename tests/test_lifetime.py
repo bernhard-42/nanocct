@@ -638,3 +638,90 @@ def test_a_void_pointer_member_keeps_the_constructor_argument():
         print(n > 10, round(radius, 6))
     """))
     assert out == ["True 5.0"]
+
+
+# ---- R-METHOD-KEEP: a method argument the object keeps the address of lives in a slot ---------------------------------
+
+def test_a_method_keeps_the_argument_it_stores():
+    """Extrema_ExtPS::Initialize(S, ...) stores `myS = &S` (Extrema_ExtPS.cxx); Perform() reads it. With the surface
+    dropped, Perform() read freed memory (segfault)."""
+    out = _ok(_run("""
+        from nanocct import Extrema, Geom, GeomAdaptor, gp
+        ext = Extrema.Extrema_ExtPS()
+        s = GeomAdaptor.GeomAdaptor_Surface(Geom.Geom_Plane(gp.gp_Pln()))
+        ext.Initialize(s, -10.0, 10.0, -10.0, 10.0, 1e-7, 1e-7)
+        del s
+        collect()
+        ext.Perform(gp.gp_Pnt(1, 2, 3))
+        print(ext.IsDone(), ext.NbExt())
+    """))
+    assert out == ["True 1"]
+
+
+def test_a_method_keeps_a_temporary_argument():
+    """The natural Python form: a temporary adaptor passed to Initialize(), Perform() later."""
+    out = _ok(_run("""
+        from nanocct import BRepAdaptor, Extrema, gp
+        edge = TopoDS.Edge(TopExp.TopExp_Explorer(box, TopAbs.TopAbs_EDGE).Current())
+        ext = Extrema.Extrema_ExtPC()
+        curve = BRepAdaptor.BRepAdaptor_Curve(edge)
+        ext.Initialize(BRepAdaptor.BRepAdaptor_Curve(edge), curve.FirstParameter(), curve.LastParameter(), 1e-7)
+        del curve
+        collect()
+        ext.Perform(gp.gp_Pnt(0.5, -1.0, 0.0))
+        print(ext.IsDone(), ext.NbExt() > 0)
+    """, BOX))
+    assert out == ["True True"]
+
+
+def test_each_method_parameter_has_its_own_slot_and_a_call_replaces_it():
+    """BOPDS_SubIterator keeps both subsets (`mySubSet1 = &theLI`, `mySubSet2 = &theLI`): one slot each. A second
+    SetSubSet1() releases the first list and leaves the second subset's list alone."""
+    out = _ok(_run("""
+        import sys
+        from nanocct.BOPDS import BOPDS_SubIterator
+        from nanocct.NCollection import NCollection_List
+        def filled(n):
+            lst = NCollection_List[int]()
+            for i in range(n):
+                lst.Append(i)
+            return lst
+        a, b, c = filled(5), filled(3), filled(2)
+        def counts():                      # one form for every measurement: Python 3.14 counts a borrowed load differently
+            return [sys.getrefcount(a), sys.getrefcount(b), sys.getrefcount(c)]
+        base = counts()
+        it = BOPDS_SubIterator()
+        it.SetSubSet1(a)
+        it.SetSubSet2(b)
+        kept = [n - r for n, r in zip(counts(), base)]
+        it.SetSubSet1(c)
+        replaced = [n - r for n, r in zip(counts(), base)]
+        del a, b
+        collect()
+        print(kept, replaced, it.SubSet1().Size(), it.SubSet2().Size())
+    """))
+    assert out == ["[1, 1, 0] [0, 1, 1] 2 3"]
+
+
+def test_a_slot_keeps_one_argument_however_often_it_is_called():
+    """nb::keep_alive on a method would keep every argument of a loop of calls (and walk all of them on each call): a slot
+    keeps the last one, and the object releases it when it goes."""
+    out = _ok(_run("""
+        import sys
+        from nanocct import Extrema, Geom, GeomAdaptor, gp
+        surfaces = [GeomAdaptor.GeomAdaptor_Surface(Geom.Geom_Plane(gp.gp_Pln(gp.gp_Pnt(0, 0, i), gp.gp_Dir(0, 0, 1))))
+                    for i in range(50)]
+        def counts():                      # one form for every measurement: Python 3.14 counts a borrowed load differently
+            return [sys.getrefcount(s) for s in surfaces]
+        base = counts()
+        ext = Extrema.Extrema_ExtPS()
+        for surface in surfaces:
+            ext.Initialize(surface, -10.0, 10.0, -10.0, 10.0, 1e-7, 1e-7)
+        del surface
+        during = [n - r for n, r in zip(counts(), base)]
+        del ext
+        collect()
+        after = [n - r for n, r in zip(counts(), base)]
+        print(sum(during[:-1]), during[-1], sum(after))
+    """))
+    assert out == ["0 1 0"]
