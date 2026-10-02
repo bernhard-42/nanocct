@@ -39,6 +39,7 @@ _INPLACE_OPS = {
 _IDENT_RE = re.compile(r"[A-Za-z_]\w*")
 
 
+# Binding-Rules.md R-DOCSTRING: the docstring as a raw string literal (R"nbdoc(...)nbdoc")
 def _cpp_doc(doc: str) -> str | None:
     if doc == "":
         return None
@@ -58,11 +59,13 @@ def _strip_ref(t: str) -> str:
 def _py_name(m: Method) -> str | None:
     """Python attribute name for a method; None when the operator has no Python counterpart."""
     if not m.is_operator:
+        # R-BASELINE: a method keeps its C++ name (the deviations: R-KEYWORD, R-STATIC-S, R-COLLISION, the operators)
         return py_safe(m.name)
     if m.name == "operator<<" and len(m.params) == 1 and not m.params[0].binary:
-        # R-STR, member forms: `Standard_OStream& operator<<(Standard_OStream&) const` prints *this (TDF_Label, TDF_Attribute,
-        # CDM_MetaData: `{ return Dump(anOS); }`) -> __str__; `VrmlData_Scene& operator<<(Standard_IStream&)` reads a scene
-        # -> Read(TextIO), a named method, because __lshift__ would read as a bit shift
+        # R-STR, member forms: `Standard_OStream& operator<<(Standard_OStream&)`, const or not, prints *this (TDF_Label,
+        # TDF_Attribute: `{ return Dump(anOS); }`; CDM_MetaData, not const: `return Print(anOStream);` in the .cxx)
+        # -> __str__; `VrmlData_Scene& operator<<(Standard_IStream&)` reads a scene -> Read(TextIO), a named method,
+        # because __lshift__ would read as a bit shift
         if m.params[0].stream == StreamKind.OUT:
             return "__str__"
         if m.params[0].stream == StreamKind.IN:
@@ -274,8 +277,9 @@ class Emitter:
         for p in params:
             if p.omitted or p.bytes_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
                 continue
-            # a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
-            # the caster runs (Design.md 4.2); so does a class pointer with a null default (R-PTR-NULL), or the default is refused
+            # R-HANDLE: a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
+            # the caster runs (Design.md 4.2); so does a class pointer, with or without a null default (R-PTR-NULL: without
+            # .none() a null default is refused)
             arg = f'nb::arg("{p.name}").none()' if p.is_handle or p.ptr_none else f'nb::arg("{p.name}")'
             # R-ENUM-ARG: an enum parameter takes its enumerators only, as in C++. nanobind's enum caster takes any int
             # that is an enumerator's value in its convert pass, True and False included (nb_enum.cpp), so
@@ -305,7 +309,7 @@ class Emitter:
         if d is not None:
             s += ", " + d
         if operator:
-            s += ", nb::is_operator()"
+            s += ", nb::is_operator()"           # R-OPERATOR
         return s
 
     # Binding-Rules.md R-KEPT
@@ -459,15 +463,17 @@ class Emitter:
                               else f"{p.name}.ptr" if p.cstr_none                        # R-CSTR-NULL
                               else f"{p.name}_stream" if p.stream != StreamKind.NONE
                               else f"{p.name}_arr" if p.array_len > 0 and not p.is_out else p.name for p in m.params)
+        # R-NULL: the call goes to OCCT as is, here and through a member pointer (_method) -- no null-input guard; OCCT's
+        # behaviour on a null argument stays OCCT's
         if cls is None:
             callee = f"{m.name}({call_args})"
         elif m.is_static:
             callee = f"{cls}::{m.name}({call_args})"
         else:
             callee = f"self.{m.name}({call_args})"
-        # the C++ return value's temporary is prefixed like every other generated name: 99 OCCT parameters are called
-        # `result` (IGESConvGeom::SplineCurveFromIGES(…, handle<Geom_BSplineCurve>& result)), and a bare `result` here
-        # is a redefinition when such a parameter is an out-parameter of a non-void method (2026-09-22)
+        # R-OUT: the C++ return value's temporary is prefixed nanocct_ like every other generated name: 99 OCCT parameters
+        # are called `result` (IGESConvGeom::SplineCurveFromIGES(…, handle<Geom_BSplineCurve>& result)), and a bare `result`
+        # here would be a redefinition when such a parameter is an out-parameter of a non-void method
         results: list[str] = []
         if m.result_kind == ResultKind.PTR_TRANSIENT:
             body.append(f"opencascade::handle<{m.result_class}> nanocct_result({callee});")
@@ -555,7 +561,8 @@ class Emitter:
             else:
                 policy = f", nanocct::cref_policy<{m.result}, {'false' if m.is_static else 'true'}>{{}}"
         if m.name in _INPLACE_OPS:
-            # OCCT in-place operators return void; Python expects self back
+            # R-IOP: OCCT in-place operators return void (or *this); the lambda calls the operator and returns self, the same
+            # Python object
             checks = "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ {checks}self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._keep_slots(m)}{self._extras(doc, m.params, False, True)})'
@@ -639,8 +646,8 @@ class Emitter:
                          else f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes         # R-BYTES: the buffer ...
                          else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
                          else p.name for p in params)
-        # R-BYTES in a constructor: the object may keep the pointer (WNT_HIDSpaceMouse stores myData = theData and reads it
-        # later, WNT_HIDSpaceMouse.cxx:151), so the bytes object lives as long as the new object: keep_alive<1, k>, where 1 is
+        # R-BYTES in a constructor: the object may keep the pointer (WNT_HIDSpaceMouse stores myData(theData) and reads it
+        # later, WNT_HIDSpaceMouse.cxx:154), so the bytes object lives as long as the new object: keep_alive<1, k>, where 1 is
         # `self` of __init__ and its parameters are numbered from 2. The nb::new_ path of a Transient has no such case and
         # its numbering is not verified, so it is refused rather than guessed.
         if cls.is_transient and any(p.is_bytes for p in ins):
@@ -651,8 +658,9 @@ class Emitter:
         # (nb_class.h, new_::execute): the nurse is the result, 0 -- in __init__ that is None, which keep_alive ignores
         # (nb_type.cpp, keep_alive_py) -- and the arguments count from 2 in both
         nurse = 0 if cls.is_transient else 1
-        # R-COPY: an argument the object may copy pointers out of (a copy constructor, TDF_ChildIterator(label)) is kept with
-        # what its slots hold now (nanocct::keep_view_arg): its next Initialize must not free what the new object points to
+        # R-COPY, R-CTOR-KEEP: an argument the object may copy pointers out of (a copy constructor, TDF_ChildIterator(label))
+        # is kept with what its slots hold now (nanocct::keep_view_arg, the argument-layout keep): its next Initialize must not
+        # free what the new object points to
         if cls.kept:
             # R-KEPT: the object is a nanocct::Kept<T>; an argument that cannot own it lives in a slot of its C++ object
             for i, p in enumerate(ins):
@@ -868,7 +876,7 @@ class Emitter:
         return f'    nanocct_register_exception<{c.name}>(nanocct_new_exception({self._attr(c.scope)}, "{c.py_name}", {d if d is not None else "nullptr"}, {base}));'
 
     def plan(self) -> tuple[list[Class], list[str]]:
-        """The first phase of emit(): which classes survive their bases (R-MI and 5.2) and which 6a instantiations this
+        """The first phase of emit(): which classes survive their bases (5.2) and which 6a instantiations this
         package binds. Returns the surviving classes and the templates-phase lines.
 
         Split out because it is also everything the *registry* needs before the declare phase, so assign_templates()
@@ -915,7 +923,7 @@ class Emitter:
         declare: list[str] = []
         define: list[str] = []
         wrappers: list[str] = []      # file-scope wrapper structs for non-copyable classes
-        for ns in ir.namespaces:      # C++ namespaces other than the package's own -> submodules
+        for ns in ir.namespaces:      # R-NAMESPACE: C++ namespaces other than the package's own -> submodules
             declare.append(f'    {self._module(ns[:-1])}.def_submodule("{ns[-1]}", "C++ namespace {"::".join(ns)} (OCCT package {ir.name})");')
         for k in ir.constants:
             declare.append(f'    {self._attr(k.scope)}.attr("{k.py_name}") = nb::cast({k.cpp});')
@@ -1019,8 +1027,8 @@ class Emitter:
                 self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
                 continue
             # R-RESULT for free functions: a mutable reference result (TopoDS::Vertex(TopoDS_Shape&)) has no owner to tie
-            # it to (no self), so it is copied rather than returned as a dangling reference; the const& overloads of
-            # those functions are the reachable ones anyway (registered first)
+            # it to (no self), so it is copied rather than returned as a dangling reference; for TopoDS::Vertex & co. this
+            # mutable overload is the bound one (R-CONST-TWIN drops the const& twin)
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
                 # R-RESULT: no owner to tie a reference to
@@ -1038,8 +1046,9 @@ class Emitter:
                 continue
             if fn.result_kind == ResultKind.VALUE_TRANSIENT or fn.result_on_heap or any(
                     p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
-                # out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL need the lambda too,
-                # and so does a Transient returned by value (R-RESULT: into a handle, never a nanobind-owned copy)
+                # R-OUT: out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL
+                # need the lambda too, and so does a Transient returned by value (R-RESULT: into a handle, never a
+                # nanobind-owned copy)
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                    result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc,
                                    result_on_heap=fn.result_on_heap, result_by_reference=fn.result_by_reference)
@@ -1063,7 +1072,7 @@ class Emitter:
         if c.is_exception:
             declare.append(self._exception(c))
             return False
-        # nanobind takes one base and reuses the derived pointer for it, so only the first (offset-0) base
+        # R-MI: nanobind takes one base and reuses the derived pointer for it, so only the first (offset-0) base
         # can be declared; further bases are reported (their members are not inherited in Python)
         for extra in c.bases[1:]:
             self.report.append(f"{c.name}: additional base {extra} not declared (nanobind: single inheritance, offset-0 base only)")
@@ -1100,6 +1109,7 @@ class Emitter:
                 return name          # a dependent `const TheKeyType&` of a 6c instantiation (NCollection_FlatMap<K, H>::Iterator)
         return None
 
+    # R-ITER: a dependent const X& Value()/Current() of a 6c instantiation is copied out unless X is a Transient
     def _copyable_const_ref(self, result: str) -> bool:
         """`const X &` inside a 6c instantiation: libclang gives the dependent pointee no declaration, so parse._result_kind
         says OTHER although nanobind copies it like any const-reference result. Safe to copy unless X is a Transient
@@ -1149,6 +1159,8 @@ class Emitter:
             for narrow, wide in demoted:
                 if narrow.skip_reason is None:
                     self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+            # R-IMPLICIT-DEFAULT: a class declaring no constructor gets the implicit default one, bound only if
+            # std::is_default_constructible_v<T> (nanocct_implicit_default_ctor)
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
             arities = {id(k): n for k, n in resolve_ctor_arities(declared)}
             for k in declared:
@@ -1229,7 +1241,7 @@ class Emitter:
         ir = self.ir
         if c.name in ir.hashable or c.template_key != "" and c.template_key.split("<", 1)[0] in ir.hashable_templates:
             # R-HASH: std::hash<T> specialised by OCCT (fully, or partially for a class template) -> hashability consistent with __eq__.
-            # OCCT writes those specialisations as one inline line forwarding to the class's own HashCode(), so when
+            # Some OCCT specialisations forward to the class's own HashCode() (TCollection_AsciiString.lxx:32), so when
             # HashCode is not in the library the lambda below does not link even though it needs no symbol itself --
             # the same trap as the inline members in overrides.toml [skip] methods, but this one is emitted by us, so
             # there is nothing to list there (BRepGraph_UsagePath on Windows, LNK2019, 2026-09-23).
@@ -1262,6 +1274,7 @@ class Emitter:
             define.append(f"    nanocct_if_concrete<{c.bound_type}>({cls_expr}, [](auto &cls) {{ using nanocct_T = typename std::decay_t<decltype(cls)>::Type; cls")
             define += ["        " + b for b in ctor_body]
             define[-1] += "; });"
+        # R-BASELINE: the class's members as one chain of .def calls under their C++ names; nanobind resolves the overloads
         if len(body) > 0:
             define.append(f'    {cls_expr}')
             define += ["        " + b for b in body]
@@ -1428,6 +1441,8 @@ class Emitter:
             # R-OWNER: the OCAF owners of TDF_Label/TDF_Data/TDF_Attribute (and what they are named in, for R-LINK)
             includes.insert(0, '#include "nanocct_ocaf.h"')
             self._note_types("TDF_Attribute TDF_Data TDF_Label TDocStd_Document TDocStd_Owner")
+        # R-PTR-INCOMPLETE: a class only forward-declared in the package's headers gets its own header here when OCCT
+        # installs one
         extra = [f"{ident}.hxx" for ident in sorted(self._idents)
                  if f"{ident}.hxx" not in ir.headers and (self.include_dir / f"{ident}.hxx").exists()]
         if self.prelude_check is not None and len(extra) > 0:
@@ -1441,11 +1456,11 @@ class Emitter:
         return includes
 
 
-# Binding-Rules.md R-COLLISION
 # the C++ scalars without a Python type of their own (nanocct/_templates.py; the stub header in stubs.py declares the same five)
 _SCALAR_MARKERS = ("float32", "uchar", "uint", "ulong", "ulonglong")
 
 
+# Binding-Rules.md R-COLLISION
 def out_suffix(params: list[Param]) -> str:
     """'__float__float' for the removed out-parameters of an overload (streams: str, or bytes in a binary package); '' when
     the overload has none. Double underscores separate the parts because OCCT names contain single ones (Design.md 2a)."""
@@ -1600,6 +1615,7 @@ def drop_unreachable(overloads: list) -> list[tuple[object, object]]:
     return dropped
 
 
+# Binding-Rules.md R-WIDTH
 def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
     """Overloads that differ only in the width of scalar parameters (Abs(double)/Abs(float), Value(int)/Value(size_t))
     are the same call from Python; nanobind takes the first registered, so the wider twin (double over float, int over

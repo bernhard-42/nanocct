@@ -294,7 +294,7 @@ def test_transient_reference_result_raw_heap_object_reverse():
     assert out == ["True 1"]
 
 
-# ---- R-RESULT: T* to another class -> rv_policy::reference (no keep_alive) --------------------------------------------
+# ---- R-RESULT: T* to another class -> rv_policy::reference_internal (the result keeps its owner alive) ----------------
 
 BSPLINE = """
 from nanocct import Geom, NCollection, gp
@@ -313,7 +313,8 @@ owner = Geom.Geom_BSplineCurve(poles, weights, knots, mults, 2)
 
 
 def test_class_pointer_result_forward():
-    """Geom_BSplineCurve::Weights() returns `const NCollection_Array1<double>*` into the curve (rv_policy::reference)."""
+    """Geom_BSplineCurve::Weights() returns `const NCollection_Array1<double>*` into the curve
+    (rv_policy::reference_internal)."""
     out = _ok(_run("""
         result = owner.Weights()
         print(list(result))
@@ -367,7 +368,7 @@ def test_class_pointer_reference_result_reverse():
 
 def test_incomplete_class_pointer_result_forward():
     """BOPAlgo_Builder::PDS() returns `BOPDS_PDS`, a `BOPDS_DS*` whose class BOPDS_PDS.hxx only forward-declares
-    (R-PTR-INCOMPLETE): the same rv_policy::reference as any class pointer."""
+    (R-PTR-INCOMPLETE): the same rv_policy::reference_internal as any class pointer a method returns."""
     out = _ok(_run("""
         result = owner.Builder().PDS()
         n = result.NbShapes()

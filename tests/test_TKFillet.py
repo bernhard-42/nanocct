@@ -47,7 +47,8 @@ def test_fillet_and_chamfer_of_a_cube():
 
 
 def test_using_unhides_base_overloads_and_prelude():
-    # R-USING: BlendFunc_ConstRadInv declares Set(R, Choix) and `using Blend_FuncInv::Set` for Set(OnFirst, COnSurf)
+    # BlendFunc_ConstRadInv declares both Set overloads itself (BlendFunc_ConstRadInv.hxx:35, :65), no using-declaration;
+    # the R-USING case is BlendFunc_ChamfInv / BlendFunc_ConstThroatInv (`using Blend_FuncInv::Set`)
     sigs = [l for l in BlendFunc.BlendFunc_ConstRadInv.Set.__doc__.splitlines() if l.startswith("Set(")]
     assert sigs == ["Set(self, OnFirst: bool, COnSurf: nanocct.Adaptor2d.Adaptor2d_Curve2d | None) -> None", "Set(self, R: float, Choix: int) -> None"]
     assert [l for l in Blend.Blend_FuncInv.Set.__doc__.splitlines() if l.startswith("Set(")] == sigs[:1]

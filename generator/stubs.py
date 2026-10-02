@@ -253,12 +253,11 @@ def _with_imports(text: str) -> str:
 
 
 def _with_numpy_imports(text: str) -> str:
-    """Add the numpy imports a hand-written `nb::sig` needs.
+    """Add the numpy imports a stub's text names and stubgen did not write, and `Annotated` to its typing import.
 
-    nanobind's stubgen adds `import numpy` / `from numpy.typing import NDArray` for the signatures it infers
-    itself, but not for the ones given as a literal `nb::sig` string -- and the zero-copy accessors that can
-    return None have to give theirs by hand, because their C++ return type is `nb::object` (R-VIEW). Without
-    this, Image.pyi says `-> NDArray | None` with nothing importing NDArray.
+    nanobind's stubgen writes `from numpy.typing import NDArray` itself for the `__array__` members (R-VIEW). The
+    `numpy.` test also matches docstring text (`numpy.asarray(pixmap)` in Image.pyi), for which `import numpy` is
+    added although no annotation needs it.
     """
     add = []
     if re.search(r"\bNDArray\b", text) and "from numpy.typing import NDArray" not in text:
@@ -362,6 +361,8 @@ def _stub_of(shim: Path) -> Path:
     return shim.with_suffix(".pyi")
 
 
+# The stubgen script, run per module in a subprocess. R-ALIAS: its last step writes a typedef alias as an assignment by
+# module + __qualname__ (stubgen's `from X import A as B` is no re-export and wrong for a nested class)
 _STUBGEN = r"""
 import re, sys, importlib
 from pathlib import Path

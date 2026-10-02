@@ -217,7 +217,7 @@ def test_a_texture_writes_its_encoded_image_as_bytes():
 
 def test_the_space_mouse_keeps_its_raw_report_alive():
     """WNT_HIDSpaceMouse(id, const uint8_t* theData, size_t theSize) keeps the pointer, not a copy
-    (WNT_HIDSpaceMouse.cxx:151): R-BYTES in a constructor ties the bytes to the object (keep_alive), so the report stays
+    (WNT_HIDSpaceMouse.cxx:154): R-BYTES in a constructor ties the bytes to the object (keep_alive), so the report stays
     readable after the caller dropped it. WNT is built on every platform."""
     import gc
     import struct

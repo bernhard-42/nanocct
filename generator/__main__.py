@@ -26,7 +26,7 @@ from .symbols import defined_symbols, destructor_defined, unavailable_reason
 ROOT = Path(__file__).resolve().parent.parent
 
 
-# The one package nanocct writes by hand rather than generating: src/cpp/AddOns, built by CMakeLists outside
+# The one package nanocct writes by hand rather than generating (R-ADDON): src/cpp/AddOns, built by CMakeLists outside
 # the toolkit loop and imported as nanocct.AddOns (extension _AddOns). It is a package, never a toolkit.
 HANDWRITTEN_PACKAGE = "AddOns"
 # Its submodules (nb::module_::def_submodule in src/cpp/AddOns/_AddOns.cpp; tests/test_AddOns.py checks the two agree).
@@ -56,6 +56,7 @@ def _topo(tree, toolkits: list[str], extra: dict[str, list[str]] | None = None) 
     return out
 
 
+# Binding-Rules.md R-IMPORT-BASE
 def _base_import_edges(tree, parsed: list, templates: dict, classes: dict[str, str], packages: dict[str, str],
                        toolkit_of: dict[str, str]) -> dict[str, list[str]]:
     """Import edges nanobind needs and EXTERNLIB does not have: {toolkit: [toolkits imported before it]}.
@@ -510,9 +511,9 @@ def main(argv: list[str]) -> int:
                     if fn.skip_reason is None and not fn.defined_in_header and fn.mangled not in symbols:
                         fn.skip_reason = "declared but not defined in the library"
                         ir.report.append(f"{fn.qualified}({', '.join(p.type for p in fn.params)}): declared in the header, no definition in lib{tk_name}")
-                # a copy constructor declared but never defined (GCPnts_DistFunction: the old idiom to forbid copies) is
-                # still "copy constructible" for nanobind, which then instantiates a copy wrapper -> link error:
-                # the class cannot be bound at all
+                # R-UNDEFINED-COPY: a copy constructor declared but never defined (GCPnts_DistFunction: the old idiom to
+                # forbid copies) is still "copy constructible" for nanobind, which then instantiates a copy wrapper -> link
+                # error: the class cannot be bound at all, it is skipped and reported
                 unlinkable = [c for c in ir.classes if "<" not in c.name and any(
                     k.is_copy and not k.defined_in_header and k.mangled not in symbols for k in c.ctors)]
                 for c in unlinkable:
@@ -675,10 +676,10 @@ def main(argv: list[str]) -> int:
         depends = [d for d in tk.depends if d in generated_toolkits]
         depends += [d for d in manifest.get("links", {}).get(tk_name, [])
                     if d in generated_toolkits and d not in depends and position[d] < position[tk_name]]
-        # 6a: NCollection_Shared<T> derives from T, so the toolkit binding T must be *imported* before this module
-        # registers the wrapper. Ordering nanocct/__init__.py is not enough -- another toolkit's import chain can
-        # reach this one first (_TKService imports _TKV3d for a cross-toolkit alias, _TKV3d imports _TKMesh, and
-        # _TKMesh registered a wrapper over a TKBool DataMap; 2026-09-23).
+        # R-IMPORT-BASE: the toolkit binding a base (or an instantiation a signature uses) is imported first. 6a:
+        # NCollection_Shared<T> derives from T, so the toolkit binding T must be *imported* before this module registers
+        # the wrapper. Ordering nanocct/all.py is not enough -- another toolkit's import chain can reach this one first
+        # (_TKV3d imports _TKMesh, and _TKMesh registers a wrapper over a TKBool DataMap).
         # ... and unlike R-LINK's, this edge is not filtered by the EXTERNLIB order: TKBool comes *after* TKMesh
         # there, which is exactly the case the edge exists to repair. A cycle would make the eager order's _topo
         # fail loudly, since it is given the same edges.
@@ -764,8 +765,9 @@ def main(argv: list[str]) -> int:
     # `import nanocct.all` loads every toolkit, in dependency order: on macOS Gatekeeper verifies each dylib the
     # first time it is loaded, so warming all of them once after installing a wheel is cheaper than paying for it
     # scattered through a session. It is *not* needed for DE_Wrapper:
-    # nanocct does not bind DE_PluginHolder<T> (R-TEMPLATE-SKIP), so a provider is registered by an explicit
-    # `wrapper.Bind(DEBREP_ConfigurationNode())` whatever has been imported -- measured 2026-09-24.
+    # nanocct does not bind DE_PluginHolder<T> (a class template no typedef instantiates, R-TEMPLATE-SKIP: "template (not bound)" in the
+    # report), so a provider is registered by an explicit `wrapper.Bind(DEBREP_ConfigurationNode())` whatever has been
+    # imported -- measured 2026-09-24.
     (py_root / "all.py").write_text(
         '''"""Load every nanocct toolkit: `import nanocct.all`.
 

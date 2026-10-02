@@ -24,6 +24,7 @@ from .model import (Class, Constant, Constructor, Conversion, ConversionKind, En
                     ResultKind, StreamKind, TemplateInstance, TypeAlias)
 from .occt import OcctTree, Package
 
+# R-CHAR: a plain char is a primitive and passes through; nanobind's type_caster<char> makes it a 1-character str
 _PRIMITIVE_KINDS = {
     TK.BOOL, TK.CHAR_U, TK.UCHAR, TK.CHAR16, TK.CHAR32, TK.USHORT, TK.UINT, TK.ULONG,
     TK.ULONGLONG, TK.CHAR_S, TK.SCHAR, TK.WCHAR, TK.SHORT, TK.INT, TK.LONG, TK.LONGLONG,
@@ -33,6 +34,7 @@ _PRIMITIVE_KINDS = {
 # object behind them is what gets bound, a null one is None -- opencascade::handle<T> for Transients and
 # NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object
 _SMART_HANDLES = ("handle", "NCollection_Handle")
+# R-ITERATOR: the STL-style iterator templates; members taking or returning them are skipped
 _STL_ITERATORS = {"NCollection_ForwardRangeIterator", "NCollection_IndexedIterator", "NCollection_StlIterator", "NCollection_UtfIterator"}
 _PRIMITIVE_SPELLINGS = {"double", "float", "int", "bool", "char", "long", "short", "size_t", "unsigned", "unsigned int", "unsigned long",
                         "long long", "unsigned long long", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t",
@@ -77,7 +79,7 @@ _UNSUPPORTED_RE = re.compile(
 # Other std types nanobind has no caster for. Reported by name: "iostream type" was the message for these too until
 # 2026-09-22, which read as a stream in the report (DE_Wrapper::GlobalLoadMutex returns a std::mutex&).
 _UNSUPPORTED_STD_RE = re.compile(r"std::(__\w+::)?(locale|thread|mutex|atomic|type_info|exception_ptr)\b")
-# std templates nanobind casts (nanobind/stl/*.h, all included from nanocct_common.h)
+# R-STL: std templates nanobind casts (nanobind/stl/*.h, all included from nanocct_common.h)
 _STD_TEMPLATES_OK = {"shared_ptr", "unique_ptr", "vector", "map", "unordered_map", "set", "unordered_set", "pair",
                      "optional", "function", "tuple", "array", "variant", "list", "basic_string", "basic_string_view",
                      "bitset"}   # R-BITSET: set[int] of the set bits' indices (its size is a non-type argument, kind INVALID)
@@ -172,6 +174,7 @@ def clang_args(tree: OcctTree) -> list[str]:
     return args
 
 
+# Binding-Rules.md R-DOCSTRING: a class's or member's docstring is its raw_comment without the comment markers
 def _doc(cursor: cindex.Cursor) -> str:
     raw = cursor.raw_comment
     if raw is None:
@@ -375,6 +378,8 @@ def _is_out_param(t: cindex.Type) -> bool:
     pointee = t.get_pointee()
     if pointee.is_const_qualified():
         return False
+    # R-REF-CLASS: a non-const reference to a bound class is no out-parameter: it keeps its T& type, nanobind passes the
+    # instance by reference and the callee mutates it in place
     return pointee.get_canonical().kind in _PRIMITIVE_KINDS or _is_handle(pointee) or _std_caster_name(pointee) is not None
 
 
@@ -523,6 +528,7 @@ def _type_spelling_raw(t: cindex.Type) -> str:
     return s
 
 
+# Binding-Rules.md R-TEMPLATE-NAME: an instantiation or explicit specialisation with no typedef -> template__arg1__arg2
 def _py_identifier(cpp_name: str) -> str:
     """Python name for a C++ type: identity for plain classes; template instantiations (which OCCT 8 does not
     typedef) become template__arg1__arg2 with OCCT's Handle_X convention for handle<X>, nested left to right:
@@ -570,7 +576,7 @@ def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
     return ".".join(reversed(parts))
 
 
-# Binding-Rules.md R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
+# Binding-Rules.md R-CSTR-NULL: the const char* test for a parameter with a null default
 def _is_cstring(t: cindex.Type) -> bool:
     """const char* (Standard_CString): the pointer the char caster maps to str."""
     canon = t.get_canonical()
@@ -596,6 +602,7 @@ def _is_const_byte_ptr(t: cindex.Type) -> bool:
     return pointee.is_const_qualified() and pointee.get_canonical().kind == TK.UCHAR
 
 
+# Binding-Rules.md R-UNSUPPORTED, R-ARRAY, R-ITERATOR, R-STL, R-CSTRING
 def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
     canon = t.get_canonical()
     cs = canon.spelling
@@ -606,6 +613,7 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
         return f"unsupported std type: std::{std_type.group(2)}"
     if canon.kind == TK.RVALUEREFERENCE:
         return "rvalue reference"
+    # R-ARRAY: _params binds a fixed-size array parameter (R-FIXED-ARRAY); any other array is skipped and reported
     if canon.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
         return "array"
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
@@ -625,8 +633,9 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
             return "function pointer"
         if pk == TK.VOID:
             return "void pointer"
+        # R-CSTRING, R-CHAR16: const char* / const char16_t* (Standard_ExtString) are strings, casters in nanocct_common.h
         if pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and pointee.is_const_qualified():
-            return None            # const char* / const char16_t* (Standard_ExtString) -> str, casters in nanocct_common.h
+            return None
         if pk in _PRIMITIVE_KINDS or pk == TK.POINTER:
             return "raw pointer to primitive"
     if canon.kind == TK.LVALUEREFERENCE and canon.get_pointee().get_canonical().kind == TK.RECORD:
@@ -883,11 +892,12 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             allow_streams: bool = True) -> tuple[list[Param], str | None]:
     """allow_streams: False for constructors (an object may keep the stream reference beyond the call)."""
     params: list[Param] = []
-    # overrides.toml [inout] entries are glob patterns on the qualified name: "gp_Trsf::Transforms" exactly,
+    # R-INOUT: an out-parameter of a member listed in overrides.toml [inout] stays an input and is still returned.
+    # The [inout] entries are glob patterns on the qualified name: "gp_Trsf::Transforms" exactly,
     # "*::InitFromJson" for every class, "DE*_Provider::Read" for every DataExchange provider (each one repeats the
     # same personizeWS(theWS) body, and forgetting one only shows up as four overload collisions in its report)
     inout = any(fnmatch(qualified, pattern) for pattern in _INOUT)
-    binary = qualified in _BINARY_MEMBERS                                              # R-STREAM-OUT/IN: a document stream in a text package
+    binary = qualified in _BINARY_MEMBERS                         # R-STREAM-OUT, R-STREAM-IN: a document stream in a text package
     # R-BYTES: a `const uint8_t*` parameter immediately followed by its length is one `bytes` parameter.
     # Listed rather than inferred, because "the next integer is the length" is a convention and not a type:
     # every entry has been read. Without it the whole method is unbindable (raw pointer to primitive), which
@@ -917,15 +927,15 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
                 reason = "raw pointer to primitive (template argument)"
         if reason is None:
             reason = _stl_iterator_in_6c(p.type)
-        name = py_safe(p.spelling)                 # R-KEYWORD: TDF_Attribute::Restore(const handle<TDF_Attribute>& with) -> with_
+        name = py_safe(p.spelling)                 # R-KEYWORD: TDF_TagSource::Restore(const handle<TDF_Attribute>& with) -> with_
         if name == "":
             name = f"arg{i}"
         if reason in _OPTIONAL_PTR_REASONS and (
                 p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0")
                 or _is_empty_shared_ptr_default(p, _default_expr(p, scope, members))):
-            # R-OPTIONAL-PTR: an optional output/context pointer (BRepFill_AdvancedEvolved::IsDone(unsigned* theErrorCode = 0),
-            # BRep_Tool::CurveOnSurface(..., bool* theIsStored = NULL)) is dropped; the callee gets nullptr -- and so is a
-            # std::shared_ptr<std::ostream> defaulted to its own empty form (RWPly_PlyWriterContext::Open), for which
+            # R-OPTIONAL-PTR: an optional output/context pointer (BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode
+            # = nullptr), BRep_Tool::CurveOnSurface(..., bool* theIsStored = nullptr)) is dropped; the callee gets nullptr -- and
+            # so is a std::shared_ptr<std::ostream> defaulted to its own empty form (RWPly_PlyWriterContext::Open), for which
             # nullptr is exactly that default (shared_ptr's nullptr_t constructor)
             params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False, omitted=True))
             continue
@@ -947,14 +957,16 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         is_out = _is_out_param(p.type)
         _note_instance(p.type)
         default = _default_expr(p, scope, members)
-        # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
-        # STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)) would be unreachable -> nanocct::OptionalCString, `str | None = None`
+        # R-CSTR-NULL: nanobind's const char* caster rejects None, so a null default (LDOM_XmlWriter(const char*
+        # theEncoding = nullptr), STEPCAFControl_Writer::Transfer(..., const char* const theIsMulti = nullptr)) would be
+        # unreachable -> nanocct::OptionalCString, `str | None = None`
         cstr_none = _is_cstring(p.type) and default in ("NULL", "nullptr", "0")
         # R-PTR-NULL: a class pointer takes None (nullptr), as a handle does (R-HANDLE): nanobind's pointer caster rejects None
         # without .none(). With a null default (BSplCLib_Cache(..., const NCollection_Array1<double>* theWeights = nullptr)) the
-        # default itself was refused; without one, OCCT's documented "NULL = no weights, non-rational" (BSplCLib.hxx: BSplCLib::D0(...,
-        # const NCollection_Array1<double>* Weights, ...), BSplCLib::NoWeights() returns that nullptr) was unreachable. Without a default only a pointer to a class: const char* and
-        # const char16_t* are strings (R-CSTR-NULL, R-CHAR16)
+        # default itself would be refused; without one, OCCT's documented "NULL = no weights, non-rational" (BSplCLib.hxx:
+        # BSplCLib::D0(..., const NCollection_Array1<double>* Weights, ...), BSplCLib::NoWeights() returns that nullptr) would
+        # be unreachable. Without a default only a pointer to a class: const char* and const char16_t* are strings (R-CSTR-NULL,
+        # R-CHAR16)
         canon = p.type.get_canonical()
         ptr_none = not cstr_none and canon.kind == TK.POINTER and (
             default in ("NULL", "nullptr", "0") or (default is None and canon.get_pointee().get_canonical().kind == TK.RECORD))
@@ -1162,6 +1174,7 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
 # Binding-Rules.md R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
     name = cursor.spelling
+    # R-DELETED: operator= is not bound, without a report line (nor are the allocation operators)
     if name.startswith("operator") and name in ("operator=", "operator new", "operator delete", "operator new[]", "operator delete[]"):
         return None
     params, reason = _params(cursor, f"{cls_name}::{name}", cls_name, members)
@@ -1177,7 +1190,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:
         # Standard_OStream& Print(x, Standard_OStream&), Standard_IStream& BinObjMgt_Persistent::Read(Standard_IStream&): the stream
-        # itself, for chaining (R-STREAM-OUT/IN)
+        # itself, for chaining (R-STREAM-OUT, R-STREAM-IN)
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     rc0 = cursor.result_type.get_canonical()
     self_type = _type_spelling(rc0.get_pointee()).replace("const ", "") if rc0.kind == TK.LVALUEREFERENCE else ""
@@ -1196,8 +1209,9 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
             m.skip_reason = _stl_iterator_in_6c(cursor.result_type)
         rc0 = cursor.result_type.get_canonical()
         if m.skip_reason == "reference to pointer" and rc0.get_pointee().get_canonical().get_pointee().get_canonical().kind == TK.RECORD:
-            # R-PTR-REF: BOPAlgo_Builder*& BRepAlgoAPI_BuilderAlgo::Builder() -> bound as the pointer (a lambda copies it out;
-            # rv_policy::reference for a class, a handle for a Transient)
+            # R-PTR-REF: a reference to a class pointer (BOPAlgo_Builder* const& BRepAlgoAPI_BuilderAlgo::Builder(),
+            # NCollection_ListNode*& NCollection_ListNode::Next()) -> bound as the pointer (a lambda copies it out;
+            # rv_policy::reference_internal for a method, reference for a static one, a handle for a Transient)
             ptr_t = rc0.get_pointee()
             if _unsupported(ptr_t, allow_out=False) is None:
                 m.skip_reason = None
@@ -1207,12 +1221,14 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                 m.force_lambda = True
         if m.skip_reason == "reference to primitive" and rc0.kind == TK.LVALUEREFERENCE and not cursor.is_const_method():
             # double& Value(i, j) (math_Matrix), double& ChangeCoord(i) (gp_XYZ): Python cannot hold the reference,
-            # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (Binding-Rules.md, Python addition)
+            # so the emitter binds a getter plus a Set<Name>/__setitem__ counterpart (R-REF-PRIMITIVE)
             m.skip_reason = None
             m.result_kind, m.result = ResultKind.REF_PRIMITIVE, _type_spelling(rc0.get_pointee()).replace("const ", "")
+        # R-ITERATOR: a result spelled as an STL-style iterator, the dependent spelling inside an instantiated template
+        # (begin()/end())
         if m.skip_reason is None and re.match(r"(const )?(\w+)<", m.result) is not None \
                 and re.match(r"(const )?(\w+)<", m.result).group(2) in _STL_ITERATORS:
-            m.skip_reason = "return: STL-style iterator"     # dependent spelling inside an instantiated template (begin()/end())
+            m.skip_reason = "return: STL-style iterator"
         if m.skip_reason is None and "type-parameter-" in m.result:
             m.skip_reason = "dependent type (unresolved template parameter)"
         rcanon = cursor.result_type.get_canonical()
@@ -1238,7 +1254,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                            or cursor.is_pure_virtual_method())      # pure virtual: dispatched via vtable, no symbol
     m.mangled = cursor.mangled_name
     if m.skip_reason is None and cursor.is_deleted_method():
-        m.skip_reason = "deleted"
+        m.skip_reason = "deleted"                  # R-DELETED: a deleted method is skipped and reported
     if m.skip_reason is None:
         sig = f"{cls_name}::{name}({', '.join(p.type for p in params)})"
         if f"{cls_name}::{name}" in _SKIP_METHODS or sig in _SKIP_METHODS:
@@ -1248,6 +1264,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     return m
 
 
+# Binding-Rules.md R-INCOMPLETE
 def _incomplete_in(t: cindex.Type) -> str | None:
     """Name of a record type with no definition in the translation unit that t holds by value: t itself or a
     template argument of it (NCollection_LinearVector<Slot>); pointers/references/handles are fine."""
@@ -1309,7 +1326,7 @@ def _conversion(cursor: cindex.Cursor) -> Conversion | None:
     return None
 
 
-# Binding-Rules.md R-NESTED, R-FIELD, R-INCOMPLETE, R-IMPLICIT-CONV, R-IMPLICIT-DEFAULT, R-MI, R-NONCOPYABLE
+# Binding-Rules.md R-NONCOPYABLE: the parser's own detection of a non-copyable class (field types, used in _class)
 _DETECTED_NONCOPYABLE: set[str] = set()     # classes found non-copyable while parsing this run (CellFilter members), by canonical name
 
 
@@ -2163,11 +2180,15 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
 
 def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     # the qualified name lets overrides.toml [bytes] name a constructor (R-BYTES: WNT_HIDSpaceMouse::WNT_HIDSpaceMouse);
-    # streams stay out of constructors whatever the name says (allow_streams=False)
+    # streams stay out of constructors whatever the name says (allow_streams=False; R-STREAM-OUT, R-STREAM-IN: an object
+    # may keep the stream reference beyond the call)
     params, reason = _params(ch, f"{c.name}::{ch.spelling}", c.name, members, allow_streams=False)
     required = [q for q in params if q.default is None]
+    # R-IMPLICIT-CONV: a non-explicit constructor callable with one argument converts implicitly (nb::implicitly_convertible
+    # in the emitter); copy and move constructors do not
     implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
                 and not ch.is_copy_constructor() and not ch.is_move_constructor())
+    # defined_in_header feeds the nm checks in __main__ (R-UNDEFINED, R-UNDEFINED-COPY): `= default` counts as defined
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
@@ -2193,7 +2214,8 @@ def _using_methods(using: cindex.Cursor, c: Class) -> None:
     for i in range(lib.clang_getNumOverloadedDecls(odr)):
         d = lib.clang_getOverloadedDecl(odr, i)
         if d.kind == K.CONSTRUCTOR:
-            # `using Base::Base;`: Derived(args) is valid for every base constructor except copy/move (BRepGraph_FacesOfEdge)
+            # `using Base::Base;`: Derived(args) is valid for every base constructor except copy/move (BRepGraph_FacesOfEdge);
+            # the base's deleted constructors are not bound either (R-DELETED)
             if d.is_copy_constructor() or d.is_move_constructor() or d.is_deleted_method() or d.access_specifier == Access.PRIVATE:
                 continue
             ctor = _ctor(d, c, _members(d.semantic_parent))
@@ -2268,8 +2290,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             break
     if c.is_transient:
         c.kept_blocker, c.virtual_symbols = _kept_facts(cursor, c)     # R-KEPT
-    # a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot, defined in
-    # the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed
+    # R-INCOMPLETE: a data member (any access) of a type that is only declared in the headers (BRepGraph_CacheMesh::Slot,
+    # defined in the .cxx) makes the destructor uninstantiable -> nb::class_ cannot be formed, the class is skipped
     for ch in cursor.get_children():
         if ch.kind == K.FIELD_DECL:
             inc = _incomplete_in(ch.type)
@@ -2320,6 +2342,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
     for ch in cursor.get_children():
         if ch.kind == K.CXX_BASE_SPECIFIER:
             if ch.access_specifier != Access.PUBLIC:
+                # R-MI: a non-public base is dropped and reported; it costs the constructors only when it provides
+                # operator new.
                 # The base's members are not inherited publicly, so they are not bound. Construction is only lost when
                 # the base *provides* operator new (DEFINE_STANDARD_ALLOC): the inherited allocation function is then
                 # inaccessible and `new Derived(...)` is ill-formed even in C++ (Message_LazyProgressScope, verified
@@ -2369,14 +2393,16 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 _dependent_bases.append((c.name, c.bases[-1], header))     # only spellable after substitution: needs its own Type
             continue
         if ch.kind == K.CONSTRUCTOR:
-            c.has_declared_ctor = True
+            c.has_declared_ctor = True             # R-IMPLICIT-DEFAULT: any declared constructor (any access) counts
         if ch.access_specifier != Access.PUBLIC:
             continue
         if ch.kind == K.CONSTRUCTOR:
+            # R-DELETED: deleted and move constructors are not bound, without a report line
             if ch.is_move_constructor() or ch.is_deleted_method():
                 continue
+            # R-IMPLICIT-COPY, R-COPY: `T(const T&) = default` is the implicit copy, bound as that one
             if ch.is_copy_constructor() and ch.is_default_method():
-                continue                           # R-COPY: `T(const T&) = default` is the implicit copy, bound as that one
+                continue
             c.ctors.append(_ctor(ch, c, members))
         elif ch.kind == K.CXX_METHOD:
             mark = len(_dependent_uses)
@@ -2413,6 +2439,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                                               value_in_header=any(x.kind.is_expression() for x in ch.get_children())))
         elif ch.kind == K.FIELD_DECL:
             reason = _unsupported(ch.type, allow_out=False)
+            # R-ARRAY: an array field R-FIXED-ARRAY cannot express is skipped and reported below
             if reason is None and ch.type.get_canonical().kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY):
                 reason = "array"
             if reason == "array" and not _SUBST.active:
@@ -2423,7 +2450,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                     c.fields.append(Field(name=ch.spelling, type=elem, is_const=const, doc=_doc(ch), array_len=n))
                     continue
             if reason is None and ch.type.get_canonical().kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
-                reason = "reference member (no pointer-to-member)"
+                reason = "reference member (no pointer-to-member)"     # R-UNSUPPORTED: a reference-typed field
             if reason is not None:
                 c.skipped.append(f"{c.name}::{ch.spelling}: field {reason}")
                 continue
@@ -2437,7 +2464,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 # object it does not keep alive); what it points to is read as a copy, decided with the pointee's layout
                 pointee = ch.type.get_canonical().get_pointee()
                 if pointee.get_canonical().kind in (TK.CHAR_S, TK.CHAR_U):
-                    c.fields[-1].is_pointer = True     # const char* (R-CSTR): a str copy
+                    c.fields[-1].is_pointer = True     # const char* (R-CSTRING): a str copy
                 else:
                     decl = pointee.get_canonical().get_declaration()
                     defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
@@ -2481,12 +2508,15 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         elif ch.kind == K.USING_DECLARATION:
             _using_methods(ch, c)
         elif ch.kind in (K.FUNCTION_TEMPLATE,):
-            c.skipped.append(f"{c.name}::{ch.spelling}: template member")
+            c.skipped.append(f"{c.name}::{ch.spelling}: template member")      # R-UNSUPPORTED: skipped, reported
         elif ch.kind in (K.CLASS_DECL, K.STRUCT_DECL) and ch.is_definition():
+            # R-NESTED: a public nested class/struct becomes a class of its own, declared into its outer class (non-public
+            # ones were skipped above)
             if ch.spelling == "":
                 c.skipped.append(f"{c.name}: anonymous nested struct")
             elif _SUBST.active and cursor.spelling in _STL_ITERATORS:
-                # NCollection_ForwardRangeIterator::PostfixProxy: plumbing of an STL-style iterator, which Python does not use (R-ITER)
+                # NCollection_ForwardRangeIterator::PostfixProxy: plumbing of an STL-style iterator, which Python does not
+                # use (R-ITERATOR)
                 c.skipped.append(f"{cursor.spelling}::{ch.spelling}: nested class of a class template (alias instantiation)")
             else:
                 # a nested class of a 6c instantiation is walked with the instantiation's substitution still active
@@ -2501,7 +2531,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 else:
                     c.nested.append(n)
         elif ch.kind == K.CLASS_TEMPLATE:
-            c.skipped.append(f"{c.name}::{ch.spelling}: nested class template")
+            c.skipped.append(f"{c.name}::{ch.spelling}: nested class template")      # R-UNSUPPORTED: skipped, reported
     _class_layouts.append((c, _held_types(cursor, c)))     # Class.view, decided with the layout probe
     return c
 
@@ -2914,6 +2944,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
         for h in allowed:
             if h not in pkg.headers:
                 raise ValueError(f"overrides.toml [include] headers: {h} is not a header of package {pkg.name}")
+    # R-SKIP-HEADER: a header listed in overrides.toml [skip] headers is left out of the parse and reported
     ir = PackageIR(name=pkg.name, toolkit=pkg.toolkit,
                    headers=[h for h in pkg.headers if h not in _SKIP_HEADERS and (allowed is None or h in allowed)])
     for h in pkg.headers:
@@ -2989,7 +3020,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
 
         def add_class(c: Class) -> None:
             ir.classes.append(c)
-            for n in c.nested:               # nested classes are bound after (and into) their outer class
+            for n in c.nested:               # nested classes are bound after (and into) their outer class (R-NESTED)
                 add_class(n)
 
         for cur, ns in top_level(tu.cursor, ""):
@@ -3003,13 +3034,15 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 continue
             if ns == "" and cur.semantic_parent is not None and cur.semantic_parent.kind == K.NAMESPACE:
                 ns = _qualified_template(cur.semantic_parent) + "::"     # `template <> struct std::hash<X>` written at file scope
-            # a namespace named like the package is the package module itself (TopoDS::Vertex -> nanocct.TopoDS.Vertex);
-            # every other namespace becomes a submodule (Geom2dEval_RepCurveDesc::Base -> nanocct.Geom2dEval.Geom2dEval_RepCurveDesc.Base)
+            # R-NAMESPACE: a namespace named like the package is the package module itself (TopoDS::Vertex ->
+            # nanocct.TopoDS.Vertex); every other namespace becomes a submodule (Geom2dEval_RepCurveDesc::Base ->
+            # nanocct.Geom2dEval.Geom2dEval_RepCurveDesc.Base)
             ns_parts = [part for part in (ns.rstrip(":").split("::") if ns != "" else []) if not part.startswith("__")]   # std::__1 -> std
             if "" in ns_parts:
                 ir.report.append(f"{header}: {cur.spelling}: anonymous namespace (not bound)")
                 continue
             if any(part in _SKIP_NAMESPACES for part in ns_parts):
+                # R-HASH: a std::hash<T> specialisation (full, or partial for a class template) makes T hashable
                 if ns_parts == ["std"] and cur.kind == K.STRUCT_DECL and cur.spelling == "hash" and cur.is_definition() \
                         and cur.type.get_num_template_arguments() == 1:
                     ir.hashable.add(_canonical_args(cur.type.get_template_argument_type(0)))   # std::hash<TopoDS_Shape> -> __hash__
@@ -3031,6 +3064,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 ir.constants.append(Constant(py_name=cur.spelling, cpp=f"{ns}{cur.spelling}", doc=_doc(cur), scope=scope))
                 continue
             if ns != "" and cur.kind in (K.FUNCTION_TEMPLATE, K.CLASS_TEMPLATE):
+                # R-TEMPLATE-SKIP: a function or class template in a namespace has no concrete type -> not bound, reported
                 ir.report.append(f"{ns}{cur.spelling}: template in namespace (not bound)")
                 continue
             if cur.kind in (K.CLASS_DECL, K.STRUCT_DECL) and cur.is_definition():
@@ -3066,6 +3100,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     _note_views(cur, fn, "", None)               # R-RESULT-KEEP
                 ir.functions.append(fn)
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
+                # R-ALIAS: every typedef is recorded for Emitter._aliases, which binds it as a second name of its target
                 ir.typedefs.append(TypeAlias(py_name=cur.spelling, target=_canonical_args(cur.underlying_typedef_type),
                                              written=_type_spelling(cur.underlying_typedef_type), scope=scope))
                 _note_instance(cur.underlying_typedef_type)      # BVH_Array3d = NCollection_LinearVector<...>: bind the instantiation
@@ -3078,6 +3113,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             elif cur.kind in (K.CLASS_TEMPLATE, K.FUNCTION_TEMPLATE):
                 if cur.semantic_parent is not None and cur.semantic_parent.kind in (K.CLASS_DECL, K.STRUCT_DECL, K.CLASS_TEMPLATE):
                     continue                       # an out-of-line member template definition (TCollection_AsciiString::Cat<T> in the .lxx): reported with its class
+                # R-TEMPLATE-SKIP: a package-level template no typedef instantiates (6c) -- not bound, reported
                 ir.report.append(f"{cur.spelling}: template (not bound)")
         # bases that are un-aliased template instantiations (BRepGraph_WiresOfEdge : EdgeParentsOf<...>): instantiated
         # on demand under the mangled name, so that the derived class can be bound (Binding-Rules.md 6c)
@@ -3165,7 +3201,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     ir.instances = dict(_instances_seen)
     ir.owned_args = set(_owned_instance_args)
     ir.copy_owner_instances = dict(_instance_owners)
-    if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT/IN: binary formats -> bytes / typing.BinaryIO
+    if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT, R-STREAM-IN: binary formats -> bytes / typing.BinaryIO
         for params in [m.params for c in ir.classes for m in c.methods] + [f.params for f in ir.functions]:
             for prm in params:
                 if prm.stream != StreamKind.NONE:

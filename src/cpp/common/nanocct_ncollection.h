@@ -194,6 +194,7 @@ template <typename S, typename B, typename... Extra> void def_transient_members(
      .def("DynamicType", [](const B &b) { return static_cast<const S &>(b).DynamicType(); }, "Returns a type descriptor about this object (Standard_Transient).")
      .def("IsInstance", [](const B &b, const char *n) { return static_cast<const S &>(b).IsInstance(n); }, nb::arg("theTypeName"), "Standard_Transient::IsInstance")
      .def("IsKind", [](const B &b, const char *n) { return static_cast<const S &>(b).IsKind(n); }, nb::arg("theTypeName"), "Standard_Transient::IsKind")
+     // R-STATIC-S: statics carry _s here too, as in the generated bindings
      .def_static("get_type_name_s", []() { return S::get_type_name(); })
      .def_static("get_type_descriptor_s", []() { return S::get_type_descriptor(); });
     nanocct_register_mi<S>(c);
@@ -624,6 +625,7 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
     static_assert(owners_not_supported<T>, "R-OWNER: the Array2 binder does not keep the owners of its elements");
     using A2 = NCollection_Array2<T>;
     namespace D = nanocct_doc::NCollection_Array2;
+    // R-STATIC-S: statics carry _s here too, as in the generated bindings
     c.def_static("BeginPosition_s", [](int r1, int r2, int c1, int c2) { return A2::BeginPosition(r1, r2, c1, c2); },
                  nb::arg("theRowLower"), nb::arg("theRowUpper"), nb::arg("theColLower"), nb::arg("theColUpper"), D::BeginPosition)
      .def_static("LastPosition_s", [](int r1, int r2, int c1, int c2) { return A2::LastPosition(r1, r2, c1, c2); },
@@ -778,7 +780,7 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
      .def(nb::init<const V &>(), nb::arg("theOther"), D::ctor)
      .def("HasData", [](const V &self) { return self.HasData(); }, D::HasData)
      .def("Empty", [](const V &self) { return self.Empty(); }, D::Empty)
-     .def_static("MaxSize_s", []() { return V::MaxSize(); }, D::MaxSize)
+     .def_static("MaxSize_s", []() { return V::MaxSize(); }, D::MaxSize)   // R-STATIC-S, as in the generated bindings
      .def("Size", [](const V &self) { return self.Size(); }, D::Size)
      .def("IsEmpty", [](const V &self) { return self.IsEmpty(); }, D::IsEmpty)
      .def("Capacity", [](const V &self) { return self.Capacity(); }, D::Capacity)

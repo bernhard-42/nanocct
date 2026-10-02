@@ -1,4 +1,4 @@
-// nanocct._AddOns -- hand-written additions that are *not* a 1:1 binding of an OCCT class.
+// nanocct._AddOns -- hand-written additions that are *not* a 1:1 binding of an OCCT class (Binding-Rules.md R-ADDON).
 //
 // Everything else in nanocct mirrors OCCT. This does not, so it lives in its own package rather than being
 // grafted onto an OCCT class: a user reading `AddOns.Tessellator.NormalsFromSurface(...)` can see at a glance

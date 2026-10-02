@@ -1,7 +1,7 @@
 """Generated bindings for TKCDF (ApplicationFramework: CDM, PCDM, CDF, UTL, LDOM): the document-framework bases that
-TDocStd/XCAF build on, OCAF format detection from bytes (PCDM/CDF are binary-stream packages, R-STREAM-IN/OUT), the reader
-filter, and OCCT's own XML DOM (LDOM) parsed from and written to Python strings. The first `const char* = nullptr`
-parameter (LDOM_XmlWriter) exercises R-CSTR-NULL."""
+TDocStd/XCAF build on, OCAF format detection from bytes (PCDM/CDF are binary-stream packages, R-STREAM-OUT,
+R-STREAM-IN), the reader filter, and OCCT's own XML DOM (LDOM) parsed from and written to Python strings. The first
+`const char* = nullptr` parameter (LDOM_XmlWriter) exercises R-CSTR-NULL."""
 import importlib
 import io
 from pathlib import Path
@@ -31,7 +31,7 @@ def test_ldom_parse_from_a_text_file_like_and_navigate():
     root = parser.getDocument().getDocumentElement()
     assert root.getTagName().GetString() == "root"
     assert root.getNodeType() == LDOM.LDOM_Node.NodeType.ELEMENT_NODE
-    # a str converts to LDOMString implicitly (R-IMPLICIT); a numeric attribute value is an LDOM_Integer, whose
+    # a str converts to LDOMString implicitly (R-IMPLICIT-CONV); a numeric attribute value is an LDOM_Integer, whose
     # GetString() is "" by OCCT's design (LDOMBasicString.hxx:58) -- GetInteger() gives it back
     a = root.getAttribute("a")
     assert a.Type() == LDOM.LDOMBasicString.StringType.LDOM_Integer and a.GetString() == "" and a.GetInteger() == (True, 1)

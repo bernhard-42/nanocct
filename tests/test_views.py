@@ -121,7 +121,7 @@ def test_the_view_keeps_the_triangulation_alive():
 
 def test_every_class_listed_in_overrides_has_a_specialisation():
     """A name in [views] without a nanocct_def_views<T> specialisation is a link error; this turns it into a
-    generation-time one, which is the failure the developer can act on.
+    test failure, which is the failure the developer can act on.
 
     The override file is read directly rather than through `generator.parse`, which imports libclang: the
     whole suite is also run against an installed wheel on three interpreters (the R-VIEW acceptance), and

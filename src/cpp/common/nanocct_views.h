@@ -33,8 +33,8 @@
 namespace nb = nanobind;
 
 //! Declared, never defined: a class listed in overrides.toml [views] without a specialisation below is a link
-//! error rather than a silently missing accessor. generator/tests assert the two lists agree, so it normally
-//! fails at generation instead.
+//! error rather than a silently missing accessor. tests/test_views.py asserts the two lists agree, so it normally
+//! fails in the test suite instead.
 template <class T> void nanocct_def_views(nb::class_<T> cls);
 
 // ---- Poly_ArrayOfNodes, Poly_ArrayOfUVNodes ---------------------------------------------------------------

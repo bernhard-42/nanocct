@@ -67,7 +67,8 @@ def test_loft_pipe_and_wire_offset():
 
 
 def test_optional_pointer_parameters_are_dropped():
-    # R-OPTIONAL-PTR: BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode = 0) had no binding at all before
+    # R-OPTIONAL-PTR: BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode = nullptr) is bound without the pointer
+    # (without the rule the method would be skipped)
     from nanocct import BRepFill
     assert BRepFill.BRepFill_AdvancedEvolved().IsDone() is False
     assert "IsDone(self) -> bool" in BRepFill.BRepFill_AdvancedEvolved.IsDone.__doc__

@@ -93,7 +93,7 @@ def test_the_driver_constructs_and_initialises(driver):
     assert driver.GetSharedContext() is None                      # no context until a window is attached
     caps = driver.Options()
     assert isinstance(caps, OpenGl_Caps)
-    assert isinstance(caps.contextDebug, bool)                    # a bit-field, bound through def_prop_rw (R-FIELD)
+    assert isinstance(caps.contextDebug, bool)                    # a plain bool field, nanocct_def_field (R-FIELD)
 
 
 @needs_gl_context

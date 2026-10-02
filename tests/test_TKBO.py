@@ -94,8 +94,8 @@ def test_general_fuse_splitter_and_bop():
 
 
 def test_general_fuse_internals_are_reachable():
-    # R-PTR-REF: Builder()/DSFiller() return BOPAlgo_Builder*& / BOPAlgo_PaveFiller*&; R-PTR-INCOMPLETE: PDS() returns BOPDS_DS*
-    # (forward-declared in BOPAlgo_Builder.hxx, header included by the generator)
+    # R-PTR-REF: Builder()/DSFiller() return BOPAlgo_Builder* const& / BOPAlgo_PaveFiller* const&; R-PTR-INCOMPLETE: PDS()
+    # returns BOPDS_DS* (forward-declared in BOPAlgo_Builder.hxx, header included by the generator)
     a, b = _boxes()
     fuse = BRepAlgoAPI.BRepAlgoAPI_Fuse(a, b)
     builder, filler = fuse.Builder(), fuse.DSFiller()

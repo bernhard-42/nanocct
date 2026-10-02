@@ -1430,7 +1430,7 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert '(Rules_Value::*)(const double) const' in cpp and '(Rules_Value::*)(const float) const' not in cpp
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double), registered before it -> not bound (unreachable)" in em.report
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
-    # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
+    # R-ITER: More/Next/Value -> __iter__ through nanocct_def_iter; Rules_Value (no More) gets none
     assert cpp.count("nanocct_def_iter<") == 4 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor, Rules_ViewSource, Rules_GuardIter
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
@@ -1571,7 +1571,7 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert block.count('.def("Flag"') == 2 and "&Rules_Options::" not in block
     assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanocct_stream_text(theS_stream); }' in block
     # inherited constructors: Rules_Value(const gp_Pnt&) becomes Rules_Inherit's; the default and copy constructors are not inherited
-    # in C++ (the derived class gets its own implicit ones, R-IMPLICIT-DEFAULT/-COPY)
+    # in C++ (the derived class gets its own implicit ones, R-IMPLICIT-DEFAULT, R-IMPLICIT-COPY)
     inherit = next(c for c in rules_ir.classes if c.name == "Rules_Inherit")
     assert [[p.type for p in k.params] for k in inherit.ctors] == [["const gp_Pnt &"]] and not inherit.has_declared_ctor
     tail = cpp[cpp.index('m.attr("Rules_Inherit"))'):]
@@ -2300,9 +2300,9 @@ def test_unsupported_std_types_are_reported_by_name(rules_ir):
 
 # Binding-Rules.md R-DEFAULT
 def test_a_braced_default_is_list_initialised(rules_ir):
-    """`= {}` in the header (XSAlgo_ShapeProcessor's DE_ShapeFixParameters, the ParameterMap of SetShapeFixParameters,
-    3 more in TKXSBase) must be emitted as std::decay_t<T>{} -- static_cast from a braced-init-list does not compile
-    ("expected expression", 2026-09-22)."""
+    """`= {}` in the header (XSAlgo_ShapeProcessor's DE_ShapeFixParameters, and the ParameterMap of SetShapeFixParameters
+    in seven classes: 3 in TKXSBase, 2 each in TKDEIGES and TKDESTEP) must be emitted as std::decay_t<T>{} -- static_cast
+    from a braced-init-list does not compile ("expected expression", 2026-09-22)."""
     assert _method(rules_ir, "Rules_Value", "Braced").params[0].default == "{ }"   # libclang spells the tokens
     em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})

@@ -17,6 +17,7 @@
 #endif
 #include <nanobind/nanobind.h>
 #include <nanobind/make_iterator.h>
+// R-STL: nanobind's casters for std types (generator/parse.py _STD_TEMPLATES_OK lists them, plus std::bitset: R-BITSET)
 #include <nanobind/stl/array.h>
 #include <nanobind/stl/function.h>
 #include <nanobind/stl/list.h>
@@ -486,9 +487,9 @@ inline void keep_view_of(PyObject *nurse, PyObject *patient) {
     nb::keep_alive_obj(nurse, patient);
     keep_slots_of(nurse, patient);
 }
-// R-COPY: keep_view_of as a call policy, numbered like nb::keep_alive (0 is the result, 1 self, nb::new_'s arguments count
-// from 2): a copy keeps its original, a constructor an argument it copies pointers out of (TDF_ChildIterator(label)). A
-// None nurse (nb::new_'s no-op __init__) keeps nothing.
+// R-COPY, R-CTOR-KEEP: keep_view_of as a call policy, numbered like nb::keep_alive (0 is the result, 1 self, nb::new_'s
+// arguments count from 2): a copy keeps its original, a constructor an argument it copies pointers out of
+// (TDF_ChildIterator(label), the argument-layout keep). A None nurse (nb::new_'s no-op __init__) keeps nothing.
 template <size_t Nurse, size_t Patient> struct keep_view_arg {
     static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
     static void postcall(PyObject **args, size_t, nb::handle ret) {
@@ -534,9 +535,6 @@ template <typename Tag, typename Self, size_t Patient, size_t Slot, bool View, b
 };
 } // namespace nanocct
 
-// R-ITER (Design.md 2c): a class with More()/Next() and a parameterless Value() or Current() is its own Python
-// iterator, like a file object: __iter__ returns self, __next__ yields the current element and advances. The element
-// is copied out before Next() (a const reference from Value() would dangle afterwards).
 // Constructors of a class-template instantiation whose abstractness only the compiler can see (BVH_PrimitiveSet<double, 3>
 // through the pure virtuals of BVH_Set): the generic lambda's body is instantiated only when the class is concrete (R-TEMPLATE-BASE).
 template <typename T, typename F> void nanocct_if_concrete(nb::class_<T> cls, F f) {
@@ -544,7 +542,8 @@ template <typename T, typename F> void nanocct_if_concrete(nb::class_<T> cls, F 
         f(cls);
 }
 
-// R-ITER through nb::make_iterator, like the containers: a hand-written __next__ ended every loop with a thrown
+// R-ITER: a class with More()/Next() and a parameterless Value() or Current() gets __iter__, a Python iterator over it
+// through nb::make_iterator, like the containers: a hand-written __next__ ended every loop with a thrown
 // nb::stop_iteration, a C++ exception that cost ~8 us per loop however short (2026-09-27: a TopExp_Explorer over
 // 6 faces took 8.5 us against 0.47 us for a More()/Next() loop). make_iterator ends without one. The cursor
 // advances the object itself, so it is exhausted afterwards, like a file; the element is copied out before Next().
@@ -597,6 +596,7 @@ template <typename T, bool K, typename... A> T *nanocct_new_transient(A &&...arg
         return new T(std::forward<A>(args)...);
 }
 
+// R-IMPLICIT-DEFAULT: the implicit default constructor, bound only when std::is_default_constructible_v<T>
 template <typename T, bool K = false> void nanocct_implicit_default_ctor(nb::class_<T> cls) {
     if constexpr (std::is_default_constructible_v<T>) {
         if constexpr (std::is_base_of_v<Standard_Transient, T>)
@@ -606,9 +606,9 @@ template <typename T, bool K = false> void nanocct_implicit_default_ctor(nb::cla
     }
 }
 
-// The implicit copy constructor (none declared by the class): bound when it exists (deleted for classes with a
-// reference or non-copyable member) and the generator found it safe (R-COPY: never for a class whose destructor may free
-// a pointer the copy would share). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
+// R-IMPLICIT-COPY: the implicit copy constructor (none declared by the class): bound when it exists (deleted for classes
+// with a reference or non-copyable member) and the generator found it safe (R-COPY: never for a class whose destructor
+// may free a pointer the copy would share). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
 // View (R-COPY): the class holds pointers, which the copy shares, so the copy keeps the original alive and what the
 // original's slots hold now (keep_view_arg<0, 2> through nb::new_, as for R-CTOR-KEEP). R-KEPT: K, a Kept<T> class -- the
 // original then lives in a slot of the copy's C++ object when Cpp (it cannot own the copy), named by Tag and Slot.
@@ -631,8 +631,8 @@ void nanocct_implicit_copy_ctor(nb::class_<T> cls) {
     }
 }
 
-// operator To() const of From: To gets a constructor from From (To(aFrom) in Python) and, unless the operator is
-// explicit, the implicit conversion C++ has (a From passes where a To is expected). From is taken by non-const
+// R-CONV: operator To() const of From: To gets a constructor from From (To(aFrom) in Python) and, unless the operator
+// is explicit, the implicit conversion C++ has (a From passes where a To is expected). From is taken by non-const
 // reference: some operators are not const (Message_Msg).
 template <typename From, typename To, bool K = false> void nanocct_conversion(nb::handle to_type, bool implicit) {
     auto cls = nb::borrow<nb::class_<To>>(to_type);
@@ -645,7 +645,7 @@ template <typename From, typename To, bool K = false> void nanocct_conversion(nb
         nb::implicitly_convertible<From, To>();
 }
 
-// operator opencascade::handle<To>() const of From: the handle's object becomes the result of To(aFrom)
+// R-CONV: operator opencascade::handle<To>() const of From: the handle's object becomes the result of To(aFrom)
 template <typename From, typename To> void nanocct_conversion_handle(nb::handle to_type, bool implicit) {
     auto cls = nb::borrow<nb::class_<To>>(to_type);
     cls.def(nb::new_([](From &from) { return static_cast<opencascade::handle<To>>(from); }), nb::arg("theFrom"));
@@ -713,8 +713,8 @@ inline void nanocct_install_exception_translator(PyObject *fallback) {
         fallback);
 }
 
-// The text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are text (Dump, DumpJson, Print,
-// BRepTools::Write); decoded with surrogateescape so that a stray non-UTF-8 byte is lossless.
+// Binding-Rules.md R-STREAM-OUT: the text an OCCT method wrote to a std::ostream& parameter, as a str. OCCT streams are
+// text (Dump, DumpJson, Print, BRepTools::Write); decoded with surrogateescape so that a stray non-UTF-8 byte is lossless.
 inline nb::str nanocct_stream_text(const std::ostringstream &stream) {
     const std::string text = stream.str();
     return nb::steal<nb::str>(PyUnicode_DecodeUTF8(text.data(), static_cast<Py_ssize_t>(text.size()), "surrogateescape"));
@@ -726,9 +726,10 @@ inline nb::bytes nanocct_stream_bytes(const std::ostringstream &stream) {
     return nb::bytes(data.data(), data.size());
 }
 
-// A std::istream& / std::stringstream parameter (BRepTools::Read, InitFromJson): the text of a Python file-like object
-// (anything with read(): io.StringIO, an open text file). A str is deliberately not accepted -- it would collide with
-// the file-path overloads -- so a non-file-like argument falls through to the next overload. Typed typing.TextIO.
+// Binding-Rules.md R-STREAM-IN: a std::istream& / std::stringstream parameter (BRepTools::Read, InitFromJson): the text
+// of a Python file-like object (anything with read(): io.StringIO, an open text file). A str is deliberately not accepted
+// -- it would collide with the file-path overloads -- so a non-file-like argument falls through to the next overload.
+// Typed typing.TextIO.
 namespace nanocct {
 struct TextInput {
     std::string text;
@@ -739,9 +740,10 @@ struct BinaryInput {
     std::string data;
 };
 // R-CSTR-NULL: a const char* parameter with a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
-// STEPCAFControl_Writer::Write(..., const char* theIsMulti = nullptr)). nanobind's const char* caster rejects None, which
-// would make the default unreachable; this one takes a str or None (-> nullptr). The UTF-8 buffer belongs to the str
-// object, which is alive for the duration of the call (as for nanobind's own caster). Typed `str | None` (with .none()).
+// STEPCAFControl_Writer::Transfer(..., const char* const theIsMulti = nullptr)). nanobind's const char* caster rejects
+// None, which would make the default unreachable; this one takes a str or None (-> nullptr). The UTF-8 buffer belongs to
+// the str object, which is alive for the duration of the call (as for nanobind's own caster). Typed `str | None` (with
+// .none()).
 struct OptionalCString {
     const char *ptr = nullptr;
 };
@@ -1171,9 +1173,10 @@ template <> struct type_caster<nanocct::BinaryInput> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
-// Type caster for char16_t and const char16_t* (Standard_ExtString: OCCT's UTF-16 strings, TCollection_ExtendedString),
-// modeled on nanobind's char caster: a Python str converts to a NUL-terminated UTF-16 buffer owned by the caster for the
-// duration of the call, a const char16_t* result decodes to str, a single char16_t is a 1-character str.
+// Binding-Rules.md R-CHAR16: type caster for char16_t and const char16_t* (Standard_ExtString: OCCT's UTF-16 strings,
+// TCollection_ExtendedString), modeled on nanobind's char caster: a Python str converts to a NUL-terminated UTF-16
+// buffer owned by the caster for the duration of the call, a const char16_t* result decodes to str, a single char16_t
+// is a 1-character str.
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
@@ -1272,6 +1275,8 @@ template <> struct type_caster<char32_t> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
+// Binding-Rules.md R-HANDLE: opencascade::handle<T> is transparent -- the most-derived registered type, a null handle is
+// None, None is a null handle.
 // Type caster for opencascade::handle<T> (also occ::handle<T>), modeled on nanobind's shared_ptr
 // caster. The Python instance never owns the C++ object directly; a heap-allocated handle is attached
 // via keep_alive, so OCCT's intrusive reference count governs the lifetime on both sides.
@@ -1393,11 +1398,11 @@ template <typename T> struct type_caster<NCollection_Handle<T>> {
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)
 
-// Type caster for std::reference_wrapper<T> results: NCollection_FlatMap::Contained() returns
-// std::optional<std::reference_wrapper<const K>>, NCollection_FlatDataMap::Contained() an optional pair of them. nanobind has
-// no caster for it, so those members raised TypeError. A const T is returned as a copy (a read-only key or value); a
-// mutable T as a reference into its owner that keeps the owner alive (reference_internal), so edits reach the map as
-// in C++. Results only: no OCCT parameter takes a reference_wrapper.
+// Binding-Rules.md R-REFWRAP: type caster for std::reference_wrapper<T> results: NCollection_FlatMap::Contained()
+// returns std::optional<std::reference_wrapper<const K>>, NCollection_FlatDataMap::Contained() an optional pair of them.
+// nanobind has no caster for it, so without this one those members would raise TypeError. A const T is returned as a
+// copy (a read-only key or value); a mutable T as a reference into its owner that keeps the owner alive
+// (reference_internal), so edits reach the map as in C++. Results only: no OCCT parameter takes a reference_wrapper.
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 

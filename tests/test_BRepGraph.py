@@ -89,8 +89,9 @@ def test_graph_iterators_and_flat_maps_are_python_iterables():
 
 
 def test_flat_map_contained_returns_the_stored_entries():
-    """std::reference_wrapper results: Contained() raised TypeError (no caster). A const reference comes
-    back as a copy (the key), a mutable one as a reference into the map that keeps it alive (the data map's value)."""
+    """R-REFWRAP: std::reference_wrapper results (nanobind has no caster for them; without nanocct's, Contained() would
+    raise TypeError). A const reference comes back as a copy (the key), a mutable one as a reference into the map that
+    keeps it alive (the data map's value)."""
     flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId()
     key = BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 3)
     flat.Add(key)

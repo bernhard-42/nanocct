@@ -1,7 +1,7 @@
 # Hand-maintained exceptions to the generator's generic rules. Keep this file small; every entry
 # is a documented deviation from the "derive everything from the headers" principle.
 
-# Methods whose non-const reference parameters of primitive or handle<T> type are in/out: the value is
+# R-INOUT: methods whose non-const reference parameters of primitive or handle<T> type are in/out: the value is
 # read AND written (e.g. transform coordinates in place, replace a curve by its extended version). The
 # default rule treats such parameters as pure outputs (dropped from the Python signature, returned in a
 # tuple). Listed methods keep them as inputs and still return the updated values. Each entry was checked
@@ -145,8 +145,9 @@ namespaces = [
 headers = [
     "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
     "WNT_Dword.hxx",        # Windows only (includes <windows.h>); WNT_Window/WNT_WClass guard themselves with _WIN32
-    # OCCT 8.0.1 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private file that
-    # is not installed (GeomBndLib_Curve/Curve2d include GeomBndLib_Line/Line2d). BndLib_Add3dCurve etc. cover the use.
+    # R-SKIP-HEADER, an OCCT 8.0.1 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private
+    # file that is not installed (GeomBndLib_Curve/Curve2d include GeomBndLib_Line/Line2d). BndLib_Add3dCurve etc. cover
+    # the use.
     "GeomBndLib_Line.hxx",
     "GeomBndLib_Line2d.hxx",
     "GeomBndLib_Curve.hxx",
@@ -161,7 +162,7 @@ headers = [
 # automatically, per overload (generator/symbols.py: nm on the toolkit library, compared by mangled name).
 methods = [
     # Stream setters that *store* the reference (myOStream = &theStream): the lambda's std::stringstream would dangle after
-    # the call (R-STREAM-OUT/IN only cover streams used during the call; constructors are excluded for the same reason).
+    # the call (R-STREAM-OUT, R-STREAM-IN only cover streams used during the call; constructors are excluded for the same reason).
     # The only two in OCCT outside constructors (grep "= &the.*Stream", 2026-09-22); Persistent::Write/Read take the stream
     # per call and stay.
     "BinObjMgt_Persistent::SetOStream",
@@ -313,7 +314,7 @@ extra = { TKService = ["TKGeomBase"] }
 
 # Packages whose stream parameters carry a binary format: a std::ostream& result is returned as bytes and a
 # std::istream& parameter takes a binary file-like object (io.BytesIO), instead of str / typing.TextIO (Binding-Rules.md,
-# R-STREAM-OUT/IN). Everything else OCCT streams is text (Dump, DumpJson, BRepTools::Write, ...).
+# R-STREAM-OUT, R-STREAM-IN). Everything else OCCT streams is text (Dump, DumpJson, BRepTools::Write, ...).
 [stream]
 binary_packages = [
     "BinTools",      # BinTools::Write/Read, BinTools_ShapeSet & co.: the binary BRep format (BinLDrivers etc. follow in Phase 2)
@@ -379,13 +380,6 @@ binary_members = [
     "RWObj_Reader::Probe",
 ]
 
-# Classes that get a zero-copy numpy view through `__array__` (R-VIEW). The emitter appends
-#     nanocct_def_views<Class>(cls);
-# to the class's define phase and includes src/cpp/common/nanocct_views.h, where the views themselves are a
-# template specialisation -- one per class, because every case has runtime branches a config file cannot carry
-# (Poly_ArrayOfNodes' dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
-# stride from SizeRowBytes()). A name listed here without a specialisation does not link, and
-# tests/test_generator.py asserts the two lists agree so it fails at generation instead.
 # R-BYTES: methods where a `const uint8_t*` parameter and the length that follows it are one `bytes`
 # parameter. Listed rather than inferred -- "the next integer is the length" is a convention, not a type --
 # so every entry here has been read in the header. Class::method, every overload; an overload whose buffer
@@ -414,6 +408,13 @@ classes = [
     "IntTools_CommonPrt",      # myAllNullFlag(false) (IntTools_CommonPrt.cxx): IntTools_EdgeEdge/EdgeFace::CommonParts()
 ]
 
+# Classes that get a zero-copy numpy view through `__array__` (R-VIEW). The emitter appends
+#     nanocct_def_views<Class>(cls);
+# to the class's define phase and includes src/cpp/common/nanocct_views.h, where the views themselves are a
+# template specialisation -- one per class, because every case has runtime branches a config file cannot carry
+# (Poly_ArrayOfNodes' dtype follows IsDoublePrecision(); Image_PixMap's rows are padded, so its view needs a
+# stride from SizeRowBytes()). A name listed here without a specialisation does not link, and
+# tests/test_views.py asserts the two lists agree, so it fails in the test suite instead.
 [views]
 classes = [
     "Poly_ArrayOfNodes",      # what Poly_Triangulation::InternalNodes() returns

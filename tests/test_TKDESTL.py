@@ -75,7 +75,7 @@ def test_rwstl_reads_and_writes_a_triangulation(tmp_path, meshed_box, quiet_mess
 def test_the_binary_flavour_is_bytes_and_the_ascii_one_is_str(tmp_path, meshed_box, quiet_messenger):
     """RWStl writes and reads both flavours of STL, so the package is mixed: WriteBinary/ReadBinaryStream/ReadStream
     and RWStl_Reader.ReadBinary/IsAscii are in overrides.toml [stream] binary_members, WriteAscii/ReadAsciiStream stay
-    text (R-STREAM-OUT/IN). ReadStream sniffs the format, so bytes is the superset there."""
+    text (R-STREAM-OUT, R-STREAM-IN). ReadStream sniffs the format, so bytes is the superset there."""
     writer = StlAPI_Writer()
     writer.SetASCIIMode(False)
     path = tmp_path / "box.stl"

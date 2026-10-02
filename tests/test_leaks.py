@@ -192,7 +192,7 @@ def test_transient_reference_result_raw_heap_object():
     """, 40000)
 
 
-# ---- R-RESULT: T* to another class -> rv_policy::reference; R-PTR-REF; R-PTR-INCOMPLETE ----------------------------------
+# ---- R-RESULT: T* to another class -> rv_policy::reference_internal; R-PTR-REF; R-PTR-INCOMPLETE -------------------------
 
 def test_class_pointer_result():
     """Geom_BSplineCurve::Weights(): a pointer into the curve."""

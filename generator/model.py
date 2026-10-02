@@ -47,7 +47,7 @@ class Param:
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
     cstr_none: bool = False # R-CSTR-NULL: a const char* parameter with a null default: `str | None = None` (nanocct::OptionalCString caster)
-    ptr_none: bool = False  # R-PTR-NULL: a class pointer parameter with a null default: `T | None = None` (nb::arg(...).none())
+    ptr_none: bool = False  # R-PTR-NULL: a class pointer parameter takes None (nb::arg(...).none()), `= None` with a null default
     instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the type (parse._binder_key), "" if none
     class_ancestors: tuple[str, ...] = ()   # R-OVERLOAD-ORDER: every base of class_name, spelled like class_name (parse._class_ancestors)
     kept: bool = False      # R-CTOR-KEEP / R-METHOD-KEEP: a parameter the object can keep the address of: keep_alive / keep_slot
@@ -168,7 +168,7 @@ class Class:
     not_constructible_reason: str = ""   # what to report; "" means the operator new case
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
-    view: bool = False                # R-CTOR-KEEP: its layout holds pointers, so a copy (sharing them) keeps the original alive
+    view: bool = False                # R-COPY, R-CTOR-KEEP: its layout holds pointers, so a copy (sharing them) keeps the original alive
     copy_owner: str = ""              # R-COPY: where a destructor may free a pointer an implicit copy duplicates: no implicit copy
     dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
                                       # (implicit or defined in the header). R-UNDEFINED checks it: nanobind instantiates
@@ -187,7 +187,7 @@ class Class:
     ctors: list[Constructor] = field(default_factory=list)
     methods: list[Method] = field(default_factory=list)
     fields: list[Field] = field(default_factory=list)
-    statics: list[Constant] = field(default_factory=list)      # R-STATIC-DATA: public static const data members -> class attributes
+    statics: list[Constant] = field(default_factory=list)      # R-STATIC-DATA: public static const data members -> read-only static properties
     conversions: list[Conversion] = field(default_factory=list)
     enums: list[Enum] = field(default_factory=list)
     nested: list[Class] = field(default_factory=list)  # public nested classes (flattened into PackageIR.classes by the parser)
