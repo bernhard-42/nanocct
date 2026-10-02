@@ -172,7 +172,7 @@ In [4]: del v
 Out[4]: (5, 3)
 ```
 
-A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](Design.md#views-a-container-refuses-to-invalidate-r-view-guard-2026-10-02).
+A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 6a](Design.md#views-a-container-refuses-to-invalidate-r-view-guard).
 
 ### Index access
 
