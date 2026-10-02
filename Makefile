@@ -126,7 +126,7 @@ else
 endif
 
 .PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs wheel delocate test shim shim-parity nanocctbuild \
-        clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist help
+        asan clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist clean_asan help
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -134,8 +134,8 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | shim | wheels | shim-parity | nanocctbuild"
-	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | shim | wheels | shim-parity | nanocctbuild | asan"
+	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist clean_asan"
 	@echo "platform: $(PLATFORM)"
 
 
@@ -342,20 +342,22 @@ test:
 	@# The suite runs against what ships: the repaired wheel from `make delocate`, installed into a venv of its own with
 	@# the dev tools (pytest, mypy, ty, libclang for the generator tests) -- not against the staged tree, and not in .venv,
 	@# where the staged tree's .pth would put a second copy of the modules into the process (the one-copy rule).
+	@# tools/pytest_leakcheck.py runs pytest and fails on nanobind's "leaked" report at interpreter exit, which comes after
+	@# pytest's own summary (a reference cycle no garbage collector sees, R-KEPT).
 	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
 	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "test: need exactly one repaired wheel in $(DIST_DIR) -- run make wheel delocate" >&2; exit 1; fi
 ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
 	    && uv pip install -q --python $(TEST_VENV)/bin/python --group dev $(DIST_DIR)/nanocct-*.whl
-	cd $(ROOT) && $(TEST_VENV)/bin/python -m pytest tests -q -p no:cacheprovider
+	cd $(ROOT) && $(TEST_VENV)/bin/python tools/pytest_leakcheck.py tests -q -p no:cacheprovider
 else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
 	    && uv pip install -q --python "$(TEST_VENV)/Scripts/python.exe" --group dev $(DIST_DIR)/nanocct-*.whl
-	cd $(ROOT) && "$(TEST_VENV)/Scripts/python.exe" -m pytest tests -q -p no:cacheprovider
+	cd $(ROOT) && "$(TEST_VENV)/Scripts/python.exe" tools/pytest_leakcheck.py tests -q -p no:cacheprovider
 else
 	$(CONTAINER) "cd /work && uv venv -q --clear -p $(ML_SYSPY) /work/.venv-test-ml \
 	    && uv pip install -q --python /work/.venv-test-ml/bin/python --group dev /work/dist/nanocct-*.whl \
-	    && xvfb-run -a /work/.venv-test-ml/bin/python -m pytest tests -q -p no:cacheprovider"
+	    && xvfb-run -a /work/.venv-test-ml/bin/python tools/pytest_leakcheck.py tests -q -p no:cacheprovider"
 endif
 
 
@@ -443,6 +445,9 @@ wheels: generate compile stubs wheel delocate test shim
 clean_dist:
 	rm -rf $(DIST_DIR)
 
+clean_asan:
+	rm -rf $(ASAN_DIR)
+
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # Parity tests
@@ -453,6 +458,32 @@ clean_dist:
 # the ocp_tessellate sdist nanocctbuild/nanocctbuild.sh fetches into build/nanocctbuild/sdist; everything else goes to
 # build/shim-parity. Host-only for now: on Linux the wheels live in the container's world.
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+# AddressSanitizer (macOS)
+#
+# OCCT and the bindings built with -fsanitize=address into build/asan -- OCCT once (~4 min, ~4 GB), the bindings from the
+# current generated sources (~2.5 min) -- and a venv importing them; then the lifetime tests and the memory audit's
+# scenarios run under ASan (tools/asan/run.sh): a read of freed memory aborts with ASan's report instead of passing by
+# coincidence, as it can on a release build. Opt-in, not part of `wheels`. Needs `make deps generate compile stubs`
+# (stage-mac holds the Python files and stubs). ASAN_TESTS: the pytest arguments (`make asan ASAN_TESTS=tests` runs
+# the whole suite). tools/asan/run.sh alone repeats a run without rebuilding.
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+ASAN_DIR   := $(ROOT)/build/asan
+ASAN_TESTS ?= tests/test_lifetime.py tests/test_memory_audit.py
+asan:
+ifeq ($(PLATFORM),macos)
+	@[ -f $(ASAN_DIR)/occt/lib/libTKernel.dylib ] || $(ROOT)/tools/asan/build-occt-macos.sh
+	$(ROOT)/tools/asan/build-bindings-macos.sh
+	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(ASAN_DIR)/venv \
+	    && uv pip install -q --python $(ASAN_DIR)/venv/bin/python --group dev -r pyproject.toml
+	echo "$(ASAN_DIR)/stage" > "$$(ls -d $(ASAN_DIR)/venv/lib/python3.*/site-packages)/_nanocct_asan.pth"
+	$(ROOT)/tools/asan/run.sh $(ASAN_TESTS)
+else
+	@echo "asan runs on macOS only so far (tools/asan)"; exit 1
+endif
 
 
 BUILD123D ?= $(HOME)/Development/CAD/build123d
