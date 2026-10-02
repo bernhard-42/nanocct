@@ -1772,6 +1772,45 @@ def _label_source(t: cindex.Type) -> bool:
     return decl.kind != K.NO_DECL_FOUND and _derives_from(decl, _LABEL_DOCUMENT)
 
 
+# Binding-Rules.md R-ALLOCATOR
+def _holds_allocator(cls: cindex.Cursor) -> bool:
+    """R-ALLOCATOR: does the class -- its own members or a base's -- hold a handle to an NCollection allocator? Such a class
+    may place the objects it hands out in that allocator (BRepMeshData_Model: `new (myAllocator) BRepMeshData_Face(...)`),
+    and their memory then goes with the allocator, not with their handle (DEFINE_INC_ALLOC's operator delete does nothing)."""
+    for ch in cls.get_children():
+        if ch.kind == K.FIELD_DECL:
+            canon = ch.type.get_canonical()
+            if canon.kind == TK.RECORD and _record_key(canon).startswith("opencascade::handle<") \
+                    and canon.get_num_template_arguments() == 1:
+                decl = canon.get_template_argument_type(0).get_canonical().get_declaration()
+                if decl.kind != K.NO_DECL_FOUND and _derives_from(decl, "NCollection_BaseAllocator"):
+                    return True
+        elif ch.kind == K.CXX_BASE_SPECIFIER:
+            base = ch.type.get_declaration()
+            defn = base.get_definition() if base.kind != K.NO_DECL_FOUND else None
+            if defn is not None and _holds_allocator(defn):
+                return True
+    return False
+
+
+def _transient_result(t: cindex.Type) -> bool:
+    """R-ALLOCATOR: a handle result (by value or reference), or a pointer or reference to a Transient -- except a type
+    descriptor (Standard_Type: static, never in an allocator) and an allocator itself (not placed in its own memory)."""
+    canon = t.get_canonical()
+    indirect = canon.kind in (TK.LVALUEREFERENCE, TK.POINTER)
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD:
+        return False
+    handle = _record_key(canon).startswith("opencascade::handle<") and canon.get_num_template_arguments() == 1
+    if handle:
+        canon = canon.get_template_argument_type(0).get_canonical()
+    decl = canon.get_declaration()
+    if decl.kind == K.NO_DECL_FOUND or _derives_from(decl, "Standard_Type") or _derives_from(decl, "NCollection_BaseAllocator"):
+        return False
+    return handle or (indirect and _derives_from(decl, "Standard_Transient"))
+
+
 def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
     """R-RESULT-KEEP: the class behind a type -- through references, pointers and handles -- and its layout (_Held), one per
     class and package; None for a scalar or an enum. A dependent type of a 7c walk is read from its substituted spelling
@@ -2391,6 +2430,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
         c.noncopyable = True
     if c.noncopyable:
         _DETECTED_NONCOPYABLE.add(c.name)
+    holds_allocator: bool | None = None        # R-ALLOCATOR, decided at the first Transient result
     for ch in cursor.get_children():
         if ch.kind == K.CXX_BASE_SPECIFIER:
             if ch.access_specifier != Access.PUBLIC:
@@ -2469,6 +2509,10 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 _decide_kept(ch, c, m.params, True, m.is_const)      # R-METHOD-KEEP
             if m.skip_reason is None:
                 _note_views(ch, m, c.name, None if m.is_static else c)      # R-RESULT-KEEP
+                if not m.is_static and _transient_result(ch.result_type):
+                    if holds_allocator is None:
+                        holds_allocator = _holds_allocator(cursor)
+                    m.result_keeps_producer = holds_allocator       # R-ALLOCATOR
             c.methods.append(m)
         elif ch.kind == K.VAR_DECL:
             # R-STATIC-DATA: a static data member (a VAR_DECL inside a class; FIELD_DECL is the instance kind). Until

@@ -3454,6 +3454,47 @@ The Python additions of Design.md, section 2.
         explorer.Next()
     assert tags == [1, 2, 3]
     ```
+### R-ALLOCATOR
+
+- **C++ Idiom**
+
+    A class that holds an NCollection allocator (`occ::handle<NCollection_IncAllocator>` or another `NCollection_BaseAllocator`, its own member or a base's) and hands out Transients it may have placed in that allocator
+
+- **OCCT examples**
+
+    - `const IMeshData::IFaceHandle& BRepMeshData_Model::GetFace(const int theIndex) const override` (`IFaceHandle` = `occ::handle<IMeshData_Face>`; the model creates its faces with `new (myAllocator) BRepMeshData_Face(theFace, myAllocator)`, `BRepMeshData_Model.cxx:51`)
+    - `const IMeshData::IEdgeHandle& BRepMeshData_Model::AddEdge(const TopoDS_Edge& theEdge) override`
+    - `DEFINE_INC_ALLOC` (`IMeshData_Types.hxx:54`): an `operator new` into the allocator and an `operator delete` that does nothing
+
+- **Rule**
+
+    - The object's memory goes with the allocator, not with its handle: releasing the last handle frees nothing (the no-op `operator delete`), and the producer's destructor releases the allocator and with it every object placed there. A face kept from `model.GetFace(0)` after `del model` points into freed memory (a bus error under MallocScribble on macOS, an access violation on Windows; `tests/test_lifetime.py`).
+    - Decided from the producer's layout -- it holds an allocator -- because the result type does not say it: Python sees the face as the interface `IMeshData_Face`, the allocator-placed `BRepMeshData_*` classes are not bound (their `operator new` takes an allocator).
+    - Where such a producer hands out an object from the ordinary heap, the producer lives as long as the result -- longer than needed, never a crash (candidates: `BOPAlgo_Builder::Context()`, the `History()` of the BOPAlgo/BRepAlgoAPI algorithms).
+    - Not for a type descriptor (`DynamicType()`, `Standard_Type` is static) or an allocator itself (`Allocator()`: not placed in its own memory).
+
+- **Python**
+
+    - The result keeps the producer alive (`nanocct::KeepOwnerUnlessSelf`, as R-RESULT case 1): a handle result, or a pointer or reference to a Transient, of a non-static method of such a class.
+    - The chain holds: a wire from a face keeps the face, the face keeps the model.
+
+- **Python examples**
+
+    ```python
+    import gc
+    from nanocct.BRepMesh import BRepMesh_ModelBuilder
+    from nanocct.BRepPrimAPI import BRepPrimAPI_MakeCone
+    from nanocct.IMeshTools import IMeshTools_Parameters
+
+    params = IMeshTools_Parameters()
+    params.Deflection, params.Angle = 0.1, 0.5
+    model = BRepMesh_ModelBuilder().Perform(BRepPrimAPI_MakeCone(1.0, 0.5, 2.0).Shape(), params)
+    face = model.GetFace(0)                  # placed in the model's allocator
+    del model
+    gc.collect()                             # the face keeps the model, and with it its own memory
+    assert face.WiresNb() == 1
+    ```
+
 ### R-BYTES
 
 - **C++ Idiom**

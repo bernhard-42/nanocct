@@ -91,6 +91,7 @@ class Method:
     force_lambda: bool = False        # bound through a lambda even without out-parameters (R-PTR-REF: a T*& result returned as T*)
     result_view: bool = False         # R-RESULT-KEEP: a class by value/const& whose layout holds pointers: keeps self and result_keeps
     result_keeps: tuple[int, ...] = ()  # ... the parameters (indices) whose objects it may point into
+    result_keeps_producer: bool = False   # R-ALLOCATOR: a Transient/handle result of a class holding an allocator keeps self
     result_owned: bool = False        # R-OWNER: the result's type has known OCAF owners (TDF_Label, TDF_Attribute, ...): kept instead
     result_by_reference: bool = False # R-COPY: a `const T&` of an owner class (its copy would free what the original points to): by reference
     result_on_heap: bool = False      # R-COPY: a `T` by value of an owner class without its own move/copy constructor: new T(call)

@@ -925,6 +925,26 @@ def test_an_object_holding_labels_keeps_the_document_it_was_given():
     """, XCAF))
     assert out == ["[1, 2, 3]"]
 
+
+def test_a_mesh_face_keeps_the_model_whose_allocator_holds_it():
+    """R-ALLOCATOR: BRepMeshData_Model places its faces in its own NCollection_IncAllocator (`new (myAllocator)
+    BRepMeshData_Face(...)`), and DEFINE_INC_ALLOC's operator delete does nothing -- the face's memory goes with the model,
+    not with the face's handle. Without the keep, using the face after `del model` read freed memory (a bus error under
+    MallocScribble on macOS, an access violation on Windows)."""
+    out = _ok(_run("""
+        from nanocct.BRepMesh import BRepMesh_ModelBuilder
+        from nanocct.BRepPrimAPI import BRepPrimAPI_MakeCone
+        from nanocct.IMeshTools import IMeshTools_Parameters
+        params = IMeshTools_Parameters()
+        params.Deflection, params.Angle = 0.1, 0.5
+        model = BRepMesh_ModelBuilder().Perform(BRepPrimAPI_MakeCone(1.0, 0.5, 2.0).Shape(), params)
+        face = model.GetFace(0)
+        del model
+        collect()
+        print(face.WiresNb(), face.GetDeflection() > 0.0)
+    """))
+    assert out == ["1 True"]
+
 def test_an_attribute_keeps_its_document():
     """An XCAF tool is an attribute in the document's label tree: `ShapeTool(doc.Main())` and then dropping the document
     left the tool pointing at freed nodes."""

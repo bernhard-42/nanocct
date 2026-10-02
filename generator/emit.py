@@ -581,8 +581,9 @@ class Emitter:
                 ptr_policy = ", nb::rv_policy::take_ownership"
             elif m.result_by_reference:
                 ptr_policy = policy
-            if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
-                # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
+            if (m.result_kind == ResultKind.REF_TRANSIENT or m.result_keeps_producer) and not m.is_static:
+                # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18);
+                # R-ALLOCATOR: so does a result an allocating producer may have placed in its allocator
                 ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
             if m.result_kind == ResultKind.PTR_CLASS:      # a reference result is copied here (auto), a pointer is not
                 self._report_owned_container(cls, m)
@@ -595,6 +596,8 @@ class Emitter:
             return f'.def_static("{py}", {fn}{policy}{self._keep_views(m, False)}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
         fn = self._guarded(f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})", m.params)
+        if m.result_keeps_producer:
+            policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"     # R-ALLOCATOR
         return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
 
     # Binding-Rules.md R-REF-PRIMITIVE
