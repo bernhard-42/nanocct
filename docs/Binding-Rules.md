@@ -3341,6 +3341,8 @@ The Python additions of 2c.
     ```
 ### R-OWNER
 
+#### Case 1: an OCAF object, its owner known by its type
+
 - **C++ Idiom**
 
     - An OCAF object whose owner is known by its type: a `TDF_Label` and every `TDF_Attribute` point into the `TDF_LabelNode` tree of a `TDF_Data`, whose root carries a `TDocStd_Owner` with a raw pointer to the `TDocStd_Document`.
@@ -3411,6 +3413,57 @@ The Python additions of 2c.
     del document, tool
     gc.collect()
     assert labels.Length() == 1 and found and named.Get().IsSame(box)
+    ```
+
+#### Case 2: an object whose layout holds a label
+
+- **C++ Idiom**
+
+    A class that is no OCAF type itself but whose layout holds a `TDF_Label`, given an OCAF object as a handle argument it takes labels from: a `TDocStd_Document`, a `TDF_Data`, a `TDF_Attribute` (or derived)
+
+- **OCCT examples**
+
+    - `XCAFPrs_DocumentExplorer::XCAFPrs_DocumentExplorer(const occ::handle<TDocStd_Document>& theDocument, const XCAFPrs_DocumentExplorerFlags theFlags, const XCAFPrs_Style& theDefStyle = XCAFPrs_Style())` (its `NCollection_DynamicArray<XCAFPrs_DocumentNode> myNodeStack` holds labels; the header only forward-declares the document)
+    - `void XCAFPrs_DocumentExplorer::Init(const occ::handle<TDocStd_Document>& theDocument, const TDF_Label& theRoot, const XCAFPrs_DocumentExplorerFlags theFlags, const XCAFPrs_Style& theDefStyle = XCAFPrs_Style())`
+    - `XCAFDoc_AssemblyIterator::XCAFDoc_AssemblyIterator(const occ::handle<TDocStd_Document>& theDoc, const int theLevel = INT_MAX)`
+    - `bool STEPCAFControl_Reader::Transfer(const occ::handle<TDocStd_Document>& doc, const Message_ProgressRange& theProgress = Message_ProgressRange())`
+    - `TDF_DeltaOnAddition::TDF_DeltaOnAddition(const occ::handle<TDF_Attribute>& anAtt)`
+
+- **Rule**
+
+    - The labels point into the `TDF_LabelNode` tree of the argument's document, and nothing keeps that document: the handle argument is not stored, or stored next to labels that need the document too. `XCAFPrs_DocumentExplorer(doc, 0)` iterated after `del doc` reads the freed label tree (a segfault, `tests/test_lifetime.py`).
+    - Decided from the layout, not by name: the class's layout (its members, its bases', what it holds by value, a container's elements) holds a `TDF_LabelNode*`, the pointer inside every `TDF_Label`. Decided at the end of the package, once the layout probe completed every layout.
+    - Not for an OCAF type itself: Case 1 keeps its owners already, and an attribute keeping another attribute could close a cycle.
+    - A forward declaration is enough to recognise the document (`_derives_from`), which the headers holding the labels mostly have.
+
+- **Python**
+
+    - The object keeps such an argument: `keep_alive` for a constructor, a slot for a method (R-METHOD-KEEP: a second `Init(doc)` replaces the first document), the `nanocct::Kept<T>` slots for a Transient (R-KEPT, with its cycle guard).
+    - Applies to `XCAFPrs_DocumentExplorer`, `XCAFDoc_AssemblyIterator`, `XCAFDoc_AssemblyGraph`, `STEPCAFControl_Reader`/`Writer` (`Transfer`, `Perform`), the `TDF`, `TDataStd` and `TNaming` deltas, `TDF_DataSet.AddAttribute`, `TDF_RelocationTable.SetRelocation`, `TNaming_Identifier` and `TNaming_Name` (OCCT 8.0.1).
+
+- **Python examples**
+
+    ```python
+    import gc
+    from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from nanocct.TCollection import TCollection_ExtendedString
+    from nanocct.TDocStd import TDocStd_Document
+    from nanocct.XCAFDoc import XCAFDoc_DocumentTool
+    from nanocct.XCAFPrs import XCAFPrs_DocumentExplorer
+
+    document = TDocStd_Document(TCollection_ExtendedString("XmlXCAF"))
+    tool = XCAFDoc_DocumentTool.ShapeTool_s(document.Main())
+    for i in range(3):
+        tool.AddShape(BRepPrimAPI_MakeBox(1.0 + i, 2.0, 3.0).Shape(), False)
+    del tool
+    explorer = XCAFPrs_DocumentExplorer(document, 0)
+    del document
+    gc.collect()                      # the explorer keeps the document its labels point into
+    tags = []
+    while explorer.More():
+        tags.append(explorer.Current().Label.Tag())
+        explorer.Next()
+    assert tags == [1, 2, 3]
     ```
 ### R-BYTES
 

@@ -902,6 +902,29 @@ def test_a_label_keeps_its_document():
     assert out == ["1 1 TDocStd_Document True"]
 
 
+
+def test_an_object_holding_labels_keeps_the_document_it_was_given():
+    """R-OWNER, by layout: XCAFPrs_DocumentExplorer is no OCAF type, but its node stack holds labels of the document it
+    was handed as a handle -- and nothing else keeps that document. Without the keep, iterating after `del doc` reads
+    the freed label tree (a segfault under MallocScribble)."""
+    out = _ok(_run("""
+        from nanocct.XCAFPrs import XCAFPrs_DocumentExplorer
+        doc = new_document()
+        tool = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+        for i in range(3):
+            tool.AddShape(BRepPrimAPI.BRepPrimAPI_MakeBox(1.0 + i, 2.0, 3.0).Shape(), False)
+        del tool
+        explorer = XCAFPrs_DocumentExplorer(doc, 0)
+        del doc
+        collect()
+        tags = []
+        while explorer.More():
+            tags.append(explorer.Current().Label.Tag())
+            explorer.Next()
+        print(tags)
+    """, XCAF))
+    assert out == ["[1, 2, 3]"]
+
 def test_an_attribute_keeps_its_document():
     """An XCAF tool is an attribute in the document's label tree: `ShapeTool(doc.Main())` and then dropping the document
     left the tool pointing at freed nodes."""

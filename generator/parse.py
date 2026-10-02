@@ -1729,6 +1729,7 @@ _instance_owners: dict[str, str] = {}                # R-COPY: the instantiation
 # nanocct_ocaf.h); nanocct::keep_view checks this verdict against the C++ trait at compile time
 _OWNED_ROOTS = ("TDF_Label", "TDF_Data")
 _OWNED_BASE = "TDF_Attribute"
+_LABEL_DOCUMENT = "TDocStd_Document"      # R-OWNER, by layout: a document hands out its data's labels (Main())
 _OWNED_CONTAINERS = ("NCollection_Array1", "NCollection_HArray1", "NCollection_Sequence", "NCollection_HSequence", "NCollection_List",
                      "NCollection_Map", "NCollection_IndexedMap", "NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap")
 
@@ -1752,6 +1753,23 @@ def _owned(t: cindex.Type) -> bool:
         return any(_owned(a) for a in args if a.kind != TK.INVALID)
     defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
     return defn is not None and defn.kind in (K.CLASS_DECL, K.STRUCT_DECL) and _derives_from(defn, _OWNED_BASE)
+
+
+def _label_source(t: cindex.Type) -> bool:
+    """R-OWNER, by layout: is t a handle a TDF_Label can be taken from -- of an OCAF type whose owners are known (_owned: a
+    TDF_Data, a TDF_Attribute, a container of them), or of a TDocStd_Document (its data's labels)?"""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD or not _record_key(canon).startswith("opencascade::handle<") \
+            or canon.get_num_template_arguments() != 1:
+        return False
+    if _owned(canon):
+        return True
+    # _derives_from, not the definition: the header holding the label usually only forward-declares the document
+    # (XCAFPrs_DocumentExplorer.hxx: `class TDocStd_Document;`)
+    decl = canon.get_template_argument_type(0).get_canonical().get_declaration()
+    return decl.kind != K.NO_DECL_FOUND and _derives_from(decl, _LABEL_DOCUMENT)
 
 
 def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
@@ -2159,8 +2177,19 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
     the binding does -- reported."""
     held = _held_types(fn.semantic_parent, c)
     undecided: list[tuple[Param, str, tuple[str, ...], bool, _Held | None]] = []
+    ocaf_class = _owned(fn.semantic_parent.type)
     for p, arg in zip(params, fn.get_arguments()):
-        if p.omitted or p.is_handle or p.is_bytes or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
+        if p.omitted or p.is_bytes or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
+            continue
+        if p.is_handle:
+            # R-OWNER, by layout: an object whose layout holds a TDF_Label (XCAFPrs_DocumentExplorer's node stack) points into
+            # the document a handle argument gave it -- a document, its data or an attribute -- and nothing else keeps that
+            # document: the object keeps the argument. Decided at the end of the package, once the layout probe completed
+            # every layout (the key is the label's TDF_LabelNode*). An OCAF object itself knows its owners already (R-OWNER).
+            if not ocaf_class and not p.is_out and _label_source(arg.type):
+                if c.is_transient:
+                    _cycle_open.append((c, fn.semantic_parent, fn.spelling, p, arg.type))   # R-KEPT, decided once p.kept is
+                undecided.append((p, "TDF_LabelNode", (), const_method, None))
             continue
         pointee = _pointee(arg.type)
         if pointee is None:
