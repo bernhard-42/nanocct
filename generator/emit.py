@@ -29,7 +29,7 @@ _BINARY_OPS = {
     "operator>=": ("__ge__", None, None),
     "operator()": ("__call__", "__call__", None),
     "operator[]": ("__getitem__", None, None),
-    "operator!": (None, "__not__", None),
+    # no operator!: Python has no protocol `not` would call -- `not x` asks __bool__ (R-OPERATOR)
 }
 _INPLACE_OPS = {
     "operator+=": "__iadd__", "operator-=": "__isub__", "operator*=": "__imul__",

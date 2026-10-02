@@ -2402,19 +2402,23 @@ The Python additions of 2c.
     - `double& math_Matrix::operator()(const int Row, const int Col)`
     - `bool BOPDS_Pave::operator<(const BOPDS_Pave& theOther) const`
     - `char32_t NCollection_UtfString::operator[](const int theCharIndex) const`
+    - `bool BinObjMgt_Persistent::operator!() const` (not bound)
 
 - **Rule**
 
     - Member operators.
     - Bound with `nb::is_operator()`.
+    - Unary `!` is not bound: Python has no protocol that `not` would call, `not x` asks `__bool__`. Its one site, `bool BinObjMgt_Persistent::operator!() const { return IsError(); }`, has `operator bool() const { return IsOK(); }` next to it (R-CONV-SCALAR), so `not persistent` is the C++ `!persistent`.
 
 - **Python**
 
     - `__add__` … `__call__`, `__neg__` …
+    - `operator!`: not bound, reported as an operator without a Python equivalent.
 
 - **Python examples**
 
     ```python
+    from nanocct.BinObjMgt import BinObjMgt_Persistent
     from nanocct.BOPDS import BOPDS_Pave
     from nanocct.gp import gp_Vec
     from nanocct.math import math_Matrix
@@ -2426,6 +2430,8 @@ The Python additions of 2c.
     assert v.__add__(1) is NotImplemented              # nb::is_operator(): Python then raises its own TypeError
     matrix = math_Matrix(1, 2, 1, 2, 3.0)
     assert matrix(1, 2) == 3.0                         # operator(): __call__
+    persistent = BinObjMgt_Persistent()
+    assert not hasattr(persistent, "__not__") and (not persistent) == persistent.IsError()   # operator! is __bool__'s negation
     first, second = BOPDS_Pave(), BOPDS_Pave()
     first.SetParameter(1.0)
     second.SetParameter(2.0)
