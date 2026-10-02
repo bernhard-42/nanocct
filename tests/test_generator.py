@@ -659,6 +659,109 @@ private:
   const Rules_Keeper* myPrev = nullptr;
 };
 
+//! R-CTOR-KEEP from the whole layout. A base's member keeps the argument (VrmlData_Node::myScene for every VRML node).
+class Rules_KeepBase
+{
+public:
+  Rules_KeepBase(const gp_XYZ& theXYZ) : myBaseXYZ(&theXYZ) {}
+
+protected:
+  const gp_XYZ* myBaseXYZ;
+};
+
+class Rules_KeepViaBase : public Rules_KeepBase
+{
+public:
+  Rules_KeepViaBase(const gp_XYZ& theXYZ, const gp_Pnt& theCopied) : Rules_KeepBase(theXYZ), myCopy(theCopied) {}
+
+private:
+  gp_Pnt myCopy;
+};
+
+//! A pointer member declared through a typedef (BRepAlgoAPI_BuilderAlgo's BOPAlgo_PPaveFiller myDSFiller); a container held
+//! by value owns its storage, so its element type is not kept (GccAna_Circ2d2TanOn's NCollection_Array1<gp_Circ2d>).
+typedef const gp_Pnt* Rules_PPnt;
+class Rules_KeepViaTypedef
+{
+public:
+  Rules_KeepViaTypedef(const gp_Pnt& thePnt, const gp_XYZ& theXYZ) : myPnt(&thePnt), myXYZs(1, 1) { myXYZs.SetValue(1, theXYZ); }
+
+private:
+  Rules_PPnt                 myPnt;
+  NCollection_Array1<gp_XYZ> myXYZs;
+};
+
+//! A pointer inside a member held by value (Extrema_GenExtCS's Extrema_FuncExtCS myF).
+class Rules_KeepViaMember
+{
+public:
+  Rules_KeepViaMember(const gp_XYZ& theXYZ) { myInner.myXYZ = &theXYZ; }
+
+private:
+  struct Inner
+  {
+    const gp_XYZ* myXYZ = nullptr;
+  };
+  Inner myInner;
+};
+
+//! A `void *` member may hold anything (CPnts_UniformDeflection's myCurve).
+class Rules_KeepVoid
+{
+public:
+  Rules_KeepVoid(const gp_Pnt& thePnt) : myAddr((void*)&thePnt) {}
+
+private:
+  void* myAddr;
+};
+
+//! A class template held by value whose layout exists only after substitution (Extrema_GGExtPC's TheEPC myExtPC): the layout
+//! probe completes Rules_KeepHolderT<gp_Pnt>, also through a private member type (libclang builds the type despite the
+//! access error). A pack expansion in a base list cannot be matched to the arguments: reported, not kept.
+template <class TheItem> class Rules_KeepHolderT
+{
+public:
+  const TheItem* myItem = nullptr;
+};
+
+template <class TheItem> class Rules_KeepOuterT
+{
+public:
+  Rules_KeepOuterT(const TheItem& theItem) { myHolder.myItem = &theItem; }
+
+private:
+  Rules_KeepHolderT<TheItem> myHolder;
+};
+typedef Rules_KeepOuterT<gp_Pnt> Rules_KeepOuterPnt;
+
+template <class TheItem> class Rules_KeepHiddenT
+{
+  struct Hidden
+  {
+    const TheItem* myItem = nullptr;
+  };
+
+public:
+  Rules_KeepHiddenT(const TheItem& theItem) { myHidden.myItem = &theItem; }
+
+private:
+  Hidden myHidden;
+};
+typedef Rules_KeepHiddenT<gp_Pnt> Rules_KeepHiddenPnt;
+
+template <class... TheItems> class Rules_KeepPack : public Rules_KeepHolderT<TheItems>...
+{
+};
+
+class Rules_KeepViaPack
+{
+public:
+  Rules_KeepViaPack(const gp_Pnt& thePnt) { myPack.Rules_KeepHolderT<gp_Pnt>::myItem = &thePnt; }
+
+private:
+  Rules_KeepPack<gp_Pnt, gp_XYZ> myPack;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -728,7 +831,9 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_TTransient<int>", "Rules_ViaTypedef", "Rules_TTransient<double>", "Rules_Sink",
                                "Rules_TOnly<short>", "Rules_Order", "Rules_TWide<short>", "Rules_TNarrow<short>", "Rules_TVec<unsigned long>::Cursor",
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
-                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper",
+                               "Rules_KeepBase", "Rules_KeepViaBase", "Rules_KeepViaTypedef", "Rules_KeepViaMember", "Rules_KeepVoid",
+                               "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepViaPack"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -798,6 +903,26 @@ def test_ir_and_emitter_keep_alive_for_a_kept_constructor_argument(tmp_path_fact
     cpp = em.emit()
     assert "nb::init<const gp_XYZ &, const gp_Pnt &>(), nb::keep_alive<1, 2>(), nb::arg(\"theKept\")" in cpp
     assert "keep_alive<1, 3>" not in cpp
+
+
+def test_kept_constructor_arguments_follow_the_whole_layout(tmp_path_factory):
+    """R-CTOR-KEEP reads the whole layout with canonical types: a base's member, a typedef'd pointer, a pointer inside a
+    member held by value, a `void *` member (keeps anything) and a class template's by-value member completed by the layout
+    probe. A container's own storage keeps nothing, and what the probe cannot name is reported instead of guessed."""
+    ir = rules_ir_of(tmp_path_factory, "occt_keep_layout")
+    kept = {c.name: {tuple(p.type for p in k.params): [p.kept for p in k.params] for k in c.ctors}
+            for c in ir.classes if c.name.startswith("Rules_Keep") and c.name != "Rules_Keeper"}
+    assert kept["Rules_KeepBase"][("const gp_XYZ &",)] == [True]
+    assert kept["Rules_KeepViaBase"][("const gp_XYZ &", "const gp_Pnt &")] == [True, False]       # the base's member
+    assert kept["Rules_KeepViaTypedef"][("const gp_Pnt &", "const gp_XYZ &")] == [True, False]    # typedef'd pointer; container
+    assert kept["Rules_KeepViaMember"][("const gp_XYZ &",)] == [True]
+    assert kept["Rules_KeepVoid"][("const gp_Pnt &",)] == [True]
+    assert kept["Rules_KeepOuterT<gp_Pnt>"][("const gp_Pnt &",)] == [True]                         # through the layout probe
+    assert kept["Rules_KeepHiddenT<gp_Pnt>"][("const gp_Pnt &",)] == [True]                        # a private member type
+    assert kept["Rules_KeepViaPack"][("const gp_Pnt &",)] == [False]
+    lines = [line for line in ir.report if "R-CTOR-KEEP could not follow" in line]
+    assert len(lines) == 1 and lines[0].startswith("Rules_KeepViaPack: ") and "no keep-alive for thePnt" in lines[0]
+    assert categorize(lines[0]) == "lifetime"
 
 def test_header_allowlist_override(monkeypatch, tmp_path_factory):
     # overrides.toml [include] headers: a partial package (the font slice) binds only the listed headers
@@ -998,7 +1123,7 @@ def test_ir_records_mangled_names(rules_ir):
 
 def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
     known = {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Unbound": "Rules", "Rules_Orphan": "Rules", "Rules_Value": "Rules",
-             "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules",
+             "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules", "Rules_KeepBase": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},

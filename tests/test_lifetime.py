@@ -551,3 +551,90 @@ def test_a_transient_keeps_its_constructor_argument_while_it_lives():
         print(during - before, sys.getrefcount(table) - before)
     """))
     assert out == ["1 0"]
+
+
+# ---- R-CTOR-KEEP from the whole layout: a base's member, a typedef'd pointer, a member held by value, a void* member ---
+
+def test_a_base_class_member_keeps_the_constructor_argument():
+    """BRepAlgoAPI_Cut(S1, S2, PF) hands the filler to BRepAlgoAPI_BuilderAlgo, whose `BOPAlgo_PPaveFiller myDSFiller` (a
+    typedef'd pointer, in a base) keeps its address; SectionEdges() and Modified() read the filler's data structure. The
+    filler was collected under the operation (segfault): R-CTOR-KEEP looked at the class's own members only, spelled as
+    written. It also gains exactly one reference while the operation lives, and loses it with the operation."""
+    out = _ok(_run("""
+        import sys
+        from nanocct import BOPAlgo, BRepAlgoAPI, BRepPrimAPI, TopAbs, TopExp, TopoDS, gp
+        from nanocct.NCollection import NCollection_List
+        box = BRepPrimAPI.BRepPrimAPI_MakeBox(2, 2, 2).Shape()
+        cyl = BRepPrimAPI.BRepPrimAPI_MakeCylinder(gp.gp_Ax2(gp.gp_Pnt(1, 1, -1), gp.gp_Dir(0, 0, 1)), 0.5, 4).Shape()
+        args = NCollection_List[TopoDS.TopoDS_Shape]()
+        args.Append(box)
+        args.Append(cyl)
+        pf = BOPAlgo.BOPAlgo_PaveFiller()
+        pf.SetArguments(args)
+        pf.Perform()
+        before = sys.getrefcount(pf)
+        cut = BRepAlgoAPI.BRepAlgoAPI_Cut(box, cyl, pf)
+        during = sys.getrefcount(pf)
+        del pf, args
+        collect()
+        n = 0
+        ex = TopExp.TopExp_Explorer(box, TopAbs.TopAbs_FACE)
+        while ex.More():
+            n += cut.Modified(ex.Current()).Size()
+            ex.Next()
+        print(during - before, cut.IsDone(), n > 0, cut.SectionEdges().Size() > 0)
+    """))
+    assert out == ["1 True True True"]
+
+
+def test_a_base_class_member_of_a_transient_keeps_the_constructor_argument():
+    """Every VRML node keeps its scene in its base's `const VrmlData_Scene* myScene` (VrmlData_Node): VrmlData_Box(scene, ...)
+    gains a reference to the scene while the node lives and gives it back with the node (keep_alive<0, k> through nb::new_)."""
+    out = _ok(_run("""
+        import sys
+        from nanocct.VrmlData import VrmlData_Box, VrmlData_Scene
+        scene = VrmlData_Scene()
+        before = sys.getrefcount(scene)
+        box = VrmlData_Box(scene, "b", 1.0, 2.0, 3.0)
+        during = sys.getrefcount(scene)
+        del box
+        collect()
+        print(during - before, sys.getrefcount(scene) - before)
+    """))
+    assert out == ["1 0"]
+
+
+def test_a_member_held_by_value_keeps_the_constructor_argument():
+    """Extrema_GenExtCS keeps the curve inside a member it holds by value (`Extrema_FuncExtCS myF`, whose `myC` points at
+    it): the curve gains one reference while the extrema object lives."""
+    out = _ok(_run("""
+        import sys
+        from nanocct import Extrema, Geom, GeomAdaptor, gp
+        curve = GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Line(gp.gp_Pnt(0, 0, 3), gp.gp_Dir(1, 1, 0)), -10.0, 10.0)
+        surface = GeomAdaptor.GeomAdaptor_Surface(Geom.Geom_SphericalSurface(gp.gp_Ax3(), 2.0))
+        before = sys.getrefcount(curve)
+        ext = Extrema.Extrema_GenExtCS(curve, surface, 20, 20, 20, 1e-7, 1e-7)
+        during = sys.getrefcount(curve)
+        del ext
+        collect()
+        print(during - before, sys.getrefcount(curve) - before)
+    """))
+    assert out == ["1 0"]
+
+
+def test_a_void_pointer_member_keeps_the_constructor_argument():
+    """CPnts_UniformDeflection keeps its curve as `void* myCurve`: a `void *` member may hold any object, so every class
+    argument by reference is kept. A temporary adaptor was collected before More()/Next() read it (segfault)."""
+    out = _ok(_run("""
+        from nanocct import CPnts, Geom, GeomAdaptor, gp
+        ud = CPnts.CPnts_UniformDeflection(GeomAdaptor.GeomAdaptor_Curve(Geom.Geom_Circle(gp.gp_Ax2(), 5.0)), 0.05, 1e-6, True)
+        collect()
+        n, radius = 0, 0.0
+        while ud.More():
+            p = ud.Point()
+            radius = max(radius, (p.X() ** 2 + p.Y() ** 2) ** 0.5)
+            ud.Next()
+            n += 1
+        print(n > 10, round(radius, 6))
+    """))
+    assert out == ["True 5.0"]

@@ -1320,17 +1320,264 @@ def _core_type(spelling: str) -> str:
     return re.sub(r"^const\s+", "", s).strip()
 
 
-def _held_types(cls: cindex.Cursor) -> set[str]:
-    """The types a class keeps a pointer or reference to in a data member (any access), spelled as _core_type spells a
-    parameter: BRepGraph's reverse iterators keep `const ContainerType* myRefs` and `const BRepGraph* myGraph`,
-    GeomBndLib_Surface `const Adaptor3d_Surface* myAdaptorRef` -- all set from constructor arguments."""
-    held: set[str] = set()
-    for f in cls.get_children():
-        if f.kind == K.FIELD_DECL:
-            spelled = _type_spelling(f.type)
-            if spelled.rstrip().endswith(("&", "*")):
-                held.add(_core_type(spelled))
-    return held
+def _record_key(t: cindex.Type) -> str:
+    """The identity of a class type for R-CTOR-KEEP: canonical (typedefs resolved), without cv-qualifiers."""
+    return re.sub(r"\b(const|volatile)\s+", "", _canonical_args(t)).strip()
+
+
+def _pointee(t: cindex.Type) -> cindex.Type | None:
+    """The canonical type behind every pointer/reference level of t, or None when t is neither (`BOPAlgo_PPaveFiller` is
+    `BOPAlgo_PaveFiller *` -- a typedef'd pointer is a pointer)."""
+    canon = t.get_canonical()
+    if canon.kind not in (TK.POINTER, TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        return None
+    while canon.kind in (TK.POINTER, TK.LVALUEREFERENCE, TK.RVALUEREFERENCE):
+        canon = canon.get_pointee().get_canonical()
+    return canon
+
+
+def _is_dependent(t: cindex.Type) -> bool:
+    canon = t.get_canonical()
+    return canon.kind in (TK.UNEXPOSED, TK.INVALID) or "type-parameter-" in canon.spelling
+
+
+# owning smart pointers: what they point to is not borrowed from an argument
+_OWNING_TEMPLATES = ("opencascade::handle<", "NCollection_Handle<", "std::shared_ptr<", "std::unique_ptr<", "std::weak_ptr<")
+
+
+class _Held:
+    """What an object keeps pointers or references to, read from its layout (R-CTOR-KEEP): the class types behind every
+    pointer or reference data member of any access -- its own, every base's, and those inside members it holds by value,
+    recursively; a template instance's type arguments count as members (a container of pointers keeps what they point
+    to), and for a container (BINDERS) or a std:: type only they do. `anything`: a `void *` member may hold any object
+    (CPnts_UniformDeflection keeps its curve, TopOpeBRepDS_CurveExplorer its data structure as `void*`). `pending`: a base
+    or by-value member spelled only after template substitution -- completed by a layout probe at the end of the package
+    (_resolve_held_layout). `gaps`: what neither could follow (reported, never guessed)."""
+
+    def __init__(self) -> None:
+        self.types: set[str] = set()
+        self.anything = False
+        self.pending: list[tuple[str, str]] = []     # (spelling, where)
+        self.gaps: list[str] = []
+        self.probed: set[str] = set()                # spellings a probe already completed: incomplete there means incomplete
+        self.constants: set[str] = set()             # constants of the walked class (a non-type template argument: THE_BUFFER_SIZE)
+        self._seen: set[str] = set()
+
+    def add_pointee(self, p: cindex.Type) -> None:
+        if p.kind == TK.RECORD:
+            self.types.add(_record_key(p))
+        elif p.kind == TK.VOID:
+            self.anything = True
+
+    def spelled(self, spelled: str, where: str) -> None:
+        """A type known only by its spelling (substituted): a pointer or reference to it is held, a class by value is probed."""
+        if "type-parameter-" in spelled:
+            self.gaps.append(f"{where}: {spelled}")
+            return
+        core = _core_type(spelled)
+        if spelled.rstrip().endswith(("&", "*")):
+            if core in ("void", "Standard_Address"):
+                self.anything = True
+            elif core not in _PRIMITIVE_SPELLINGS:
+                self.types.add(core)
+        elif core == "Standard_Address":
+            self.anything = True
+        elif "<" in core and (core.startswith("std::") or core.split("<")[0] in BINDERS):
+            # a container counts by its arguments only (record): read them from the spelling, no probe -- one may be a
+            # class constant the probe could not name (math_VectorBase's private THE_BUFFER_SIZE in std::array<T, THE_BUFFER_SIZE>)
+            for arg in _split_top(core[core.index("<") + 1 : core.rindex(">")]):
+                if re.fullmatch(r"-?\d+[uUlL]*|true|false", arg) is None and arg not in self.constants:
+                    self.spelled(arg, f"{where} -> {core}")
+        elif core not in _PRIMITIVE_SPELLINGS and not core.startswith(_OWNING_TEMPLATES):
+            self.pending.append((core, where))
+
+    def member(self, ft: cindex.Type, where: str) -> None:
+        p = _pointee(ft)
+        if p is not None and not _is_dependent(p):
+            self.add_pointee(p)
+            return
+        canon = ft.get_canonical()
+        for t in (ft, canon):
+            if t.kind in (TK.CONSTANTARRAY, TK.INCOMPLETEARRAY, TK.VARIABLEARRAY, TK.DEPENDENTSIZEDARRAY):
+                self.member(t.element_type, where)
+                return
+        if canon.kind == TK.RECORD and not _is_dependent(canon):
+            self.record(canon, where)
+        elif _is_dependent(ft):
+            decl = ft.get_declaration()
+            if decl.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL) and not _is_dependent(decl.underlying_typedef_type):
+                self.member(decl.underlying_typedef_type, where)
+            else:
+                self.spelled(_type_spelling(ft), where)    # inside a class template walked for an alias instantiation (6c)
+
+    def record(self, t: cindex.Type, where: str) -> None:
+        """A class held by value or as a base: t is its canonical type."""
+        key = _record_key(t)
+        if key in self._seen or key.startswith(_OWNING_TEMPLATES):
+            return
+        self._seen.add(key)
+        for i in range(t.get_num_template_arguments()):
+            at = t.get_template_argument_type(i)
+            if at.kind != TK.INVALID:
+                self.member(at, f"{where} -> {key}")
+        if key.startswith("std::") or key.split("<")[0] in BINDERS:
+            # a container owns its storage (NCollection_Array1<gp_Circ2d>'s `gp_Circ2d* myData` points into its own buffer,
+            # not at an argument), and the standard library's layout differs per implementation: the arguments only
+            return
+        decl = t.get_declaration()
+        defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
+        if defn is None:
+            if key in self.probed:
+                self.gaps.append(f"{where}: {key} (incomplete)")
+            else:
+                self.pending.append((key, where))  # NCollection_CellFilter<...>::Cell: complete only once named in a probe
+            return
+        if len(list(defn.get_children())) > 0:
+            self.cursor(defn, f"{where} -> {key}")
+            return
+        # an implicit instantiation's cursor has no children: its members come from the instantiated type, its bases from
+        # the template's definition with the template's parameters replaced by this instantiation's arguments
+        for f in t.get_fields():
+            self.member(f.type, f"{where} -> {key}")
+        tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(defn)
+        if tmpl is None or tmpl.kind == K.NO_DECL_FOUND:
+            return
+        tdef = tmpl.get_definition()
+        tdef = tmpl if tdef is None else tdef
+        tparams = [ch for ch in tdef.get_children()
+                   if ch.kind in (K.TEMPLATE_TYPE_PARAMETER, K.TEMPLATE_NON_TYPE_PARAMETER, K.TEMPLATE_TEMPLATE_PARAMETER)]
+        names = [ch.spelling for ch in tparams]
+        values = _split_top(key[key.index("<") + 1 : key.rindex(">")]) if "<" in key else []
+        for tp in tparams[len(values):]:
+            # the canonical spelling can leave defaulted arguments out (BVH_Traverse<double, 3, Set> for <..., MetricType = NumType>)
+            default = _template_default(tp)
+            if default is None:
+                break
+            for name, value in zip(names, values):
+                default = re.sub(rf"(?<![:\w]){re.escape(name)}\b", value, default)
+            values.append(default)
+        for b in tdef.get_children():
+            if b.kind != K.CXX_BASE_SPECIFIER:
+                continue
+            if not _is_dependent(b.type):
+                self.base(b.type, f"{where} -> {key}")
+            elif len(names) == len(values):
+                spelled = b.type.spelling
+                for name, value in zip(names, values):
+                    spelled = re.sub(rf"(?<![:\w]){re.escape(name)}\b", value, spelled)
+                self.spelled(spelled, f"{where} -> {key}: base")
+            else:
+                self.gaps.append(f"{where} -> {key}: base {b.type.spelling}")
+
+    def base(self, bt: cindex.Type, where: str) -> None:
+        if _is_dependent(bt):
+            # the template's parameters only: Substitution.apply would also expand the injected class name, which here can be a
+            # template template argument (BVH_Box<T, N> : BVH_BaseBox<T, N, BVH_Box>)
+            spelled = bt.spelling
+            for name, value in _SUBST.params.items():
+                spelled = re.sub(rf"(?<![:\w]){re.escape(name)}\b", value, spelled)
+            self.spelled(spelled, f"{where}: base")
+        elif bt.get_canonical().kind == TK.RECORD:
+            self.record(bt.get_canonical(), where)
+
+    def cursor(self, cls: cindex.Cursor, where: str) -> None:
+        """A class definition walked through its cursor: a plain class, or the class template of a 6c walk."""
+        for ch in cls.get_children():
+            if ch.kind == K.FIELD_DECL:
+                self.member(ch.type, f"{where}::{ch.spelling}")
+            elif ch.kind == K.CXX_BASE_SPECIFIER:
+                self.base(ch.type, where)
+
+    def holds(self, key: str, ancestors: tuple[str, ...]) -> bool:
+        return self.anything or key in self.types or any(a in self.types for a in ancestors)
+
+
+# R-CTOR-KEEP state of the package being parsed (reset per package): the held state of each class, shared by its
+# constructors, and the constructor parameters still undecided because part of the layout waits for the probe
+_held_by_class: dict[tuple[str, int], _Held] = {}    # (class name, hash of the walked definition): a template is walked per instantiation
+_held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...]]]]] = []
+
+
+def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
+    """The types a class keeps a pointer or reference to (R-CTOR-KEEP), from its whole layout: BRepGraph's reverse
+    iterators keep `const ContainerType* myRefs`, GeomBndLib_Surface `const Adaptor3d_Surface* myAdaptorRef`,
+    BRepAlgoAPI_Cut its base's `BOPAlgo_PPaveFiller myDSFiller` (a typedef'd pointer), Extrema_ExtPC `TheCurve* myC`."""
+    key = (c.name, cls.hash)
+    if key not in _held_by_class:
+        held = _Held()
+        held.constants = {ch.spelling for ch in cls.get_children() if ch.kind in (K.VAR_DECL, K.ENUM_CONSTANT_DECL)} | {
+            v.spelling for e in cls.get_children() if e.kind == K.ENUM_DECL for v in e.get_children()}
+        held.cursor(cls, c.name)
+        _held_by_class[key] = held
+    return _held_by_class[key]
+
+
+def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], td: str) -> None:
+    """R-CTOR-KEEP, end of package: what the layout walk could only spell (a by-value member or base of a class template
+    after substitution: Extrema_GGExtPC's `TheEPC myExtPC`, BVH_Box's base BVH_BaseBox<double, 3, BVH_Box>) gets a probe
+    alias completed by sizeof, whose layout the same walk reads -- a few rounds, since a probed layout can pend in turn.
+    Then the open constructor parameters are decided; what stays unresolved is reported for the classes it leaves undecided."""
+    resolved: dict[str, _Held | None] = {}
+
+    def absorb() -> None:
+        """Fold every resolved spelling into the classes that pend on it; a probed layout's own pending entries follow."""
+        for _, held, _ in _held_open:
+            for _ in range(len(resolved) + 1):          # a resolved layout can pend on spellings resolved earlier
+                still: list[tuple[str, str]] = []
+                changed = False
+                for s, where in held.pending:
+                    if s not in resolved:
+                        still.append((s, where))
+                        continue
+                    changed = True
+                    r = resolved[s]
+                    if r is None:
+                        held.gaps.append(f"{where}: {s} (the layout probe did not compile)")
+                    else:
+                        held.types |= r.types
+                        held.anything = held.anything or r.anything
+                        held.gaps += [f"{where} -> {g}" for g in r.gaps]
+                        still += [(s2, f"{where} -> {w2}") for s2, w2 in r.pending]
+                held.pending = still
+                if not changed:
+                    break
+
+    for _ in range(10):                            # a probed layout can pend in turn (BVH_Distance -> BVH_Traverse -> ... -> BVH_Object)
+        absorb()
+        todo = sorted({s for _, h, cands in _held_open if len(cands) > 0 for s, _ in h.pending if s not in resolved})
+        if len(todo) == 0:
+            break
+        probe = Path(td) / "nanocct__layout.hxx"
+        probe.write_text(umbrella.read_text() + "".join(
+            f"using nanocct_layout_{i} = {s};\nstatic_assert(sizeof(nanocct_layout_{i}) != 0, \"\");\n" for i, s in enumerate(todo)))
+        tu = index.parse(str(probe), args=args)
+        aliases = {cur.spelling: cur for cur in tu.cursor.get_children()
+                   if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanocct_layout_")}
+        for i, s in enumerate(todo):
+            cur = aliases.get(f"nanocct_layout_{i}")
+            t = None if cur is None else cur.underlying_typedef_type.get_canonical()
+            if t is None or t.kind == TK.INVALID:
+                resolved[s] = None                 # did not compile (a private member type does: libclang builds it anyway)
+                continue
+            h = _Held()
+            h.probed.add(s)
+            if t.kind == TK.RECORD:
+                h.record(t, s)
+            else:
+                h.member(t, s)                     # a builtin or enum holds nothing; a pointer typedef holds its pointee
+            resolved[s] = h
+    absorb()
+    for c, held, cands in _held_open:
+        missed = []
+        for p, key, ancestors in cands:
+            if held.holds(key, ancestors):
+                p.kept = True
+            else:
+                missed.append(p.name)
+        open_layout = held.gaps + [f"{w}: {s} (not resolved within the probe rounds)" for s, w in held.pending]
+        if len(missed) > 0 and len(open_layout) > 0:
+            c.skipped.append(f"{c.name}: R-CTOR-KEEP could not follow its whole layout ({'; '.join(sorted(set(open_layout)))}): "
+                             f"no keep-alive for {', '.join(sorted(set(missed)))}")
 
 
 def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
@@ -1343,13 +1590,33 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
-    if not ch.is_copy_constructor() and not ch.is_move_constructor():
-        held = _held_types(ch.semantic_parent)
-        for p in params:
-            if not p.omitted and not p.is_handle and p.type.rstrip().endswith(("&", "*")):
-                core = _core_type(p.type)
-                if core not in _PRIMITIVE_SPELLINGS and (core in held or any(a in held for a in p.class_ancestors)):
-                    p.kept = True
+    if not ch.is_copy_constructor() and not ch.is_move_constructor() and reason is None:
+        held = _held_types(ch.semantic_parent, c)
+        undecided: list[tuple[Param, str, tuple[str, ...]]] = []
+        for p, arg in zip(params, ch.get_arguments()):
+            if p.omitted or p.is_handle or p.is_bytes:
+                continue
+            pointee = _pointee(arg.type)
+            if pointee is None:
+                continue
+            if _is_dependent(pointee):        # a 6c walk: the parameter is spelled only after substitution
+                if not p.type.rstrip().endswith(("&", "*")):
+                    continue
+                key, is_class = _core_type(p.type), _core_type(p.type) not in _PRIMITIVE_SPELLINGS
+            else:
+                key, is_class = _record_key(pointee), pointee.kind == TK.RECORD
+            if not is_class or key.startswith(_OWNING_TEMPLATES):
+                continue
+            if held.holds(key, p.class_ancestors):
+                p.kept = True
+            else:
+                undecided.append((p, key, p.class_ancestors))
+        if len(undecided) > 0:
+            entry = next((e for e in _held_open if e[0] is c), None)
+            if entry is None:
+                _held_open.append((c, held, undecided))
+            else:
+                entry[2].extend(undecided)
     if ctor.skip_reason is None and 0 < _MAX_PARAMS < len(params):
         ctor.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     if ctor.skip_reason is not None:
@@ -2064,6 +2331,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     _template_uses.clear()
     _dependent_bases.clear()
     _dependent_uses.clear()
+    _held_by_class.clear()
+    _held_open.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -2258,6 +2527,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                         for c in ir.classes:
                             c.bases = [inst.name if x == b else x for x in c.bases]
                     add_class(inst)
+        _resolve_held_layout(index, umbrella, args, td)       # R-CTOR-KEEP: layout spelled only after substitution
         # a template base that could not be instantiated is dropped from its derived classes (R-TEMPLATE-BASE): the class binds
         # without the base's members. A Transient class whose only path to Standard_Transient is that base cannot be bound at all.
         names = {c.name for c in ir.classes}
