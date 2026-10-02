@@ -719,3 +719,206 @@ def test_a_slot_keeps_one_argument_however_often_it_is_called():
         print(sum(during[:-1]), during[-1], sum(after))
     """))
     assert out == ["0 1 0"]
+
+
+# ---- R-RESULT-KEEP: a result that can point into what produced it keeps it alive --------------------------------------
+
+def test_a_result_holding_a_pointer_keeps_its_producer():
+    """BRepGraph::Topo() returns a view (`BRepGraph::TopoView`, copied out of the `const&`) that holds `BRepGraph*`: with
+    the graph's variable gone, every count read the freed graph (segfault)."""
+    out = _ok(_run("""
+        from nanocct import BRepGraph, BRepPrimAPI
+        g = BRepGraph.BRepGraph()
+        g.Clear()
+        g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(10.0, 20.0, 30.0).Shape())
+        topo = g.Topo()
+        del g
+        collect()
+        print(topo.Vertices().Nb(), topo.Edges().Nb(), topo.Faces().Nb())
+    """))
+    assert out == ["8 12 6"]
+
+
+def test_a_constructor_keeps_an_argument_it_copies_a_pointer_out_of():
+    """TDF_ChildIterator(label) stores the label's `TDF_LabelNode*`, not the label: the iterator's layout and the label's
+    share TDF_LabelNode, so the iterator keeps the label -- and the label its TDF_Data (R-OWNER). It walked freed nodes."""
+    out = _ok(_run("""
+        from nanocct.TDF import TDF_ChildIterator, TDF_Data
+        data = TDF_Data()
+        root = data.Root()
+        root.FindChild(1, True)
+        root.FindChild(2, True)
+        it = TDF_ChildIterator(root, False)
+        del data, root
+        collect()
+        print([label.Tag() for label in it])
+    """))
+    assert out == ["[1, 2]"]
+
+
+def test_a_copy_keeps_the_original():
+    """A copy of an object holding pointers shares them: `Extrema_ExtCC2d(other)` points at the curve the original keeps
+    (R-CTOR-KEEP). The copy keeps the original, so the curve outlives the original's variable."""
+    out = _ok(_run("""
+        from nanocct import Extrema, Geom2d, Geom2dAdaptor, gp
+        def line(y):
+            return Geom2dAdaptor.Geom2dAdaptor_Curve(Geom2d.Geom2d_Line(gp.gp_Pnt2d(0, y), gp.gp_Dir2d(1, 0)), -10.0, 10.0)
+        c1 = line(0.0)
+        ext = Extrema.Extrema_ExtCC2d(c1, line(1.0))
+        copy = Extrema.Extrema_ExtCC2d(ext)
+        del ext
+        collect()
+        copy.Perform(c1, -10.0, 10.0)
+        print(copy.IsDone(), copy.IsParallel())
+    """))
+    assert out == ["True True"]
+
+
+# ---- R-OWNER: a TDF_Label, TDF_Attribute or TDF_Data keeps its TDF_Data and that data's TDocStd_Document ---------------
+
+XCAF = BOX + """
+from nanocct.NCollection import NCollection_Sequence
+from nanocct.TCollection import TCollection_ExtendedString
+from nanocct.TDF import TDF_Label
+from nanocct.TDocStd import TDocStd_Document
+from nanocct.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ShapeTool
+def new_document():
+    return TDocStd_Document(TCollection_ExtendedString("XmlXCAF"))
+"""
+
+
+def test_a_label_keeps_its_data():
+    """`TDF_Data().Root()`: the label points at the root node of a TDF_Data nobody else holds (tests/test_streams.py does
+    exactly this). It read the scribbled node (Tag() 1431655765 = 0x55555555)."""
+    out = _ok(_run("""
+        from nanocct.TDF import TDF_Data
+        label = TDF_Data().Root()
+        collect()
+        print(label.Tag(), label.Depth(), label.IsRoot())
+    """))
+    assert out == ["0 0 True"]
+
+
+def test_a_label_keeps_its_document():
+    """doc.Main() after the document's variable is gone: the label keeps the data and the document, so the way back from
+    the label to its document (TDocStd_Document::Get, through the TDocStd_Owner's raw pointer) stays valid too."""
+    out = _ok(_run("""
+        main = new_document().Main()
+        collect()
+        document = TDocStd_Document.Get_s(main)
+        print(main.Tag(), main.Depth(), type(document).__name__, document.Main().IsEqual(main))
+    """, XCAF))
+    assert out == ["1 1 TDocStd_Document True"]
+
+
+def test_an_attribute_keeps_its_document():
+    """An XCAF tool is an attribute in the document's label tree: `ShapeTool(doc.Main())` and then dropping the document
+    left the tool pointing at freed nodes."""
+    out = _ok(_run("""
+        tool = XCAFDoc_DocumentTool.ShapeTool_s(new_document().Main())
+        collect()
+        label = tool.AddShape(box, False)
+        print(tool.IsTopLevel(label), XCAFDoc_ShapeTool.GetShape_s(label).IsSame(box))
+    """, XCAF))
+    assert out == ["True True"]
+
+
+def test_a_label_from_an_attribute_keeps_the_document():
+    """A label returned by a tool keeps the document, not only the tool: the tool does not own the label tree."""
+    out = _ok(_run("""
+        document = new_document()
+        label = XCAFDoc_DocumentTool.ShapeTool_s(document.Main()).AddShape(box, False)
+        del document
+        collect()
+        print(XCAFDoc_ShapeTool.GetShape_s(label).IsSame(box), TDocStd_Document.Get_s(label).Main().Depth())
+    """, XCAF))
+    assert out == ["True 1"]
+
+
+def test_labels_a_call_writes_into_a_sequence_keep_their_document():
+    """GetFreeShapes(seq) fills a Python sequence with labels of the document: the sequence keeps their owners."""
+    out = _ok(_run("""
+        from nanocct.BRepPrimAPI import BRepPrimAPI_MakeSphere
+        document = new_document()
+        tool = XCAFDoc_DocumentTool.ShapeTool_s(document.Main())
+        tool.AddShape(box, False)
+        tool.AddShape(BRepPrimAPI_MakeSphere(1.0).Shape(), False)
+        labels = NCollection_Sequence[TDF_Label]()
+        tool.GetFreeShapes(labels)
+        del document, tool
+        collect()
+        print(labels.Length(), [XCAFDoc_ShapeTool.GetShape_s(label).ShapeType().name for label in labels])
+    """, XCAF))
+    assert out == ["2 ['TopAbs_SOLID', 'TopAbs_SOLID']"]
+
+
+def test_a_label_a_call_writes_into_keeps_its_document():
+    """FindShape(shape, label) writes into a label Python passed: that label keeps the document."""
+    out = _ok(_run("""
+        document = new_document()
+        tool = XCAFDoc_DocumentTool.ShapeTool_s(document.Main())
+        tool.AddShape(box, False)
+        label = TDF_Label()
+        found = tool.FindShape(box, label, False)
+        del document, tool
+        collect()
+        print(found, XCAFDoc_ShapeTool.GetShape_s(label).IsSame(box))
+    """, XCAF))
+    assert out == ["True True"]
+
+
+def test_a_container_keeps_the_owners_of_what_python_puts_in():
+    """A sequence holds copies of the labels appended to it; it keeps their owners, and a label read back keeps them too."""
+    out = _ok(_run("""
+        labels = NCollection_Sequence[TDF_Label]()
+        labels.Append(new_document().Main())
+        collect()
+        first = labels.Value(1)
+        del labels
+        collect()
+        print(first.Tag(), first.Depth(), TDocStd_Document.Get_s(first).Main().IsEqual(first))
+    """, XCAF))
+    assert out == ["1 1 True"]
+
+
+def test_a_copy_of_a_label_keeps_its_document():
+    out = _ok(_run("""
+        copy = TDF_Label(new_document().Main())
+        collect()
+        print(copy.Tag(), copy.Depth())
+    """, XCAF))
+    assert out == ["1 1"]
+
+
+def test_labels_and_their_tool_do_not_keep_each_other_alive():
+    """`label = tool.NewShape(); tool.SetShape(label, shape)`: the tool keeps the label (R-METHOD-KEEP: the label's node
+    pointer may be stored), so a label keeping the tool back would be a keep-alive cycle no garbage collector sees, and the
+    whole document would leak (nanobind's report at exit). A label keeps the document instead (R-OWNER)."""
+    _ok(_run("""
+        for _ in range(3):
+            document = new_document()
+            tool = XCAFDoc_DocumentTool.ShapeTool_s(document.Main())
+            label = tool.NewShape()
+            tool.SetShape(label, box)
+            del document, tool, label
+            collect()
+    """, XCAF))
+
+
+def test_a_guard_handed_back_to_its_editor_is_released():
+    """`ops.SetTolerance(ops.Mut(id), t)`: the RAII guard keeps its editor (R-RESULT-KEEP), so the editor must not keep the
+    guard in a slot -- the two would keep each other until exit (16 instances leaked) and the guard's markModified() in its
+    destructor would never run. R-CTOR-KEEP's argument-layout test is for constructors only."""
+    out = _ok(_run("""
+        from nanocct import BRepGraph, BRepPrimAPI
+        g = BRepGraph.BRepGraph()
+        g.Clear()
+        g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape())
+        ops = g.Editor().Edges()
+        guard = ops.Mut(BRepGraph.BRepGraph_EdgeId(0))
+        ops.SetTolerance(guard, 0.5)
+        del guard
+        collect()
+        print(g.Topo().Edges().Definition(BRepGraph.BRepGraph_EdgeId(0)).Tolerance)
+    """))
+    assert out == ["0.5"]

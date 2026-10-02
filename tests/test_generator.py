@@ -68,6 +68,8 @@ HEADER = """
 #include <gp_Trsf.hxx>
 #include <bitset>
 #include <mutex>
+#include <TDF_Attribute.hxx>
+#include <TDF_Label.hxx>
 
 class Rules_Fwd;
 
@@ -645,7 +647,7 @@ private:
 };
 
 //! R-CTOR-KEEP: keeps the address of its first argument (GeomBndLib_Surface's myAdaptorRef), copies the second; the
-//! copy constructor copies the pointer and must not keep its source alive.
+//! copy constructor shares the original's pointers (and keeps its address in myPrev), so the copy keeps the original.
 class Rules_Keeper
 {
 public:
@@ -779,6 +781,63 @@ private:
   Rules_KeepPack<gp_Pnt, gp_XYZ> myPack;
 };
 
+//! R-RESULT-KEEP: a value holding a pointer into what produced it -- returned (also as a const reference, which is
+//! copied), written into an argument, yielded by an iterator, copied -- keeps its producers alive; a value without
+//! pointers keeps nothing.
+class Rules_View
+{
+public:
+  Rules_View() = default;
+  double X() const { return myPnt == nullptr ? 0.0 : myPnt->X(); }
+  const gp_Pnt* Pnt() const { return myPnt; }
+
+private:
+  friend class Rules_ViewSource;
+  const gp_Pnt* myPnt = nullptr;
+};
+
+class Rules_ViewSource
+{
+public:
+  Rules_ViewSource() = default;
+  Rules_View View() const { Rules_View aView; aView.myPnt = &myPnt; return aView; }
+  const Rules_View& Cached() const { return myView; }
+  void Fill(Rules_View& theView) const { theView.myPnt = &myPnt; }
+  gp_Pnt Copy() const { return myPnt; }
+  static Rules_View Of(const Rules_ViewSource& theSource, const gp_XYZ& theXYZ) { (void)theXYZ; return theSource.View(); }
+  static Rules_View At(const gp_Pnt& thePnt) { Rules_View aView; aView.myPnt = &thePnt; return aView; }
+  bool More() const { return false; }
+  void Next() {}
+  Rules_View Value() const { return View(); }
+
+private:
+  gp_Pnt     myPnt;
+  Rules_View myView;
+};
+
+//! R-CTOR-KEEP: copies the pointer out of its argument -- the argument's layout and its own share gp_Pnt.
+class Rules_ViewHolder
+{
+public:
+  Rules_ViewHolder(const Rules_View& theView) : myPnt(theView.Pnt()) {}
+
+private:
+  const gp_Pnt* myPnt;
+};
+
+//! R-OWNER: an OCAF label, a container of labels and an attribute keep their TDF_Data and TDocStd_Document instead.
+class Rules_Ocaf
+{
+public:
+  Rules_Ocaf() = default;
+  TDF_Label Label() const { return myLabel; }
+  void Labels(NCollection_Sequence<TDF_Label>& theLabels) const { theLabels.Append(myLabel); }
+  opencascade::handle<TDF_Attribute> Attribute() const { return nullptr; }
+
+private:
+  TDF_Label myLabel;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -850,7 +909,8 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_PBin", "Rules_PQuad", "Rules_PTree<double, 3, Rules_PBin>", "Rules_PBase<double, 3>",
                                "Rules_PTree<int, 1, Rules_PQuad>", "Rules_Nullable", "Rules_NullableMut", "Rules_NullableBool", "Rules_NoCopyInner", "Rules_NoCopyHolder", "Rules_Keeper",
                                "Rules_KeepBase", "Rules_KeepViaBase", "Rules_KeepViaTypedef", "Rules_KeepViaMember", "Rules_KeepVoid",
-                               "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepMethods", "Rules_KeepViaPack"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_KeepOuterT<gp_Pnt>", "Rules_KeepHiddenT<gp_Pnt>", "Rules_KeepMethods", "Rules_KeepViaPack",
+                               "Rules_View", "Rules_ViewSource", "Rules_ViewHolder", "Rules_Ocaf"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -907,13 +967,13 @@ def test_ir_and_emitter_bytes_buffer_from_override(monkeypatch, tmp_path_factory
 
 def test_ir_and_emitter_keep_alive_for_a_kept_constructor_argument(tmp_path_factory):
     """R-CTOR-KEEP: a constructor parameter by reference or pointer whose type the class holds in a pointer or reference
-    member gets keep_alive; one that is copied does not, and a copy constructor is never one. A fresh parse: emit()
-    changes the IR it is given, and the module-scoped one is shared."""
+    member gets keep_alive; one that is copied does not. A copy constructor of a class holding pointers keeps the original,
+    whose pointers the copy shares. A fresh parse: emit() changes the IR it is given, and the module-scoped one is shared."""
     ir = rules_ir_of(tmp_path_factory, "occt_keep")
     keeper = next(c for c in ir.classes if c.name == "Rules_Keeper")
     kept = {tuple(p.type for p in k.params): [p.kept for p in k.params] for k in keeper.ctors}
     assert kept == {("const gp_XYZ &", "const gp_Pnt &"): [True, False],
-                    ("const Rules_Keeper &",): [False],                          # the copy constructor
+                    ("const Rules_Keeper &",): [True],                           # the copy constructor: shares myKept
                     ("const Rules_Keeper &", "const gp_Pnt &"): [True, False]}   # not a copy constructor: myPrev keeps it
     em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
@@ -944,6 +1004,51 @@ def test_kept_method_arguments_get_a_slot(tmp_path_factory):
     slots = [int(n) for n in re.findall(r"keep_slot<nanocct_slots, \d+, (\d+)>", cpp)]
     assert sorted(slots) == list(range(len(slots)))                                 # one slot per (declaration, parameter)
     assert "namespace { struct nanocct_slots {}; }" in cpp
+
+
+def test_views_keep_their_producers_and_ocaf_types_their_owners(tmp_path_factory):
+    """R-RESULT-KEEP: a result, an argument written into or an iterator's element whose layout holds pointers keeps self
+    (a method) and the arguments it can point into (a static method too); a copy keeps the original, and a constructor an
+    argument whose own pointers it can copy. R-OWNER: an OCAF type keeps its owners instead, through the same policy,
+    checked against nanocct::owners at compile time (`true`), with nanocct_ocaf.h included."""
+    ir = rules_ir_of(tmp_path_factory, "occt_views")
+    source = next(c for c in ir.classes if c.name == "Rules_ViewSource")
+    flags = {m.name: (m.result_view, m.result_keeps, m.result_owned) for m in source.methods if m.name not in ("More", "Next")}
+    assert flags == {"View": (True, (), False), "Cached": (True, (), False), "Fill": (False, (), False),
+                     "Copy": (False, (), False), "Of": (True, (0,), False), "At": (True, (0,), False), "Value": (True, (), False)}
+    fill = _method(ir, "Rules_ViewSource", "Fill")
+    assert (fill.params[0].out_view, fill.params[0].out_keeps) == (True, ())
+    holder = next(c for c in ir.classes if c.name == "Rules_ViewHolder")
+    assert [p.kept for p in holder.ctors[0].params] == [True]
+    ocaf = {m.name: (m.result_view, m.result_owned) for m in next(c for c in ir.classes if c.name == "Rules_Ocaf").methods}
+    assert ocaf == {"Label": (False, True), "Labels": (False, False), "Attribute": (False, True)}
+    assert _method(ir, "Rules_Ocaf", "Labels").params[0].owned is True
+    em = Emitter(ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules",
+                                "TDF_Label": "TDF", "TDF_Attribute": "TDF"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules", "TDF": "TKLCAF"}, {}, ["TKernel", "TKMath", "TKLCAF", "TKRules"], {})
+    cpp = em.emit()
+
+    def bindings(cls: str) -> dict[str, str]:
+        block = cpp[cpp.index(f'nb::borrow<nb::class_<{cls}>>(m.attr("{cls}"))\n'):]
+        block = block[:re.search(r"\n    (nb::borrow|nanocct_|\})", block).start()]
+        chunks = re.split(r'(?=\.def(?:_static)?\(")', block)
+        return {re.match(r'\.def(?:_static)?\("(\w+)"', c).group(1): c for c in chunks if re.match(r'\.def(?:_static)?\("', c)}
+
+    lines = bindings("Rules_ViewSource")
+    assert "nb::call_policy<nanocct::keep_view<Rules_View, false, 0, -1, 1>>()" in lines["View"]
+    assert "nb::call_policy<nanocct::keep_view<const Rules_View &, false, 0, -1, 1>>()" in lines["Cached"]
+    assert "nb::call_policy<nanocct::keep_view<Rules_View &, false, 2, -1, 1>>()" in lines["Fill"]   # the argument keeps self
+    assert "nb::call_policy<nanocct::keep_view<Rules_View, false, 0, -1, 1>>()" in lines["Of_s"]     # the source, not the gp_XYZ
+    assert "nb::call_policy<nanocct::keep_view<Rules_View, false, 0, -1, 1>>()" in lines["At_s"]
+    assert "keep_view" not in lines["Copy"]
+    assert "nanocct_def_iter<Rules_ViewSource, true>(" in cpp
+    assert "nanocct_implicit_copy_ctor<Rules_View, true>(" in cpp
+    assert "nb::init<const Rules_View &>(), nb::keep_alive<1, 2>()" in cpp
+    lines = bindings("Rules_Ocaf")
+    assert "nb::call_policy<nanocct::keep_view<TDF_Label, true, 0, -1>>()" in lines["Label"]
+    assert "nb::call_policy<nanocct::keep_view<NCollection_Sequence<TDF_Label> &, true, 2, -1>>()" in lines["Labels"]
+    assert re.search(r"nb::call_policy<nanocct::keep_view<(occ|opencascade)::handle<TDF_Attribute>, true, 0, -1>>\(\)", lines["Attribute"])
+    assert '#include "nanocct_ocaf.h"' in cpp
 
 
 def test_kept_constructor_arguments_follow_the_whole_layout(tmp_path_factory):
@@ -1073,7 +1178,7 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Value::Scale(const float): same Python signature as Scale(const double), registered before it -> not bound (unreachable)" in em.report
     assert cpp.index('(Rules_Value::*)(const int) const>(&Rules_Value::Width)') < cpp.index('(Rules_Value::*)(const size_t) const>(&Rules_Value::Width)')
     # R-ITER: More/Next/Value -> __iter__/__next__ through nanocct_def_iter; Rules_Value (no More) gets none
-    assert cpp.count("nanocct_def_iter<") == 2 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor
+    assert cpp.count("nanocct_def_iter<") == 3 and "nanocct_def_iter<Rules_Iter>" in cpp   # + Rules_TVec<unsigned long>::Cursor, Rules_ViewSource
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
@@ -1917,9 +2022,9 @@ def test_extra_link_libraries_from_the_emitted_includes(rules_ir):
     assert "Rules.hxx" in em.includes
     assert "gp_Pnt.hxx" in em.includes                       # a parameter type's header, not one of the package's own
     extra = sorted({tree.toolkit_of_header[h] for h in em.includes if h in tree.toolkit_of_header} - tree.link_closure("TKBRep"))
-    assert extra == []                                       # gp_Pnt is TKMath, already in TKBRep's closure
+    assert extra == ["TKLCAF"]           # gp_Pnt is TKMath, already in TKBRep's closure; R-OWNER (Rules_Ocaf) names TKLCAF's types
     assert sorted({tree.toolkit_of_header[h] for h in em.includes if h in tree.toolkit_of_header}
-                  - tree.link_closure("TKernel")) == ["TKMath"]   # from TKernel's point of view gp_Pnt would be an extra library
+                  - tree.link_closure("TKernel")) == ["TKLCAF", "TKMath"]   # from TKernel's point of view gp_Pnt would be an extra library
 
 
 def test_generated_toolkits_cmake_declares_the_extra_link_libraries():

@@ -107,6 +107,7 @@ class Emitter:
         self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self.slots = 0                         # R-METHOD-KEEP: the slots of this file (one per kept method parameter)
+        self.needs_ocaf = False               # R-OWNER: this file applies nanocct::owners to an OCAF type (nanocct_ocaf.h)
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
         # NCollection_ForwardRangeIterator/Sentinel pair -- is not value equality and must not land here.
@@ -319,6 +320,52 @@ class Emitter:
                 self.slots += 1
         return out
 
+    @staticmethod
+    def _positions(m: Method | Function, method: bool) -> dict[int, int]:
+        """Python position of each parameter the signature shows (1 is self for a method), as _keep_slots counts them."""
+        out, position = {}, 1 if method else 0
+        for i, p in enumerate(m.params):
+            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+                continue
+            position += 1
+            out[i] = position
+        return out
+
+    # Design.md 6 R-RESULT-KEEP, R-OWNER
+    def _keep_views(self, m: Method | Function, method: bool) -> str:
+        """nanocct::keep_view call policies: a result, an argument the call writes into, or a returned out-handle of a class
+        that holds pointers keeps the objects it may point into (self for a method, and the parameters the parser found);
+        one whose OCAF owners are known keeps those instead. method: a non-static member function (self is argument 1)."""
+        positions = self._positions(m, method)
+        outs = [p for p in m.params if p.is_out]
+        n_results = (0 if m.result == "void" else 1) + len(outs) + sum(1 for p in m.params if p.stream == StreamKind.OUT)
+        out = ""
+
+        def policy(cpp_type: str, owned: bool, nurse: int, elem: int, patients: list[int]) -> str:
+            if owned:
+                self.needs_ocaf = True
+            return (f", nb::call_policy<nanocct::keep_view<{cpp_type}, {'true' if owned else 'false'}, {nurse}, {elem}"
+                    f"{''.join(f', {k}' for k in patients)}>>()")
+
+        # a `const T&` of a class whose copy drops state comes back by reference (R-RESULT, [not_value_copy]): it may be an object
+        # Python already has, which must not collect producers -- it could be one of them (keep_view decides the same at
+        # compile time for a class that cannot be copied at all)
+        by_reference = m.result.rstrip().endswith("&") and _names_not_value_copy(m.result)
+        if m.result != "void" and (m.result_owned or m.result_view and not by_reference):
+            patients = [] if m.result_owned else ([1] if method else []) + [positions[i] for i in m.result_keeps if i in positions]
+            if m.result_owned or len(patients) > 0:
+                out += policy(m.result, m.result_owned, 0, 0 if n_results > 1 else -1, patients)
+        for i, p in enumerate(m.params):
+            if i in positions and (p.out_view or (p.owned and not p.is_out)):
+                patients = [] if p.owned else [k for k in ([1] if method else []) + [positions[j] for j in p.out_keeps if j in positions]
+                                                if k != positions[i]]
+                if p.owned or len(patients) > 0:
+                    out += policy(p.type, p.owned, positions[i], -1, patients)
+            elif p.is_out and p.owned:
+                elem = (0 if m.result == "void" else 1) + outs.index(p)
+                out += policy(p.type, True, 0, elem if n_results > 1 else -1, [])
+        return out
+
     def _sig(self, params: list[Param]) -> str:
         return ", ".join(f"{p.type}[{p.array_len}]" if p.array_len > 0 else p.type for p in params)
 
@@ -449,14 +496,14 @@ class Emitter:
             if m.result_kind == ResultKind.REF_TRANSIENT and not m.is_static:
                 # R-RESULT: the member lives as long as its owner -- keep_alive<0, 1>, except when the result is self (8.18)
                 ptr_policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"
-            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._extras(doc, m.params, True, m.is_operator)})'
+            return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._keep_views(m, not m.is_static)}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
         if m.is_static:
             fn = f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})"
-            return f'.def_static("{py}", {fn}{policy}{self._extras(doc, m.params, False, False)})'
+            return f'.def_static("{py}", {fn}{policy}{self._keep_views(m, False)}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
         fn = f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})"
-        return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._extras(doc, m.params, False, m.is_operator)})'
+        return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
 
     # Design.md 6 R-REF-PRIMITIVE
     def _ref_primitive(self, cls: Class, m: Method, py: str) -> str:
@@ -630,6 +677,8 @@ class Emitter:
                 self.report.append(f"{key}: template argument {pointers[0]} is a raw pointer -> instantiation skipped")
                 self.templates[key] = {"toolkit": "", "package": "", "name": "", "by": self.ir.name, "skipped": True}
                 return
+            if any(a in self.ir.owned_args for a in args):
+                self.needs_ocaf = True                      # R-OWNER: the binder keeps the OCAF owners of these elements
             home = "NCollection"                            # every instantiation lives in nanocct.NCollection
             if home not in generated:
                 home = self.ir.name
@@ -875,9 +924,9 @@ class Emitter:
                 as_method = Method(name=qualified, params=fn.params, result=fn.result, result_kind=fn.result_kind,
                                    result_class=fn.result_class, is_static=False, is_const=False, is_noexcept=fn.is_noexcept, doc=doc)
                 ptr_policy = policy if fn.result_kind == ResultKind.PTR_CLASS else ""
-                module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{ptr_policy}{self._extras(doc, fn.params, True, False)});')
+                module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{ptr_policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, True, False)});')
                 continue
-            module_fns.append(f'    {self._module(fn.scope)}.def("{py}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._extras(doc, fn.params, False, False)});')
+            module_fns.append(f'    {self._module(fn.scope)}.def("{py}", static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified}){policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, False, False)});')
         return free_ops, module_fns
 
     def _declare_class(self, c: Class, declare: list[str], wrappers: list[str]) -> bool:
@@ -1029,7 +1078,11 @@ class Emitter:
             get = next(m for m in c.methods if m.name == getter and len(m.params) == 0 and not m.is_static and m.skip_reason is None)
             value = (f"opencascade::handle<{get.result_class}>(new {get.result_class}(self.{getter}()))"   # R-RESULT: never a nanobind-owned Transient
                      if get.result_kind == ResultKind.VALUE_TRANSIENT else f"self.{getter}()")
-            define.append(f'    nanocct_def_iter<{c.bound_type}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return {value}; }});')
+            # R-RESULT-KEEP: an element of a class holding pointers keeps the iterated object; R-OWNER: an OCAF one its owners
+            view = ", true" if get.result_view else ""
+            if get.result_owned:
+                self.needs_ocaf = True
+            define.append(f'    nanocct_def_iter<{c.bound_type}{view}>({cls_expr_of(c)}, []({c.bound_type} &self) {{ return {value}; }});')
         for conv in c.conversions:          # operator bool/int/double() -> Python dunder; class targets: see _conversions
             dunder = {ConversionKind.BOOL: "__bool__", ConversionKind.INT: "__int__", ConversionKind.FLOAT: "__float__"}.get(conv.kind)
             if dunder is not None:
@@ -1091,7 +1144,8 @@ class Emitter:
         # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
         # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
         if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-            define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}>({cls_expr});')
+            # R-CTOR-KEEP: the copy of a class holding pointers shares them, so it keeps the original alive
+            define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
         for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
             self._note_types(f.type)
             dd = _cpp_doc(f.doc)
@@ -1223,6 +1277,10 @@ class Emitter:
             includes.insert(0, '#include "nanocct_ncollection.h"')
         if self.needs_views:
             includes.insert(0, '#include "nanocct_views.h"')
+        if self.needs_ocaf:
+            # R-OWNER: the OCAF owners of TDF_Label/TDF_Data/TDF_Attribute (and what they are named in, for R-LINK)
+            includes.insert(0, '#include "nanocct_ocaf.h"')
+            self._note_types("TDF_Attribute TDF_Data TDF_Label TDocStd_Document TDocStd_Owner")
         extra = [f"{ident}.hxx" for ident in sorted(self._idents)
                  if f"{ident}.hxx" not in ir.headers and (self.include_dir / f"{ident}.hxx").exists()]
         if self.prelude_check is not None and len(extra) > 0:

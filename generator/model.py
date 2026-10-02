@@ -55,6 +55,9 @@ class Param:
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
     bytes_of: str = ""      # R-BYTES: this parameter is that buffer's length and is dropped; the value is the bytes parameter's name
+    out_view: bool = False  # R-RESULT-KEEP: a non-const reference/pointer to a class holding pointers, which the call writes into:
+    out_keeps: tuple[int, ...] = ()  # ... it keeps self (a method) and these parameters (indices) alive
+    owned: bool = False     # R-OWNER: an argument written into, or a returned out-handle, of a type whose OCAF owners are known
 
 
 @dataclass
@@ -78,6 +81,9 @@ class Method:
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
     via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
     force_lambda: bool = False        # bound through a lambda even without out-parameters (R-PTR-REF: a T*& result returned as T*)
+    result_view: bool = False         # R-RESULT-KEEP: a class by value/const& whose layout holds pointers: keeps self and result_keeps
+    result_keeps: tuple[int, ...] = ()  # ... the parameters (indices) whose objects it may point into
+    result_owned: bool = False        # R-OWNER: the result's type has known OCAF owners (TDF_Label, TDF_Attribute, ...): kept instead
 
 
 @dataclass
@@ -148,6 +154,7 @@ class Class:
     not_constructible_reason: str = ""   # what to report; "" means the operator new case
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
+    view: bool = False                # R-CTOR-KEEP: its layout holds pointers, so a copy (sharing them) keeps the original alive
     dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
                                       # (implicit or defined in the header). R-UNDEFINED checks it: nanobind instantiates
                                       # wrap_destruct<T> for every bound class, so an unexported ~T() is a link error
@@ -186,6 +193,9 @@ class Function:
     mangled: str = ""                 # linker symbol; R-UNDEFINED compares it with nm's list (FUN_scanloi in TopOpeBRepDS)
     result_class_name: str = ""       # canonical class/enum behind the result, as for methods (R-UNBOUND-TYPE)
     result_instance_key: str = ""     # as for methods
+    result_view: bool = False         # R-RESULT-KEEP, R-OWNER: as for methods
+    result_keeps: tuple[int, ...] = ()
+    result_owned: bool = False
 
 
 @dataclass
@@ -229,4 +239,5 @@ class PackageIR:
     hashable: set[str] = field(default_factory=set)   # classes with a std::hash<T> specialisation in this package's headers -> __hash__
     hashable_templates: set[str] = field(default_factory=set)   # class templates with a partial std::hash<Tmpl<...>> specialisation
     instances: dict[str, TemplateInstance] = field(default_factory=dict)  # NCollection instances used in bound signatures
+    owned_args: set[str] = field(default_factory=set)   # R-OWNER: instance arguments with known OCAF owners (TDF_Label, handle<TDF_Attribute>)
     report: list[str] = field(default_factory=list)

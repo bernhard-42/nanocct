@@ -141,7 +141,10 @@ def test_report_is_nine_lines():
     # 7 until 2026-09-23: rapidjson::GenericValue appears only as a reference parameter, so the skipped namespace was
     # not reported for it -- the method bound with an unregistered type instead (6c, R-UNSUPPORTED)
     # 9 since 2026-09-30: FormatParseError(rapidjson::ParseErrorCode) is not bound, no Python value of the type exists (R-UNBOUND-TYPE)
-    assert len(lines) == 9
+    # 14 since 2026-10-02: RWGltf_GltfMaterialMap keeps the writer it is handed (R-METHOD-KEEP), so the writer, written into,
+    # does not keep the map back -- that would be a keep-alive cycle (R-RESULT-KEEP)
+    assert len(lines) == 14
+    assert sum(line.startswith("lifetime") and "RWGltf_GltfMaterialMap::" in line and "theWriter" in line for line in lines) == 5
     assert sum("rapidjson" in line and "namespace skipped" in line for line in lines) == 4
     assert sum("R-TEMPLATE-BASE" in line for line in lines) == 2   # the two rapidjson bases, dropped
     # the two stream lines are objects that *hold* a stream beyond the call, as for BinTools (2d)

@@ -79,5 +79,6 @@ def test_relocation_tables_derive_from_the_containers():
 
 def test_report_has_only_the_expected_omissions():
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
-    assert {line.split("\t")[0] for line in lines} == {"overload-collision", "raw-pointer"}
+    # lifetime: an LDOM_Element both kept by the array/persistent and written into -- no keep-alive cycle (R-RESULT-KEEP)
+    assert {line.split("\t")[0] for line in lines} == {"lifetime", "overload-collision", "raw-pointer"}
     assert all("XmlObjMgt" in line for line in lines)        # GetInteger/GetReal(const char*&): the drivers' string scanners

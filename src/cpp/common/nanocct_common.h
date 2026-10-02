@@ -147,6 +147,131 @@ inline nb::object nanocct_new_exception(nb::handle m, const char *name, const ch
     return type;
 }
 
+// ---------------------------------------------------------------------------------------------
+// R-OWNER (Design.md 6): the owner of an OCAF object, known by its type. A TDF_Label and a TDF_Attribute point into the
+// TDF_LabelNode tree a TDF_Data owns; the root of a document's data carries a TDocStd_Owner whose raw pointer is the
+// TDocStd_Document. owners<T>::keep(nurse, value) keeps the TDF_Data and the TDocStd_Document of `value` alive as long as
+// the Python object `nurse` -- for a handle, of its object; for a container, of every element. The definitions need the
+// OCAF headers: ocaf_owners is complete only in nanocct_ocaf.h, which the generator includes where the rule applies, so a
+// file that applies it without that header does not compile. Every other type: active = false, no code.
+class TDF_Label;
+class TDF_Data;
+class TDF_Attribute;
+template <class T> class NCollection_Array1;
+template <class T> class NCollection_HArray1;
+template <class T> class NCollection_Sequence;
+template <class T> class NCollection_HSequence;
+template <class T> class NCollection_List;
+template <class K, class H> class NCollection_Map;
+template <class K, class H> class NCollection_IndexedMap;
+template <class K, class V, class H> class NCollection_DataMap;
+template <class K, class V, class H> class NCollection_IndexedDataMap;
+template <class K1, class K2, class H1, class H2> class NCollection_DoubleMap;
+
+namespace nanocct {
+struct ocaf_owners;
+
+template <typename T, typename = void> struct owners {
+    static constexpr bool active = false;
+    static void keep(PyObject *, const T &) {}
+};
+template <> struct owners<TDF_Label> {
+    static constexpr bool active = true;
+    template <typename O = ocaf_owners> static void keep(PyObject *nurse, const TDF_Label &v) { O::label(nurse, v); }
+};
+template <typename T>
+struct owners<T, std::enable_if_t<std::disjunction_v<std::is_same<T, TDF_Data>, std::is_base_of<TDF_Attribute, T>>>> {
+    static constexpr bool active = true;
+    template <typename O = ocaf_owners> static void keep(PyObject *nurse, const T &v) { O::transient(nurse, v); }
+};
+template <typename T> struct owners<opencascade::handle<T>> {
+    static constexpr bool active = owners<T>::active;
+    static void keep(PyObject *nurse, const opencascade::handle<T> &h) {
+        if constexpr (active)
+            if (!h.IsNull())
+                owners<T>::keep(nurse, *h);
+    }
+};
+template <typename E> struct owners<NCollection_Array1<E>> {
+    static constexpr bool active = owners<E>::active;
+    static void keep(PyObject *nurse, const NCollection_Array1<E> &c) {
+        if constexpr (active)
+            for (int i = c.Lower(); i <= c.Upper(); ++i)
+                owners<E>::keep(nurse, c.Value(i));
+    }
+};
+template <typename E> struct owners<NCollection_HArray1<E>> : owners<NCollection_Array1<E>> {};
+template <typename E> struct owners<NCollection_Sequence<E>> {
+    static constexpr bool active = owners<E>::active;
+    static void keep(PyObject *nurse, const NCollection_Sequence<E> &c) {
+        if constexpr (active)
+            for (int i = c.Lower(); i <= c.Upper(); ++i)
+                owners<E>::keep(nurse, c.Value(i));
+    }
+};
+template <typename E> struct owners<NCollection_HSequence<E>> : owners<NCollection_Sequence<E>> {};
+template <typename E> struct owners<NCollection_List<E>> {
+    static constexpr bool active = owners<E>::active;
+    static void keep(PyObject *nurse, const NCollection_List<E> &c) {
+        if constexpr (active)
+            for (typename NCollection_List<E>::Iterator it(c); it.More(); it.Next())
+                owners<E>::keep(nurse, it.Value());
+    }
+};
+template <typename K, typename H> struct owners<NCollection_Map<K, H>> {
+    static constexpr bool active = owners<K>::active;
+    static void keep(PyObject *nurse, const NCollection_Map<K, H> &c) {
+        if constexpr (active)
+            for (typename NCollection_Map<K, H>::Iterator it(c); it.More(); it.Next())
+                owners<K>::keep(nurse, it.Key());
+    }
+};
+template <typename K, typename H> struct owners<NCollection_IndexedMap<K, H>> {
+    static constexpr bool active = owners<K>::active;
+    static void keep(PyObject *nurse, const NCollection_IndexedMap<K, H> &c) {
+        if constexpr (active)
+            for (int i = 1; i <= c.Extent(); ++i)
+                owners<K>::keep(nurse, c.FindKey(i));
+    }
+};
+template <typename K, typename V, typename H> struct owners<NCollection_DataMap<K, V, H>> {
+    static constexpr bool active = owners<K>::active || owners<V>::active;
+    static void keep(PyObject *nurse, const NCollection_DataMap<K, V, H> &c) {
+        if constexpr (active)
+            for (typename NCollection_DataMap<K, V, H>::Iterator it(c); it.More(); it.Next()) {
+                owners<K>::keep(nurse, it.Key());
+                owners<V>::keep(nurse, it.Value());
+            }
+    }
+};
+template <typename K, typename V, typename H> struct owners<NCollection_IndexedDataMap<K, V, H>> {
+    static constexpr bool active = owners<K>::active || owners<V>::active;
+    static void keep(PyObject *nurse, const NCollection_IndexedDataMap<K, V, H> &c) {
+        if constexpr (active)
+            for (int i = 1; i <= c.Extent(); ++i) {
+                owners<K>::keep(nurse, c.FindKey(i));
+                owners<V>::keep(nurse, c.FindFromIndex(i));
+            }
+    }
+};
+template <typename K1, typename K2, typename H1, typename H2> struct owners<NCollection_DoubleMap<K1, K2, H1, H2>> {
+    static constexpr bool active = owners<K1>::active || owners<K2>::active;
+    static void keep(PyObject *nurse, const NCollection_DoubleMap<K1, K2, H1, H2> &c) {
+        if constexpr (active)
+            for (typename NCollection_DoubleMap<K1, K2, H1, H2>::Iterator it(c); it.More(); it.Next()) {
+                owners<K1>::keep(nurse, it.Key1());
+                owners<K2>::keep(nurse, it.Key2());
+            }
+    }
+};
+
+// the type whose owners a result or argument of C++ type R has: references, pointers and handles looked through
+template <typename T> struct owner_target { using type = T; };
+template <typename T> struct owner_target<opencascade::handle<T>> { using type = T; };
+template <typename R>
+using owner_target_t = typename owner_target<std::remove_cv_t<std::remove_pointer_t<std::remove_cv_t<std::remove_reference_t<R>>>>>::type;
+} // namespace nanocct
+
 // R-ITER (Design.md 2c): a class with More()/Next() and a parameterless Value() or Current() is its own Python
 // iterator, like a file object: __iter__ returns self, __next__ yields the current element and advances. The element
 // is copied out before Next() (a const reference from Value() would dangle afterwards).
@@ -161,20 +286,40 @@ template <typename T, typename F> void nanocct_if_concrete(nb::class_<T> cls, F 
 // nb::stop_iteration, a C++ exception that cost ~8 us per loop however short (2026-09-27: a TopExp_Explorer over
 // 6 faces took 8.5 us against 0.47 us for a More()/Next() loop). make_iterator ends without one. The cursor
 // advances the object itself, so it is exhausted afterwards, like a file; the element is copied out before Next().
-template <typename T, typename Get> struct nanocct_iter_cursor {
+// View (R-RESULT-KEEP): the element is a class that holds pointers, so each one keeps the iterated object alive (a
+// TDF_Label from TDF_ChildIterator); an element with OCAF owners keeps those too (R-OWNER).
+template <typename T, bool View, typename Get> struct nanocct_iter_cursor {
     T *obj;                                   // nullptr: the end sentinel
     Get get;
+    PyObject *owner;                          // View: the iterated object (borrowed; the iterator keeps it alive)
     bool done() const { return obj == nullptr || !obj->More(); }
     bool operator==(const nanocct_iter_cursor &o) const { return done() == o.done(); }
     bool operator!=(const nanocct_iter_cursor &o) const { return !(*this == o); }
     nanocct_iter_cursor &operator++() { obj->Next(); return *this; }
-    auto operator*() const { return get(*obj); }    // by value: Current() may be a reference that Next() changes
+    auto operator*() const {                  // by value: Current() may be a reference that Next() changes
+        using E = std::remove_cv_t<std::remove_reference_t<decltype(get(*obj))>>;
+        if constexpr (View || nanocct::owners<E>::active) {
+            E value = get(*obj);
+            nb::object element = nb::cast(value, nb::rv_policy::copy);
+            if constexpr (View)
+                nb::keep_alive_obj(element, owner);
+            if constexpr (nanocct::owners<E>::active)
+                nanocct::owners<E>::keep(element.ptr(), value);
+            return nb::typed<nb::object, E>(std::move(element));
+        } else {
+            return get(*obj);
+        }
+    }
 };
 
-template <typename T, typename Get> void nanocct_def_iter(nb::class_<T> cls, Get get) {
+template <typename T, bool View = false, typename Get> void nanocct_def_iter(nb::class_<T> cls, Get get) {
     cls.def("__iter__", [get](T &self) {
-        using Cursor = nanocct_iter_cursor<T, Get>;
-        return nb::make_iterator<nb::rv_policy::move>(nb::type<T>(), "iterator", Cursor{&self, get}, Cursor{nullptr, get});
+        using Cursor = nanocct_iter_cursor<T, View, Get>;
+        nb::object owner;
+        if constexpr (View)
+            owner = nb::find(self);
+        return nb::make_iterator<nb::rv_policy::move>(nb::type<T>(), "iterator", Cursor{&self, get, owner.ptr()},
+                                                      Cursor{nullptr, get, nullptr});
     }, nb::keep_alive<0, 1>(),
     "Python addition: iterate with More()/Next(), yielding Value() (or Current()); the iterator advances the object "
     "itself, so it is exhausted afterwards.");
@@ -193,10 +338,16 @@ template <typename T> void nanocct_implicit_default_ctor(nb::class_<T> cls) {
 
 // The implicit copy constructor (none declared by the class): bound when it exists (deleted for classes with a
 // reference or non-copyable member). Sub-class arguments convert implicitly, as in C++ (TopoDS_Shape(aVertex)).
-template <typename T> void nanocct_implicit_copy_ctor(nb::class_<T> cls) {
+// View (R-CTOR-KEEP): the class holds pointers, which the copy shares, so the copy keeps the original alive
+// (keep_alive<0, 2> through nb::new_, as for R-CTOR-KEEP).
+template <typename T, bool View = false> void nanocct_implicit_copy_ctor(nb::class_<T> cls) {
     if constexpr (std::is_copy_constructible_v<T>) {
-        if constexpr (std::is_base_of_v<Standard_Transient, T>)
+        if constexpr (std::is_base_of_v<Standard_Transient, T> && View)
+            cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"), nb::keep_alive<0, 2>());
+        else if constexpr (std::is_base_of_v<Standard_Transient, T>)
             cls.def(nb::new_([](const T &other) { return opencascade::handle<T>(new T(other)); }), nb::arg("theOther"));
+        else if constexpr (View)
+            cls.def(nb::init<const T &>(), nb::arg("theOther"), nb::keep_alive<1, 2>());
         else
             cls.def(nb::init<const T &>(), nb::arg("theOther"));
     }
@@ -360,6 +511,32 @@ template <typename Tag, size_t Patient, size_t Slot> struct keep_slot {
         PyObject *argument = args[Patient - 1];          // the converted object when an implicit conversion took place
         Py_INCREF(argument);
         PyList_SetItem(list, static_cast<Py_ssize_t>(Slot), argument);   // steals it, releases what the slot held
+    }
+};
+// R-RESULT-KEEP / R-OWNER (Design.md 6): a result, or an argument the call writes into, of a class that holds pointers
+// keeps alive what it may point into. R: its C++ type; Owned: the generator found that R's OCAF owners are known -- checked
+// against nanocct::owners, so the two cannot disagree silently; Nurse: 0 = the result, k = argument k (1 is self); Elem:
+// the result's position in a returned tuple (out-parameters), -1 if none; Patients: the arguments it may point into.
+// keep_alive_obj on a fresh result keeps one call's arguments; an argument written into keeps them for good, nanobind
+// skipping duplicates. A nurse that is also a patient (a method returning *this) keeps nothing of itself. A `const T&` of
+// a class that cannot be copied comes back by reference (cref_policy) and may be an object Python already has -- one of the
+// patients, even (VrmlData_Node::Scene() of the scene the node keeps): it keeps no producers, which could make a cycle.
+template <typename R, bool Owned, size_t Nurse, int Elem, size_t... Patients> struct keep_view {
+    using T = owner_target_t<R>;
+    static_assert(owners<T>::active == Owned, "R-OWNER: the generator and nanocct::owners disagree about this type");
+    static constexpr bool keeps_producers = Nurse != 0 || !std::is_lvalue_reference_v<R>
+                                            || std::is_copy_constructible_v<std::remove_cv_t<std::remove_reference_t<R>>>;
+    static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
+    static void postcall(PyObject **args, size_t, nb::handle ret) {
+        PyObject *nurse = Nurse == 0 ? ret.ptr() : args[Nurse - 1];
+        if constexpr (Elem >= 0)
+            nurse = PyTuple_GetItem(nurse, Elem);       // borrowed
+        if (nurse == nullptr || nurse == Py_None)
+            return;
+        if constexpr (keeps_producers)
+            ((args[Patients - 1] != nurse ? nb::keep_alive_obj(nurse, args[Patients - 1]) : void()), ...);
+        if constexpr (Owned)
+            owners<T>::keep(nurse, nb::cast<const T &>(nb::handle(nurse)));
     }
 };
 // R-RESULT: a `const T&` result is copied (nanobind's default) -- unless T cannot be copied (a deleted copy constructor

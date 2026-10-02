@@ -1514,11 +1514,166 @@ class _Held:
         types, anything = (self.mutable_types, self.mutable_anything) if const_method else (self.types, self.anything)
         return anything or key in types or any(a in types for a in ancestors)
 
+    def shares_pointees(self, other: "_Held", const_method: bool) -> bool:
+        """Can this object hold a pointer it copied out of an argument of layout `other` -- TDF_ChildIterator(label) stores
+        the label's TDF_LabelNode*? Both hold pointers to a common class, or one side holds a `void *` and the other any
+        pointer. A const method only into mutable members."""
+        types, anything = (self.mutable_types, self.mutable_anything) if const_method else (self.types, self.anything)
+        if anything:
+            return len(other.types) > 0 or other.anything
+        if other.anything:
+            return len(types) > 0
+        return len(types & other.types) > 0
 
-# R-CTOR-KEEP state of the package being parsed (reset per package): the held state of each class, shared by its
-# constructors, and the constructor parameters still undecided because part of the layout waits for the probe
+    def holds_pointers(self) -> bool:
+        return len(self.types) > 0 or self.anything
+
+
+# R-CTOR-KEEP / R-METHOD-KEEP / R-RESULT-KEEP state of the package being parsed (reset per package): the held state of each
+# class, shared by its constructors and methods; the parameters still undecided because part of a layout waits for the probe;
+# the layout of every class named in a signature; the results and in-place outputs to decide once the layouts are complete
 _held_by_class: dict[tuple[str, int], _Held] = {}    # (class name, hash of the walked definition): a template is walked per instantiation
-_held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...], bool]]]] = []   # (class, held, (param, key, ancestors, const method))
+_held_open: list[tuple[Class, _Held, list[tuple[Param, str, tuple[str, ...], bool, "_Held | None"]]]] = []   # (class, held, (param, key, ancestors, const method, the argument's own layout))
+_layout_of_type: dict[str, _Held] = {}               # canonical class spelling (or a substituted spelling) -> its layout
+_views_open: list[tuple[str, "Method | Function", Param | None, str, _Held, list[tuple[int, str, tuple[str, ...], "_Held | None"]], "Class | None"]] = []
+#   (qualified name, method or function, the in-place parameter or None for the result, the class it is, its layout,
+#    candidates: (parameter index, class, its bases, its layout), the method's class (None: static, free))
+_class_layouts: list[tuple[Class, _Held]] = []      # Class.view: a copy of a class holding pointers keeps the original
+
+
+# Design.md 6 R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_common.h, defined in
+# nanocct_ocaf.h); nanocct::keep_view checks this verdict against the C++ trait at compile time
+_OWNED_ROOTS = ("TDF_Label", "TDF_Data")
+_OWNED_BASE = "TDF_Attribute"
+_OWNED_CONTAINERS = ("NCollection_Array1", "NCollection_HArray1", "NCollection_Sequence", "NCollection_HSequence", "NCollection_List",
+                     "NCollection_Map", "NCollection_IndexedMap", "NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap")
+
+
+def _owned(t: cindex.Type) -> bool:
+    """R-OWNER: is t -- through references, pointers and handles -- a TDF_Label, a TDF_Data, a TDF_Attribute (or derived), or
+    one of the NCollection containers nanocct::owners walks, holding such elements?"""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if canon.kind != TK.RECORD or _is_dependent(canon):
+        return False
+    key = _record_key(canon)
+    decl = canon.get_declaration()
+    if key.startswith("opencascade::handle<") and canon.get_num_template_arguments() == 1:
+        return _owned(canon.get_template_argument_type(0))
+    if key in _OWNED_ROOTS:
+        return True
+    if decl.spelling in _OWNED_CONTAINERS and canon.get_num_template_arguments() > 0:
+        args = [canon.get_template_argument_type(i) for i in range(canon.get_num_template_arguments())]
+        return any(_owned(a) for a in args if a.kind != TK.INVALID)
+    defn = decl.get_definition() if decl.kind != K.NO_DECL_FOUND else None
+    return defn is not None and defn.kind in (K.CLASS_DECL, K.STRUCT_DECL) and _derives_from(defn, _OWNED_BASE)
+
+
+def _type_layout(t: cindex.Type, spelled: str = "") -> tuple[str, _Held] | None:
+    """R-RESULT-KEEP: the class behind a type -- through references, pointers and handles -- and its layout (_Held), one per
+    class and package; None for a scalar or an enum. A dependent type of a 6c walk is read from its substituted spelling
+    (`spelled`), completed by the layout probe."""
+    canon = t.get_canonical()
+    while canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        canon = canon.get_pointee().get_canonical()
+    if _is_dependent(canon):
+        core = _core_type(spelled)
+        if spelled == "" or core in _PRIMITIVE_SPELLINGS or "type-parameter-" in core:
+            return None
+        if core not in _layout_of_type:
+            # the probe names the class behind the spelling: a typedef can hide a reference or a pointer
+            # (NCollection_Array1<T>::const_reference), which as a member spelling would count as a held pointer
+            held = _Held()
+            held.pending.append((f"std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<{core}>>>", core, False))
+            _layout_of_type[core] = held
+        return core, _layout_of_type[core]
+    if canon.kind == TK.RECORD and _record_key(canon).startswith("opencascade::handle<") and canon.get_num_template_arguments() == 1:
+        canon = canon.get_template_argument_type(0).get_canonical()
+    if canon.kind != TK.RECORD:
+        return None
+    key = _record_key(canon)
+    if key not in _layout_of_type:
+        held = _Held()
+        held.record(canon, key, False)
+        _layout_of_type[key] = held
+    return key, _layout_of_type[key]
+
+
+# Design.md 6 R-RESULT-KEEP, R-OWNER
+def _note_views(fn: cindex.Cursor, m: "Method | Function", owner: str, cls: Class | None) -> None:
+    """A result, or an argument the call writes into, of a class whose layout holds pointers (a TDF_Label, an LDOMString, a
+    Message_Messenger::StreamBuffer) may point into the object that produced it: the result keeps that object -- self for
+    a method, and every argument whose class, or a pointer in whose layout, the result can hold. An OCAF type keeps its
+    owners instead (R-OWNER), which is all it needs. Decided at the end of the package (_decide_views), once the layout probe
+    has completed every layout. owner: the class, "" for a free function (for the report); cls: a method's class, None for a
+    static method or a free function."""
+    args = list(fn.get_arguments())
+    name = f"{owner}::{m.name}" if owner != "" else m.name
+    if m.result != "void":
+        m.result_owned = _owned(fn.result_type)
+    for p, a in zip(m.params, args):
+        if p.is_out and p.is_handle:
+            p.owned = _owned(a.type)
+    cands: list[tuple[int, str, tuple[str, ...], _Held | None]] = []
+    for i, (p, a) in enumerate(zip(m.params, args)):
+        if p.omitted or p.bytes_of != "" or p.is_bytes or (p.is_out and not p.is_inout) or p.stream != StreamKind.NONE:
+            continue
+        lay = _type_layout(a.type, p.type)
+        if lay is not None:
+            cands.append((i, lay[0], p.class_ancestors, lay[1]))
+    if m.result != "void" and m.result_kind == ResultKind.VALUE and not m.result_owned:
+        rt = fn.result_type.get_canonical()
+        if rt.kind == TK.LVALUEREFERENCE and rt.get_pointee().is_const_qualified():
+            rt = rt.get_pointee().get_canonical()
+        # a class, not a handle -- a Transient's Python object may already exist and would collect the keep-alives of every
+        # call -- and not a std:: type (a type caster's copy: no Python object of the class to keep anything)
+        spelled = _core_type(m.result)
+        if (rt.kind == TK.RECORD and not _record_key(rt).startswith(("std::",) + _OWNING_TEMPLATES)
+                or _is_dependent(rt) and not spelled.startswith(("std::", "occ::handle<") + _OWNING_TEMPLATES)):
+            lay = _type_layout(rt, m.result)
+            if lay is not None:
+                _views_open.append((name, m, None, lay[0], lay[1], cands, cls))
+    for p, a in zip(m.params, args):
+        if p.is_out or p.is_handle or p.omitted or p.stream != StreamKind.NONE or p.array_len > 0 or p.cstr_none or p.is_bytes:
+            continue
+        canon = a.type.get_canonical()
+        if canon.kind not in (TK.LVALUEREFERENCE, TK.POINTER):
+            continue
+        pointee = canon.get_pointee()
+        if pointee.is_const_qualified() or _is_dependent(pointee) or pointee.get_canonical().kind != TK.RECORD:
+            continue
+        if _owned(a.type):
+            p.owned = True
+            continue
+        if _record_key(pointee.get_canonical()).startswith(("std::",) + _OWNING_TEMPLATES):
+            continue
+        lay = _type_layout(a.type)
+        if lay is not None:
+            _views_open.append((name, m, p, lay[0], lay[1], cands, cls))
+
+
+def _decide_views(report: list[str]) -> None:
+    """R-RESULT-KEEP, end of package: the results and in-place outputs whose layout holds pointers keep their producers."""
+    kept_by: dict[int, set[str]] = {}            # per class: the classes of the arguments its constructors and methods keep
+    for name, m, param, cls, held, cands, owner in _views_open:
+        if not held.holds_pointers():
+            continue
+        keeps = tuple(i for i, key, ancestors, lay in cands
+                      if held.holds(key, ancestors, False) or (lay is not None and held.shares_pointees(lay, False)))
+        if param is None:
+            m.result_view, m.result_keeps = True, keeps
+            continue
+        if owner is not None and id(owner) not in kept_by:
+            kept_by[id(owner)] = {q.class_name for k in owner.ctors + owner.methods for q in k.params if q.kept}
+        if owner is not None and len(({param.class_name} | set(param.class_ancestors)) & kept_by[id(owner)]) > 0:
+            # the object keeps arguments of this class (R-CTOR-KEEP, R-METHOD-KEEP), maybe this one: the argument keeping the
+            # object back would be a cycle nanobind's keep-alive records hide from the garbage collector -- both would live for ever
+            report.append(f"{name}: in-place argument {param.name} ({cls}) is of a class the object keeps, so it does not keep "
+                          f"the object back (a keep-alive cycle) (R-RESULT-KEEP)")
+        else:
+            param.out_view = True
+            param.out_keeps = tuple(i for i in keeps if m.params[i] is not param)
 
 
 def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
@@ -1538,13 +1693,18 @@ def _held_types(cls: cindex.Cursor, c: Class) -> _Held:
 def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], td: str) -> None:
     """R-CTOR-KEEP, end of package: what the layout walk could only spell (a by-value member or base of a class template
     after substitution: Extrema_GGExtPC's `TheEPC myExtPC`, BVH_Box's base BVH_BaseBox<double, 3, BVH_Box>) gets a probe
-    alias completed by sizeof, whose layout the same walk reads -- a few rounds, since a probed layout can pend in turn.
-    Then the open constructor parameters are decided; what stays unresolved is reported for the classes it leaves undecided."""
+    alias completed by sizeof, whose layout the same walk reads -- a few rounds, since a probed layout can pend in turn. A
+    class the package's headers only declare (`class gp_Pnt;` before a method returning one) is completed by including its
+    header in the probe. Then the open constructor and method parameters are decided; what stays unresolved is reported for
+    the classes it leaves undecided."""
     resolved: dict[str, _Held | None] = {}
+    open_layouts: list[_Held] = list({id(h): h for h in list(_held_by_class.values()) + list(_layout_of_type.values())
+                                      + [h for _, h in _class_layouts]
+                                      + [lay for _, _, cands in _held_open for *_, lay in cands if lay is not None]}.values())
 
     def absorb() -> None:
         """Fold every resolved spelling into the classes that pend on it; a probed layout's own pending entries follow."""
-        for _, held, _ in _held_open:
+        for held in open_layouts:
             for _ in range(len(resolved) + 1):          # a resolved layout can pend on spellings resolved earlier
                 still: list[tuple[str, str, bool]] = []
                 changed = False
@@ -1566,13 +1726,18 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
 
     for _ in range(10):                            # a probed layout can pend in turn (BVH_Distance -> BVH_Traverse -> ... -> BVH_Object)
         absorb()
-        todo = sorted({s for _, h, cands in _held_open if len(cands) > 0 for s, _, _ in h.pending if s not in resolved})
+        todo = sorted({s for h in open_layouts for s, _, _ in h.pending if s not in resolved})
         if len(todo) == 0:
             break
         probe = Path(td) / "nanocct__layout.hxx"
-        probe.write_text(umbrella.read_text() + "".join(
+        # the header named like every class in a spelling (a template's arguments too: NCollection_CellFilter<X>::Cell needs X
+        # complete), when the umbrella does not include it already
+        have = umbrella.read_text()
+        headers = sorted({f"{name}.hxx" for s in todo for name in re.findall(r"\w+", s)
+                          if f"<{name}.hxx>" not in have and (_INCLUDE_DIR / f"{name}.hxx").exists()})
+        probe.write_text(have + "#include <type_traits>\n" + "".join(f"#include <{h}>\n" for h in headers) + "".join(
             f"using nanocct_layout_{i} = {s};\nstatic_assert(sizeof(nanocct_layout_{i}) != 0, \"\");\n" for i, s in enumerate(todo)))
-        tu = index.parse(str(probe), args=args)
+        tu = index.parse(str(probe), args=args + ["-ferror-limit=0"])   # a private member type's access error each: no limit
         aliases = {cur.spelling: cur for cur in tu.cursor.get_children()
                    if cur.kind == K.TYPE_ALIAS_DECL and cur.spelling.startswith("nanocct_layout_")}
         for i, s in enumerate(todo):
@@ -1591,8 +1756,8 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
     absorb()
     for c, held, cands in _held_open:
         missed = []
-        for p, key, ancestors, const_method in cands:
-            if held.holds(key, ancestors, const_method):
+        for p, key, ancestors, const_method, lay in cands:
+            if held.holds(key, ancestors, const_method) or (lay is not None and held.shares_pointees(lay, const_method)):
                 p.kept = True
             else:
                 missed.append(p.name)
@@ -1600,17 +1765,21 @@ def _resolve_held_layout(index: cindex.Index, umbrella: Path, args: list[str], t
         if len(missed) > 0 and len(open_layout) > 0:
             c.skipped.append(f"{c.name}: R-CTOR-KEEP could not follow its whole layout ({'; '.join(sorted(set(open_layout)))}): "
                              f"no keep-alive for {', '.join(sorted(set(missed)))}")
+    for c, held in _class_layouts:
+        c.view = held.holds_pointers()
 
 
 
 def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bool, const_method: bool) -> None:
     """R-CTOR-KEEP / R-METHOD-KEEP: mark the parameters of a constructor or method that the object can keep the address of --
     taken by reference or pointer (not a handle, a primitive, a stream, bytes or a returned out-parameter), of a class that
-    the object, by its layout (_Held), holds a pointer or reference to. What waits for the layout probe is decided at the
-    end of the package (_resolve_held_layout). A method's out-parameters are returned, not passed; an in-out parameter is
-    copied into the binding's lambda, so an address the object keeps would dangle whatever the binding does -- reported."""
+    the object, by its layout (_Held), holds a pointer or reference to -- or, for a constructor, whose own layout holds a
+    pointer the object can hold too, copied out of the argument (TDF_ChildIterator(label) keeps the label's TDF_LabelNode*). What waits for the
+    layout probe is decided at the end of the package (_resolve_held_layout). A method's out-parameters are returned, not
+    passed; an in-out parameter is copied into the binding's lambda, so an address the object keeps would dangle whatever
+    the binding does -- reported."""
     held = _held_types(fn.semantic_parent, c)
-    undecided: list[tuple[Param, str, tuple[str, ...], bool]] = []
+    undecided: list[tuple[Param, str, tuple[str, ...], bool, _Held | None]] = []
     for p, arg in zip(params, fn.get_arguments()):
         if p.omitted or p.is_handle or p.is_bytes or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
             continue
@@ -1625,15 +1794,22 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
             key, is_class = _record_key(pointee), pointee.kind == TK.RECORD
         if not is_class or key.startswith(_OWNING_TEMPLATES):
             continue
+        lay = _type_layout(arg.type, p.type)
+        # a pointer copied out of the argument (shares_pointees): constructors only. A new object has no pointers of its own
+        # yet, so one it copies points where the argument's does; a method's object already points into what produced it,
+        # and the test then mostly matched BRepGraph's editor and the RAII MutGuard it is handed (both hold BRepGraph*): the
+        # editor kept the guard in a slot while the guard kept the editor (R-RESULT-KEEP), a keep-alive cycle -- 16 instances
+        # leaked, the guard's markModified() never ran
+        own = None if lay is None or is_method else lay[1]
         if is_method and p.is_inout:
-            if held.holds(key, p.class_ancestors, const_method):
+            if held.holds(key, p.class_ancestors, const_method) or (own is not None and held.shares_pointees(own, const_method)):
                 c.skipped.append(f"{c.name}::{fn.spelling}: in-out argument {p.name} is copied into the binding, an address "
                                  f"the object keeps would dangle (R-METHOD-KEEP)")
             continue
-        if held.holds(key, p.class_ancestors, const_method):
+        if held.holds(key, p.class_ancestors, const_method) or (own is not None and held.shares_pointees(own, const_method)):
             p.kept = True
         else:
-            undecided.append((p, key, p.class_ancestors, const_method))
+            undecided.append((p, key, p.class_ancestors, const_method, own))
     if len(undecided) > 0:
         entry = next((e for e in _held_open if e[0] is c and e[1] is held), None)
         if entry is None:
@@ -1652,8 +1828,8 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
                        mangled=ch.mangled_name)
-    if not ch.is_copy_constructor() and not ch.is_move_constructor() and reason is None:
-        _decide_kept(ch, c, params, False, False)
+    if not ch.is_move_constructor() and reason is None:
+        _decide_kept(ch, c, params, False, False)       # a copy constructor too: the copy shares the original's pointers
     if ctor.skip_reason is None and 0 < _MAX_PARAMS < len(params):
         ctor.skip_reason = f"{len(params)} parameters, more than overrides.toml [skip] max_params ({_MAX_PARAMS})"
     if ctor.skip_reason is not None:
@@ -1699,6 +1875,8 @@ def _using_methods(using: cindex.Cursor, c: Class) -> None:
             c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}) (using {base}::{m.name}): {m.skip_reason}")
         elif not m.is_static:
             _decide_kept(d, c, m.params, True, m.is_const)       # R-METHOD-KEEP: the base's layout, inside this object
+        if m.skip_reason is None:
+            _note_views(d, m, c.name, None if m.is_static else c)       # R-RESULT-KEEP
         c.methods.append(m)
 
 
@@ -1864,6 +2042,8 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 c.skipped.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}): {m.skip_reason}")
             elif not m.is_static:
                 _decide_kept(ch, c, m.params, True, m.is_const)      # R-METHOD-KEEP
+            if m.skip_reason is None:
+                _note_views(ch, m, c.name, None if m.is_static else c)      # R-RESULT-KEEP
             c.methods.append(m)
         elif ch.kind == K.VAR_DECL:
             # R-STATIC-DATA: a static data member (a VAR_DECL inside a class; FIELD_DECL is the instance kind). Until
@@ -1957,10 +2137,12 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                     c.nested.append(n)
         elif ch.kind == K.CLASS_TEMPLATE:
             c.skipped.append(f"{c.name}::{ch.spelling}: nested class template")
+    _class_layouts.append((c, _held_types(cursor, c)))     # Class.view, decided with the layout probe
     return c
 
 
 _instances_seen: dict[str, TemplateInstance] = {}    # filled while parsing a package (reset per package)
+_owned_instance_args: set[str] = set()                # R-OWNER: their arguments with known OCAF owners (reset per package)
 
 
 def collect_state() -> dict:
@@ -2026,6 +2208,10 @@ def _note_instance(t: cindex.Type) -> None:
     if decl.spelling in _SMART_HANDLES:  # opencascade::handle<NCollection_HArray1<T>> -> look inside (NCollection_Handle<T> too)
         _note_instance(canon.get_template_argument_type(0))
         return
+    for i in range(canon.get_num_template_arguments()):     # R-OWNER: the binder keeps the OCAF owners of such elements
+        arg = canon.get_template_argument_type(i)
+        if arg.kind != TK.INVALID and _owned(arg):
+            _owned_instance_args.add(_canonical_args(arg))
     owner = _NESTED_OWNER.get(decl.spelling)
     if owner is not None:
         # NCollection_TListIterator<T> is NCollection_List<T>::Iterator, bound by the List binder (6a) as
@@ -2368,12 +2554,16 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
             ir.report.append(f"{h}: not in the allowlist (overrides.toml [include] headers)")
     headers = set(ir.headers)
     _instances_seen.clear()
+    _owned_instance_args.clear()
     _template_bases.clear()
     _template_uses.clear()
     _dependent_bases.clear()
     _dependent_uses.clear()
     _held_by_class.clear()
     _held_open.clear()
+    _layout_of_type.clear()
+    _views_open.clear()
+    _class_layouts.clear()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)
@@ -2497,6 +2687,8 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     fn.skip_reason = _unsupported(cur.result_type, allow_out=False)
                 if fn.skip_reason is not None:
                     ir.report.append(f"{fn.name}(...): {fn.skip_reason}")
+                else:
+                    _note_views(cur, fn, "", None)               # R-RESULT-KEEP
                 ir.functions.append(fn)
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
                 ir.typedefs.append(TypeAlias(py_name=cur.spelling, target=_canonical_args(cur.underlying_typedef_type),
@@ -2569,6 +2761,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                             c.bases = [inst.name if x == b else x for x in c.bases]
                     add_class(inst)
         _resolve_held_layout(index, umbrella, args, td)       # R-CTOR-KEEP: layout spelled only after substitution
+        _decide_views(ir.report)                                # R-RESULT-KEEP: once every layout is complete
         # a template base that could not be instantiated is dropped from its derived classes (R-TEMPLATE-BASE): the class binds
         # without the base's members. A Transient class whose only path to Standard_Transient is that base cannot be bound at all.
         names = {c.name for c in ir.classes}
@@ -2594,6 +2787,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     # only instances referenced by members that are actually bound matter, but the over-approximation
     # (every signature seen) is harmless: an unused instantiation just costs compile time
     ir.instances = dict(_instances_seen)
+    ir.owned_args = set(_owned_instance_args)
     if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT/IN: binary formats -> bytes / typing.BinaryIO
         for params in [m.params for c in ir.classes for m in c.methods] + [f.params for f in ir.functions]:
             for prm in params:
