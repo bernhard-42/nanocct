@@ -11,7 +11,7 @@ class ResultKind(StrEnum):
     VALUE_TRANSIENT = "value_transient"  # T by value with T Transient: moved into handle<T>(new T(...)), like a constructor
     PTR_TRANSIENT = "ptr_transient"    # T* with T Transient: wrapped in a handle<T>, never owned by nanobind
     REF_TRANSIENT = "ref_transient"    # T& with T Transient: same
-    PTR_CLASS = "ptr_class"            # T* other class: rv_policy::reference
+    PTR_CLASS = "ptr_class"            # T* other class: rv_policy::reference_internal (reference for a static method or free function)
     REF_MUTABLE = "ref_mutable"        # T& (mutable) other class: rv_policy::reference_internal (ChangeXxx accessors)
     REF_PRIMITIVE = "ref_primitive"    # double& Value(i): getter + Set<Name>/__setitem__ Python additions
     OTHER = "other"

@@ -1384,7 +1384,7 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     assert [(p.type, p.array_len, p.is_out) for p in nodes.params] == [("int", 3, False)]
     value = next(c for c in rules_ir.classes if c.name == "Rules_Value")
     assert [(f.name, f.type, f.array_len) for f in value.fields if f.name == "myPeriod"] == [("myPeriod", "double", 3)]
-    # R-PTR-REF: gp_Pnt*& -> gp_Pnt* with rv_policy::reference through a lambda
+    # R-PTR-REF: gp_Pnt*& -> gp_Pnt* through a lambda, tied to its owner (R-RESULT: reference_internal for a method)
     ptr = _method(rules_ir, "Rules_Value", "PtrRef")
     assert ptr.skip_reason is None and ptr.result == "gp_Pnt *" and ptr.result_kind == ResultKind.PTR_CLASS and ptr.force_lambda
     # R-PTR-INCOMPLETE: Rules_Fwd is only forward-declared, but Rules_Fwd.hxx exists in the include directory
@@ -1397,7 +1397,7 @@ def test_ir_optional_pointer_fixed_arrays_pointer_results(rules_ir):
     assert "gp_Pnt theP[8]{}; auto nanocct_result = self.Corners(theP); std::array<gp_Pnt, 8> theP_out;" in cpp
     assert "const std::array<int, 3> &theNodes) { int theNodes_arr[3]; std::copy(theNodes.begin(), theNodes.end(), theNodes_arr);" in cpp
     assert '.def_prop_rw("myPeriod", [](const Rules_Value &self) { std::array<double, 3> a;' in cpp
-    assert '.def("PtrRef", [](Rules_Value &self) { auto nanocct_result = self.PtrRef(); return nanocct_result; }, nb::rv_policy::reference' in cpp
+    assert '.def("PtrRef", [](Rules_Value &self) { auto nanocct_result = self.PtrRef(); return nanocct_result; }, nb::rv_policy::reference_internal' in cpp
     # R-CSTR-NULL: the null-defaulted const char* is kept (unlike R-OPTIONAL-PTR) and takes str or None through nanocct::OptionalCString
     enc = _method(rules_ir, "Rules_Value", "Encoding")
     assert enc.skip_reason is None and [(p.name, p.cstr_none, p.omitted, p.default) for p in enc.params] == [("theEncoding", True, False, "nullptr")]

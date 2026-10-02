@@ -16,12 +16,12 @@ reference cycle through `keep_alive` shows. On an AddressSanitizer audit build a
 child, so it fails here like any crash -- provided `ASAN_OPTIONS` has `strip_env=0`, without which ASan removes
 `DYLD_INSERT_LIBRARIES` from the environment and every child aborts at its first import.
 
-The call sites are real generated ones, one per row, named in each test. Where the reverse direction is unsafe **by
-design** — `rv_policy::reference` has no keep_alive, so the result dangles once its owner is collected — the test asserts
-the safe outcome and is marked `xfail(strict=False)`: the finding stays visible in every run (and an AddressSanitizer
-build names the use-after-free) without making the suite depend on what freed memory happens to contain.
-Two bugs these tests found (a Transient returned by value, a `*this` result keeping itself alive) are fixed; their
-tests are ordinary ones now.
+The call sites are real generated ones, one per row, named in each test. Where a reverse direction is unsafe for a
+reason the bindings cannot change (an OCCT bug), the test asserts the safe outcome and is marked `xfail(strict=False)`:
+the finding stays visible in every run (and an AddressSanitizer build names the use-after-free) without making the suite
+depend on what freed memory happens to contain.
+Three bugs these tests found (a Transient returned by value, a `*this` result keeping itself alive, a `T*` result that did
+not keep its owner -- `rv_policy::reference`, by design until 2026-10-02) are fixed; their tests are ordinary ones now.
 """
 from __future__ import annotations
 
@@ -324,8 +324,6 @@ def test_class_pointer_result_forward():
     assert out == ["[1.0, 2.0, 1.0]", "True [1.0, 2.0, 1.0]"]
 
 
-@pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive, so the array dangles once the "
-                                        "curve is collected (a silent read after free)")
 def test_class_pointer_result_reverse():
     out = _ok(_run("""
         result = owner.Weights()
@@ -357,8 +355,6 @@ def test_class_pointer_reference_result_forward():
     assert out == ["BOPAlgo_BOP False 1", "True False 1"]
 
 
-@pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive; the builder is deleted with the "
-                                        "fuse and the result dangles (segfault)")
 def test_class_pointer_reference_result_reverse():
     out = _ok(_run("""
         result = owner.Builder()
@@ -382,8 +378,6 @@ def test_incomplete_class_pointer_result_forward():
     assert out == ["True True False"]
 
 
-@pytest.mark.xfail(strict=False, reason="by design: rv_policy::reference has no keep_alive; the data structure is freed with "
-                                        "the fuse and the result reads freed memory")
 def test_incomplete_class_pointer_result_reverse():
     out = _ok(_run("""
         result = owner.Builder().PDS()

@@ -423,9 +423,11 @@ class Emitter:
             return self._ref_primitive(cls, m, py)
         has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
         wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT, ResultKind.VALUE_TRANSIENT)   # never let nanobind own a Transient
-        policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
-        if m.result_kind == ResultKind.REF_MUTABLE and m.is_static:
-            # R-RESULT: a static method has no self to tie the reference to (BRepMesh_DiscretFactory::Get(), the singleton):
+        # R-RESULT: a T* or T& to another class keeps its owner alive (reference_internal: keep_alive<0, 1> on a new wrapper
+        # -- nanobind returns an existing wrapper, self included, as is, so `return this` cannot keep itself alive)
+        policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference_internal", ResultKind.REF_MUTABLE: ", nb::rv_policy::reference_internal"}.get(m.result_kind, "")
+        if m.result_kind in (ResultKind.PTR_CLASS, ResultKind.REF_MUTABLE) and m.is_static:
+            # R-RESULT: a static method has no self to tie the result to (BRepMesh_DiscretFactory::Get(), the singleton):
             # reference_internal made every call fail ("Unable to convert function return value")
             policy = ", nb::rv_policy::reference"
         if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
