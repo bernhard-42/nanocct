@@ -2654,6 +2654,8 @@ def _note_instance(t: cindex.Type) -> None:
     if canon.kind != TK.RECORD or canon.get_num_template_arguments() <= 0:
         return
     decl = canon.get_declaration()
+    if decl.spelling in _STL_ITERATORS:
+        return                           # R-ITERATOR: an STL-style iterator is never bound, nor instantiated for a signature
     if decl.spelling in _SMART_HANDLES:  # opencascade::handle<NCollection_HArray1<T>> -> look inside (NCollection_Handle<T> too)
         _note_instance(canon.get_template_argument_type(0))
         return
@@ -3125,6 +3127,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 c = _class(cur, header, pkg.name)
                 if c.name in _SKIP_CLASSES:
                     ir.report.append(f"{c.name}: skipped (overrides.toml [skip])")
+                    continue
+                if c.name in _STL_ITERATORS:
+                    # R-ITERATOR: the end marker of a forward range is part of the begin()/end() pair, which is not bound
+                    ir.report.append(f"{c.name}: STL-style iterator, not bound")
                     continue
                 if c.unbindable:
                     ir.report.extend(c.skipped)

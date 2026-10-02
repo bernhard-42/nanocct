@@ -2952,14 +2952,14 @@ The Python additions of 2c.
     - `bool NCollection_Vec3::operator==(const NCollection_Vec3& theOther) const`
     - `bool Graphic3d_MaterialAspect::operator==(const Graphic3d_MaterialAspect& theOther) const`
     - `bool Quantity_Date::operator==(const Quantity_Date& anOther) const`
-    - `friend bool operator==(const NCollection_ForwardRangeIterator& theLhs, NCollection_ForwardRangeSentinel)` (another type: stays hashable)
+    - `friend bool operator==(const NCollection_ForwardRangeIterator& theLhs, NCollection_ForwardRangeSentinel)` (another type: would stay hashable; the class is not bound, R-ITERATOR)
 
 - **Rule**
 
     - nanobind never touches `tp_hash`, and CPython's *"define `__eq__` and `__hash__` becomes `None`"* rule fires only at **type creation** — a `.def()` afterwards does not trigger it (measured), so these classes would keep `object.__hash__` and `a == b` would hold while `hash(a) != hash(b)`: a dict or set lookup by an equal value would miss **without raising**.
     - Unhashable at least fails loudly, and `id()`-keyed dicts still work.
     - pybind11 does this automatically (`add_class_method`); nanobind leaves it to the binding.
-    - **Not** applied when the only `operator==` takes another type: `NCollection_ForwardRangeIterator == NCollection_ForwardRangeSentinel` is an exhaustion test, so iterator-to-iterator `==` still falls back to identity and the identity hash stays consistent with it (11 instantiations left hashable).
+    - **Not** applied when the only `operator==` takes another type (OCCT 8.0.1's one such pair is not bound, R-ITERATOR; `tests/test_generator.py` covers the rule with a synthetic pair): `NCollection_ForwardRangeIterator == NCollection_ForwardRangeSentinel` is an exhaustion test, so iterator-to-iterator `==` still falls back to identity and the identity hash stays consistent with it (11 instantiations left hashable).
     - The stub needs `# type: ignore[assignment]`, as typeshed's own unhashable classes do (`generator/stubs.py`).
 
 - **Python**
@@ -2971,7 +2971,6 @@ The Python additions of 2c.
 
     ```python
     from nanocct.Bnd import Bnd_Range
-    from nanocct.TopExp import NCollection_ForwardRangeIterator__TopExp_Explorer
 
     a, b = Bnd_Range(0.0, 1.0), Bnd_Range(0.0, 1.0)
     assert a == b and Bnd_Range.__hash__ is None
@@ -2982,7 +2981,6 @@ The Python additions of 2c.
         hashable = False
     assert not hashable                              # fails loudly instead of missing silently
     assert {id(a): "a"}[id(a)] == "a"                # id()-keyed dicts still work
-    assert NCollection_ForwardRangeIterator__TopExp_Explorer.__hash__ is object.__hash__   # == against the sentinel only
     ```
 ### R-CTOR-KEEP
 
@@ -3639,7 +3637,7 @@ The Python additions of 2c.
     - `NormalsFromSurface` because OCCT offers surface normals only as `BRepGProp_Face::Normal(u, v, ...)`, one call at a time, and `Poly_Triangulation`'s stored normals are not a substitute — `BRepLib::EnsureNormalConsistency` fills a whole shape in 0.1 ms but flips 2 of 1773 nodes on a fused solid.
     - `EdgeSegments` because an edge carries ~26 points against a face's ~128, so per-item Python overhead never amortises: vectorising *inside* each edge gave 221 ms for 33 370 edges against pure Python's 274 ms, while moving the loop to C++ gave **19.7 ms**.
     - The face path stays in Python precisely because it does amortise.
-    - **A helper returns whatever only it can know**: `EdgeSegments` decides which edges to skip, so it returns each kept edge's `GeomAbs_CurveType` alongside its segment count — a caller could not align a type array with the counts afterwards without redoing the lookups the helper exists to avoid (~2 ms of C++ against ~26 ms of the Python loop over 33 388 edges).
+    - **A helper returns whatever only it can know**: `EdgeSegments` decides which edges to skip, so it returns each kept edge's `GeomAbs_CurveType` alongside its segment count — a caller could not align a type array with the counts afterwards without redoing the lookups the helper exists to avoid (the Python loop a caller would need, `BRepAdaptor_Curve(e).GetType()` over the 33 388 edges of the 219-leaf assembly, takes 24.4 ms -- more than `EdgeSegments` as a whole, curve types included, 17.5 ms; best of 7, macOS).
     - Measured in one process over a 219-leaf assembly, 1.97 M nodes, extraction only: the same pure-Python algorithm 1425.8 ms, views + AddOns **366.4 ms** — 3.9x faster than pure Python, `compute()` to `compute()`.
 
 - **Python**
@@ -3967,10 +3965,13 @@ The Python additions of 2c.
 - **Python**
 
     - Skipped.
+    - The iterator classes themselves are not instantiated for a signature that names one, and the end marker `NCollection_ForwardRangeSentinel` is not bound: Python could not use either.
 
 - **Python examples**
 
     ```python
+    import nanocct.NCollection as NCollection
+    import nanocct.TopExp as TopExp
     from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
     from nanocct.NCollection import NCollection_Array1
     from nanocct.TopAbs import TopAbs_ShapeEnum
@@ -3981,6 +3982,8 @@ The Python additions of 2c.
     assert len(list(values)) == 3                    # __iter__ instead
     explorer = TopExp_Explorer(BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape(), TopAbs_ShapeEnum.TopAbs_FACE)
     assert not hasattr(explorer, "begin") and not hasattr(explorer, "end")
+    assert not hasattr(TopExp, "NCollection_ForwardRangeIterator__TopExp_Explorer")
+    assert not hasattr(NCollection, "NCollection_ForwardRangeSentinel")
     assert len(list(explorer)) == 6                  # R-ITER instead of the range-for adapter
     ```
 
@@ -4908,7 +4911,7 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
 - **Instantiations named by the members of an instantiation:** inside a walk a member's type is dependent (`NCollection_Vec4<Element_t>::xyz()` returns `NCollection_Vec3<Element_t>`), libclang gives it no declaration, and without a record the member would be bound with an unregistered type (`Vec4__unsigned_char().xyz()` would raise `TypeError`). `parse._note_dependent_use` records the substituted spelling (`NCollection_Vec3<unsigned char>`) and the R-TEMPLATE-BASE probe instantiates it. Not recorded: binder kinds (6a), `handle`, `std::`, the walked instantiation itself spelled with its arguments (`NCollection_AliasedArray<MyAlignSize>` inside `NCollection_AliasedArray<>` would be bound twice under the keys `<>` and `<16>`, and the module would fail to initialise: nanobind's "already registered"), and the uses of a member that ends up skipped (the `begin()`/`end()` range iterators would add 64 classes).
 
 - **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured over all 297 6c instantiations (OCCT 8.0.1): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 6c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
-- **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_FlatMap<K, H>::Iterator` → `<outer>.Iterator`, `NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). The helper of an STL-style iterator (`NCollection_ForwardRangeIterator::PostfixProxy`, 11) stays out.
+- **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_FlatMap<K, H>::Iterator` → `<outer>.Iterator`, `NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). An STL-style iterator is not instantiated at all (R-ITERATOR), so neither is its helper `NCollection_ForwardRangeIterator::PostfixProxy`.
 
 ### Nested templates and dependent names (BRepGraph)
 

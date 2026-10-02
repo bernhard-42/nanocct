@@ -47,10 +47,11 @@ def test_fillet_and_chamfer_of_a_cube():
 
 
 def test_using_unhides_base_overloads_and_prelude():
-    # BlendFunc_ConstRadInv declares both Set overloads itself (BlendFunc_ConstRadInv.hxx:35, :65), no using-declaration;
-    # the R-USING case is BlendFunc_ChamfInv / BlendFunc_ConstThroatInv (`using Blend_FuncInv::Set`)
-    sigs = [l for l in BlendFunc.BlendFunc_ConstRadInv.Set.__doc__.splitlines() if l.startswith("Set(")]
-    assert sigs == ["Set(self, OnFirst: bool, COnSurf: nanocct.Adaptor2d.Adaptor2d_Curve2d | None) -> None", "Set(self, R: float, Choix: int) -> None"]
+    # R-USING: BlendFunc_ChamfInv declares only Set(Dist1, Dist2, Choix) (BlendFunc_ChamfInv.hxx:54); `using
+    # Blend_FuncInv::Set;` (:52) unhides the base's Set(OnFirst, COnSurf), which the binding re-exports next to it
+    sigs = [l for l in BlendFunc.BlendFunc_ChamfInv.Set.__doc__.splitlines() if l.startswith("Set(")]
+    assert sigs == ["Set(self, OnFirst: bool, COnSurf: nanocct.Adaptor2d.Adaptor2d_Curve2d | None) -> None",
+                    "Set(self, Dist1: float, Dist2: float, Choix: int) -> None"]
     assert [l for l in Blend.Blend_FuncInv.Set.__doc__.splitlines() if l.startswith("Set(")] == sigs[:1]
     rows = read_report(REPORT)
     assert all(cat != "misc" for cat, _, _ in rows)

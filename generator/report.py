@@ -22,7 +22,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("hash", r"__hash__ = None added"),
     ("null-bool", r"__bool__ = not IsNull\(\) added"),
     ("view", r"zero-copy numpy views added"),
-    ("lifetime", r"R-CTOR-KEEP could not follow|\(R-RESULT-KEEP\)"),
+    ("lifetime", r"R-CTOR-KEEP could not follow|\(R-RESULT-KEEP\)|\(R-METHOD-KEEP\)"),
     ("view-guard", r"\(R-VIEW-GUARD\)"),
     ("copy", r"\(R-COPY\)"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
@@ -34,7 +34,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("namespace", r"anonymous namespace|namespace skipped"),
     ("unbound-type", r"unbound type|is not bound|not known"),
     ("incomplete", r"incomplete type"),
-    ("not-constructible", r"operator new is not public|copy constructor declared in the header"),
+    ("not-constructible", r"operator new is not public"),     # an undefined copy constructor is "undefined" (R-UNDEFINED-COPY)
     ("noncopyable", r"non-copyable wrapper|no non-copyable wrapper possible"),
     ("inheritance", r"additional base|non-public base|of a base, not a method"),
     ("array", r"\barray\b"),

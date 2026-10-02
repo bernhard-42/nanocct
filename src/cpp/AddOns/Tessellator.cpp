@@ -94,8 +94,8 @@ nb::ndarray<nb::numpy, double, nb::ndim<2>> NormalsFromSurface(
 //! The curve type comes along because the caller cannot compute it afterwards: which edges were skipped is
 //! decided here, so a Python loop over the edge map could not be aligned with the counts without redoing the
 //! triangulation and polygon lookups this function exists to avoid. It is BRepAdaptor_Curve::GetType, the
-//! same value ocp-tessellate records as edge_types, and it costs ~25 ms over the 33 388 edges of a real
-//! assembly against ~350 ms for the whole extraction.
+//! same value ocp-tessellate records as edge_types. A Python loop computing it takes ~24 ms over the 33 388 edges
+//! of a real assembly -- more than this whole function, curve types included (~18 ms).
 //!
 //! @return (segments, segments_per_edge, edge_types): (2 * S, 3) float64 of segment endpoints, flattened as
 //!         the tessellator expects, and two (E,) int32 arrays -- segments per edge, and GeomAbs_CurveType

@@ -840,7 +840,7 @@ class Emitter:
     def _base_ok(self, c: Class, skipped: set[str]) -> bool:
         def skip(c: Class) -> None:
             skipped.add(c.name)
-            skipped.update(e.name for e in c.enums)     # its nested enums (BRepExtrema_ProximityDistTool::ProxPnt_Status) go with it:
+            skipped.update(e.name for e in c.enums)     # its nested enums go with it:
                                                         # no alias, instantiation or manifest entry may name them (Design.md 5.2)
         if c.outer in skipped:
             self.report.append(f"{c.name}: outer class {c.outer} is not bound -> nested class skipped")
@@ -1564,6 +1564,15 @@ def _width(t: str) -> tuple[str, int]:
     return (base, 0)
 
 
+
+_INT_ALIASES = {"Standard_Integer": "int", "Standard_Size": "size_t", "unsigned": "unsigned int"}
+
+
+def _int_type(t: str) -> str:
+    """The C++ integer type behind a parameter spelling, OCCT's typedefs resolved (R-UNREACHABLE)."""
+    base = _strip_ref(t)
+    return _INT_ALIASES.get(base, base)
+
 def _covers(x: Param, y: Param) -> bool:
     """Whether every Python argument parameter y accepts is also accepted by x (R-UNREACHABLE): a double takes every
     float, a string type every text; an int never covers another int width (nanobind's range check fails over, so
@@ -1571,6 +1580,10 @@ def _covers(x: Param, y: Param) -> bool:
     (kx, rx), (ky, ry) = _width(x.type), _width(y.type)
     if kx != ky:
         return False
+    if kx == "int":
+        # only the same C++ type: the widths other than int share one rank (R-WIDTH's order), but size_t does not take
+        # what a short takes -- nanobind's range check fails a negative value over to the signed twin
+        return _int_type(x.type) == _int_type(y.type)
     if kx == "float":
         return rx <= ry
     if kx == "str":

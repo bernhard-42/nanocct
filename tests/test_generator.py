@@ -14,7 +14,7 @@ from clang import cindex
 
 from generator import parse
 from generator.binders import BINDERS
-from generator.emit import Emitter, order_by_derivation, resolve_ctor_arities, resolve_overload_collisions
+from generator.emit import Emitter, _covers, order_by_derivation, resolve_ctor_arities, resolve_overload_collisions
 from generator.model import Class, Constructor, ConversionKind, Method, PackageIR, Param, ResultKind, StreamKind
 from generator.occt import OcctTree, Package, load_tree
 from generator.occt import _cmake_list
@@ -154,13 +154,13 @@ public:
   bool Corners(gp_Pnt theP[8]) const { theP[0] = gp_Pnt(1, 2, 3); return true; }
   int SumNodes(const int (&theNodes)[3]) const { return theNodes[0] + theNodes[1] + theNodes[2]; }
   double myPeriod[3] = {1.0, 2.0, 3.0};
-  //! R-PTR-REF: a T*& result is returned as the pointer (BRepAlgoAPI_BuilderAlgo::Builder()).
+  //! R-PTR-REF: a T*& or T* const& result is returned as the pointer (BRepAlgoAPI_BuilderAlgo::Builder() returns const BOPAlgo_PBuilder&).
   gp_Pnt*& PtrRef() { return myPtr; }
   //! R-PTR-INCOMPLETE: a pointer to a class only forward-declared here, whose header exists (BOPAlgo_Builder::PDS()).
   Rules_Fwd* Fwd() const { return nullptr; }
   //! A member template declared here and defined in Rules.lxx: reported once, as a template member.
   template <class T> T Half(const T theV) const;
-  //! R-CSTR-NULL: a const char* with a null default stays in the signature as `str | None = None` (LDOM_XmlWriter, STEPCAFControl_Writer::Write).
+  //! R-CSTR-NULL: a const char* with a null default stays in the signature as `str | None = None` (LDOM_XmlWriter, STEPCAFControl_Writer::Transfer).
   const char* Encoding(const char* const theEncoding = nullptr) const { return theEncoding == nullptr ? "none" : theEncoding; }
 
   //! A public nested class.
@@ -224,7 +224,7 @@ public:
 };
 
 //! A class whose base no binding knows (the test's Emitter does not know gp_Trsf), and a class deriving from it.
-//! Its nested enum goes with it: no alias, instantiation or manifest entry may name it (BRepExtrema_ProximityDistTool::ProxPnt_Status).
+//! Its nested enum goes with it: no alias, instantiation or manifest entry may name it.
 class Rules_Unbound : public gp_Trsf
 {
 public:
@@ -581,7 +581,7 @@ public:
   int Rational(const gp_XYZ* theW, const char* theName) const { (void)theName; return theW == nullptr ? 0 : 1; }
   //! R-UNBOUND-TYPE for the standard library: an enum of it has no Python type (std::_Ios_Openmode on libstdc++).
   int Round(std::float_round_style theStyle) const { return static_cast<int>(theStyle); }
-  //! R-STATIC-DATA: static data members -- constants become class attributes, the rest is reported.
+  //! R-STATIC-DATA: static data members -- constants become read-only static properties, the rest is reported.
   static const int THE_LIMIT = 7;
   static constexpr double THE_TOL = 1.5;
   static const char* const THE_NAMES[2];
@@ -2181,6 +2181,9 @@ def test_report_categories_are_complete_for_the_checked_in_reports():
             seen.add(cat)
     assert seen <= {c for c, _ in CATEGORIES}
     assert categorize("Foo::bar(): some idiom nobody expected") == "misc"
+    # R-UNDEFINED-COPY is an undefined symbol; the in-out keep of R-METHOD-KEEP is a lifetime line like its siblings
+    assert categorize("GCPnts_DistFunction: copy constructor declared in the header, no definition in libTKGeomBase -> class skipped") == "undefined"
+    assert categorize("X::Init: in-out argument theA is copied into the binding, an address the object keeps would dangle (R-METHOD-KEEP)") == "lifetime"
 
 
 def test_regeneration_of_TKG2d_reproduces_the_checked_in_sources(tmp_path):
@@ -2447,3 +2450,16 @@ def test_a_forward_declaration_seen_first_does_not_hide_a_transient():
     assert not parse._derives_from(fwd, "Rules_Root")
     tu_def, full = declaration("class Rules_Root {};\nclass Rules_Leaf : public Rules_Root {};\nvoid probe_f(const Rules_Leaf*);\n")
     assert parse._derives_from(full, "Rules_Root")
+
+
+
+# Binding-Rules.md R-UNREACHABLE
+def test_one_integer_width_never_covers_another():
+    """size_t and short share R-WIDTH's rank, but a negative value reaches only the short overload (nanobind's range check
+    fails over): neither may be dropped as unreachable after the other. The same type under an OCCT typedef does cover."""
+    def p(t: str) -> Param:
+        return Param(name="x", type=t, default=None, is_out=False)
+    assert not _covers(p("size_t"), p("short")) and not _covers(p("short"), p("size_t"))
+    assert not _covers(p("unsigned int"), p("int")) and not _covers(p("long long"), p("unsigned long"))
+    assert _covers(p("Standard_Size"), p("size_t")) and _covers(p("const Standard_Integer"), p("int"))
+    assert _covers(p("double"), p("float")) and not _covers(p("float"), p("double"))
