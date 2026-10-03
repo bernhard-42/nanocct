@@ -42,6 +42,8 @@
 #include <type_traits>
 
 #include <atomic>
+#include <cstdint>
+#include <stdexcept>
 #include <mutex>
 #include <sstream>
 #include <string>

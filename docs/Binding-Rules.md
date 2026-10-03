@@ -3843,20 +3843,23 @@ The Python additions of Design.md, section 2.
     - A view would read freed memory after the container moved or freed what it points into: `a.ChangeValue(1)` after `a.Resize(…)`, `np.asarray(a)` after `Resize`, a Sequence's `ChangeValue` after `Remove`, a List's `Append` result after `Clear` (heap-use-after-free under ASan), and every iterator kind -- `List.Iterator`/`Sequence.Iterator` after `Clear`/`Remove`, a `DataMap.Iterator` and `for k in map` after an `Add`/`Bind` that grows the table, `iter(list)` after `Clear` (ASan).
     - OCCT changes containers passed in: `Graphic3d_Camera::FrustumPoints` resizes its array argument (Graphic3d_Camera.cxx:1743), `TopExp::MapShapes` adds to the map.
     - The check runs after argument conversion because a call policy's `precall` runs before it, and raising there would pre-empt another overload taking the same container `const` (`PLib::SetPoles`).
-    - Consequence, as for `bytearray`: an iterator or view still referenced blocks the container until it is released (`del it`).
+    - **Element references and numpy arrays**, as for `bytearray`: a view still referenced blocks the call until it is released (`del point`).
+    - **Iterators**, as Python's own collections (`dict`, `set`, `OrderedDict`, `deque`, measured on Python 3.14.7: none refuses a change of size while an iterator exists, a stale one raises on its next use): the call goes ahead and the container's iterators go stale; every later use of a stale iterator raises -- `More()` included, an exhausted one too (like `deque`), and `Reset()`, which restarts from the bucket array a map iterator cached (NCollection_BaseMap.hxx, `Reset` -> `findFirst`: a use-after-free otherwise) -- until `Init`/`Initialize` starts it again. Refusing the change instead blocked an exhausted `while it.More()` iterator that nobody would use again (until 2026-10-03).
     - A numpy view taken before an OCCT call that fills the array blocks that call -- take the view after it.
-    - Measured: a view handed out +40 to +55 ns (`ChangeValue` 44 → 83-99 ns), the same view returned again +7 ns, `np.asarray` +70 ns, a `for` loop +75 ns, a checked call +2 to +3 ns while nothing is viewed and +6 to +8 ns otherwise.
+    - Measured: a view handed out +40 to +55 ns (`ChangeValue` 44 → 83-99 ns), the same view returned again +7 ns, `np.asarray` +70 ns, a `for` loop +75 ns, a checked call +2 to +3 ns while nothing is viewed and +6 to +8 ns otherwise. The staleness check (2026-10-03, against the wheel without it, median of 5 alternating runs): an iterator member +2 ns (`More`/`Value`/`Next` over a 10 000-key map 29 → 36 ns per element), a `for` step +1 ns (`for k in map` 12.8 → 13.6 ns), a `for` over an R-ITER class that iterates no container (`TopExp_Explorer`) +2 ns per element, a container call while nothing is viewed ±0.
     - Not covered (residual): what OCCT itself does to a container it owns -- the 149<!-- count: view-guard-lines --> reported methods, an OCCT object changing a container it was handed earlier or reaches through a handle (`handle<NCollection_HArray1<…>>` arguments are not checked), the R-VIEW classes of nanocct_views.h (`Poly_ArrayOfNodes` after `Poly_Triangulation::ResizeNodes`), and a container wrapped in `NCollection_Shared` (bound at a non-zero offset).
 
 - **Python**
 
-    - The call raises **`BufferError`** (Python's rule for `bytearray` while a buffer is exported).
-    - Views are counted per **C++ container address** in **one** table for all extension modules (`nanocct::view_table()`, a capsule on the `nanocct` package like the slot table; two Python wrappers of one container agree), mutex-protected, with an atomic count of all live views as the fast path.
+    - A call that would invalidate an element view raises **`BufferError`** (Python's rule for `bytearray` while a buffer is exported).
+    - A call that would invalidate an iterator goes ahead; the iterator raises **`RuntimeError`** on its next use ("the container changed during iteration; initialise the iterator again"), as `dict` does.
+    - Views are counted per **C++ container address** in **one** table for all extension modules (`nanocct::view_table()`, a capsule on the `nanocct` package like the slot table; two Python wrappers of one container agree), with an atomic count of all live views as the fast path. No lock in a GIL build -- the table is touched only from binding glue, which holds the GIL (calls, call policies, `keep_alive_cb`, capsule destructors) -- and a mutex under `Py_GIL_DISABLED` (free-threading; not built so far).
+    - **Staleness** is a generation per container, an atomic its iterators share: every call that would invalidate them bumps it, an iterator records the value when it is registered (constructor, `Init`/`Initialize`; `nanocct::add_view`) and every use compares. The check finds the iterator's record by its C++ address (one hash lookup and one atomic load): the binder's `Iterator` members through `fresh(self, …)`, a generated iterator class's members through `nanocct::fresh_call<…>::call` (same signature, stubs unchanged) or a lambda's first statement `nanocct::refuse_if_stale_self(self, …)` (emit.py `_stale_check`: an R-ITER class with a constructor or `Init`/`Initialize` taking a container; every member but `Init`/`Initialize`), `for x in it` through the R-ITER cursor. `__iter__`'s Python iterator holds the generation itself (`nanocct::iterate`, `checked_iterator`). A step of `nb::make_iterator` is `++` then `==`: `++` checks before it moves, the `==` right after it does not check again.
     - A view's count goes when it dies (`nb::keep_alive_cb`; a numpy array: its owner capsule, which also keeps the container's Python object -- nanobind refuses `reference_internal` for an ndarray with an owner).
-    - Which call invalidates which view is OCCT's container code, read once (7a, the R-VIEW-GUARD table): the binder checks its own members exactly (a `Resize` to the same length, an `Assign` of the same size, an append below `Capacity()` pass; a hashed map's insert is checked against its iterators only, which cache the bucket array; `Remove(it)` through the iterator itself is allowed).
-    - **Every generated function** taking a container by **non-const reference or pointer** (`Param.guarded`, parse.py `_mutable_container`; inside a 7c walk from the substituted spelling) checks it, after nanobind converted the arguments: a direct binding goes through `&nanocct::guarded<static_cast<…>(&C::M), k…>::call`, same signature, stubs unchanged; a lambda or constructor body starts with `nanocct::refuse_viewed_argument(x, k)` -- 1 867<!-- count: view-guard-params --> parameters in 35<!-- count: view-guard-toolkits --> toolkits (1 102<!-- count: view-guard-wrapped --> wrapped bindings, 106<!-- count: view-guard-lambda --> lambda checks).
-    - A **container data member** (by value) gets a setter that checks (`nanocct_def_container_field`, 44).
-    - An R-ITER class's constructor or `Init`/`Initialize` taking a container registers the object as an iterator of it (`nanocct::view_of<iterator, …>`, 23<!-- count: view-guard-iterators --> sites: `NCollection_Iterator<…>`, BRepGraph's iterators over a parents vector, `TopOpeBRepDS_InterferenceIterator`).
+    - Which call invalidates which view is OCCT's container code, read once (7a, the R-VIEW-GUARD table): the binder checks its own members exactly (a `Resize` to the same length, an `Assign` of the same size, an append below `Capacity()` pass; a hashed map's insert makes its iterators stale, which cache the bucket array, and leaves its element views alone; `Remove(it)` leaves the iterator it goes through valid and makes the others stale).
+    - **Every generated function** taking a container by **non-const reference or pointer** (`Param.guarded`, parse.py `_mutable_container`; inside a 7c walk from the substituted spelling) checks it, after nanobind converted the arguments (every argument for element views first, then their iterators go stale, so a refused call stales nothing): a direct binding goes through `&nanocct::guarded<static_cast<…>(&C::M), k…>::call`, same signature, stubs unchanged; a lambda or constructor body starts with `nanocct::refuse_viewed_argument(x, k)` -- 1 867<!-- count: view-guard-params --> parameters in 35<!-- count: view-guard-toolkits --> toolkits (1 102<!-- count: view-guard-wrapped --> wrapped bindings, 106<!-- count: view-guard-lambda --> lambda checks).
+    - A **container data member** (by value) gets a setter that checks: it refuses while element views live and makes the iterators stale (`nanocct_def_container_field`, 44).
+    - An R-ITER class's constructor or `Init`/`Initialize` taking a container registers the object as an iterator of it (`nanocct::view_of<iterator, …>`, 23<!-- count: view-guard-iterators --> sites: `NCollection_Iterator<…>`, BRepGraph's iterators over a parents vector, `TopOpeBRepDS_InterferenceIterator`, `XCAFPrs_DocumentExplorer`); its other members check staleness.
     - A method handing out a container its object owns by non-const reference is **reported**, category `view-guard` (149, OCCT 8.0.1: `TDF_DataSet::Labels()`, `AIS_ColoredShape::ChangeCustomAspectsMap()`, …).
 
 - **Python examples**
@@ -3902,7 +3905,12 @@ The Python additions of Design.md, section 2.
     assert not refuses(lambda: vectors.Bind(2, gp_Vec()))   # growth relinks the nodes, keeps them
     assert refuses(lambda: vectors.UnBind(2))               # removal frees a node
     keys = iter(vectors)
-    assert refuses(lambda: vectors.Bind(3, gp_Vec()))       # the iterator caches the bucket array
+    assert not refuses(lambda: vectors.Bind(3, gp_Vec()))   # allowed: the iterator goes stale instead
+    try:
+        next(keys)                                       # it cached the bucket array the growth may free
+        raise AssertionError("not stale")
+    except RuntimeError:
+        pass
     ```
 
     ```python
@@ -3935,14 +3943,13 @@ The Python additions of Design.md, section 2.
     box = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()
     faces = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
     it = iter(faces)
+    TopExp.MapShapes_s(box, TopAbs_ShapeEnum.TopAbs_FACE, faces)   # OCCT adds to its argument: allowed
     try:
-        TopExp.MapShapes_s(box, TopAbs_ShapeEnum.TopAbs_FACE, faces)   # OCCT adds to its argument
-        raise AssertionError("not refused")
-    except BufferError:
+        next(it)                                         # the iterator went stale
+        raise AssertionError("not stale")
+    except RuntimeError:
         pass
-    del it
-    TopExp.MapShapes_s(box, TopAbs_ShapeEnum.TopAbs_FACE, faces)
-    assert faces.Extent() == 6
+    assert faces.Extent() == 6 and len(list(faces)) == 6   # a new iterator sees the new contents
     ```
 ### R-ITER
 
@@ -3969,7 +3976,7 @@ The Python additions of Design.md, section 2.
     - An element of a class holding pointers keeps the iterated object and what its slots hold (R-RESULT-KEEP, `nanocct_def_iter<T, true>`).
     - An element of an owner class (R-COPY) is never copied out, so such a class is not iterable (none, OCCT 8.0.1).
     - An OCAF one keeps its owners (R-OWNER: the elements of `TDF_ChildIterator(root)` outlive the iterator and the data's variable).
-    - An object of such a class constructed or initialised from an NCollection container counts as an iterator of it (R-VIEW-GUARD).
+    - An object of such a class constructed or initialised from an NCollection container counts as an iterator of it and goes stale when the container changes (R-VIEW-GUARD).
 
 - **Python**
 
@@ -4100,7 +4107,7 @@ The Python additions of Design.md, section 2.
     - Not bound, reported: a pointer to a Transient (a handle may not own it: `Segment.EdgePtr`), to an owner (R-COPY), or to a class the compiler cannot copy -- asked through a probe, `std::conditional_t<std::is_copy_constructible_v<P>, int, char>` read back as a type (`NCollection_ListNode`, `NCollection_IncAllocator::IBlock` with its `std::atomic` members, the abstract `OpenGl_Element`; 6).
     - A **handle** member's setter also takes `None` (`nb::for_setter(nb::arg("value").none())`: the getter reads a null handle as `None`, R-HANDLE, and a plain `def_rw` setter refuses it -- `GeomHash.PolygonOnTriHashKey.Poly`).
     - A **bit-field** (`unsigned stick : 1` in `Graphic3d_CStructure`, `unsigned int r1 : 8` … in `MeshVS_TwoColors` -- the only public ones in the install) is a `def_prop_rw` through lambdas, since no pointer-to-member exists (`Field.is_bitfield`).
-    - An **NCollection container** member's setter raises `BufferError` while the container has live views (`nanocct_def_container_field`, R-VIEW-GUARD).
+    - An **NCollection container** member's setter raises `BufferError` while the container has live element views and makes its iterators stale (`nanocct_def_container_field`, R-VIEW-GUARD).
 
 - **Python examples**
 
@@ -4916,11 +4923,11 @@ The Python additions of Design.md, section 2.
 - For every other element type these compile to nothing (`owners<T>::active` is false; a `keep_if_owned` that does not apply is an empty `nb::call_guard<>`) -- measured: `NCollection_Sequence[int].Value` 21 ns with and without the rule.
 - The binders that do not apply it -- Array2/HArray2, DynamicArray, LinearVector, Shared -- `static_assert` that their element type has no owners, so an OCAF instantiation of one does not compile instead of losing its owners silently (none in OCCT 8.0.1).
 
-### Views a container refuses to invalidate (R-VIEW-GUARD)
+### Calls that invalidate a container's views (R-VIEW-GUARD)
 
-What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element references, numpy arrays and iterators; *iterators* = iterators only. Everything not listed keeps every view valid (`SetValue`, `Init`, `CopyValues`, `Reverse`, a Sequence's `Exchange(I, J)`, an IndexedMap's `Substitute`/`Swap`, inserting into a List, Sequence, DynamicArray or any map's nodes).
+What invalidates what, read in OCCT 8.0.1's container code. Every call listed makes the container's iterators stale (they raise `RuntimeError` on their next use); the first column also refuses (`BufferError`) while an element reference or a numpy array of the container lives. Everything not listed keeps every view valid (`SetValue`, `Init`, `CopyValues`, `Reverse`, a Sequence's `Exchange(I, J)`, an IndexedMap's `Substitute`/`Swap`, inserting into a List, Sequence, DynamicArray or any map's nodes).
 
-| Container | Refuses while any view lives | Refuses while an iterator lives |
+| Container | Refuses while an element view lives; makes iterators stale | Makes iterators stale only |
 |---|---|---|
 | `Array1`, `HArray1` | `Resize` to another length, `Assign` of another size (a new buffer; the same size copies in place) | -- |
 | `Array2`, `HArray2` | `Resize`/`ResizeWithTrim` without data to another number of elements, with data to another shape (`resizeImpl` moves `*this` into a temporary); `Assign` of another size | -- |

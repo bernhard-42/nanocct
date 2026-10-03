@@ -2,29 +2,54 @@
 // Include nanocct_common.h, not this file: the parts rely on each other in the order it includes them.
 #pragma once
 
-// R-VIEW-GUARD (Binding-Rules.md): an NCollection container refuses a call that would invalidate one of its live views, with
-// BufferError -- Python's own rule for bytearray, which refuses to resize while a buffer is exported. A view is anything
-// that points into a container's storage: an element reference (ChangeValue, a List's Append result, a map's ChangeFind or
-// ChangeSeek, ...), a numpy array over it, an iterator (OCCT's Iterator classes and the Python ones of __iter__). Which call
-// invalidates which kind of view is OCCT's container code, read once (Binding-Rules.md, the R-VIEW-GUARD table): the binder
-// (nanocct_ncollection.h) checks its own members, nanocct::guarded checks every generated function that takes a container
-// by non-const reference or pointer -- OCCT may change it -- and a container data member checks before it is assigned.
-// Views are counted per C++ container address, so two Python wrappers of one container agree, in ONE table for all
-// extension modules (nanocct_shared): a generated function of any toolkit sees the views another toolkit's binder handed
-// out. A view's count goes when the view dies (nb::keep_alive_cb; a numpy array: its owner capsule). A mutex protects the
-// table, not the GIL (free-threading); `live` counts all views of all containers, so a call made while nothing is viewed
+// R-VIEW-GUARD (Binding-Rules.md): a view is anything that points into an NCollection container's storage: an element
+// reference (ChangeValue, a List's Append result, a map's ChangeFind or ChangeSeek, ...), a numpy array over it, an
+// iterator (OCCT's Iterator classes and the Python ones of __iter__). A call that would invalidate a view is treated as
+// Python treats its own types:
+// - element references and numpy arrays: the container refuses the call with BufferError -- Python's rule for bytearray,
+//   which refuses to resize while a buffer is exported;
+// - iterators: the call goes ahead and the container's live iterators go stale; a stale iterator raises RuntimeError on
+//   its next use -- Python's rule for dict, set and deque ("dictionary changed size during iteration").
+// Which call invalidates which kind of view is OCCT's container code, read once (Binding-Rules.md, the R-VIEW-GUARD
+// table): the binder (nanocct_ncollection.h) checks its own members, nanocct::guarded checks every generated function that
+// takes a container by non-const reference or pointer -- OCCT may change it -- and a container data member checks before
+// it is assigned. Views are counted per C++ container address, so two Python wrappers of one container agree, in ONE
+// table for all extension modules (nanocct_shared): a generated function of any toolkit sees the views another toolkit's
+// binder handed out. A view's count goes when the view dies (nb::keep_alive_cb; a numpy array: its owner capsule).
+// Staleness is a generation per container, an atomic the container's iterators share: an invalidating call bumps it, an
+// iterator remembers the value it was registered at (constructor, Init/Initialize). An iterator's check is one table
+// lookup by its C++ address and an atomic load (a Python iterator of __iter__ holds the generation itself: one atomic
+// load), so a loop pays a few ns per step. `live` counts all views of all containers: a call made while nothing is viewed
 // anywhere costs one atomic load.
+// The table is touched only from binding glue, which holds the GIL (calls, call policies, keep_alive_cb, capsule
+// destructors): a GIL build needs no lock, a free-threaded build (Py_GIL_DISABLED) takes a mutex.
+#if defined(Py_GIL_DISABLED)
+using view_mutex = std::mutex;
+#else
+struct view_mutex { void lock() noexcept {} void unlock() noexcept {} };
+#endif
 enum class view_kind : size_t { element = 0, iterator = 1 };
+using view_generation = std::atomic<uint64_t>;
 struct view_registry {
-    struct counts { size_t n[2] = {0, 0}; };              // by view_kind
-    struct view { const void *container; view_kind kind; };
-    std::mutex mutex;
+    struct counts {                                       // a container with live views
+        size_t n[2] = {0, 0};                             // by view_kind
+        std::shared_ptr<view_generation> generation = std::make_shared<view_generation>(0);
+    };
+    struct view {                                         // a live view object
+        const void *container = nullptr;
+        view_kind kind = view_kind::element;
+        const void *object = nullptr;                     // an iterator's C++ object: its key in `iterators`
+        std::shared_ptr<view_generation> generation;      // an iterator's container's generation ...
+        uint64_t stamp = 0;                               // ... and the value it started at
+    };
+    view_mutex mutex;
     std::atomic<size_t> live{0};
-    std::unordered_map<const void *, counts> containers;  // container -> its live views
-    std::unordered_map<PyObject *, view> views;          // view object -> what it views (an iterator can be re-initialised)
+    std::unordered_map<const void *, counts> containers;            // container -> its live views
+    std::unordered_map<PyObject *, std::unique_ptr<view>> views;    // view object -> what it views (an iterator can be re-initialised)
+    std::unordered_map<const void *, view *> iterators;             // C++ object of an iterator view -> its record
 };
 inline view_registry &view_table() { return nanocct_shared<view_registry>("_view_registry", "nanocct._view_registry"); }
-// both under the mutex
+// both under the lock
 inline void view_link(view_registry &reg, const void *container, view_kind kind) {
     reg.containers[container].n[(size_t) kind] += 1;
     reg.live.fetch_add(1);
@@ -40,40 +65,54 @@ inline void view_unlink(view_registry &reg, const void *container, view_kind kin
 }
 inline void release_view(void *view) noexcept {
     view_registry &reg = view_table();
-    std::lock_guard<std::mutex> lock(reg.mutex);
+    std::lock_guard<view_mutex> lock(reg.mutex);
     auto it = reg.views.find(static_cast<PyObject *>(view));
     if (it == reg.views.end())
         return;
-    view_unlink(reg, it->second.container, it->second.kind);
+    view_unlink(reg, it->second->container, it->second->kind);
+    auto i = reg.iterators.find(it->second->object);
+    if (i != reg.iterators.end() && i->second == it->second.get())
+        reg.iterators.erase(i);
     reg.views.erase(it);
 }
 // `view` (a nanobind instance) points into the container at `container` until it dies. The same object again (nanobind
 // returns the wrapper it already has for an address) counts once; an iterator initialised on another container moves.
+// Every registration (re)starts an iterator at the container's current generation: a re-initialised iterator is fresh.
 inline void add_view(nb::handle view, const void *container, view_kind kind) {
     if (!view.is_valid() || view.is_none())
         return;
     view_registry &reg = view_table();
+    bool fresh;
     {
-        std::lock_guard<std::mutex> lock(reg.mutex);
-        auto [it, fresh] = reg.views.try_emplace(view.ptr(), view_registry::view{container, kind});
-        if (!fresh) {
-            if (it->second.container != container || it->second.kind != kind) {
-                view_unlink(reg, it->second.container, it->second.kind);
-                it->second = view_registry::view{container, kind};
-                view_link(reg, container, kind);
-            }
-            return;
+        std::lock_guard<view_mutex> lock(reg.mutex);
+        std::unique_ptr<view_registry::view> &v = reg.views[view.ptr()];
+        fresh = v == nullptr;
+        if (fresh) {
+            v = std::make_unique<view_registry::view>();
+        } else if (v->container != container || v->kind != kind) {
+            view_unlink(reg, v->container, v->kind);
         }
-        view_link(reg, container, kind);
+        if (fresh || v->container != container || v->kind != kind) {
+            v->container = container;
+            v->kind = kind;
+            view_link(reg, container, kind);
+        }
+        if (kind == view_kind::iterator) {
+            v->object = nb::inst_ptr<void>(view);
+            v->generation = reg.containers[container].generation;
+            v->stamp = v->generation->load();
+            reg.iterators[v->object] = v.get();
+        }
     }
-    nb::keep_alive_cb(view, view.ptr(), &release_view);
+    if (fresh)
+        nb::keep_alive_cb(view, view.ptr(), &release_view);
 }
 // the container an iterator object was registered for, nullptr if none (a default-constructed Iterator)
 inline const void *viewed_container(PyObject *iterator) {
     view_registry &reg = view_table();
-    std::lock_guard<std::mutex> lock(reg.mutex);
+    std::lock_guard<view_mutex> lock(reg.mutex);
     auto it = reg.views.find(iterator);
-    return it == reg.views.end() ? nullptr : it->second.container;
+    return it == reg.views.end() ? nullptr : it->second->container;
 }
 // numpy: the owner of an array over the container's storage -- counts one element view and keeps the container's Python
 // object alive until the array (and every array derived from it) is gone. nanobind refuses reference_internal for an
@@ -82,7 +121,7 @@ struct exported_view { const void *container; PyObject *owner; };
 inline nb::capsule export_view(const void *container, nb::handle owner) {
     view_registry &reg = view_table();
     {
-        std::lock_guard<std::mutex> lock(reg.mutex);
+        std::lock_guard<view_mutex> lock(reg.mutex);
         view_link(reg, container, view_kind::element);
     }
     auto *payload = new exported_view{container, owner.inc_ref().ptr()};
@@ -90,51 +129,112 @@ inline nb::capsule export_view(const void *container, nb::handle owner) {
         auto *e = static_cast<exported_view *>(p);
         {
             view_registry &r = view_table();
-            std::lock_guard<std::mutex> lock(r.mutex);
+            std::lock_guard<view_mutex> lock(r.mutex);
             view_unlink(r, e->container, view_kind::element);
         }
         Py_DECREF(e->owner);                             // outside the lock: the release can run Python code
         delete e;
     });
 }
-// the live views of a container: all kinds, or iterators only; `except` (an iterator the call itself goes through, as in
-// List.Remove(it)) is not counted
-inline size_t live_views(const void *container, bool iterators_only, PyObject *except = nullptr) {
+// the live element views (element references, numpy arrays) of a container
+inline size_t live_elements(const void *container) {
     view_registry &reg = view_table();
     if (reg.live.load() == 0)
         return 0;
-    std::lock_guard<std::mutex> lock(reg.mutex);
+    std::lock_guard<view_mutex> lock(reg.mutex);
     auto it = reg.containers.find(container);
-    if (it == reg.containers.end())
-        return 0;
-    size_t n = it->second.n[(size_t) view_kind::iterator] + (iterators_only ? 0 : it->second.n[(size_t) view_kind::element]);
-    if (except != nullptr) {
-        auto v = reg.views.find(except);
-        if (v != reg.views.end() && v->second.container == container && (!iterators_only || v->second.kind == view_kind::iterator))
-            n -= 1;
-    }
-    return n;
+    return it == reg.containers.end() ? 0 : it->second.n[(size_t) view_kind::element];
 }
 [[noreturn]] inline void raise_viewed(size_t n, const std::string &what) {
-    const std::string msg = what + ": " + std::to_string(n) + " live view(s) of this container (element references, "
-        "iterators or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray "
-        "raises while a buffer is exported)";
+    const std::string msg = what + ": " + std::to_string(n) + " live view(s) of this container (element references or "
+        "numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a "
+        "buffer is exported)";
     throw nb::buffer_error(msg.c_str());
 }
-// BufferError when the container has live views the call would invalidate. what: the member, for the message.
+// the call goes ahead: the container's live iterators go stale, except `except` (an iterator the call itself goes through
+// and leaves valid, as List.Remove(it)), which moves to the new generation
+inline void invalidate_iterators(const void *container, PyObject *except = nullptr) {
+    view_registry &reg = view_table();
+    if (reg.live.load() == 0)
+        return;
+    std::lock_guard<view_mutex> lock(reg.mutex);
+    auto it = reg.containers.find(container);
+    if (it == reg.containers.end() || it->second.n[(size_t) view_kind::iterator] == 0)
+        return;
+    const uint64_t now = it->second.generation->fetch_add(1) + 1;
+    if (except != nullptr) {
+        auto v = reg.views.find(except);
+        if (v != reg.views.end() && v->second->container == container && v->second->kind == view_kind::iterator)
+            v->second->stamp = now;
+    }
+}
+// BufferError when the container has live element views the call would invalidate; otherwise its iterators go stale.
+// what: the member, for the message.
 inline void refuse_if_viewed(const void *container, const char *what, PyObject *except = nullptr) {
-    const size_t n = live_views(container, false, except);
+    const size_t n = live_elements(container);
     if (n != 0)
         raise_viewed(n, what);
+    invalidate_iterators(container, except);
 }
-// a hashed map's table can grow on insert: its iterators (not its element references) would be invalidated
-inline void refuse_if_iterated(const void *container, const char *what) {
-    const size_t n = live_views(container, true);
-    if (n != 0) {
-        const std::string msg = std::string(what) + ": " + std::to_string(n) + " live iterator(s) of this map would be "
-            "invalidated by this call (the table may grow); finish or release them first (BufferError)";
-        throw nb::buffer_error(msg.c_str());
+[[noreturn]] inline void raise_stale(const char *what) {
+    const std::string msg = std::string(what) + ": the container changed during iteration; initialise the iterator "
+        "again (RuntimeError, as dict raises after a change of size during iteration)";
+    throw std::runtime_error(msg);
+}
+// RuntimeError when the C++ object `object` is a registered iterator whose container changed since it was (re)initialised.
+// what: the member, for the message.
+inline void refuse_if_stale(const void *object, const char *what) {
+    view_registry &reg = view_table();
+    if (reg.live.load() == 0)
+        return;
+    bool stale;
+    {
+        std::lock_guard<view_mutex> lock(reg.mutex);
+        auto it = reg.iterators.find(object);
+        stale = it != reg.iterators.end() && it->second->generation->load(std::memory_order_relaxed) != it->second->stamp;
     }
+    if (stale)
+        raise_stale(what);
+}
+// A container's Python iterator (__iter__): nb::make_iterator drives a C++ iterator, which raises RuntimeError before it
+// moves or compares once the container changed. The generation and its start value are shared by the begin and end
+// copies and set right after the Python iterator is registered (iterate below), from its record.
+struct iterate_start {
+    std::shared_ptr<view_generation> generation;
+    uint64_t stamp = 0;
+};
+template <typename I> struct checked_iterator {
+    I it;
+    std::shared_ptr<iterate_start> start;
+    mutable bool stepped = false;             // ++ checked, the == right after it need not (nanocct_iter_cursor)
+    void check() const {
+        if (start->generation != nullptr && start->generation->load(std::memory_order_relaxed) != start->stamp)
+            raise_stale("iterator");
+    }
+    bool operator==(const checked_iterator &o) const {
+        if (!stepped)
+            check();
+        stepped = false;
+        return it == o.it;
+    }
+    bool operator!=(const checked_iterator &o) const { return !(*this == o); }
+    checked_iterator &operator++() { check(); ++it; stepped = true; return *this; }
+    decltype(auto) operator*() const { return *it; }
+};
+// __iter__: a Python iterator over [first, last), registered as an iterator view of `self` (R-VIEW-GUARD)
+template <nb::rv_policy::value Policy = nb::rv_policy::automatic_reference_v, typename C, typename I>
+auto iterate(nb::handle scope, const char *name, const C &self, I first, I last) {
+    auto start = std::make_shared<iterate_start>();
+    auto it = nb::make_iterator<Policy>(scope, name, checked_iterator<I>{first, start}, checked_iterator<I>{last, start});
+    add_view(it, &self, view_kind::iterator);
+    view_registry &reg = view_table();
+    std::lock_guard<view_mutex> lock(reg.mutex);
+    auto v = reg.views.find(it.ptr());
+    if (v != reg.views.end()) {
+        start->generation = v->second->generation;
+        start->stamp = v->second->stamp;
+    }
+    return it;
 }
 // call policies: the result (0) or argument Self (1-based) becomes a view of the container that is argument Container
 // (1-based; 1 is self, as in nb::keep_alive). In a constructor's postcall args[0] is the new object; nb::new_'s arguments
@@ -158,7 +258,8 @@ struct view_through_iterator {
     }
 };
 
-// R-VIEW-GUARD for generated code: the call refuses when a container argument it may change has live views. The check runs
+// R-VIEW-GUARD for generated code: the call refuses when a container argument it may change has live element views, and
+// makes its iterators stale otherwise (every argument is checked before any iterator goes stale). The check runs
 // inside the call, after nanobind converted the arguments: a call policy's precall runs before the conversion, and raising
 // there pre-empted another overload taking the same container const (PLib::SetPoles: (const Array1<gp_Pnt>&,
 // Array1<double>&) and (..., const Array1<double>&, Array1<double>&)). K: the 0-based C++ parameter positions (self not
@@ -170,19 +271,30 @@ template <typename A> const void *container_address(A &argument) {
         return static_cast<const void *>(&argument);
 }
 // position: the argument's 1-based position in the Python call, self not counted (for the message)
-template <typename A> void refuse_viewed_argument(A &argument, size_t position) {
+template <typename A> void refuse_element_viewed_argument(A &argument, size_t position) {
     const void *container = container_address(argument);
     if (container == nullptr)
         return;
-    const size_t n = live_views(container, false);
+    const size_t n = live_elements(container);
     if (n != 0)
         raise_viewed(n, "argument " + std::to_string(position));
+}
+template <typename A> void invalidate_argument_iterators(A &argument) {
+    const void *container = container_address(argument);
+    if (container != nullptr)
+        invalidate_iterators(container);
+}
+// one argument (a generated lambda or constructor body)
+template <typename A> void refuse_viewed_argument(A &argument, size_t position) {
+    refuse_element_viewed_argument(argument, position);
+    invalidate_argument_iterators(argument);
 }
 template <size_t... K, typename... A> void refuse_viewed_arguments(A &...arguments) {
     if (view_table().live.load() == 0)
         return;
     auto all = std::forward_as_tuple(arguments...);
-    (refuse_viewed_argument(std::get<K>(all), K + 1), ...);
+    (refuse_element_viewed_argument(std::get<K>(all), K + 1), ...);
+    (invalidate_argument_iterators(std::get<K>(all)), ...);
 }
 // the bound function with the same signature (a member function takes self first, as nanobind's own wrapper does):
 // guarded<static_cast<Sig>(&C::Method), K...>::call. Dispatch on the exact function type: deducing from the value made a
@@ -209,10 +321,37 @@ struct guarded_impl<R (C::*)(A...) const noexcept, F, K...> {
     static R call(const C &self, A... a) { refuse_viewed_arguments<K...>(a...); return (self.*F)(std::forward<A>(a)...); }
 };
 template <auto F, size_t... K> using guarded = guarded_impl<decltype(F), F, K...>;
+
+// R-VIEW-GUARD for generated iterator classes constructed or initialised on a container (emit.py _stale_check): every
+// member but Init/Initialize raises RuntimeError once that container changed. One atomic load while nothing is viewed.
+template <typename T> void refuse_if_stale_self(const T &self, const char *what) {
+    refuse_if_stale(static_cast<const void *>(&self), what);
+}
+// the directly bound member with the same signature, self first (as guarded): fresh_call<F>::call, F a member function
+// or a function taking self first (guarded<...>::call)
+template <typename T, T F> struct fresh_impl;
+template <typename R, typename C, typename... A, R (C::*F)(A...)> struct fresh_impl<R (C::*)(A...), F> {
+    static R call(C &self, A... a) { refuse_if_stale_self(self, "iterator"); return (self.*F)(std::forward<A>(a)...); }
+};
+template <typename R, typename C, typename... A, R (C::*F)(A...) const> struct fresh_impl<R (C::*)(A...) const, F> {
+    static R call(const C &self, A... a) { refuse_if_stale_self(self, "iterator"); return (self.*F)(std::forward<A>(a)...); }
+};
+template <typename R, typename C, typename... A, R (C::*F)(A...) noexcept> struct fresh_impl<R (C::*)(A...) noexcept, F> {
+    static R call(C &self, A... a) { refuse_if_stale_self(self, "iterator"); return (self.*F)(std::forward<A>(a)...); }
+};
+template <typename R, typename C, typename... A, R (C::*F)(A...) const noexcept>
+struct fresh_impl<R (C::*)(A...) const noexcept, F> {
+    static R call(const C &self, A... a) { refuse_if_stale_self(self, "iterator"); return (self.*F)(std::forward<A>(a)...); }
+};
+template <typename R, typename C, typename... A, R (*F)(C &, A...)> struct fresh_impl<R (*)(C &, A...), F> {
+    static R call(C &self, A... a) { refuse_if_stale_self(self, "iterator"); return F(self, std::forward<A>(a)...); }
+};
+template <auto F> using fresh_call = fresh_impl<decltype(F), F>;
 }
 
 // R-VIEW-GUARD: a container member (an NCollection_List, Array1, ... held by value) as nanocct_def_field binds it, whose
-// setter refuses while the container has live views -- the assignment would free or reallocate what they point into.
+// setter refuses while the container has live element views and makes its iterators stale -- the assignment would free or
+// reallocate what they point into.
 // The property is nanobind's def_rw (nb_class.h) with that check in the setter.
 template <typename C, typename T, typename D, typename... Extra>
 void nanocct_def_container_field(nb::class_<C> cls, const char *name, D T::*p, const Extra &...extra) {

@@ -42,7 +42,7 @@ nanobind's default for a returned raw pointer is *take ownership*, which would `
 - a *mutable* reference to a class (`ChangeXxx()` accessors) gets `rv_policy::reference_internal` so in-place edits reach the owner;
 - const references and values are copied (nanobind default) -- a `const T&` of a class that cannot be copied comes back by reference, tied to its owner (R-RESULT);
 - a value (or a copied `const T&`) of a class that holds pointers keeps alive what produced it, and so does an argument the call writes into (R-RESULT-KEEP); an OCAF label, attribute or data keeps its `TDF_Data` and that data's `TDocStd_Document` instead (R-OWNER).
-- an element reference, an iterator or a numpy view of an NCollection container blocks every call that would invalidate it: the call raises `BufferError`, as a `bytearray` does while a buffer is exported (R-VIEW-GUARD).
+- an element reference or a numpy view of an NCollection container blocks every call that would invalidate it: the call raises `BufferError`, as a `bytearray` does while a buffer is exported; such a call does not wait for the container's iterators, they go stale and raise `RuntimeError` on their next use, as a `dict`'s do (R-VIEW-GUARD).
 
 ### Multiple inheritance
 

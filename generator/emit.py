@@ -133,6 +133,7 @@ class Emitter:
         self.slots = 0                         # R-METHOD-KEEP: the slots of this file (one per kept method parameter)
         self._slot_texts: list[str] = []       # the emitted text of each slot's policy, checked once the file is complete
         self._iterating = False                # R-VIEW-GUARD: the class being defined is an iterator class (R-ITER)
+        self._stale_checked = False            # R-VIEW-GUARD: ... constructed or initialised on a container: its members check staleness
         self.needs_ocaf = False               # R-OWNER: this file applies nanocct::owners to an OCAF type (nanocct_ocaf.h)
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
         # mapped (the member ones are found in _define_class). A free operator== against something else -- the
@@ -385,6 +386,20 @@ class Emitter:
             return ""
         return self._iterator_views(m.params, self._positions(m, True), 1)
 
+    def _stale_check(self, m: Method) -> str:
+        """R-VIEW-GUARD: a member of an iterator class constructed or initialised on a container (an iterator view of it)
+        raises RuntimeError once the container changed -- every member but Init/Initialize, which re-start it. The first
+        statement of a lambda; a direct binding goes through nanocct::fresh_call (_fresh)."""
+        if not self._stale_checked or m.is_static or m.name in ("Init", "Initialize"):
+            return ""
+        return 'nanocct::refuse_if_stale_self(self, "iterator"); '
+
+    def _fresh(self, fn: str, m: Method) -> str:
+        """The same check for a directly bound member: nanocct::fresh_call, same signature."""
+        if self._stale_check(m) == "":
+            return fn
+        return f"&nanocct::fresh_call<{fn}>::call"
+
     @staticmethod
     def _guarded(fn: str, params: list[Param]) -> str:
         """A directly bound function taking a container it may change goes through nanocct::guarded: same signature, the
@@ -475,6 +490,8 @@ class Emitter:
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
                        else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
         body: list[str] = self._guard_checks(m.params)          # R-VIEW-GUARD
+        if cls is not None and self._stale_check(m) != "":
+            body.insert(0, self._stale_check(m).strip())
         body += [f"{p.type} {p.name}[{p.array_len}]{{}};" if p.array_len > 0 else f"{_strip_ref(p.type)} {p.name}{{}};"
                  for p in outs if not p.is_inout]
         # R-FIXED-ARRAY: a const T[N] parameter is copied from the std::array into a C array for the call
@@ -592,7 +609,7 @@ class Emitter:
         if m.name in _INPLACE_OPS:
             # R-IOP: OCCT in-place operators return void (or *this); the lambda calls the operator and returns self, the same
             # Python object
-            checks = "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
+            checks = self._stale_check(m) + "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
             lam = f"[]({B} &self{''.join(f', {p.type} {p.name}' for p in m.params)}) -> {B} & {{ {checks}self.{m.name}({', '.join(p.name for p in m.params)}); return self; }}"
             return f'.def("{py}", {lam}, nb::rv_policy::reference{self._keep_slots(m)}{self._extras(doc, m.params, False, True)})'
         if (m.result_on_heap or m.result_by_reference) and has_out:
@@ -624,7 +641,7 @@ class Emitter:
             fn = self._guarded(f"static_cast<{m.result} (*)({self._sig(m.params)}){ne}>(&{T}::{m.name})", m.params)
             return f'.def_static("{py}", {fn}{policy}{self._keep_views(m, False)}{self._extras(doc, m.params, False, False)})'
         const = " const" if m.is_const else ""
-        fn = self._guarded(f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})", m.params)
+        fn = self._fresh(self._guarded(f"static_cast<{m.result} ({T}::*)({self._sig(m.params)}){const}{ne}>(&{T}::{m.name})", m.params), m)
         if m.result_keeps_producer:
             policy += ", nb::call_policy<nanocct::KeepOwnerUnlessSelf>()"     # R-ALLOCATOR
         return f'.def("{py}", {fn}{policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, True)}{self._extras(doc, m.params, False, m.is_operator)})'
@@ -639,7 +656,7 @@ class Emitter:
         sep = ", " if len(m.params) > 0 else ""
         args = ", ".join(p.name for p in m.params)
         keep = self._keep_slots(m)
-        checks = "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
+        checks = self._stale_check(m) + "".join(c + " " for c in self._guard_checks(m.params))    # R-VIEW-GUARD
         getter = f'.def("{py}", []({B} &self{sep}{params}) -> {m.result} {{ {checks}return self.{m.name}({args}); }}{keep}{self._extras(m.doc, m.params, False, m.is_operator)})'
         note = f"Python addition: sets the value {m.name}({args}) returns by reference in C++."
         if m.is_operator:
@@ -1177,6 +1194,7 @@ class Emitter:
         body: list[str] = []
         ctor_body: list[str] = []     # constructors of a 7c instantiation: guarded at compile time (abstractness is not visible in the template)
         self._iterating = self._iter_getter(c) is not None    # R-VIEW-GUARD: constructors and Init/Initialize make iterator views
+        self._stale_checked = self._iterating and any(p.container for f in [*c.ctors, *(m for m in c.methods if m.name in ("Init", "Initialize") and not m.is_static)] for p in f.params)
         self._self = c.bound_type                              # R-KEPT: keep_slot's Self
         unhashable = False            # R-UNHASHABLE: emitted after the body, as a statement of its own
         def cls_expr_of(cc: Class) -> str:

@@ -1058,7 +1058,8 @@ def test_a_guard_handed_back_to_its_editor_is_released():
     assert out == ["0.5"]
 
 
-# ---- R-VIEW-GUARD: a container refuses to invalidate its live views (BufferError, as bytearray) -------------------------
+# ---- R-VIEW-GUARD: a container refuses to invalidate its live element views (BufferError, as bytearray); its iterators --
+# ---- go stale instead (RuntimeError on their next use, as dict's) ----------------------------------------------------------
 
 GUARD = """
 def attempt(call):
@@ -1067,6 +1068,8 @@ def attempt(call):
         return "done"
     except BufferError:
         return "BufferError"
+    except RuntimeError:
+        return "RuntimeError"
 """
 
 
@@ -1152,45 +1155,49 @@ def test_views_into_lists_and_sequences_block_what_frees_or_moves_their_nodes():
     assert out == ["BufferError BufferError BufferError", "BufferError BufferError BufferError", "1.0 1.0 5.0 3 2 0", "2 0"]
 
 
-def test_an_iterator_blocks_what_would_free_its_node():
-    """An iterator holds a node pointer (OCCT's `Iterator` and the Python one of `for`): `Clear()` freed it and the next
-    `Value()`/`next()` read freed memory (heap-use-after-free, 2026-10-02). Removing through the iterator itself -- OCCT's
-    removal loop -- moves it on and stays allowed; a re-initialised iterator no longer blocks its old list."""
+def test_an_iterator_goes_stale_when_its_list_frees_nodes():
+    """An iterator holds a node pointer (OCCT's `Iterator` and the Python one of `for`): `Clear()` frees it, and a `Value()`
+    or `next()` after it read freed memory (heap-use-after-free, 2026-10-02). The call goes ahead and the iterator raises
+    RuntimeError on every later use -- `More()` included -- until it is initialised again. Removing through the iterator
+    itself -- OCCT's removal loop -- leaves that one valid and every other iterator of the list stale."""
     out = _ok(_run("""
         from nanocct.NCollection import NCollection_List
         from nanocct.gp import gp_Pnt
         L = NCollection_List[gp_Pnt]
         l, l2 = L(), L()
         for i in range(3):
-            l.Append(gp_Pnt(i, 0, 0))
             l2.Append(gp_Pnt(i, 0, 0))
+        l.Append(gp_Pnt(9, 0, 0))
         it = L.Iterator(l)
-        print(attempt(lambda: l.Clear()))
+        print(attempt(lambda: l.Clear()), attempt(lambda: it.More()), attempt(lambda: it.Value()))
+        for i in range(3):
+            l.Append(gp_Pnt(i, 0, 0))
+        it.Initialize(l)
+        other = L.Iterator(l)
         while it.More():
             if it.Value().X() == 1.0:
                 l.Remove(it)
             else:
                 it.Next()
+        print(l.Extent(), attempt(lambda: other.More()))
         it.Initialize(l2)
         l.Clear()
-        print(l.Extent(), attempt(lambda: l2.Clear()))
-        del it
-        collect()
+        print(attempt(lambda: it.Value()))
         try:
             for x in l2:
                 l2.Clear()
-        except BufferError:
-            print("BufferError")
-        l2.Clear()
+        except RuntimeError:
+            print("RuntimeError")
         print(l2.Extent())
     """, GUARD))
-    assert out == ["BufferError", "0 BufferError", "BufferError", "0"]
+    assert out == ["done RuntimeError RuntimeError", "2 RuntimeError", "done", "RuntimeError", "0"]
 
 
-def test_a_map_iterator_blocks_growth_its_element_views_only_removal():
+def test_growth_makes_a_map_iterator_stale_and_removal_is_refused_to_its_element_views():
     """A hashed map's iterator caches the bucket array, which an insert that grows the table frees (`Bind`/`Add`,
-    NCollection_BaseMap.hxx `Iterator::PNext`: heap-use-after-free, 2026-10-02); a value handed out by `ChangeFind` lives
-    in its node, which only a removal frees. An indexed map's iterator holds the map and an index and survives growth."""
+    NCollection_BaseMap.hxx `Iterator::PNext`: heap-use-after-free, 2026-10-02): the insert goes ahead and the iterator
+    raises RuntimeError afterwards. A value handed out by `ChangeFind` lives in its node, which only a removal frees: the
+    removal is refused while it lives. An indexed map's iterator holds the map and an index and survives growth."""
     out = _ok(_run("""
         from nanocct.NCollection import NCollection_DataMap, NCollection_IndexedMap, NCollection_Map
         from nanocct import BRepPrimAPI, TopTools, TopoDS
@@ -1203,7 +1210,7 @@ def test_a_map_iterator_blocks_growth_its_element_views_only_removal():
             m.Bind(s, s)
         print(m.Extent(), attempt(lambda: m.UnBind(shapes[0])), v.IsSame(shapes[0]))
         it = M.Iterator(m)
-        print(attempt(lambda: m.Bind(shapes[0], shapes[1])), attempt(lambda: m.ReSize(5000)))
+        print(attempt(lambda: m.Bind(shapes[0], shapes[1])), attempt(lambda: it.Key()), attempt(lambda: m.ReSize(5000)))
         del it, v
         collect()
         print(m.UnBind(shapes[0]))
@@ -1212,8 +1219,8 @@ def test_a_map_iterator_blocks_growth_its_element_views_only_removal():
         try:
             for k in keys:
                 keys.Add(k + 1)
-        except BufferError:
-            print("BufferError")
+        except RuntimeError:
+            print("RuntimeError")
         im = NCollection_IndexedMap[float]()
         im.Add(1.0)
         n = 0
@@ -1223,7 +1230,7 @@ def test_a_map_iterator_blocks_growth_its_element_views_only_removal():
                 im.Add(k + 1.0)
         print(n)
     """, GUARD))
-    assert out == ["300 BufferError True", "BufferError BufferError", "True", "BufferError", "2000"]
+    assert out == ["300 BufferError True", "done RuntimeError done", "True", "RuntimeError", "2000"]
 
 
 def test_a_vector_refuses_to_grow_past_its_capacity_while_viewed():
@@ -1245,10 +1252,11 @@ def test_a_vector_refuses_to_grow_past_its_capacity_while_viewed():
     assert out == ["2 2 BufferError BufferError", "3"]
 
 
-def test_a_call_that_may_change_a_viewed_container_refuses():
+def test_a_call_that_may_change_a_viewed_container_refuses_or_makes_its_iterators_stale():
     """A generated function taking a container by non-const reference may change it -- OCCT does resize arrays passed in
-    (Graphic3d_Camera.cxx:1743) and fills maps, which can grow them. While the container is viewed the call raises
-    (`nanocct::guarded`, checked after argument conversion); a container it takes by const reference does not matter."""
+    (Graphic3d_Camera.cxx:1743) and fills maps, which can grow them. While the container has element views (a numpy
+    array) the call raises (`nanocct::guarded`, checked after argument conversion); its iterators go stale; a container it
+    takes by const reference does not matter."""
     out = _ok(_run("""
         import numpy as np
         from nanocct import BRepPrimAPI, NCollection, PLib, TopAbs, TopExp, TopTools, TopoDS
@@ -1258,7 +1266,7 @@ def test_a_call_that_may_change_a_viewed_container_refuses():
         TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE, m)
         keys = iter(m)
         next(keys)
-        print(attempt(lambda: TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)))
+        print(attempt(lambda: TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)), attempt(lambda: next(keys)))
         del keys
         collect()
         TopExp.TopExp.MapShapes_s(box, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
@@ -1274,12 +1282,12 @@ def test_a_call_that_may_change_a_viewed_container_refuses():
         f = np.asarray(fp)
         print(attempt(lambda: PLib.PLib.SetPoles_s(poles, weights, fp)), f.tolist())
     """, GUARD))
-    assert out == ["BufferError", "18", "BufferError [2.0, 4.0, 6.0, 2.0, 8.0, 10.0, 12.0, 2.0]"]
+    assert out == ["done RuntimeError", "18", "BufferError [2.0, 4.0, 6.0, 2.0, 8.0, 10.0, 12.0, 2.0]"]
 
 
-def test_a_container_member_refuses_assignment_while_viewed():
+def test_assigning_a_container_member_makes_its_iterators_stale():
     """Assigning a container data member frees or reallocates what its views point into (`MathRoot::MultipleResult::Roots`,
-    an `NCollection_DynamicArray<double>`): the setter raises while it is iterated."""
+    an `NCollection_DynamicArray<double>`): the setter goes ahead and an iterator of the old contents raises afterwards."""
     out = _ok(_run("""
         from nanocct.MathRoot import MultipleResult
         from nanocct.NCollection import NCollection_DynamicArray
@@ -1291,13 +1299,68 @@ def test_a_container_member_refuses_assignment_while_viewed():
         replacement.Append(5.0)
         def assign():
             r.Roots = replacement
-        print(next(values), attempt(assign))
+        print(next(values), attempt(assign), attempt(lambda: next(values)))
         del values
         collect()
         assign()
         print(r.Roots.Length(), r.Roots.Value(0))
     """, GUARD))
-    assert out == ["1.0 BufferError", "1 5.0"]
+    assert out == ["1.0 done RuntimeError", "1 5.0"]
+
+
+def test_an_exhausted_iterator_does_not_block_and_is_stale_after_a_change():
+    """`while it.More(): it.Next()` leaves an exhausted iterator that is still referenced: a later `ReSize` goes ahead
+    (as dict lets a consumed iterator live). The iterator is stale: `Reset()` restarts from the bucket array it cached,
+    which the ReSize freed (NCollection_BaseMap.hxx, `Reset` -> `findFirst`), so it raises like every other member;
+    `Initialize` starts it again on the new table."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_Map
+        M = NCollection_Map[int]
+        m = M(10)
+        for i in range(100):
+            m.Add(i)
+        it = M.Iterator(m)
+        while it.More():
+            it.Next()
+        print(attempt(lambda: m.ReSize(200)), attempt(lambda: it.Reset()), attempt(lambda: it.More()))
+        it.Initialize(m)
+        n = 0
+        while it.More():
+            n += 1
+            it.Next()
+        print(n)
+    """, GUARD))
+    assert out == ["done RuntimeError RuntimeError", "100"]
+
+
+def test_a_python_iterator_of_an_array_goes_stale_when_the_array_reallocates():
+    """`iter(a)` walks the array's buffer; `Resize` to another length reallocates it: the call goes ahead and `next()`
+    raises (nanocct::iterate). A new `iter(a)` walks the new buffer."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_Array1
+        a = NCollection_Array1[float](1, 3)
+        for i in range(1, 4):
+            a.SetValue(i, float(i))
+        values = iter(a)
+        print(next(values), attempt(lambda: a.Resize(1, 5, True)), attempt(lambda: next(values)), len(list(a)))
+    """, GUARD))
+    assert out == ["1.0 done RuntimeError 5"]
+
+
+def test_a_generated_iterator_class_goes_stale_with_its_container():
+    """A generated More/Next class constructed or initialised on a container (`TopOpeBRepDS_InterferenceIterator` on an
+    `NCollection_List`) is an iterator of it: every member but `Init` raises once the list changed (`nanocct::fresh_call`),
+    and so does a `for` over it; `Init` starts it again."""
+    out = _ok(_run("""
+        from nanocct.NCollection import NCollection_List
+        from nanocct.TopOpeBRepDS import TopOpeBRepDS_Interference, TopOpeBRepDS_InterferenceIterator
+        l = NCollection_List[TopOpeBRepDS_Interference]()
+        it = TopOpeBRepDS_InterferenceIterator(l)
+        print(attempt(lambda: l.Clear()), attempt(lambda: it.More()), attempt(lambda: [x for x in it]))
+        it.Init(l)
+        print(it.More())
+    """, GUARD))
+    assert out == ["done RuntimeError RuntimeError", "False"]
 
 
 # ---- R-KEPT: a Transient keeps what it was given as long as its C++ object lives ---------------------------------------

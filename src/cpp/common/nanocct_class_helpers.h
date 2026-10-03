@@ -16,14 +16,27 @@ template <typename T, typename F> void nanocct_if_concrete(nb::class_<T> cls, F 
 // advances the object itself, so it is exhausted afterwards, like a file; the element is copied out before Next().
 // View (R-RESULT-KEEP): the element is a class that holds pointers, so each one keeps the iterated object alive (a
 // TDF_Label from TDF_ChildIterator); an element with OCAF owners keeps those too (R-OWNER).
+// R-VIEW-GUARD: an object registered as an iterator of a container (an NCollection Iterator, a generated iterator class
+// constructed on a container) raises RuntimeError before it moves or compares once that container changed. A step of
+// nb::make_iterator is ++ then ==: ++ checks, and the == right after it does not check again (`stepped`); an == without a
+// ++ before it (the first step, a next() after the end) checks.
+namespace nanocct { inline void refuse_if_stale(const void *object, const char *what); }   // nanocct_guards.h
 template <typename T, bool View, typename Get> struct nanocct_iter_cursor {
     T *obj;                                   // nullptr: the end sentinel
     Get get;
     PyObject *owner;                          // View: the iterated object (borrowed; the iterator keeps it alive)
-    bool done() const { return obj == nullptr || !obj->More(); }
+    mutable bool stepped = false;             // ++ checked, the next == need not
+    bool done() const {
+        if (obj == nullptr)
+            return true;
+        if (!stepped)
+            nanocct::refuse_if_stale(obj, "iterator");
+        stepped = false;
+        return !obj->More();
+    }
     bool operator==(const nanocct_iter_cursor &o) const { return done() == o.done(); }
     bool operator!=(const nanocct_iter_cursor &o) const { return !(*this == o); }
-    nanocct_iter_cursor &operator++() { obj->Next(); return *this; }
+    nanocct_iter_cursor &operator++() { nanocct::refuse_if_stale(obj, "iterator"); obj->Next(); stepped = true; return *this; }
     auto operator*() const {                  // by value: Current() may be a reference that Next() changes
         using E = std::remove_cv_t<std::remove_reference_t<decltype(get(*obj))>>;
         if constexpr (View || nanocct::owners<E>::active) {

@@ -38,15 +38,18 @@ template <typename T>
 struct has_equal<T, std::void_t<decltype(std::declval<const T &>() == std::declval<const T &>())>> : std::true_type {};
 
 // R-VIEW-GUARD (nanocct_guards.h, Binding-Rules.md): what a member hands out that points into the container. A view of self
-// (an element reference, LinearVector::ToArray1's aliasing array), an iterator over self (__iter__), an iterator
-// constructed or initialised on its argument, an element reference handed out by such an iterator.
+// (an element reference, LinearVector::ToArray1's aliasing array), an iterator constructed or initialised on its
+// argument, an element reference handed out by such an iterator. An iterator over self (__iter__) registers itself
+// (nanocct::iterate).
 using elem_view_of_self = nb::call_policy<view_of<view_kind::element>>;
-using iterator_of_self = nb::call_policy<view_of<view_kind::iterator>>;
 using iterator_of_arg = nb::call_policy<view_of<view_kind::iterator, 1, 2>>;
 using elem_view_of_iterator = nb::call_policy<view_through_iterator>;
 // the Python object of an iterator argument, for a call that goes through it (List::Remove(it) moves it on and keeps it
 // valid): that iterator does not count against the call
 template <typename It> nb::object iterator_object(const It &it) { return nb::find(it); }
+// R-VIEW-GUARD: an Iterator whose container changed since it was constructed or initialised raises RuntimeError on every
+// use but Initialize, as Python's dict iterators do; what: the member, for the message
+template <typename It> It &fresh(It &it, const char *what) { refuse_if_stale_self(it, what); return it; }
 
 // def() a member returning an element reference: a view (reference_internal, counted as a view of the container: Policy)
 // for class element types, a value for scalars and handles (nanobind policies are compile-time tags, hence if constexpr)
@@ -155,8 +158,8 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      // Python additions
      .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (OCCT index).")
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
-     .def("__iter__", [](const Cls &self) { return nb::make_iterator(nb::type<Cls>(), "iterator", self.begin(), self.end()); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the values from Lower() to Upper().");
+     .def("__iter__", [](const Cls &self) { return iterate(nb::type<Cls>(), "iterator", self, self.begin(), self.end()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values from Lower() to Upper().");
     // R-VIEW: a packed POD element type also gets numpy's array protocol, a zero-copy
     // view of the whole array, so the per-element __getitem__ loop above never has to be the way large data
     // reaches Python. Not every instantiation qualifies -- a handle, a string, a TopoDS_Shape has nothing to view.
@@ -238,10 +241,10 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
         .def(nb::init<>(), D::Iterator::ctor)
         .def(nb::init<const L &>(), nb::arg("theList"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
         .def("Initialize", [](It &self, const L &l) { self.Initialize(l); }, nb::arg("theList"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::Initialize)
-        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-        .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value);
-    def_elem<T, elem_view_of_iterator>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value);
+    def_elem<T, elem_view_of_iterator>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     // R-VIEW-GUARD: removing or clearing frees nodes; Append/Prepend/Insert*(theOther) move theOther's nodes into this list
     // (NCollection_BaseList.cxx, PAppend(list&) ...), Exchange both ways; inserting an item never moves a node
@@ -271,8 +274,8 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
               own_all(self, other); own_all(other, self); self.Exchange(other); }, nb::arg("theOther"), D::Exchange)
      // Python additions
      .def("__len__", [](const L &self) { return self.Extent(); }, "Python addition: alias to Extent.")
-     .def("__iter__", [](const L &self) { return nb::make_iterator(nb::type<L>(), "value_iterator", self.begin(), self.end()); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the values.");
+     .def("__iter__", [](const L &self) { return iterate(nb::type<L>(), "value_iterator", self, self.begin(), self.end()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
     // members returning the (inserted) element reference: view for class types, value otherwise
     def_elem<T>(c, "Append", [](L &self, const T &v) -> T & { own(self, v); return self.Append(v); }, nb::arg("theItem"), D::Append);
     def_elem<T>(c, "Prepend", [](L &self, const T &v) -> T & { own(self, v); return self.Prepend(v); }, nb::arg("theItem"), D::Prepend);
@@ -331,8 +334,8 @@ template <typename T, typename Cls, typename... Extra> void def_sequence_members
      .def("__getitem__", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), "Python addition: alias to Value (OCCT index, 1-based).")
      .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (OCCT index).")
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
-     .def("__iter__", [](const Cls &self) { return nb::make_iterator(nb::type<Cls>(), "value_iterator", self.cbegin(), self.cend()); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the values.");
+     .def("__iter__", [](const Cls &self) { return iterate(nb::type<Cls>(), "value_iterator", self, self.cbegin(), self.cend()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
     if constexpr (std::is_class_v<T>) {
         c.def("ChangeFirst", [](Cls &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeFirst)
          .def("ChangeLast", [](Cls &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeLast)
@@ -349,10 +352,10 @@ template <typename T> void bind_NCollection_Sequence(nb::module_ &m, const char 
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
         .def(nb::init<const S &, const bool>(), nb::arg("theSeq"), nb::arg("isStart") = true, nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
-        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-        .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value);
-    def_elem<T, elem_view_of_iterator>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value);
+    def_elem<T, elem_view_of_iterator>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), "ChangeValue", [](It &self) -> T & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     c.def(nb::init<>(), D::ctor)
      .def(nb::init<const opencascade::handle<NCollection_BaseAllocator> &>(), nb::arg("theAllocator").none(), D::ctor)
@@ -402,7 +405,7 @@ template <bool Indexed, typename M, typename... Extra> void def_basemap_members(
               refuse_if_viewed(&self, "Exchange"); refuse_if_viewed(&other, "Exchange");
               own_all(self, other); own_all(other, self); self.Exchange(other); }, nb::arg("theOther"), D.Exchange)
      .def("Assign", [](M &self, const M &other) -> M & { refuse_if_viewed(&self, "Assign"); own_all(self, other); return self.Assign(other); }, nb::rv_policy::reference, nb::arg("theOther"), D.Assign)
-     .def("ReSize", [](M &self, const int n) { if constexpr (!Indexed) refuse_if_iterated(&self, "ReSize"); self.ReSize(n); }, nb::arg("N"), D.ReSize)
+     .def("ReSize", [](M &self, const int n) { if constexpr (!Indexed) invalidate_iterators(&self); self.ReSize(n); }, nb::arg("N"), D.ReSize)
      .def("Clear", [](M &self, const bool release) { refuse_if_viewed(&self, "Clear"); self.Clear(release); }, nb::arg("doReleaseMemory") = true, D.Clear)
      .def("Clear", [](M &self, const opencascade::handle<NCollection_BaseAllocator> &a) { refuse_if_viewed(&self, "Clear"); self.Clear(a); }, nb::arg("theAllocator").none(), D.Clear)
      .def("__len__", [](const M &self) { return self.Extent(); }, "Python addition: alias to Extent.");
@@ -418,7 +421,7 @@ template <typename M, typename It, typename Get> auto key_iterator(nb::handle sc
         Cursor &operator++() { it.Next(); return *this; }
         decltype(auto) operator*() const { return get(it); }
     };
-    return nb::make_iterator(scope, "key_iterator", Cursor{It(self), get}, Cursor{It(), get});
+    return iterate(scope, "key_iterator", self, Cursor{It(self), get}, Cursor{It(), get});
 }
 
 
@@ -432,25 +435,25 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
         .def(nb::init<>(), D::Iterator::ctor)
         .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
         .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::Initialize)
-        .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
-        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-        .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value)
-        .def("Key", [](const It &self) -> decltype(auto) { return owned(self.Key()); }, D::Iterator::Key);
+        .def("Reset", [](It &self) { fresh(self, "Iterator.Reset").Reset(); }, D::Iterator::Reset)
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+        .def("Key", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key").Key()); }, D::Iterator::Key);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: Add can grow the table (iterators); removal frees nodes. The set operations per NCollection_MapAlgo.hxx:
     // Union clears this map unless it is an operand, Unite only adds, the others remove or exchange into a local.
-    c.def("Add", [](M &self, const K &k) { refuse_if_iterated(&self, "Add"); own(self, k); return self.Add(k); }, nb::arg("theKey"), D::Add)
-     .def("Added", [](M &self, const K &k) -> decltype(auto) { refuse_if_iterated(&self, "Added"); own(self, k); return owned(self.Added(k)); }, nb::arg("theKey"), D::Added)
+    c.def("Add", [](M &self, const K &k) { invalidate_iterators(&self); own(self, k); return self.Add(k); }, nb::arg("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> decltype(auto) { invalidate_iterators(&self); own(self, k); return owned(self.Added(k)); }, nb::arg("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
      .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains_deprecated)
      .def("Remove", [](M &self, const K &k) { refuse_if_viewed(&self, "Remove"); return self.Remove(k); }, nb::arg("theKey"), D::Remove)
      .def("IsEqual", [](const M &self, const M &other) { return self.IsEqual(other); }, nb::arg("theOther"), D::IsEqual)
      .def("Union", [](M &self, const M &a, const M &b) {
-              if (&self != &a && &self != &b) refuse_if_viewed(&self, "Union"); else refuse_if_iterated(&self, "Union");
+              if (&self != &a && &self != &b) refuse_if_viewed(&self, "Union"); else invalidate_iterators(&self);
               own_all(self, a); own_all(self, b); self.Union(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Union)
-     .def("Unite", [](M &self, const M &other) { refuse_if_iterated(&self, "Unite"); own_all(self, other); return self.Unite(other); }, nb::arg("theOther"), D::Unite)
+     .def("Unite", [](M &self, const M &other) { invalidate_iterators(&self); own_all(self, other); return self.Unite(other); }, nb::arg("theOther"), D::Unite)
      .def("HasIntersection", [](const M &self, const M &other) { return self.HasIntersection(other); }, nb::arg("theMap"), D::HasIntersection)
      .def("Intersection", [](M &self, const M &a, const M &b) { refuse_if_viewed(&self, "Intersection"); own_all(self, a); own_all(self, b); self.Intersection(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Intersection)
      .def("Intersect", [](M &self, const M &other) { refuse_if_viewed(&self, "Intersect"); return self.Intersect(other); }, nb::arg("theOther"), D::Intersect)
@@ -461,7 +464,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
      // Python additions
      .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the keys.");
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.");
 }
 
 // ---- NCollection_DataMap<K, V, Hasher>
@@ -474,17 +477,17 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     it.def(nb::init<>(), D::Iterator::ctor)
       .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
       .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::Initialize)
-      .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
-      .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-      .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-      .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value)
-      .def("Key", [](const It &self) -> decltype(auto) { return owned(self.Key()); }, D::Iterator::Key);
+      .def("Reset", [](It &self) { fresh(self, "Iterator.Reset").Reset(); }, D::Iterator::Reset)
+      .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+      .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+      .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+      .def("Key", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key").Key()); }, D::Iterator::Key);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
-    def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+    def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: binding can grow the table (iterators; a bound key's value is assigned in place), UnBind frees a node
-    c.def("Bind", [](M &self, const K &k, const V &v) { refuse_if_iterated(&self, "Bind"); own(self, k); own(self, v); return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
-     .def("TryBind", [](M &self, const K &k, const V &v) { refuse_if_iterated(&self, "TryBind"); own(self, k); own(self, v); return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
+    c.def("Bind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
+     .def("TryBind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
      .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), D::IsBound)
      .def("UnBind", [](M &self, const K &k) { refuse_if_viewed(&self, "UnBind"); return self.UnBind(k); }, nb::arg("theKey"), D::UnBind)
      .def("Find", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nb::arg("theKey"), D::Find)
@@ -492,17 +495,17 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
      // Python additions
      .def("__contains__", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), "Python addition: alias to IsBound.")
      .def("__getitem__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nb::arg("theKey"), "Python addition: alias to Find.")
-     .def("__setitem__", [](M &self, const K &k, const V &v) { refuse_if_iterated(&self, "__setitem__"); own(self, k); own(self, v); self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), "Python addition: alias to Bind.")
+     .def("__setitem__", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), "Python addition: alias to Bind.")
      .def("__delitem__", [](M &self, const K &k) { refuse_if_viewed(&self, "__delitem__"); if (!self.UnBind(k)) throw nb::key_error(); }, nb::arg("theKey"), "Python addition: UnBind, KeyError if the key is not bound.")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the keys.")
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.")
      .def("items", [](const M &self) {
               nb::list out;
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key()), owned(it.Value())));
               return out; }, "Python addition: list of (key, value) tuples.");
     // element references: view for class V, value for scalars/handles
-    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { refuse_if_iterated(&self, "Bound"); own(self, k); own(self, v); return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
-    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { refuse_if_iterated(&self, "TryBound"); own(self, k); own(self, v); return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
     def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nb::arg("theKey"), D::ChangeFind);
     // Seek: nullptr when absent -> None. The const Seek is a copy, as Find() is (a const pointer is no view: nanobind has no
     // const, so reference_internal handed out a writable alias -- on DoubleMap's Seek1/Seek2 a *key*, whose change left it
@@ -526,11 +529,11 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
     nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
         .def(nb::init<>(), D::Iterator::ctor)
         .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
-        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-        .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value)
-        .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
-        .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+        .def("Index", [](const It &self) { return fresh(self, "Iterator.Index").Index(); }, D::Iterator::Index)
+        .def("IsEqual", [](const It &self, const It &o) { return fresh(self, "Iterator.IsEqual").IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_basemap_members<true>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: adding, Substitute and Swap keep every node (NCollection_IndexedMap.hxx); removal frees one
@@ -549,7 +552,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
      .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
      .def("__getitem__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindKey(i)); }, nb::arg("theIndex"), "Python addition: alias to FindKey (1-based index).")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Value(); }); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the keys in index order.");
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.");
 }
 
 // ---- NCollection_IndexedDataMap<K, V, Hasher>
@@ -561,14 +564,14 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
     it.def(nb::init<>(), D::Iterator::ctor)
       .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
-      .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-      .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-      .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value)
-      .def("Key", [](const It &self) -> decltype(auto) { return owned(self.Key()); }, D::Iterator::Key)
-      .def("Index", [](const It &self) { return self.Index(); }, D::Iterator::Index)
-      .def("IsEqual", [](const It &self, const It &o) { return self.IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
+      .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+      .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+      .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+      .def("Key", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key").Key()); }, D::Iterator::Key)
+      .def("Index", [](const It &self) { return fresh(self, "Iterator.Index").Index(); }, D::Iterator::Index)
+      .def("IsEqual", [](const It &self, const It &o) { return fresh(self, "Iterator.IsEqual").IsEqual(o); }, nb::arg("theOther"), D::Iterator::IsEqual);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
-    def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return self.ChangeValue(); }, D::Iterator::ChangeValue);
+    def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     def_basemap_members<true>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: as IndexedMap -- adding, binding (in place for a bound key), Substitute and Swap keep every node
     c.def("Add", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.Add(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Add)
@@ -589,7 +592,7 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
      .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
      .def("__getitem__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindFromIndex(i)); }, nb::arg("theIndex"), "Python addition: alias to FindFromIndex (1-based index).")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the keys in index order.")
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.")
      .def("items", [](const M &self) {
               nb::list out;
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key()), owned(it.Value())));
@@ -742,8 +745,8 @@ template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const c
      // Python additions
      .def("__setitem__", [](V &self, const int i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
      .def("__len__", [](const V &self) { return self.Length(); }, "Python addition: alias to Length.")
-     .def("__iter__", [](const V &self) { return nb::make_iterator(nb::type<V>(), "value_iterator", self.cbegin(), self.cend()); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the values.");
+     .def("__iter__", [](const V &self) { return iterate(nb::type<V>(), "value_iterator", self, self.cbegin(), self.cend()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
     def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { return self.Append(v); }, nb::arg("theValue"), D::Append);
     def_elem<T>(c, "InsertAfter", [](V &self, const int i, const T &v) -> T & { return self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertAfter);
     def_elem<T>(c, "InsertBefore", [](V &self, const int i, const T &v) -> T & { return self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertBefore);
@@ -807,8 +810,8 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
      // Python additions
      .def("__setitem__", [](V &self, const size_t i, const T &v) { refuse_if_grown(self, i, "__setitem__"); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
      .def("__len__", [](const V &self) { return self.Size(); }, "Python addition: alias to Size.")
-     .def("__iter__", [](const V &self) { return nb::make_iterator(nb::type<V>(), "value_iterator", self.cbegin(), self.cend()); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over the values.");
+     .def("__iter__", [](const V &self) { return iterate(nb::type<V>(), "value_iterator", self, self.cbegin(), self.cend()); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
     def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { refuse_if_full(self, "Append"); return self.Append(v); }, nb::arg("theValue"), D::Append);
     def_elem<T>(c, "Appended", [](V &self) -> T & { refuse_if_full(self, "Appended"); return self.Appended(); }, D::Appended);
     def_elem<T>(c, "SetValue", [](V &self, const size_t i, const T &v) -> T & { refuse_if_grown(self, i, "SetValue"); return self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::SetValue);
@@ -831,17 +834,17 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
         .def(nb::init<>(), D::Iterator::ctor)
         .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
         .def("Initialize", [](It &self, const M &map) { self.Initialize(map); }, nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::Initialize)
-        .def("Reset", [](It &self) { self.Reset(); }, D::Iterator::Reset)
-        .def("More", [](const It &self) { return self.More(); }, D::Iterator::More)
-        .def("Next", [](It &self) { self.Next(); }, D::Iterator::Next)
-        .def("Key1", [](const It &self) -> decltype(auto) { return owned(self.Key1()); }, D::Iterator::Key1)
-        .def("Key2", [](const It &self) -> decltype(auto) { return owned(self.Key2()); }, D::Iterator::Key2)
-        .def("Value", [](const It &self) -> decltype(auto) { return owned(self.Value()); }, D::Iterator::Value);
+        .def("Reset", [](It &self) { fresh(self, "Iterator.Reset").Reset(); }, D::Iterator::Reset)
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Key1", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key1").Key1()); }, D::Iterator::Key1)
+        .def("Key2", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key2").Key2()); }, D::Iterator::Key2)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value);
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: binding can grow both tables (iterators), UnBind1/UnBind2 free a node
-    c.def("Bind", [](M &self, const K1 &a, const K2 &b) { refuse_if_iterated(&self, "Bind"); own(self, a); own(self, b); self.Bind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Bind)
-     .def("TryBind", [](M &self, const K1 &a, const K2 &b) { refuse_if_iterated(&self, "TryBind"); own(self, a); own(self, b); return self.TryBind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::TryBind)
+    c.def("Bind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); self.Bind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Bind)
+     .def("TryBind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); return self.TryBind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::TryBind)
      .def("AreBound", [](const M &self, const K1 &a, const K2 &b) { return self.AreBound(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::AreBound)
      .def("IsBound1", [](const M &self, const K1 &a) { return self.IsBound1(a); }, nb::arg("theKey1"), D::IsBound1)
      .def("IsBound2", [](const M &self, const K2 &b) { return self.IsBound2(b); }, nb::arg("theKey2"), D::IsBound2)
@@ -851,7 +854,7 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
      .def("Find2", [](const M &self, const K2 &b) -> decltype(auto) { return owned(self.Find2(b)); }, nb::arg("theKey2"), D::Find2)
      // Python additions
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) { return nb::make_tuple(owned(it.Key1()), owned(it.Key2())); }); },
-          nb::keep_alive<0, 1>(), iterator_of_self(), "Python addition: iterates over (key1, key2) pairs.")
+          nb::keep_alive<0, 1>(), "Python addition: iterates over (key1, key2) pairs.")
      .def("items", [](const M &self) {
               nb::list out;
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key1()), owned(it.Key2())));
