@@ -61,7 +61,7 @@ def counts() -> dict[str, int]:
 # spell some types differently; Windows also skips what its libraries do not export)
 PINNED: dict[str, dict[str, int]] = {
     "darwin": {
-        "R-CTOR-KEEP keep_alive": 455,
+        "R-CTOR-KEEP keep_alive": 454,
         "R-COPY keep_view_arg": 79,
         "R-METHOD-KEEP slots": 814,
         "R-KEPT slots on the C++ object": 109,
@@ -78,13 +78,13 @@ PINNED: dict[str, dict[str, int]] = {
         "R-COPY implicit copies": 4920,
         "R-COPY implicit copies that keep the original": 528,
         "R-KEPT implicit copies": 28,
-        "report copy": 311,
+        "report copy": 310,
         "report kept": 45,
         "report lifetime": 91,
         "report view-guard": 149,
     },
     "linux": {
-        "R-CTOR-KEEP keep_alive": 455,
+        "R-CTOR-KEEP keep_alive": 454,
         "R-COPY keep_view_arg": 78,
         "R-METHOD-KEEP slots": 814,
         "R-KEPT slots on the C++ object": 109,
@@ -101,7 +101,7 @@ PINNED: dict[str, dict[str, int]] = {
         "R-COPY implicit copies": 4920,
         "R-COPY implicit copies that keep the original": 528,
         "R-KEPT implicit copies": 28,
-        "report copy": 309,
+        "report copy": 308,
         "report kept": 45,
         "report lifetime": 91,
         "report view-guard": 149,
@@ -124,7 +124,7 @@ PINNED: dict[str, dict[str, int]] = {
         "R-COPY implicit copies": 4918,
         "R-COPY implicit copies that keep the original": 528,
         "R-KEPT implicit copies": 28,
-        "report copy": 315,
+        "report copy": 314,
         "report kept": 45,
         "report lifetime": 91,
         "report view-guard": 149,

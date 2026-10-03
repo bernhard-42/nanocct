@@ -80,11 +80,11 @@ Two checks, one free and one on demand:
 
 ### `overrides.toml` — the only hand-maintained input
 
-Each entry is a documented deviation with a one-line reason. Sections:
+Each entry is a documented deviation with a one-line reason, and each must still match: `tests/test_generator.py` fails on a `skip.*` entry that skipped nothing in the platform's own generation (its report) and on an `inout`, `stream.binary_members` or `not_value_copy` entry that names nothing in the OCCT headers; `bytes` and `views` have checks of their own. Sections:
 
 - `inout`: the four `gp_*::Transforms` methods whose `double&` parameters are in/out and the two `Geom_Transformation`/`Geom2d_Transformation::Transforms` that forward to them, `Bnd_Sphere::IsOut` (`theMaxDist` compared, then lowered), `ElCLib::AdjustPeriodic` (`U1`/`U2` moved into the period from their incoming values), `BVH_BuildQueue::Fetch` (`wasBusy` from the last call), `Hermit::Solutionbis` (some branches set only one of `Knotmin`/`Knotmax`), `*::InitFromJson` for every class, `Font_FontMgr::FindFont` (`Font_FontAspect&`: the aspect looked for, replaced when an alias maps to another style — `Font_FontMgr.cxx:1060`), and the methods that read and replace a `handle<T>&` — `GeomLib::ExtendCurveToPoint` and five more, `*::ReadCompleteInfo`. OCCT's `@param[in][out]` markers are too sparse to derive the list (`gp_Trsf::Transforms` has none; a survey of the bound headers: every marked non-const primitive/enum reference in the bound headers is either in the list, a protected member or an unbound function template).
-- `skip.classes`: internal helpers such as `Standard_Static_Assert<true>`.
-- `skip.noncopyable`: `math_GlobOptMin`, bound through a wrapper with deleted copy/move.
+- `skip.classes`: internal helpers such as `Standard_Static_Assert<true>`, by qualified name, nested classes included (`BRepGraphInc_Reconstruct::Cache::TempScope`).
+- `skip.noncopyable`: classes whose copy does not compile for a reason the parser cannot see, bound through a wrapper with deleted copy/move (R-NONCOPYABLE); empty for OCCT 8.0.1, the parser detects the known causes.
 - `skip.headers`: platform-specific internals OCCT only includes under `#ifdef`, e.g. `OSD_WNT.hxx`.
 - `skip.methods`: members of a 7c instantiation whose template *body* does not compile for the argument — `IntPolyh_Array<IntPolyh_Edge>::Dump` calls `Edge::Dump()` which takes an `int`. Declared-but-undefined members need no entry since the `nm` check compares mangled names per overload (R-UNDEFINED).
 - `skip.namespaces`: `std` (only `std::hash` specialisations); `detail`/`Detail`/`Internal` (header-only implementation helpers).

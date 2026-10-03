@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+from fnmatch import fnmatch
 from pathlib import Path
 
 import pytest
@@ -2377,6 +2378,68 @@ def test_every_byte_buffer_pair_in_occt_is_listed_for_r_bytes():
     assert len(found) > 0
     assert sorted(found - listed - set(not_a_buffer_pair)) == []
     assert sorted(listed - found) == []                                    # and no stale entry
+
+
+def _override_lines() -> list[str]:
+    """The messages of the `override` lines of this platform's generator reports (src/cpp/TK*/report.txt)."""
+    out = []
+    for report in sorted((ROOT / "src" / "cpp").glob("TK*/report.txt")):
+        for line in report.read_text(encoding="utf-8").splitlines():
+            if line.startswith("override\t"):
+                out.append(line.split("\t", 2)[2])
+    return out
+
+
+@pytest.mark.skipif(not (ROOT / "src" / "cpp" / "manifest.json").exists(), reason="needs a generation (make generate)")
+def test_every_skip_entry_still_skips_something():
+    """overrides.toml [skip] names classes, headers, constructors, methods and namespaces by exact spelling, and an entry
+    that stops matching is silent: what it named is bound again. For the PLib/BSplCLib entries that is a member OCCT reads
+    and writes past a single double through ("array passed by its first element"); for a class whose destructor is not
+    exported, an API that depends on the platform (BRepGraphInc_Reconstruct::Cache::TempScope was bound on macOS and
+    Linux until 2026-10-03: nested classes were not looked up). So every entry must have skipped something in this
+    platform's generation. size_t is `unsigned long` on LP64 and `unsigned long long` on Windows (LLP64): an
+    instantiation spelled with the other data model's size_t cannot match here."""
+    skip = parse._OVERRIDES["skip"]
+    lines = _override_lines()
+    assert len(lines) > 0
+    other_size_t = "unsigned long>" if sys.platform == "win32" else "unsigned long long>"
+
+    def method(e: str) -> bool:      # an exact signature, or a name for every overload (operator() is a name)
+        tail = ": overrides.toml [skip] methods"
+        return any(m == e + tail or m.startswith(e + "(") and m.endswith(tail) for m in lines)
+
+    def namespace(e: str) -> bool:   # `MathSys::detail::Helper: namespace skipped (...)`
+        return any(e in m.split(": namespace skipped")[0].split("::") for m in lines if ": namespace skipped" in m)
+
+    unmatched = (
+        [f"methods: {e}" for e in skip["methods"] if other_size_t not in e and not method(e)]
+        + [f"constructors: {e}" for e in skip["constructors"]
+           if not any(m.startswith(f"{e}: overrides.toml [skip] constructors") for m in lines)]
+        + [f"classes: {e}" for e in skip["classes"]
+           if not any(re.search(rf"(^|: ){re.escape(e)}: skipped \(overrides\.toml \[skip\]", m) for m in lines)]
+        + [f"headers: {e}" for e in skip["headers"] if f"{e}: skipped (overrides.toml [skip] headers)" not in lines]
+        + [f"namespaces: {e}" for e in skip["namespaces"] if not namespace(e)])
+    assert unmatched == []
+
+
+def test_every_member_override_names_an_occt_member():
+    """[inout], [stream] binary_members and [not_value_copy] change how a member or a class is bound and leave no report
+    line, so an entry OCCT no longer matches would go unnoticed. Every entry ([inout]: a glob on the qualified name) must
+    name a member declared in the header of its class, or a class OCCT declares. Platform-independent: read from the
+    OCCT sources, like the R-BYTES scan above."""
+    declared = set()
+    for module in ("FoundationClasses", "ModelingData", "ModelingAlgorithms", "Visualization", "ApplicationFramework",
+                   "DataExchange"):
+        for header in (OCCT_SRC / "src" / module).rglob("*.hxx"):
+            for name in set(re.findall(r"(~?\w+)\s*\(", header.read_text(errors="replace"))):
+                declared.add(f"{header.stem}::{name}")
+    assert len(declared) > 10000
+    o = parse._OVERRIDES
+    unmatched = (
+        [f"inout: {e}" for e in o["inout"] if not any(fnmatch(d, e) for d in declared)]
+        + [f"binary_members: {e}" for e in o["stream"]["binary_members"] if e not in declared]
+        + [f"not_value_copy: {e}" for e in o["not_value_copy"]["classes"] if not (OCCT_INC / f"{e}.hxx").exists()])
+    assert unmatched == []
 
 
 def test_containers_a_call_may_change_are_guarded(tmp_path_factory):

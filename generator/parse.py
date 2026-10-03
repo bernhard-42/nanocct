@@ -2620,6 +2620,11 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 # a nested class of a 7c instantiation is walked with the instantiation's substitution still active
                 # (NCollection_FlatMap<K, H>::Iterator: without it the BRepGraph flat maps could not be iterated)
                 n = _class(ch, header, package, outer=c.name)
+                if n.name in _SKIP_CLASSES:
+                    # [skip] classes names a nested class by its qualified name (BRepGraphInc_Reconstruct::Cache::TempScope),
+                    # reported like a top-level one
+                    c.skipped.append(f"{n.name}: skipped (overrides.toml [skip])")
+                    continue
                 if _SUBST.active:
                     # _class spells an instantiation's path flat (py_path of a name with '<'); a nested class belongs to its
                     # outer class like any other nested class: NCollection_FlatMap__BRepGraph_UID__...Iterator -> <outer>.Iterator

@@ -224,8 +224,9 @@ methods = [
     "IntPolyh_Array<IntPolyh_PointNormal>::Dump",
     # BVH_PairTraverse<T, N> with the default BVHSetType = void: Select() dereferences the (void) set; the overload taking two
     # BVH trees stays. The derived selectors (BRepExtrema_OverlapTool, IntPatch_BVHTraversal) call that one (2026-09-21).
+    # OCCT 8.0.1 instantiates only the 3D one; a 2D one would not compile (void* -> BVH(), BVH_Traverse.hxx:317), so it
+    # cannot come back unnoticed.
     "BVH_PairTraverse<double, 3, void, double>::Select()",
-    "BVH_PairTraverse<double, 2, void, double>::Select()",
     # NCollection_Vec3<unsigned long> (Image_PixMapData dimensions): cwiseAbs() calls std::abs(unsigned long), which is
     # ambiguous in C++ (no unsigned overload). Meaningless for an unsigned vector anyway (2026-09-22).
     "NCollection_Vec3<unsigned long>::cwiseAbs",

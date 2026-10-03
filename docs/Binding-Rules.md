@@ -2810,7 +2810,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - **No implicit copy constructor** (reported, category `copy`: 309<!-- count: copy-no-ctor --> classes, OCCT 8.0.1 -- `TopExp_Explorer`, `BOPAlgo_PaveFiller`, `IntPatch_Polyhedron`, every `AIS_InteractiveObject`, `TDF_Data`, …).
+    - **No implicit copy constructor** (reported, category `copy`: 308<!-- count: copy-no-ctor --> classes, OCCT 8.0.1 -- `TopExp_Explorer`, `BOPAlgo_PaveFiller`, `IntPatch_Polyhedron`, every `AIS_InteractiveObject`, `TDF_Data`, …).
     - A `const T&` result comes back by reference (`reference_internal`, `reference` without an owner; e.g. `BinObjMgt_Persistent::GetAsciiString()` returns `*this`).
     - A `T` by value without its own move or copy constructor is built on the heap, `new T(call)` (guaranteed copy elision, `take_ownership`; 20<!-- count: copy-heap --> sites, the `BRepGraph_MutGuard`s, whose move constructor an implicit instantiation does not show).
     - With out-parameters such a member is reported and skipped.
@@ -3008,7 +3008,7 @@ The Python additions of Design.md, section 2.
     - Layout that exists only as a spelling after template substitution -- a class template's by-value member or base (`Extrema_GGExtPC`'s `TheEPC myExtPC`, `BVH_Box`'s bases) -- is completed by a **layout probe** at the end of the package: `using nanocct_layout_N = …; static_assert(sizeof(nanocct_layout_N) != 0, "");` appended to the umbrella, up to 10 rounds since a probed layout can pend in turn (`_resolve_held_layout`; libclang builds the type even for a private member type, reporting only the access error).
     - A class the package's headers only declare is completed by including its header in the probe -- the header of every class named in the spelling, since a template argument has to be complete too (`NCollection_CellFilter<BRepMesh_CircleInspector>::Cell`).
     - Whatever stays open is reported, category `lifetime`, for the classes whose parameters it leaves undecided -- none (OCCT 8.0.1).
-    - 573<!-- count: ctor-keep --> arguments (OCCT 8.0.1).
+    - 572<!-- count: ctor-keep --> arguments (OCCT 8.0.1).
 
 - **Python examples**
 
