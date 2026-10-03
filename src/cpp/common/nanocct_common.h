@@ -373,7 +373,11 @@ inline void release_held(held_slots &held) noexcept {
 }
 
 struct kept_base {
-    held_slots held;                                      // this object's slots, guarded by slots().mutex
+    // The slot table's mutex, looked up here: a binding constructs every Kept<T>, with the GIL held. Delete() runs wherever
+    // OCCT drops the last handle (a worker thread, after finalisation), where slots() may not be called -- its first call
+    // in a toolkit imports nanocct (nanocct_shared).
+    std::mutex *guard = &slots().mutex;
+    held_slots held;                                      // this object's slots, guarded by *guard (slots().mutex)
     virtual ~kept_base() { release_held(held); }          // empty after Delete(), which releases after T's destructor
 };
 // T first, at offset 0: nanobind's stored pointer is the T* of the object. Not for a multiple-inheritance H-collection,
@@ -388,7 +392,10 @@ template <typename T> struct Kept final : T, kept_base {
     // the slots are taken out first and released after T's own Delete() has destroyed the whole object.
     void Delete() const override {
         held_slots held;
-        held.swap(const_cast<Kept *>(this)->held);
+        {
+            std::lock_guard<std::mutex> lock(*this->guard);   // store_slot and slot_arguments use held under it
+            held.swap(const_cast<Kept *>(this)->held);
+        }
         T::Delete();
         release_held(held);
     }
