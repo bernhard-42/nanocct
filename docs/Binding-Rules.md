@@ -724,7 +724,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **C++ Idiom**
 
-    Pointer parameter with a null default, or a `std::shared_ptr<T>` parameter defaulted to its own empty form
+    Pointer parameter with a null default whose pointee Python cannot pass: a primitive or an enum (`bool*`, `unsigned int*`), `void`, another pointer, a function, a stream (`Standard_OStream*`), or a class only forward-declared and without an installed header; or a `std::shared_ptr` to a stream defaulted to its own empty form. A pointer to a bound class is R-PTR-NULL, a `const char*` R-CSTR-NULL
 
 - **OCCT examples**
 
@@ -738,7 +738,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **Rule**
 
-    - The optional output/context is not expressible.
+    - Decided by the pointee type alone (`_OPTIONAL_PTR_REASONS` in `parse.py`), not by what the callee does with it: no caster exists for such a pointer, so the parameter cannot be passed from Python at all, and only its null default makes the member callable.
     - Without the rule 59<!-- count: optional-ptr --> members (each overload counted, OCCT 8.0.1) would be skipped entirely (`AdvancedEvolved` would have no `IsDone`), and `Open` is the only way to use `RWPly_PlyWriterContext` at all.
 
 - **Python**
@@ -800,7 +800,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Rule**
 
     - nanobind's `const char*` caster rejects `None`, so an emitted default `static_cast<const char*>(nullptr)` would make the zero-argument call `LDOM_XmlWriter()` a `TypeError`.
-    - Not R-OPTIONAL-PTR because the string is an input, not an optional output.
+    - Not R-OPTIONAL-PTR because a `const char*` has a caster (R-CSTRING): a `str` can be passed, so the parameter stays. A non-const `char*` has none and is R-OPTIONAL-PTR.
 
 - **Python**
 
@@ -832,7 +832,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **C++ Idiom**
 
-    Class pointer parameter, with a null default or without one
+    Pointer to a class nanocct binds (complete, or forward-declared with an installed header, R-PTR-INCOMPLETE), with a null default or without one. Every other pointer with a null default is R-OPTIONAL-PTR; `const char*`/`const char16_t*` are strings (R-CSTR-NULL, R-CHAR16)
 
 - **OCCT examples**
 
@@ -851,7 +851,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     - Without one, OCCT's documented null pointer ("No weights (BSplCLib::NoWeights()) means the curve is non rational", `BSplCLib.hxx`; `NoWeights()` returns that `nullptr`, so its result could not even be passed back) would be unreachable.
     - The cost, as in C++ and as with a null handle: `None` where OCCT does not expect a null pointer crashes the process unless OCCT checks it itself (measured: `Extrema_GlobOptFuncCS(None, None).Value(x)` segfaults; null handles already do the same, `BRepBuilderAPI_MakeEdge(None)` and `Geom_TrimmedCurve(None, 0.0, 1.0)` segfault while `GeomAdaptor_Curve(None)` raises `Standard_NullObject`).
     - Only a pointer to a class without a default: `const char*`/`const char16_t*` are strings (R-CSTR-NULL, R-CHAR16).
-    - Not R-OPTIONAL-PTR because the pointee is an input the callee reads.
+    - Not R-OPTIONAL-PTR because the pointee is a bound class: Python can pass one (or `None`), so the parameter stays, whether OCCT reads through it or writes through it.
     - Audited against overload resolution: a `None` call can reach another overload (`GeomGridEval_OtherSurface(None)`: the adaptor pointer instead of the handle constructor, both "no surface").
 
 - **Python**

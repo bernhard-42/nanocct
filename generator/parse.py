@@ -770,9 +770,11 @@ def _is_print_operator(name: str, params: list[Param], result_type: cindex.Type)
             and _stream_kind(result_type) == StreamKind.OUT)
 
 
-# R-OPTIONAL-PTR applies to these reasons; "unsupported std type" is not among them (no OCCT API has an optional
-# std::mutex*/std::locale* parameter -- such a parameter would be reported instead of silently dropped).
-_OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "reference to pointer", "iostream type")
+# R-OPTIONAL-PTR applies to these reasons: a pointer whose pointee Python cannot pass. A pointer to a bound class has no
+# reason and is R-PTR-NULL. "unsupported std type" is not among them (no OCCT API has an optional std::mutex*/std::locale*
+# parameter -- such a parameter would be reported instead of silently dropped), nor is "reference to pointer": the drop
+# below needs a pointer (or std::shared_ptr) type, never a reference.
+_OPTIONAL_PTR_REASONS = ("raw pointer to primitive", "void pointer", "pointer to incomplete type", "function pointer", "iostream type")
 
 
 # Binding-Rules.md R-FIXED-ARRAY
