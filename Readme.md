@@ -1,10 +1,5 @@
 ![](./nanocct.png)
 
----
-
-# -&nbsp;-&nbsp; *E X P E R I M E N T A L*  &nbsp;-&nbsp;-
-
----
 
 # nanocct
 
