@@ -1438,6 +1438,18 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Iter: __iter__ added (More/Next/Value)" in em.report
 
 
+
+def test_emitter_checks_that_every_slot_policy_is_emitted_exactly_once(rules_ir):
+    """R-METHOD-KEEP (review M7): a slot is one (declaration, parameter). Its policy emitted twice would make two bindings
+    overwrite each other's argument; one not emitted would be a slot nothing fills. emit() refuses both."""
+    for planted in ("nb::call_policy<nanocct::keep_slot<nanocct_slots, 2, 999>>()",   # never emitted
+                    "nb::arg("):                                                     # in the file many times
+        em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules"},
+                     {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+        em._slot_texts.append(planted)
+        with pytest.raises(ValueError, match="slot policies not emitted exactly once"):
+            em.emit()
+
 def test_emitter_null_bool_is_not_is_null(rules_ir):
     """R-NULL-BOOL (2026-09-30): IsNull() without operator bool -> __bool__ = not IsNull().
 

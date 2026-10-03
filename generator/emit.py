@@ -1,4 +1,16 @@
-"""IR -> nanobind C++ source."""
+"""IR -> nanobind C++ source.
+
+The phases depend on each other in this order (the comments at the sites say why):
+
+- parse (parse.py), per package: the end-of-package decisions run as _resolve_held_layout (every layout complete,
+  R-CTOR-KEEP) -> _decide_views (R-RESULT-KEEP) -> _decide_cycles (R-KEPT, once every parameter's `kept` is set).
+- __main__: _decide_kept_classes once every toolkit is parsed (whether a class is a Kept<T> depends on all of them).
+- Emitter.assign_templates over every package in emit order, before any emit(): it decides the owner of every
+  instantiation, which the parallel emit relies on -- and not inside plan() (its docstring says why).
+- Emitter.emit(), one Emitter per package (the slot counter and its exactly-once check are per file): plan -> declare
+  -> define. _define_class sets self._iterating and self._self, which _method and the keep policies read, so a member
+  is emitted only from _define_class of its own class.
+"""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -113,6 +125,7 @@ class Emitter:
         self.needs_views = False              # R-VIEW: this package binds a class from overrides.toml [views]
         self.skipped: set[str] = set()        # classes of this package not bound after all (base/outer not bound); the caller drops them from the manifest
         self.slots = 0                         # R-METHOD-KEEP: the slots of this file (one per kept method parameter)
+        self._slot_texts: list[str] = []       # the emitted text of each slot's policy, checked once the file is complete
         self._iterating = False                # R-VIEW-GUARD: the class being defined is an iterator class (R-ITER)
         self.needs_ocaf = False               # R-OWNER: this file applies nanocct::owners to an OCAF type (nanocct_ocaf.h)
         # R-UNHASHABLE: classes whose bound __eq__ compares against their own type, filled while free operators are
@@ -320,6 +333,13 @@ class Emitter:
         return f"nanocct::Kept<{cls_name}>" if cls_name in self.kept else cls_name
 
     # Binding-Rules.md R-METHOD-KEEP
+    def _slot(self, text: str) -> str:
+        """Take the next slot of this file for the policy `text` (which names it) and return the text. A slot is one
+        (declaration, parameter): the text must end up in the file exactly once, which emit() checks."""
+        self._slot_texts.append(text)
+        self.slots += 1
+        return text
+
     def _keep_slots(self, m: Method) -> str:
         """One nanocct::keep_slot call policy per method parameter the object can keep the address of: the argument's
         Python position (1 is self) counts the parameters the signature shows, as _args does with skip_out."""
@@ -331,11 +351,9 @@ class Emitter:
                 continue
             position += 1
             if p.kept and p.kept_cpp:      # R-KEPT: on the C++ object of a Kept<T>
-                out += f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}, {self._self}, true>>()"
-                self.slots += 1
+                out += self._slot(f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}, {self._self}, true>>()")
             elif p.kept:
-                out += f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}>>()"
-                self.slots += 1
+                out += self._slot(f", nb::call_policy<nanocct::keep_slot<nanocct_slots, {position}, {self.slots}>>()")
         return out
 
     # Binding-Rules.md R-VIEW-GUARD
@@ -677,9 +695,8 @@ class Emitter:
             # R-KEPT: the object is a nanocct::Kept<T>; an argument that cannot own it lives in a slot of its C++ object
             for i, p in enumerate(ins):
                 if p.kept:
-                    keep += (f", nb::call_policy<nanocct::keep_arg<nanocct_slots, {T}, {2 + i}, {self.slots}, "
-                             f"{'true' if p.kept_view else 'false'}, {'true' if p.kept_cpp else 'false'}>>()")
-                    self.slots += 1
+                    keep += self._slot(f", nb::call_policy<nanocct::keep_arg<nanocct_slots, {T}, {2 + i}, {self.slots}, "
+                                       f"{'true' if p.kept_view else 'false'}, {'true' if p.kept_cpp else 'false'}>>()")
         else:
             keep += "".join(f", nb::call_policy<nanocct::keep_view_arg<{nurse}, {2 + i}>>()" if p.kept_view
                             else f", nb::keep_alive<{nurse}, {2 + i}>()" for i, p in enumerate(ins) if p.kept)
@@ -976,7 +993,13 @@ class Emitter:
             "}",
             "",
         ]
-        return "\n".join(out)
+        text = "\n".join(out)
+        # R-METHOD-KEEP: a slot belongs to one (declaration, parameter); its policy emitted twice (two bindings sharing it)
+        # would make the two overwrite each other's argument, and one not emitted would be a slot nothing fills
+        wrong = [t.strip() for t in self._slot_texts if text.count(t) != 1]
+        if len(wrong) > 0:
+            raise ValueError(f"{ir.name}: slot policies not emitted exactly once: {wrong[:3]}")
+        return text
 
     def _functions(self) -> tuple[dict[str, list[str]], list[str]]:
         """Free functions: operators become members of their class operand (free_ops, by class name); the rest are
@@ -1308,8 +1331,7 @@ class Emitter:
                     # R-KEPT: the copy is a Kept<T> too; the original it shares pointers with stays kept by the copy's Python object
                     # (an argument of the class's own type can own the copy, which the cycle check of a constructor parameter
                     # would have to show first)
-                    define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}, {"true" if c.view else "false"}, true, false, nanocct_slots, {self.slots}>({cls_expr});')
-                    self.slots += 1
+                    define.append(self._slot(f'    nanocct_implicit_copy_ctor<{c.bound_type}, {"true" if c.view else "false"}, true, false, nanocct_slots, {self.slots}>({cls_expr});'))
                 else:
                     define.append(f'    nanocct_implicit_copy_ctor<{c.bound_type}{", true" if c.view else ""}>({cls_expr});')
         for f in c.fields:                 # R-FIELD: read/write when the field type is copy-assignable (decided at compile time), else read-only
