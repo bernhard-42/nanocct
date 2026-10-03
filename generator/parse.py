@@ -3230,6 +3230,14 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               qualified=f"{ns}{cur.spelling}", scope=scope,
                               defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name,
                               result_class_name=_class_behind(cur.result_type), result_instance_key=_binder_key(cur.result_type))
+                skip_sig = f"{ns}{cur.spelling}({', '.join(p.type for p in params)})"
+                if fn.skip_reason is None and skip_sig in _SKIP_METHODS:
+                    # [skip] methods reaches a free function by its exact signature only: a name alone would take every
+                    # overload of operator<< in the package (R-STR: IntRes2d_Transition's, not exported on Windows)
+                    fn.skip_reason = "overrides.toml [skip] methods"
+                    ir.report.append(f"{skip_sig}: overrides.toml [skip] methods")
+                    ir.functions.append(fn)
+                    continue
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, cur.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:

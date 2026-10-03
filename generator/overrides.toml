@@ -261,6 +261,11 @@ methods = [
     "LDOM_BasicAttribute::SetValue",         # -> the private LDOMString(LDOMBasicString, handle<LDOM_MemManager>)
     "LDOM_BasicText::SetData",               # -> the same private constructor
     "LDOM_MemManager::Hash",                 # -> the private static LDOM_MemManager::HashTable::Hash
+    # Print operators declared without Standard_EXPORT: Windows does not export them, so R-UNDEFINED drops them there and
+    # only macOS and Linux had them as __str__. Skipped on every platform, so the API is the same everywhere (2026-10-03).
+    # A free function is skipped by its exact signature only.
+    "CDM_MetaData::operator<<",              # CDM_MetaData.hxx:77, a member
+    "operator<<(std::ostream &, IntRes2d_Transition &)",   # IntRes2d_Transition.lxx:19, a free function
 ]
 
 # NCollection instantiations to bind although no bound OCCT signature uses them (spelled with canonical

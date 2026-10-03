@@ -111,6 +111,7 @@ def counts() -> dict[str, int]:
         "copy-heap": lambda: cpp(r"rv_policy::take_ownership"),
         "copy-keep-original": lambda: sum(m.group(1) == "true" for m in COPY_TAIL.finditer(text)),   # R-COPY: implicit copies that keep the original
         "unhashable": lambda: rep(r"__hash__ = None added"),
+        "str-ops": lambda: cpp(r'\.def\("__str__"'),                       # R-STR: the print operators bound as __str__
         "ctor-keep": lambda: (sum(len(re.findall(r"nb::keep_alive<\d+, \d+>", l)) for l in ctor_lines)
                               + cpp(r"nanocct::keep_view_arg<") + cpp(r"nanocct::keep_arg<")),
         "method-keep-slots": lambda: cpp(r"nanocct::keep_slot<"),

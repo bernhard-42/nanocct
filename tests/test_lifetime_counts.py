@@ -106,6 +106,11 @@ PINNED: dict[str, dict[str, int]] = {
         "report lifetime": 91,
         "report view-guard": 149,
     },
+    # Windows binds 3 more Kept<T> classes (2026-10-03, measured): WNT_Window exists only there (#if defined(_WIN32),
+    # WNT_Window.hxx:22); Message_PrinterSystemLog has a Windows-only `void* myEventSource` (Message_PrinterSystemLog.hxx:43);
+    # Xw_Window's Aspect_Drawable is `void*` there and `unsigned long` elsewhere (Aspect_Drawable.hxx:25-29). The layout rule
+    # cannot tell what a void* holds and keeps the arguments it could point to (a title, a source name): the same API, a
+    # more cautious keep. The other differences from macOS/Linux are the members R-UNDEFINED drops on Windows.
     "win32": {
         "R-CTOR-KEEP keep_alive": 448,
         "R-COPY keep_view_arg": 80,

@@ -2537,7 +2537,7 @@ The Python additions of Design.md, section 2.
     - The stream is the *first* operand, so neither R-FREE-OP nor R-STREAM-OUT reached it.
     - The filter is not decoration: `BinTools_ShapeSetBase.hxx` declares `operator<<(Standard_OStream&, const gp_Pnt&)`, which writes three binary doubles (`BinTools_ShapeSetBase.cxx:29`), and `BinObjMgt_Persistent`'s is its binary `Write` — a blanket rule would have given `gp_Pnt` a `__str__` returning bytes.
     - `repr()` is not touched: a 30-line `math_Matrix` dump is not a representation.
-    - **Platform difference:** `IntRes2d_Transition`'s operator and BinTools' two carry no `Standard_EXPORT`, so on Windows R-UNDEFINED skips them first — Windows binds 41 `__str__`, macOS and Linux 42.
+    - **No platform difference:** `IntRes2d_Transition`'s free operator and `CDM_MetaData`'s member one carry no `Standard_EXPORT`, so Windows cannot link them (R-UNDEFINED dropped them there, while macOS and Linux bound them); both are skipped on every platform (`overrides.toml [skip] methods`), and all three bind 40<!-- count: str-ops --> `__str__`. BinTools' two carry none either; they are binary and bound nowhere.
 
 - **Python**
 
