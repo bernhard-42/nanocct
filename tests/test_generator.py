@@ -1425,7 +1425,7 @@ def test_emitter_static_suffix_and_collision(rules_ir):
     assert "Rules_Value::Origin() const: const twin of a less const overload -> not bound" in em.report
     # conversion operators: the const/non-const twins to gp_XYZ give one conversion (emission mutates the IR: first emitter only)
     assert cpp.count("nanocct_conversion<Rules_Value, gp_XYZ>(") == 1 and cpp.count("nanocct_conversion<Rules_Value, gp_Pnt>(") == 1
-    # R-WIDTH: the wider twin is registered first although the header declares it second. An int twin stays reachable
+    # R-WIDTH: the double and the int twin are registered first although the header declares them second. An int twin stays reachable
     # (a value beyond int32 fails over to size_t); the float twin never is -- every Python float fits the double one --
     # so it is not bound at all (R-UNREACHABLE, 2026-09-30)
     assert '(Rules_Value::*)(const double) const' in cpp and '(Rules_Value::*)(const float) const' not in cpp
@@ -2130,7 +2130,7 @@ def test_resolve_overload_collisions_no_exception_for_an_aggregate():
 
 def test_stub_duplicate_signatures_are_only_width_or_string_kinds():
     """Overloads with identical Python signatures in the generated stubs (nanobind takes the first registered) may only
-    be scalar-width twins (R-WIDTH, wider first) or the str-accepting kinds of TCollection (const char* / char /
+    be scalar-width twins (R-WIDTH order) or the str-accepting kinds of TCollection (const char* / char /
     AsciiString / char16_t*); const twins and out-param collisions must be gone (R-CONST-TWIN, R-COLLISION)."""
     sig_re = re.compile(r"^(\s*)def (\w+)\((.*?)\)(?: -> (.*?))?:(?: \.\.\.)?$")
     cls_re = re.compile(r"^(\s*)class (\w+)")

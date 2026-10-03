@@ -2060,7 +2060,7 @@ See 3.1 (3) and 3.2.
 
 - **C++ Idiom**
 
-    Overloads that coincide once out-params are dropped — overloads that differ only in the *width* of their parameters, out-parameters included, are R-WIDTH twins, not a collision: both keep the plain name, the wider one first
+    Overloads that coincide once out-params are dropped — overloads that differ only in the *width* of their parameters, out-parameters included, are R-WIDTH twins, not a collision: both keep the plain name, in R-WIDTH's order
 
 - **OCCT examples**
 
@@ -2175,14 +2175,14 @@ See 3.1 (3) and 3.2.
 - **Rule**
 
     - nanobind takes the first overload a Python `float`/`int`/`str` fits.
-    - A narrow twin first would truncate to `float` or reject negative indices.
-    - Header order is not a rule: it is right for `Abs` (`Standard.Abs(-1e300) == 1e300` verified), but `NCollection_PackedMap(const size_t)` and `Graphic3d_Vertex::Coord(float&, float&, float&)` are declared before their wider twins.
+    - A `float` twin first would round every value to float32; a `size_t`/`unsigned` twin first would reject negative indices.
+    - Header order is not a rule: it is right for `Abs` (`Standard.Abs(-1e300) == 1e300` verified), but `NCollection_PackedMap(const size_t)` and `Graphic3d_Vertex::Coord(float&, float&, float&)` are declared before the twin registered first.
     - For text, "widest first" is wrong: `Resource_Manager::SetResource(name, const char16_t*)` stores the value through `Resource_Unicode`'s format, which with the default `NoConversion` makes `Value(name)` return Latin-1 bytes for "Größe" (measured in C++), while the `const char*` overload stores the UTF-8 as it is.
     - The C++ literal order keeps C++'s behaviour, including `TCollection_ExtendedString("Größe")` reading one byte per character unless `theIsMultiByte` is `true` (Pythonic-OCCT.md, Strings).
 
 - **Python**
 
-    - The **wider** one is registered first: `double` before `float`, `int` before `size_t`/`unsigned`/`long`/… (`order_by_width()` in `emit.py`, also for constructors and namespace functions).
+    - `double` is registered before `float`, and `int` before every other integer width, narrower or wider (`Value(int)` before `Value(size_t)`, `operator<<(const int)` before `operator<<(const uint8_t)`): a Python `int` is tried as `int` first, and a value outside its range falls through to the other twin (R-UNREACHABLE). `order_by_width()` in `emit.py`, also for constructors and namespace functions.
     - Every pair is reported.
     - Text is ordered as C++ resolves a narrow string literal: `const char*` (exact match) before `std::string_view`/`std::string` (a conversion), then `const char16_t*`, then `char`, `char16_t`, `char32_t` (`_TEXT_RANK`).
     - A twin that can never be reached this way is not bound (R-UNREACHABLE).

@@ -47,8 +47,8 @@ Overloads that Python cannot tell apart and that carry no new name (section 6 ha
     - `const gp_XYZ& Origin() const` / `gp_XYZ& Origin()`, `TopoDS.Vertex(const TopoDS_Shape&)` / `(TopoDS_Shape&)`.
     - Python objects are never const, so the non-const overload is the one C++ would select.
     - Class results of the bound twin are views into their owner (`arr[i].SetX(…)` edits the container); primitives are values with a `Set<Name>` addition.
-- **Scalar width: `double` over `float`, `int` over `size_t`/`unsigned`/`long`** (R-WIDTH).
-    - `Abs(double)`/`Abs(float)`, `Value(int)`/`Value(size_t)` are both bound; a Python `float`/`int` goes to the wider one.
+- **Scalar width: `double` over `float`, `int` over every other integer width** (R-WIDTH).
+    - `Abs(double)`/`Abs(float)`, `Value(int)`/`Value(size_t)` are both bound; a Python `float` goes to `double`, a Python `int` to `int` first and, outside its range, to the other twin.
 - **Strings:** `const char*`, `char` and `TCollection_AsciiString`/`ExtendedString` parameters all take a `str` (a `char` a one-character one) and behave alike; UTF-16 (`char16_t`) round-trips as `str`. A `const char*` with a null default (`LDOM_XmlWriter(const char* theEncoding = nullptr)`, `STEPCAFControl_Writer::Transfer(…, const char* theIsMulti = nullptr)`) is `str | None = None` (R-CSTR-NULL). **Trap, OCCT's own default:** `TCollection_ExtendedString("pärt")` selects `ExtendedString(const char*, theIsMultiByte = false)` and copies the UTF-8 *bytes* as characters (`"pÃ¤rt"`); pass `True` (`TCollection_ExtendedString("pärt", True)`) for non-ASCII text — as in C++.
 - **Handles:** every `handle<T>` parameter accepts `None` (the null handle); a returned null handle is `None`.
 - **`std::ostream&` / `std::istream&`:**

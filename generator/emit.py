@@ -989,10 +989,10 @@ class Emitter:
         for gone, taker in drop_unreachable(plain):                  # R-UNREACHABLE: Abs(float) after Abs(double)
             q = gone.qualified if gone.qualified != "" else gone.name
             self.report.append(f"{q}({self._sig(gone.params)}): same Python signature as {q}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
-        for narrow, wide in demoted:
-            if narrow.skip_reason is None:
-                q = wide.qualified if wide.qualified != "" else wide.name
-                self.report.append(f"{q}({self._sig(narrow.params)}): same Python signature as {q}({self._sig(wide.params)}) -> registered after it (width preference)")
+        for later, first in demoted:
+            if later.skip_reason is None:
+                q = first.qualified if first.qualified != "" else first.name
+                self.report.append(f"{q}({self._sig(later.params)}): same Python signature as {q}({self._sig(first.params)}) -> registered after it (width preference)")
         for fn, suffix in resolve_overload_collisions(plain):
             fn.suffix = suffix           # R-COLLISION applies to namespace functions too
         # R-FREE-OP: hidden friends, collected per class; an instantiation may be listed twice in ir.classes (the class
@@ -1159,9 +1159,9 @@ class Emitter:
             for gone, taker in drop_unreachable(declared):             # R-UNREACHABLE: (const char16_t*) after (const char*, bool = false)
                 self.report.append(f"{c.name}::{c.name}({self._sig(gone.params)}): same Python signature as {c.name}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
             declared = [k for k in declared if k.skip_reason is None]
-            for narrow, wide in demoted:
-                if narrow.skip_reason is None:
-                    self.report.append(f"{c.name}::{c.name}({self._sig(narrow.params)}): same Python signature as {c.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+            for later, first in demoted:
+                if later.skip_reason is None:
+                    self.report.append(f"{c.name}::{c.name}({self._sig(later.params)}): same Python signature as {c.name}({self._sig(first.params)}) -> registered after it (width preference)")
             # R-IMPLICIT-DEFAULT: a class declaring no constructor gets the implicit default one, bound only if
             # std::is_default_constructible_v<T> (nanocct_implicit_default_ctor)
             implicit_default = not c.has_declared_ctor    # emitted first (nanobind wants the zero-argument overload first)
@@ -1186,15 +1186,15 @@ class Emitter:
         bound = [m for m in c.methods if m.skip_reason is None]
         for m in skip_const_twins(c.methods):       # R-CONST-TWIN
             self.report.append(f"{c.name}::{m.name}({self._sig(m.params)}){' const' if m.is_const else ''}: const twin of a less const overload -> not bound")
-        methods, demoted = order_by_width(c.methods)   # R-WIDTH: wider scalar overloads registered first
+        methods, demoted = order_by_width(c.methods)   # R-WIDTH: double before float, int before the other integer widths
         methods, moved = order_by_derivation(methods, self._ancestors)   # R-OVERLOAD-ORDER: (NCollection_Array2<T>) before (NCollection_Array1<T>)
         for derived, base in moved:
             self.report.append(f"{c.name}::{derived.name}({self._sig(derived.params)}): takes a derived class of {base.name}({self._sig(base.params)}) -> registered before it")
         for gone, taker in drop_unreachable([m for m in methods if _py_name(m) is not None]):   # R-UNREACHABLE: AssignCat(char) after AssignCat(const char*)
             self.report.append(f"{c.name}::{gone.name}({self._sig(gone.params)}): same Python signature as {taker.name}({self._sig(taker.params)}), registered before it -> not bound (unreachable)")
-        for narrow, wide in demoted:
-            if narrow.skip_reason is None:
-                self.report.append(f"{c.name}::{narrow.name}({self._sig(narrow.params)}): same Python signature as {wide.name}({self._sig(wide.params)}) -> registered after it (width preference)")
+        for later, first in demoted:
+            if later.skip_reason is None:
+                self.report.append(f"{c.name}::{later.name}({self._sig(later.params)}): same Python signature as {first.name}({self._sig(first.params)}) -> registered after it (width preference)")
         resolved = resolve_overload_collisions(methods)
         for m, suffix in resolved:
             m.suffix = suffix
@@ -1499,7 +1499,7 @@ def resolve_overload_collisions(overloads: list) -> list[tuple[object, str]]:
             continue
         members = groups[py_sig(m)]
         # width twins (Graphic3d_Vertex::Coord(double&, double&, double&) / Coord(float&, float&, float&)) are the same
-        # overload from Python and do not make a collision by themselves; the wider one is registered first (R-WIDTH)
+        # overload from Python and do not make a collision by themselves; R-WIDTH decides which is registered first
         distinct = {full_sig(mm) for mm in members}
         colliding = len(distinct) > 1 and any(p.is_out or p.stream == StreamKind.OUT for mm in members for p in mm.params)
         result.append((m, out_suffix(m.params) if colliding else ""))
@@ -1537,7 +1537,7 @@ def skip_const_twins(overloads: list) -> list:
 # Binding-Rules.md R-WIDTH
 _WIDTH_RANK = {"double": ("float", 0), "Standard_Real": ("float", 0), "float": ("float", 1), "Standard_ShortReal": ("float", 1),
                "int": ("int", 0), "Standard_Integer": ("int", 0)}
-_WIDE_INTS = {"size_t", "Standard_Size", "unsigned", "unsigned int", "long", "unsigned long", "long long", "unsigned long long",
+_OTHER_INTS = {"size_t", "Standard_Size", "unsigned", "unsigned int", "long", "unsigned long", "long long", "unsigned long long",
               "short", "unsigned short", "int8_t", "uint8_t", "int16_t", "uint16_t", "int32_t", "uint32_t", "int64_t", "uint64_t"}
 
 
@@ -1559,7 +1559,7 @@ def _width(t: str) -> tuple[str, int]:
     base = _strip_ref(t)
     if base in _WIDTH_RANK:
         return _WIDTH_RANK[base]
-    if base in _WIDE_INTS:
+    if base in _OTHER_INTS:
         return ("int", 1)
     text = _TEXT_RANK.get(re.sub(r"\bconst\b|\s", "", base))
     if text is not None:
@@ -1634,8 +1634,9 @@ def drop_unreachable(overloads: list) -> list[tuple[object, object]]:
 # Binding-Rules.md R-WIDTH
 def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
     """Overloads that differ only in the width of scalar parameters (Abs(double)/Abs(float), Value(int)/Value(size_t))
-    are the same call from Python; nanobind takes the first registered, so the wider twin (double over float, int over
-    size_t/unsigned/long) is emitted first. Returns the overloads in emission order and every (narrow, wide) pair."""
+    are the same call from Python; nanobind takes the first registered, so double is emitted before float and int
+    before every other integer width, narrower or wider (a value outside int's range fails over to the other twin).
+    Returns the overloads in emission order and every (later, first) pair."""
     def key(m) -> tuple:     # constructors have no name
         return (getattr(m, "qualified", "") or getattr(m, "name", ""), getattr(m, "is_static", False), tuple(_width(p.type)[0] for p in m.params))
 
