@@ -23,10 +23,6 @@ INTERNAL = re.compile(r"NB_CALL\(\w+\)|NB_CTX\w*|NB_INLINE|nanobind/nb_\w+\.h|nb
                       + "|".join(BACKEND) + r")\b")
 
 ALLOWED: dict[tuple[str, str], tuple[int, str]] = {
-    ("src/cpp/common/nanocct_common.h", "NB_CALL(nb_type_put)"): (
-        2, "the handle<T> and NCollection_Handle<T> casters hand nanobind a pointer with its dynamic type; no documented "
-           "function returns the bound Python type for a runtime std::type_info (kept 2026-10-01, the 8.27 audit)"),
-    ("src/cpp/common/nanocct_common.h", "NB_CTX_C"): (2, "the context argument of the same two NB_CALL(nb_type_put)"),
     ("src/cpp/common/nanocct_common.h", "nanobind/nb_defs.h"): (
         1, "MSVC: NB_INLINE is redefined from __forceinline to inline (math.cpp 1677 s -> 16 s, nanobind discussion 791)"),
     ("src/cpp/common/nanocct_common.h", "NB_INLINE"): (

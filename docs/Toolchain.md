@@ -49,5 +49,5 @@ Configuration:
 ## 4.3 Python side
 
 - Python ≥ 3.12, `uv` project.
-- nanobind ≥ 3.1.0 (the `handle<T>` caster uses `nb::keep_alive_cb`, public since 3.1.0). **Documented API only**: what nanobind's documentation describes (call policies, `keep_alive_obj`/`keep_alive_cb`, `inst_ptr`, `type<T>()`, the custom type-caster contract), because an internal can change in any release; the exceptions are listed with their reason in `tests/test_nanobind_api.py` (today `NB_CALL(nb_type_put)` in the two handle casters -- no documented function returns the bound Python type for a runtime `std::type_info` -- and the MSVC `NB_INLINE` redefinition).
+- nanobind ≥ 3.1.0 (the `handle<T>` caster uses `nb::keep_alive_cb`, public since 3.1.0). **Documented API only**: what nanobind's documentation describes (call policies, `keep_alive_obj`/`keep_alive_cb`, `inst_ptr`, `type<T>()`, the custom type-caster contract; the two handle casters return an object's existing Python object through `nb::find` and create a new one through `nb::cast` with `rv_policy::reference` or, for a type in the MI registry, `nb::inst_reference`), because an internal can change in any release; the exceptions are listed with their reason in `tests/test_nanobind_api.py` (today only the MSVC `NB_INLINE` redefinition).
 - scikit-build-core; pip `libclang` (fallback parser, see 6.2); pytest.

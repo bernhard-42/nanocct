@@ -72,6 +72,7 @@ struct mi_entry {
     Standard_Transient *(*to_transient)(void *stored);   // stored (base subobject) -> Transient subobject
     void *(*from_transient)(Standard_Transient *);       // Transient subobject of an S -> stored pointer
     const std::type_info *bound = nullptr;               // R-KEPT: the entry of a nanocct::Kept<T> -- the type Python sees, T
+    PyObject *(*find)(void *stored) = nullptr;           // the existing Python object of `stored` (nb::find), new reference or null
 };
 
 // ONE object of type T for all extension modules. Every toolkit is its own shared library, and an inline function's
@@ -108,6 +109,9 @@ template <typename S> void nanocct_register_mi(nb::handle py_type) {
     mi_entry e{py_type.ptr(),
                [](void *stored) -> Standard_Transient * { return static_cast<S *>(static_cast<B *>(stored)); },
                [](Standard_Transient *t) -> void * { return static_cast<B *>(static_cast<S *>(dynamic_cast<void *>(t))); }};
+    // looked up as B at the stored address, where nanobind registered the object (B need not be at offset 0 of S:
+    // NCollection_Shared<T>); its dynamic type S matches the existing wrapper
+    e.find = [](void *stored) -> PyObject * { return nb::find(*static_cast<B *>(stored)).release().ptr(); };
     nanocct_mi_by_name()[typeid(S).name()] = e;
     nanocct_mi_list().push_back(e);
 }
@@ -430,6 +434,8 @@ template <typename T> void register_kept(nb::handle py_type) {
                [](void *stored) -> Standard_Transient * { return static_cast<T *>(stored); },
                [](Standard_Transient *t) -> void * { return static_cast<T *>(static_cast<Kept<T> *>(dynamic_cast<void *>(t))); },
                &typeid(T)};
+    // nb::find(T&): nanobind does not know Kept<T>'s own typeid and looks the object up as T, the type Python sees
+    e.find = [](void *stored) -> PyObject * { return nb::find(*static_cast<T *>(stored)).release().ptr(); };
     nanocct_mi_by_name()[typeid(Kept<T>).name()] = e;
 }
 
@@ -1340,31 +1346,43 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
         return false;
     }
 
-    static handle from_cpp(const Value &value, rv_policy, cleanup_list *cleanup) noexcept {
+    // Documented nanobind API only (Toolchain.md 4.3): the object's existing Python object when it has one (nb::find, a
+    // cast with rv_policy::none), else a new one that does not own it -- nb::inst_reference for a type in the MI registry
+    // (a multiple-inheritance H-collection, a nanocct::Kept<T>, whose own typeid nanobind does not know), nb::cast with
+    // rv_policy::reference otherwise (nanobind's automatic downcasting: the most-derived bound type). Only a new one gets
+    // the heap handle that keeps the object alive; another thread creating it in between (free-threading) costs one more
+    // holder, freed with the Python object.
+    static handle from_cpp(const Value &value, rv_policy, cleanup_list *) noexcept {
         Td *ptr = value.get();
         if (!ptr) return none().release();
-        const std::type_info *type = &typeid(Td);
-        const std::type_info *type_p = &typeid(*ptr);
-        void *stored = ptr;
-        if constexpr (has_mi_traits<Td>::value) {
-            stored = static_cast<typename mi_traits<Td>::base *>(ptr);
-        } else {
+        object result;
+        try {
+            // the registry entry of the dynamic type (a registered MI type, or a nanocct::Kept<T>: R-KEPT), else of a static MI
+            // type: nanobind stores such an object by its base subobject, not by the address of Td
+            const mi_entry *entry = nullptr;
+            void *stored = ptr;
             auto &mi = nanocct_mi_by_name();
-            auto it = mi.find(type_p->name());          // dynamic type is a registered MI type, or a nanocct::Kept<T> (R-KEPT)
+            auto it = mi.find(typeid(*ptr).name());
+            if constexpr (has_mi_traits<Td>::value)
+                if (it == mi.end())
+                    it = mi.find(typeid(Td).name());
             if (it != mi.end()) {
-                stored = it->second.from_transient(ptr);
-                if (it->second.bound != nullptr) type_p = it->second.bound;
+                entry = &it->second;
+                stored = entry->from_transient(ptr);
+            } else if constexpr (has_mi_traits<Td>::value) {
+                return handle();                        // an MI type is registered when it is bound (nanocct_register_mi)
             }
+            object existing = entry != nullptr ? steal(entry->find(stored)) : nb::find(*ptr);
+            if (existing.is_valid())
+                return existing.release();
+            result = entry != nullptr ? inst_reference(handle(entry->py_type), stored) : nb::cast(ptr, rv_policy::reference);
+        } catch (...) {
+            return handle();                            // no bound type for the object: nanobind reports the failed conversion
         }
-        bool is_new = false;
-        handle result = NB_CALL(nb_type_put)(NB_CTX_C(cleanup), type, type_p, stored,
-                                             rv_policy::reference, cleanup, &is_new);
-        if (is_new) {
-            auto *holder = new opencascade::handle<Standard_Transient>(ptr);
-            keep_alive_cb(result, holder,
-                          [](void *p) noexcept { delete (opencascade::handle<Standard_Transient> *) p; });
-        }
-        return result;
+        auto *holder = new opencascade::handle<Standard_Transient>(ptr);
+        keep_alive_cb(result, holder,
+                      [](void *p) noexcept { delete (opencascade::handle<Standard_Transient> *) p; });
+        return result.release();
     }
 };
 
@@ -1402,17 +1420,23 @@ template <typename T> struct type_caster<NCollection_Handle<T>> {
         return true;
     }
 
-    static handle from_cpp(const Value &value, rv_policy, cleanup_list *cleanup) noexcept {
+    // documented nanobind API only, as for opencascade::handle above: the existing Python object (nb::find), else a new one
+    // that does not own the object (rv_policy::reference) with the holder attached
+    static handle from_cpp(const Value &value, rv_policy, cleanup_list *) noexcept {
         if (value.IsNull()) return none().release();
         T *ptr = const_cast<T *>(value.get());
-        bool is_new = false;
-        handle result = NB_CALL(nb_type_put)(NB_CTX_C(cleanup), &typeid(T), &typeid(T), ptr,
-                                             rv_policy::reference, cleanup, &is_new);
-        if (is_new && result.is_valid()) {
-            auto *holder = new NCollection_Handle<T>(value);
-            keep_alive_cb(result, holder, [](void *p) noexcept { delete (NCollection_Handle<T> *) p; });
+        object result;
+        try {
+            object existing = nb::find(*ptr);
+            if (existing.is_valid())
+                return existing.release();
+            result = nb::cast(ptr, rv_policy::reference);
+        } catch (...) {
+            return handle();
         }
-        return result;
+        auto *holder = new NCollection_Handle<T>(value);
+        keep_alive_cb(result, holder, [](void *p) noexcept { delete (NCollection_Handle<T> *) p; });
+        return result.release();
     }
 };
 
