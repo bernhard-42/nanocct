@@ -215,8 +215,8 @@ class Emitter:
         for m in members:
             if m.skip_reason is not None:
                 continue
-            names = [p.class_name for p in m.params if not p.omitted and p.bytes_of == ""] + [getattr(m, "result_class_name", "")]
-            keys = [p.instance_key for p in m.params if not p.omitted and p.bytes_of == ""] + [getattr(m, "result_instance_key", "")]
+            names = [p.class_name for p in m.params if not p.omitted and p.bytes_of == "" and p.seq_of == ""] + [getattr(m, "result_class_name", "")]
+            keys = [p.instance_key for p in m.params if not p.omitted and p.bytes_of == "" and p.seq_of == ""] + [getattr(m, "result_instance_key", "")]
             found = next(((n, w) for n in names if (w := self._unbound_reason(n)) is not None), None) \
                 or next(((k, w) for k in keys if (w := self._unbound_instance_reason(k)) is not None), None)
             if found is not None:
@@ -275,7 +275,7 @@ class Emitter:
     def _args(self, params: list[Param], skip_out: bool) -> str:
         parts: list[str] = []
         for p in params:
-            if p.omitted or p.bytes_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
+            if p.omitted or p.bytes_of != "" or p.seq_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
                 continue
             # R-HANDLE: a handle<T> parameter accepts None (a null handle); without .none() nanobind rejects None before
             # the caster runs (Runtime.md 5.2); so does a class pointer, with or without a null default (R-PTR-NULL: without
@@ -289,6 +289,8 @@ class Emitter:
                 arg += ".noconvert()"
             if p.cstr_none:                    # R-CSTR-NULL: None reaches the OptionalCString caster only with .none()
                 parts.append(f'nb::arg("{p.name}").none() = nb::none()')
+            elif p.seq_owner != "" and p.default is not None:   # R-ARRAY-PTR: a null default is the empty sequence
+                parts.append(f'{arg} = std::vector<{_seq_element(p.type)}>()')
             elif p.default is None:
                 parts.append(arg)
             else:
@@ -325,7 +327,7 @@ class Emitter:
             return ""
         out, position = "", 1
         for p in m.params:
-            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+            if p.omitted or p.bytes_of != "" or p.seq_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
                 continue
             position += 1
             if p.kept and p.kept_cpp:      # R-KEPT: on the C++ object of a Kept<T>
@@ -375,7 +377,7 @@ class Emitter:
         position among the parameters Python passes (self not counted) for the message."""
         out, position = [], 0
         for p in params:
-            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+            if p.omitted or p.bytes_of != "" or p.seq_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
                 continue
             position += 1
             if p.guarded:
@@ -387,7 +389,7 @@ class Emitter:
         """Python position of each parameter the signature shows (1 is self for a method), as _keep_slots counts them."""
         out, position = {}, 1 if method else 0
         for i, p in enumerate(m.params):
-            if p.omitted or p.bytes_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
+            if p.omitted or p.bytes_of != "" or p.seq_of != "" or (p.is_out and not p.is_inout) or p.stream == StreamKind.OUT:
                 continue
             position += 1
             out[i] = position
@@ -437,12 +439,13 @@ class Emitter:
         """Lambda that maps out-params to a returned tuple (also handles static methods). self_type: the bound
         type when it differs from cls (non-copyable wrapper)."""
         ins = [p for p in m.params if (not p.is_out or p.is_inout) and p.stream != StreamKind.OUT
-               and not p.omitted and p.bytes_of == ""]
+               and not p.omitted and p.bytes_of == "" and p.seq_of == ""]
         outs = [p for p in m.params if p.is_out]
         lam_params: list[str] = []
         if cls is not None and not m.is_static:
             lam_params.append(f"{'const ' if m.is_const else ''}{self_type if self_type is not None else cls} &self")
         lam_params += [f"const nb::bytes &{p.name}" if p.is_bytes                                    # R-BYTES
+                       else f"const std::vector<{_seq_element(p.type)}> &{p.name}" if p.seq_owner != ""   # R-ARRAY-PTR
                        else f"const nanocct::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
                        else f"nanocct::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
@@ -459,6 +462,8 @@ class Emitter:
         body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
         call_args = ", ".join(f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes        # R-BYTES: the buffer ...
                               else f"{p.bytes_of}.size()" if p.bytes_of != ""             # ... and its length, from the same object
+                              else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
+                              else f"{p.seq_of}.size()" if p.seq_of != ""                 # ... and its count
                               else "nullptr" if p.omitted                                   # R-OPTIONAL-PTR
                               else f"{p.name}.ptr" if p.cstr_none                        # R-CSTR-NULL
                               else f"{p.name}_stream" if p.stream != StreamKind.NONE
@@ -572,7 +577,7 @@ class Emitter:
             self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): returns {m.result} with out-parameters, and its "
                                f"copy would share the pointers its destructor frees (R-COPY) -> method skipped")
             return None
-        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in m.params):
+        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
@@ -638,16 +643,20 @@ class Emitter:
         T = type_name if type_name is not None else cls.bound_type
         # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL / R-BYTES: nb::init cannot drop or convert
         # R-VIEW-GUARD: a container argument the constructor may change is checked in the body, after nanobind's conversion
-        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.guarded for p in params)
-        ins = [p for p in params if not p.omitted and p.bytes_of == ""]
+        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.guarded for p in params)
+        ins = [p for p in params if not p.omitted and p.bytes_of == "" and p.seq_of == ""]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
                                else f"nanocct::OptionalCString {p.name}" if p.cstr_none
-                               else f"const nb::bytes &{p.name}" if p.is_bytes else f"{p.type} {p.name}" for p in ins)
+                               else f"const nb::bytes &{p.name}" if p.is_bytes
+                               else f"const std::vector<{_seq_element(p.type)}> &{p.name}" if p.seq_owner != ""   # R-ARRAY-PTR
+                               else f"{p.type} {p.name}" for p in ins)
         pre = "".join(c + " " for c in self._guard_checks(params))
         pre += " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
         call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none
                          else f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes         # R-BYTES: the buffer ...
                          else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
+                         else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
+                         else f"{p.seq_of}.size()" if p.seq_of != ""                     # ... and its count
                          else p.name for p in params)
         # R-BYTES in a constructor: the object may keep the pointer (WNT_HIDSpaceMouse stores myData(theData) and reads it
         # later, WNT_HIDSpaceMouse.cxx:154), so the bytes object lives as long as the new object: keep_alive<1, k>, where 1 is
@@ -1048,7 +1057,7 @@ class Emitter:
                                    f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")
                 continue
             if fn.result_kind == ResultKind.VALUE_TRANSIENT or fn.result_on_heap or any(
-                    p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes for p in fn.params):
+                    p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" for p in fn.params):
                 # R-OUT: out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL
                 # need the lambda too, and so does a Transient returned by value (R-RESULT: into a handle, never a
                 # nanobind-owned copy)
@@ -1662,10 +1671,16 @@ def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
     return ordered, demoted
 
 
+# Binding-Rules.md R-ARRAY-PTR
+def _seq_element(t: str) -> str:
+    """The element type of a `const T *` array parameter: `const gp_XYZ *` -> `gp_XYZ`."""
+    return t.removeprefix("const ").rstrip("* ").strip()
+
+
 # Binding-Rules.md R-OVERLOAD-ORDER
 def _py_params(m) -> list[Param]:
     """The parameters a Python call passes (out-params, dropped optional pointers and R-BYTES lengths are not)."""
-    return [p for p in m.params if not p.omitted and p.bytes_of == "" and not (p.is_out and not p.is_inout)
+    return [p for p in m.params if not p.omitted and p.bytes_of == "" and p.seq_of == "" and not (p.is_out and not p.is_inout)
             and p.stream != StreamKind.OUT]
 
 

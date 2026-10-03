@@ -49,6 +49,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include <Standard_Failure.hxx>
 #include <Standard_Handle.hxx>
@@ -540,6 +541,19 @@ template <typename Tag, typename Self, size_t Patient, size_t Slot, bool View, b
         }
     }
 };
+
+// R-ARRAY-PTR (Binding-Rules.md): an array a listed member takes by its first element (VrmlData_Coordinate(scene, name,
+// nPoints, arrPoints)) is a Python sequence. The object keeps the pointer, so the elements are copied into memory of the
+// owner's allocator -- where OCCT's own reader puts them (VrmlData_ArrayVec3d::AllocateValues: Scene().Allocator(),
+// VrmlData_Geometry.cxx) -- and live as long as it. An empty sequence passes nullptr, as the C++ default does.
+template <typename Owner, typename T> const T *allocator_copy(const Owner &owner, const std::vector<T> &items) {
+    static_assert(std::is_trivially_destructible_v<T>, "R-ARRAY-PTR: an incremental allocator never runs destructors");
+    if (items.empty())
+        return nullptr;
+    T *out = static_cast<T *>(owner.Allocator()->Allocate(items.size() * sizeof(T)));
+    std::uninitialized_copy(items.begin(), items.end(), out);
+    return out;
+}
 } // namespace nanocct
 
 // Constructors of a class-template instantiation whose abstractness only the compiler can see (BVH_PrimitiveSet<double, 3>

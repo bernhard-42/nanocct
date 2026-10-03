@@ -211,6 +211,11 @@ methods = [
     "BSplCLib::Interpolate(const int, const NCollection_Array1<double> &, const NCollection_Array1<double> &, const NCollection_Array1<int> &, const int, double &, double &, int &)",
     "BSplCLib::MovePointAndTangent(const double, const int, double &, double &, const double, const int, const int, const int, double &, const NCollection_Array1<double> *, const NCollection_Array1<double> &, double &, int &)",
     "BSplCLib::Resolution(double &, const int, const int, const NCollection_Array1<double> *, const NCollection_Array1<double> &, const int, const double, double &)",
+    # The same idiom with a class pointer and its count: Init reads theAttribs[i] for i < theNbAttribs (Graphic3d_Buffer.hxx:256),
+    # while R-PTR-NULL binds the pointer as one object. The NCollection_Array1<Graphic3d_Attribute> overload of the same
+    # name stays and covers it (2026-10-03).
+    "Graphic3d_Buffer::Init(const int, const Graphic3d_Attribute *, const int)",
+    "Graphic3d_AttribBuffer::Init(const int, const Graphic3d_Attribute *, const int)",
     # std::abs(unsigned int) is ambiguous (float/double/long double candidates all convert), so cwiseAbs does not
     # compile for an unsigned element type. OCCT never instantiates it -- a template member is only instantiated when
     # used -- and binding the class is what forces it. NCollection_Vec2<unsigned int> arrived with the reference
@@ -385,6 +390,21 @@ binary_members = [
 # parameter. Listed rather than inferred -- "the next integer is the length" is a convention, not a type --
 # so every entry here has been read in the header. Class::method, every overload; an overload whose buffer
 # is an *output* (a non-const uint8_t* / char*) is unaffected and stays unbound.
+# R-ARRAY-PTR: an integer count followed by a `const T*` that is an array of T taken by its first element, as a sequence of T.
+# The object keeps the pointer, so the elements are copied into memory of an allocator that lives as long as the object:
+# the value is the C++ expression (in the binding's lambda) of the object whose Allocator() owns the copy. The VrmlData
+# nodes store `myArray = arrPoints` and their scene's allocator is where OCCT's own reader puts the arrays
+# (VrmlData_ArrayVec3d::AllocateValues, VrmlData_Geometry.cxx). Before 2026-10-03 these were bound by R-PTR-NULL as one
+# object, and a count above 1 read past it (AddressSanitizer: heap-buffer-overflow).
+[array.members]
+"VrmlData_ArrayVec3d::SetValues" = "self.Scene()"
+"VrmlData_Color::VrmlData_Color" = "theScene"
+"VrmlData_Color::SetColors" = "self.Scene()"
+"VrmlData_Coordinate::VrmlData_Coordinate" = "theScene"
+"VrmlData_Normal::VrmlData_Normal" = "theScene"
+"VrmlData_TextureCoordinate::VrmlData_TextureCoordinate" = "theScene"
+"VrmlData_TextureCoordinate::SetPoints" = "self.Scene()"
+
 [bytes]
 members = [
     "FSD_Base64::Encode",     # Encode(const uint8_t* theData, size_t theDataLen) -> TCollection_AsciiString.

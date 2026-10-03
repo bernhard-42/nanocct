@@ -57,6 +57,9 @@ class Param:
     array_len: int = 0      # R-FIXED-ARRAY: a C array T[N] / T (&)[N] of this length; `type` is the element type; is_out when non-const
     is_bytes: bool = False  # R-BYTES: a `const uint8_t*` input buffer, taken as `bytes`; the length parameter that follows it is dropped
     bytes_of: str = ""      # R-BYTES: this parameter is that buffer's length and is dropped; the value is the bytes parameter's name
+    seq_owner: str = ""     # R-ARRAY-PTR: a `const T*` array of a listed member, taken as a sequence of T: the elements are copied
+                            # into memory of this C++ object's Allocator() (overrides.toml [array]) and the copy is passed
+    seq_of: str = ""        # R-ARRAY-PTR: this parameter is that array's count and is dropped; the value is the sequence parameter's name
     out_view: bool = False  # R-RESULT-KEEP: a non-const reference/pointer to a class holding pointers, which the call writes into:
     out_keeps: tuple[int, ...] = ()  # ... it keeps self (a method) and these parameters (indices) alive
     owned: bool = False     # R-OWNER: an argument written into, or a returned out-handle, of a type whose OCAF owners are known

@@ -61,31 +61,39 @@ def test_c1_bopds_subiterator_keeps_the_list():
 
 
 def test_c1_vrml_coordinate_reads_one_object_as_an_array():
-    """VrmlData_Coordinate(scene, name, nPoints, const gp_XYZ* arrPoints) keeps the pointer (base VrmlData_ArrayVec3d);
-    from Python the "array" is one gp_XYZ, here a temporary. One point: more would read past it (the next scenario)."""
+    """VrmlData_Coordinate(scene, name, nPoints, const gp_XYZ* arrPoints) keeps the pointer (base VrmlData_ArrayVec3d). The
+    array is a temporary here; R-ARRAY-PTR copies it into the scene's allocator, so the node reads it after a collection
+    (before 2026-10-03 the "array" was one gp_XYZ the node kept a pointer to, the next scenario has the overflow)."""
     out = ok(run("""
         from nanocct.VrmlData import VrmlData_Scene, VrmlData_Coordinate
         from nanocct.gp import gp_XYZ
         scene = VrmlData_Scene()
-        c = VrmlData_Coordinate(scene, "c", 1, gp_XYZ(1, 2, 3))
+        c = VrmlData_Coordinate(scene, "c", [gp_XYZ(1, 2, 3)])
         collect()
         print(c.Length(), c.Coordinate(0).X(), c.Coordinate(0).Z())
     """))
     assert out == ["1", "1.0", "3.0"]
 
 
-@pytest.mark.xfail(strict=False, reason="open: a `const gp_XYZ*` array taken by its first element gets one gp_XYZ from "
-                                        "Python, and nPoints > 1 reads past it (not a lifetime rule; AddressSanitizer: "
-                                        "heap-buffer-overflow)")
 def test_vrml_coordinate_array_taken_by_its_first_element():
+    """R-ARRAY-PTR: `const gp_XYZ* arrPoints` with its count nPoints is an array taken by its first element. Bound as one
+    object (R-PTR-NULL, until 2026-10-03) a count above 1 read past it (AddressSanitizer: heap-buffer-overflow); now a
+    sequence, copied into the scene's allocator, read back after the scene variable and the sequence are gone."""
     out = ok(run("""
-        from nanocct.VrmlData import VrmlData_Scene, VrmlData_Coordinate
-        from nanocct.gp import gp_XYZ
+        from nanocct.VrmlData import VrmlData_Scene, VrmlData_Coordinate, VrmlData_Color, VrmlData_TextureCoordinate
+        from nanocct.gp import gp_XY, gp_XYZ
         scene = VrmlData_Scene()
-        c = VrmlData_Coordinate(scene, "c", 3, gp_XYZ(1, 2, 3))
-        print(c.Length(), c.Coordinate(0).X(), c.Coordinate(2).X())
+        points = [gp_XYZ(1, 2, 3), gp_XYZ(4, 5, 6), gp_XYZ(7, 8, 9)]
+        c = VrmlData_Coordinate(scene, "c", points)
+        colors = VrmlData_Color(scene, "rgb")
+        colors.SetColors([gp_XYZ(1, 0, 0), gp_XYZ(0, 1, 0)])
+        uv = VrmlData_TextureCoordinate(scene, "uv")
+        uv.SetPoints([gp_XY(0, 0), gp_XY(1, 0.5), gp_XY(0.25, 1)])
+        del scene, points
+        collect()
+        print(c.Length(), c.Coordinate(0).X(), c.Coordinate(2).Z(), colors.Length(), colors.Color(1).Green(), uv.Length())
     """))
-    assert out[0] == "3"
+    assert out == ["3", "1.0", "9.0", "2", "1.0", "3"]
 
 
 # ---- category 2: kept by a base class's member -----------------------------------------------------------------------

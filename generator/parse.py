@@ -71,6 +71,7 @@ NOT_VALUE_COPY: set[str] = set(_OVERRIDES.get("not_value_copy", {}).get("classes
 _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", []))   # packages whose streams carry binary formats (BinTools)
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 _BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter
+_ARRAY_MEMBERS: dict[str, str] = dict(_OVERRIDES.get("array", {}).get("members", {}))   # R-ARRAY-PTR: member -> the allocator's owner
 
 _UNSUPPORTED_RE = re.compile(
     # basic_streambuf and basic_ios too: OSD_FileSystem::OpenStreamBuffer (shared_ptr<std::streambuf>) was reported as
@@ -914,6 +915,17 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
             if _is_const_byte_ptr(args[j].type) and args[j + 1].type.get_canonical().kind in _INTEGRAL_KINDS:
                 bytes_role[j] = ""                                        # the buffer itself
                 bytes_role[j + 1] = py_safe(args[j].spelling) or f"arg{j}"   # its length, dropped
+    # R-ARRAY-PTR: an integer count immediately followed by a `const T*` to a class is an array taken by its first element
+    # (VrmlData_Coordinate(scene, name, nPoints, arrPoints)). Listed for the same reason as R-BYTES: a count next to a
+    # pointer is a convention, not a type (Graphic3d_TransformPers(..., theViewportHeight, gp_Pnt* theAnchor) is one point).
+    seq_role: dict[int, tuple[str, str]] = {}                       # index -> (seq_owner, seq_of)
+    if qualified in _ARRAY_MEMBERS:
+        for j in range(len(args) - 1):
+            ptr = args[j + 1].type.get_canonical()
+            if (args[j].type.get_canonical().kind in _INTEGRAL_KINDS and ptr.kind == TK.POINTER
+                    and ptr.get_pointee().is_const_qualified() and ptr.get_pointee().get_canonical().kind == TK.RECORD):
+                seq_role[j + 1] = (_ARRAY_MEMBERS[qualified], "")                    # the array, a sequence
+                seq_role[j] = ("", py_safe(args[j + 1].spelling) or f"arg{j + 1}")   # its count, dropped
     if members is None:
         members = set()
     for i, p in enumerate(args):
@@ -955,6 +967,11 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         if i in bytes_role:                    # R-BYTES
             params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False,
                                 is_bytes=bytes_role[i] == "", bytes_of=bytes_role[i]))
+            continue
+        if i in seq_role:                      # R-ARRAY-PTR: a defaulted array (nullptr) defaults to an empty sequence
+            owner, of = seq_role[i]
+            params.append(Param(name=name, type=_type_spelling(p.type), default=_default_expr(p, scope, members), is_out=False,
+                                seq_owner=owner, seq_of=of))
             continue
         if reason is not None:
             # an unnamed parameter (`operator==(const X&, NCollection_ForwardRangeSentinel)`) by its position and type
@@ -2210,7 +2227,8 @@ def _kept_facts(cursor: cindex.Cursor, c: Class) -> tuple[str, list[str]]:
 
 def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bool, const_method: bool) -> None:
     """R-CTOR-KEEP / R-METHOD-KEEP: mark the parameters of a constructor or method that the object can keep the address of --
-    taken by reference or pointer (not a handle, a primitive, a stream, bytes or a returned out-parameter), of a class that
+    taken by reference or pointer (not a handle, a primitive, a stream, bytes, an R-ARRAY-PTR sequence -- the object points to
+    the copy in its owner's allocator, not to the Python object -- or a returned out-parameter), of a class that
     the object, by its layout (_Held), holds a pointer or reference to -- or, for a constructor, whose own layout holds a
     pointer the object can hold too, copied out of the argument (TDF_ChildIterator(label) keeps the label's TDF_LabelNode*). What waits for the
     layout probe is decided at the end of the package (_resolve_held_layout). A method's out-parameters are returned, not
@@ -2220,7 +2238,7 @@ def _decide_kept(fn: cindex.Cursor, c: Class, params: list[Param], is_method: bo
     undecided: list[tuple[Param, str, tuple[str, ...], bool, _Held | None]] = []
     ocaf_class = _owned(fn.semantic_parent.type)
     for p, arg in zip(params, fn.get_arguments()):
-        if p.omitted or p.is_bytes or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
+        if p.omitted or p.is_bytes or p.seq_owner != "" or p.stream != StreamKind.NONE or (is_method and p.is_out and not p.is_inout):
             continue
         if p.is_handle:
             # R-OWNER, by layout: an object whose layout holds a TDF_Label (XCAFPrs_DocumentExplorer's node stack) points into

@@ -832,7 +832,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **C++ Idiom**
 
-    Pointer to a class nanocct binds (complete, or forward-declared with an installed header, R-PTR-INCOMPLETE), with a null default or without one. Every other pointer with a null default is R-OPTIONAL-PTR; `const char*`/`const char16_t*` are strings (R-CSTR-NULL, R-CHAR16)
+    Pointer to a class nanocct binds (complete, or forward-declared with an installed header, R-PTR-INCOMPLETE), with a null default or without one. Every other pointer with a null default is R-OPTIONAL-PTR; `const char*`/`const char16_t*` are strings (R-CSTR-NULL, R-CHAR16); a listed array taken by its first element is a sequence (R-ARRAY-PTR)
 
 - **OCCT examples**
 
@@ -3008,7 +3008,7 @@ The Python additions of Design.md, section 2.
     - Layout that exists only as a spelling after template substitution -- a class template's by-value member or base (`Extrema_GGExtPC`'s `TheEPC myExtPC`, `BVH_Box`'s bases) -- is completed by a **layout probe** at the end of the package: `using nanocct_layout_N = …; static_assert(sizeof(nanocct_layout_N) != 0, "");` appended to the umbrella, up to 10 rounds since a probed layout can pend in turn (`_resolve_held_layout`; libclang builds the type even for a private member type, reporting only the access error).
     - A class the package's headers only declare is completed by including its header in the probe -- the header of every class named in the spelling, since a template argument has to be complete too (`NCollection_CellFilter<BRepMesh_CircleInspector>::Cell`).
     - Whatever stays open is reported, category `lifetime`, for the classes whose parameters it leaves undecided -- none (OCCT 8.0.1).
-    - 572<!-- count: ctor-keep --> arguments (OCCT 8.0.1).
+    - 568<!-- count: ctor-keep --> arguments (OCCT 8.0.1).
 
 - **Python examples**
 
@@ -3119,7 +3119,7 @@ The Python additions of Design.md, section 2.
     - The slots of all objects are in **one** table for all extension modules (`nanocct::slots()`, a capsule on the `nanocct` package like the MI registry -- a copy made by one toolkit must see what a method of another toolkit stored, R-COPY), found by the object's `PyObject*` (guarded by a mutex, not by the GIL), created on first use and released through `nb::keep_alive_cb`, which nanobind runs after the object's C++ destructor -- the destructor still sees its arguments.
     - An object passed to itself is not stored.
     - Documented nanobind API only (`call_policy`, `keep_alive_cb`).
-    - 814<!-- count: method-keep-slots --> parameters in 50<!-- count: method-keep-files --> generated files (OCCT 8.0.1).
+    - 811<!-- count: method-keep-slots --> parameters in 50<!-- count: method-keep-files --> generated files (OCCT 8.0.1).
     - An in-out parameter that qualifies is reported instead: it is copied into the binding's lambda, so a kept address would dangle anyway (none, OCCT 8.0.1).
 
 - **Python examples**
@@ -3186,13 +3186,13 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - Constructed as **`nanocct::Kept<T>`** (`nanocct_common.h`): `T` itself at offset 0 plus a `kept_base` holding the object's slots -- R-METHOD-KEEP's slots and the constructor's kept arguments move from the table onto the C++ object (`keep_slot<…, Self, true>`, `keep_arg<…>`; 109<!-- count: kept-slots-cpp --> method and 35<!-- count: kept-ctor-args-cpp --> constructor parameters), so they live exactly as long as the C++ object, whoever drops it last.
+    - Constructed as **`nanocct::Kept<T>`** (`nanocct_common.h`): `T` itself at offset 0 plus a `kept_base` holding the object's slots -- R-METHOD-KEEP's slots and the constructor's kept arguments move from the table onto the C++ object (`keep_slot<…, Self, true>`, `keep_arg<…>`; 106<!-- count: kept-slots-cpp --> method and 31<!-- count: kept-ctor-args-cpp --> constructor parameters), so they live exactly as long as the C++ object, whoever drops it last.
     - `Kept<T>` overrides `Standard_Transient::Delete()` (the only definition in OCCT 8.0.1, Standard_Transient.hxx:134): it takes the slots out under the slot table's mutex, runs `T::Delete()` and releases afterwards -- `~kept_base` runs before `~T`, whose destructor may still read them. The mutex is looked up when the object is constructed (by a binding, with the GIL held): `Delete()` runs wherever the last handle goes, and the first lookup in a toolkit imports `nanocct`.
     - A release on a thread with a Python thread state takes the GIL (`nb::gil_scoped_acquire`); on an OCCT worker thread (no thread state) it never waits -- the references go into a per-module queue that one `Py_AddPendingCall` drains on the main thread (waiting deadlocks while the Python thread that started the algorithm holds the GIL, measured in a prototype); after finalisation nothing is released.
     - Python never sees the subclass: `nanocct::register_kept<T>` enters `typeid(Kept<T>)` into the MI registry with `T` as the type to show, which the handle caster looks up anyway.
     - An argument that **can** own the object stays kept by the Python object, reported with the path (category `kept`, 45, OCCT 8.0.1: every VRML node's scene through `VrmlData_Scene::myLstNodes` (`VrmlData_WorldInfo`'s through `VrmlData_Scene::myWorldInfo`), `TDocStd_Owner::SetDocument` through `TDF_Data::myRoot`, `MeshVS_MeshOwner`'s selectable object, OpenGl's shader manager and workspace, Graphic3d's structures, layers and structure manager, the original of a `Graphic3d_ClipPlane` copy through `Graphic3d_ClipPlane::myNextInChain`, the subviews of `V3d_View` and `Graphic3d_CView`, `BRepGraph_LayerHistory::Absorb`).
     - Not constructed as `Kept<T>` when the subclass cannot be formed -- a final class, a private destructor, a final `Delete()`, a multiple-inheritance H-collection -- or its own vtable would name a virtual function no OCCT library exports (`Class.virtual_symbols` against every toolkit's symbols: `new T` uses T's vtable from the library, `Kept<T>` its own): reported, kept by the Python object (none, OCCT 8.0.1).
-    - 55<!-- count: kept-classes --> classes (OCCT 8.0.1), 51<!-- count: kept-own --> by their own members, 4<!-- count: kept-base --> by a base's (`RWMesh_TriangulationSource` and `RWGltf_GltfLatePrimitiveArray` through `Poly_Triangulation::SetCachedMinMax`, BinXCAF's two drivers through BinL's).
+    - 54<!-- count: kept-classes --> classes (OCCT 8.0.1), 47<!-- count: kept-own --> by their own members, 7<!-- count: kept-base --> by a base's (`RWMesh_TriangulationSource` and `RWGltf_GltfLatePrimitiveArray` through `Poly_Triangulation::SetCachedMinMax`, BinXCAF's two drivers through BinL's).
 
 - **Python examples**
 
@@ -3552,6 +3552,59 @@ The Python additions of Design.md, section 2.
     image = Image_AlienPixMap()
     assert image.Load(png, TCollection_AsciiString("memory.png"))   # Load(const uint8_t*, size_t, name)
     assert (image.SizeX(), image.SizeY()) == (5, 3)
+    ```
+### R-ARRAY-PTR
+
+- **C++ Idiom**
+
+    An integer count immediately followed by a `const T*` to a class that is really an array of T taken by its first element, on a member listed in `overrides.toml [array] members`
+
+- **OCCT examples**
+
+    `VrmlData_Coordinate`, `VrmlData_Color`, `VrmlData_Normal`, `VrmlData_TextureCoordinate` (their scene constructors), `VrmlData_ArrayVec3d::SetValues`, `VrmlData_Color::SetColors`, `VrmlData_TextureCoordinate::SetPoints` -- 7 members, all storing the pointer:
+
+    - `VrmlData_Coordinate::VrmlData_Coordinate(const VrmlData_Scene& theScene, const char* theName, const size_t nPoints = 0, const gp_XYZ* arrPoints = nullptr)`
+    - `void VrmlData_ArrayVec3d::SetValues(const size_t nValues, const gp_XYZ* arrValues)` (`myArray = arrValues`)
+    - `void VrmlData_TextureCoordinate::SetPoints(const size_t nPoints, const gp_XY* arrPoints)`
+    - `bool Graphic3d_Buffer::Init(const int theNbElems, const Graphic3d_Attribute* theAttribs, const int theNbAttribs)` (the same idiom, not listed: its `NCollection_Array1<Graphic3d_Attribute>` overload covers it, Excluded.md)
+
+- **Rule**
+
+    - Bound as a class pointer (R-PTR-NULL) the parameter takes one object, and a count above 1 makes OCCT read past it (AddressSanitizer: heap-buffer-overflow).
+    - Listed rather than inferred, as for R-BYTES: a count next to a pointer is a convention, not a type (`Graphic3d_TransformPers(..., theViewportHeight, gp_Pnt* theAnchor)` is one point).
+    - The object keeps the pointer, so the elements are copied into memory that lives as long as the object: the allocator of the object the entry names -- for the VrmlData nodes their scene's, where OCCT's own reader puts the arrays (`VrmlData_ArrayVec3d::AllocateValues`, `VrmlData_Geometry.cxx`). A node keeps its scene (R-CTOR-KEEP), so the copy outlives every Python variable.
+    - A copy, unlike C++: changing the Python sequence or its elements after the call does not change the node.
+    - A repeated `SetColors`/`SetPoints`/`SetValues` leaves the previous array in the scene's allocator until the scene goes, as OCCT's reader does.
+
+- **Python**
+
+    - One sequence parameter of the element type (`Sequence[gp_XYZ]`, `std::vector<T>` in the binding); the count is dropped and passed as its length.
+    - A null default is the empty sequence, which passes `nullptr` as the C++ default does.
+    - `nanocct::allocator_copy` (nanocct_common.h) makes the copy; the sequence itself is not kept.
+
+- **Python examples**
+
+    ```python
+    import gc
+    from nanocct.gp import gp_XY, gp_XYZ
+    from nanocct.VrmlData import VrmlData_Color, VrmlData_Coordinate, VrmlData_Scene, VrmlData_TextureCoordinate
+
+    scene = VrmlData_Scene()
+    points = [gp_XYZ(1, 2, 3), gp_XYZ(4, 5, 6), gp_XYZ(7, 8, 9)]
+    coordinates = VrmlData_Coordinate(scene, "c", points)       # the count is len(points)
+    assert coordinates.Length() == 3 and coordinates.Coordinate(2).Z() == 9.0
+    points[2].SetZ(0.0)                                         # a copy: the node does not see it
+    assert coordinates.Coordinate(2).Z() == 9.0
+    assert VrmlData_Coordinate(scene, "empty").Length() == 0    # the C++ default: no array
+
+    colors = VrmlData_Color(scene, "rgb")
+    colors.SetColors([gp_XYZ(1, 0, 0), gp_XYZ(0, 1, 0)])
+    assert colors.Length() == 2 and colors.Color(1).Green() == 1.0
+    assert VrmlData_TextureCoordinate(scene, "uv", [gp_XY(0, 0), gp_XY(1, 0.5)]).Length() == 2
+
+    del scene, points
+    gc.collect()
+    assert coordinates.Coordinate(1).X() == 4.0                 # in the scene's allocator; the node keeps the scene
     ```
 ### R-VIEW
 

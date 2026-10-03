@@ -2423,7 +2423,7 @@ def test_every_skip_entry_still_skips_something():
 
 
 def test_every_member_override_names_an_occt_member():
-    """[inout], [stream] binary_members and [not_value_copy] change how a member or a class is bound and leave no report
+    """[inout], [stream] binary_members, [array] and [not_value_copy] change how a member or a class is bound and leave no report
     line, so an entry OCCT no longer matches would go unnoticed. Every entry ([inout]: a glob on the qualified name) must
     name a member declared in the header of its class, or a class OCCT declares. Platform-independent: read from the
     OCCT sources, like the R-BYTES scan above."""
@@ -2438,6 +2438,7 @@ def test_every_member_override_names_an_occt_member():
     unmatched = (
         [f"inout: {e}" for e in o["inout"] if not any(fnmatch(d, e) for d in declared)]
         + [f"binary_members: {e}" for e in o["stream"]["binary_members"] if e not in declared]
+        + [f"array: {e}" for e in o["array"]["members"] if e not in declared]
         + [f"not_value_copy: {e}" for e in o["not_value_copy"]["classes"] if not (OCCT_INC / f"{e}.hxx").exists()])
     assert unmatched == []
 
