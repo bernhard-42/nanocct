@@ -146,7 +146,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 - **Rule**
 
     - PEP 8 / pybind11 convention.
-    - Applies to enumerators, methods, fields, functions and parameter names (the stub `Restore(self, with: …)` would be a syntax error).
+    - Applies to enumerators, methods, fields, functions and parameter names (the stub `Restore(self, with: …)` would be a syntax error), and to the names of classes, enums, constants, type aliases and namespaces, through every Python path that names them (none in OCCT 8.0.1 is a keyword).
 
 - **Python**
 
@@ -522,7 +522,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - Dropped from the signature, **returned** (bare value if it is the only result, else a tuple; a non-void return comes first).
-    - A result that is a reference to the class itself (`const BinObjMgt_Persistent& GetInteger(int&)`, `*this` for chaining) is dropped like a chained stream: `GetInteger() -> int` -- also a reference to one of its bases, as an override of the base's virtual returns it (`Storage_BaseDriver& FSD_File::GetReference(int&) override`).
+    - A result that is a reference to the class itself (`const BinObjMgt_Persistent& GetInteger(int&)`, `*this` for chaining) is dropped like a chained stream: `GetInteger() -> int` -- also a reference to one of its bases, as an override of the base's virtual returns it (`Storage_BaseDriver& FSD_File::GetReference(int&) override`). The same next to a stream parameter of any member, operator or not: a stream always goes through a lambda, whose `auto` result would copy `*this`.
 
 - **Python examples**
 
@@ -1978,7 +1978,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **C++ Idiom**
 
-    `std::istream&` / `Standard_SStream&` parameter
+    `std::istream&` / `const Standard_SStream&` parameter (a non-const `std::stringstream&` the callee may write into is not an input: it is reported as an iostream type; OCCT 8.0.1 has none)
 
 - **OCCT examples**
 
@@ -2543,7 +2543,7 @@ The Python additions of Design.md, section 2.
 
     - `T.__str__`, returning exactly the text OCCT writes (a lambda streams into a `std::ostringstream`, decoded like R-STREAM-OUT).
     - The member reader becomes `Read(TextIO)` (R-STREAM-IN), its `*this` result dropped like R-OUT's.
-    - **Only when the operator prints `T`**: it is declared in `T`'s own header (`X.hxx` or its `X.lxx`), its stream is text (not a `[stream] binary_packages` package), `T` is no exception class, and `T` has no member form bound already (TDF has both).
+    - **Only when the operator prints `T`**: it is declared in `T`'s own header (`X.hxx` or its `X.lxx`), its stream is text (not a `[stream] binary_packages` package -- the free form, a hidden friend and a nested class's operator alike), `T` is no exception class, and `T` has no member form bound already (TDF has both).
 
 - **Python examples**
 
@@ -2609,7 +2609,7 @@ The Python additions of Design.md, section 2.
 
 - **C++ Idiom**
 
-    A class with a public `bool IsNull()` (no parameters, not static, const or not) and no `operator bool`; derived classes inherit it
+    A class with a public `bool IsNull()` (or `Standard_Boolean`; no parameters, not static, const or not) and no `operator bool`; derived classes inherit it
 
 - **OCCT examples**
 
@@ -3948,7 +3948,7 @@ The Python additions of Design.md, section 2.
 
 - **C++ Idiom**
 
-    A class with `More() -> bool`, `Next()` and a parameterless `Value()` or `Current()` returning a value
+    A class with `More() -> bool` (or `Standard_Boolean`, as for R-NULL-BOOL's `IsNull()`), `Next()` and a parameterless `Value()` or `Current()` returning a value
 
 - **OCCT examples**
 

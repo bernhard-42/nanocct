@@ -59,6 +59,12 @@ def _cpp_doc(doc: str) -> str | None:
     return f'R"nbdoc({doc})nbdoc"'
 
 
+def _is_bool(t: str) -> bool:
+    """A bool result, however spelled: `bool` (OCCT 8) or the `Standard_Boolean` typedef an older header may keep (R-ITER's
+    More(), R-NULL-BOOL's IsNull(); review 2026-10-02, C4)."""
+    return _strip_ref(t) in ("bool", "Standard_Boolean")
+
+
 def _strip_ref(t: str) -> str:
     """'double &' -> 'double'; 'const int &' -> 'int' (for out-param locals)."""
     s = t.replace("&", "").strip()
@@ -1132,7 +1138,7 @@ class Emitter:
         result, ResultKind.VALUE), because Next() is called right after reading it."""
         live = {(m.name, len(m.params)): m for m in c.methods if m.skip_reason is None and not m.is_static}
         more, nxt = live.get(("More", 0)), live.get(("Next", 0))
-        if more is None or nxt is None or _strip_ref(more.result) != "bool":
+        if more is None or nxt is None or not _is_bool(more.result):
             return None
         for name in ("Value", "Current"):
             get = live.get((name, 0))
@@ -1262,9 +1268,9 @@ class Emitter:
                 self._note_types(conv.target)
                 # R-CONV-SCALAR: a non-const conversion operator needs a non-const self (MeshVS_Buffer::operator int&())
                 qual = "const " if conv.is_const else ""
-                body.append(f'.def("{dunder}", [{qual and ""}]({qual}{c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
+                body.append(f'.def("{dunder}", []({qual}{c.bound_type} &self) {{ return static_cast<{conv.target}>(self); }}{", " + _cpp_doc(conv.doc) if conv.doc != "" else ""})')
         is_null = next((m for m in bound if m.name == "IsNull" and len(m.params) == 0 and not m.is_static
-                        and m.result in ("bool", "Standard_Boolean")), None)
+                        and _is_bool(m.result)), None)
         if is_null is not None and not any(conv.kind == ConversionKind.BOOL for conv in c.conversions):
             # R-NULL-BOOL: OCCT gives the class IsNull() and no operator bool -> a null object is falsy, as a null
             # handle is (None, R-HANDLE) and an empty container is (__len__). Without it every object would be true

@@ -563,7 +563,7 @@ def py_path(cpp_name: str, package: str, paths: dict[str, str] | None = None) ->
     parts = cpp_name.split("::")
     if len(parts) > 1 and parts[0] == package:
         parts = parts[1:]
-    return ".".join(parts)
+    return ".".join(py_safe(p) for p in parts)         # R-KEYWORD: a class or namespace named like a Python keyword
 
 
 def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
@@ -576,7 +576,7 @@ def _ast_py_path(cursor: cindex.Cursor, package: str) -> str:
         if not (outermost_ns and parent.spelling == package):
             parts.append(parent.spelling)
         parent = parent.semantic_parent
-    return ".".join(reversed(parts))
+    return ".".join(py_safe(p) for p in reversed(parts))   # R-KEYWORD, as py_path
 
 
 # Binding-Rules.md R-CSTR-NULL: the const char* test for a parameter with a null default
@@ -734,7 +734,8 @@ def _result_kind(t: cindex.Type) -> tuple[str, str]:
 # Binding-Rules.md R-STREAM-OUT, R-STREAM-IN
 def _stream_kind(t: cindex.Type) -> str:
     """'out' for a mutable std::ostream& (Dump, DumpJson, Print, Write: the text is returned as a str), 'in' for a
-    std::istream& or a std::stringstream (const or not: InitFromJson, Read: a text file-like object is read into a stringstream, nanocct::TextInput), else ''."""
+    std::istream& or a const std::stringstream& (InitFromJson, Read: a text file-like object is read into a stringstream,
+    nanocct::TextInput), else ''."""
     canon = t.get_canonical()
     if canon.kind != TK.LVALUEREFERENCE:
         return ""
@@ -755,8 +756,12 @@ def _stream_kind(t: cindex.Type) -> str:
         return ""
     if decl.spelling == "basic_ostream" and not pointee.is_const_qualified():
         return StreamKind.OUT
-    if decl.spelling in ("basic_istream", "basic_stringstream", "basic_istringstream"):
+    if decl.spelling in ("basic_istream", "basic_istringstream"):
         return StreamKind.IN
+    if decl.spelling == "basic_stringstream" and pointee.is_const_qualified():
+        return StreamKind.IN       # InitFromJson(const Standard_SStream&): read only
+    # a non-const std::stringstream& the callee may write into: not an input -- reported as an iostream type rather than
+    # bound as one and its output lost (review C8; OCCT 8.0.1 has none)
     return ""
 
 
@@ -1209,7 +1214,7 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
             if v.enum_value in seen:
                 aliases.append(py_safe(v.spelling))
             seen.add(v.enum_value)
-    return Enum(name=qual, py_name=cursor.spelling, values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header,
+    return Enum(name=qual, py_name=py_safe(cursor.spelling), values=values, is_scoped=cursor.is_scoped_enum(), doc=_doc(cursor), header=header,
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("), aliases=aliases)
 
 
@@ -1236,14 +1241,15 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     rc0 = cursor.result_type.get_canonical()
     self_type = _type_spelling(rc0.get_pointee()).replace("const ", "") if rc0.kind == TK.LVALUEREFERENCE else ""
-    if m.skip_reason is None and (any(p.is_out for p in params) or m.is_operator and any(p.stream != StreamKind.NONE for p in params)) \
+    if m.skip_reason is None and (any(p.is_out for p in params) or any(p.stream != StreamKind.NONE for p in params)) \
             and self_type != "" and (self_type == cls_name or _derives_from(cursor.semantic_parent, self_type)):
         # ... also when the reference is to a base class: `Storage_BaseDriver& FSD_File::GetReference(int&) override` returns
         # *this through the virtual's declared type, and dropping it only in the base made Storage_BaseDriver.GetReference()
         # -> int but FSD_File.GetReference() -> (Storage_BaseDriver, int) for the same virtual (final review 2026-09-30)
         # `const BinObjMgt_Persistent& GetInteger(int&)`: *this, for chaining. The out-param lambda would copy it (`auto result`),
         # and copying a Persistent shares its raw buffers (abort at destruction). Dropped like the chained stream (R-OUT)
-        # -- and so is `VrmlData_Scene& operator<<(Standard_IStream&)`, the scene's reader, whose *this would be copied the same way (R-STR)
+        # -- and so is `VrmlData_Scene& operator<<(Standard_IStream&)`, the scene's reader, whose *this would be copied the same way (R-STR),
+        # and any member with a stream parameter, operator or not: a stream always goes through a lambda (review C5)
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
@@ -3188,10 +3194,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 continue
             if len(ns_parts) > 0 and ns_parts[0] == pkg.name:
                 ns_parts = ns_parts[1:]
-            scope = tuple(ns_parts)
+            scope = tuple(py_safe(p) for p in ns_parts)   # R-KEYWORD: the submodule of a namespace
             if ns != "" and cur.kind == K.VAR_DECL and cur.type.is_const_qualified():
                 # namespace-level constants (constexpr double MathUtils::THE_NEWTON_FTOL_SQ = ...) -> module attributes
-                ir.constants.append(Constant(py_name=cur.spelling, cpp=f"{ns}{cur.spelling}", doc=_doc(cur), scope=scope))
+                ir.constants.append(Constant(py_name=py_safe(cur.spelling), cpp=f"{ns}{cur.spelling}", doc=_doc(cur), scope=scope))
                 continue
             if ns != "" and cur.kind in (K.FUNCTION_TEMPLATE, K.CLASS_TEMPLATE):
                 # R-TEMPLATE-SKIP: a function or class template in a namespace has no concrete type -> not bound, reported
@@ -3235,7 +3241,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                 ir.functions.append(fn)
             elif cur.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL):
                 # R-ALIAS: every typedef is recorded for Emitter._aliases, which binds it as a second name of its target
-                ir.typedefs.append(TypeAlias(py_name=cur.spelling, target=_canonical_args(cur.underlying_typedef_type),
+                ir.typedefs.append(TypeAlias(py_name=py_safe(cur.spelling), target=_canonical_args(cur.underlying_typedef_type),
                                              written=_type_spelling(cur.underlying_typedef_type), scope=scope))
                 _note_instance(cur.underlying_typedef_type)      # BVH_Array3d = NCollection_LinearVector<...>: bind the instantiation
                 if ns != "":
@@ -3336,7 +3342,12 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
     ir.owned_args = set(_owned_instance_args)
     ir.copy_owner_instances = dict(_instance_owners)
     if pkg.name in _BINARY_PACKAGES:            # R-STREAM-OUT, R-STREAM-IN: binary formats -> bytes / typing.BinaryIO
-        for params in [m.params for c in ir.classes for m in c.methods] + [f.params for f in ir.functions]:
+        def every_class(classes):               # nested classes too, and their hidden-friend operators (review C9: a
+            for c in classes:                   # friend operator<< of a binary package must not become a text __str__)
+                yield c
+                yield from every_class(c.nested)
+        members = [m for c in every_class(ir.classes) for m in list(c.methods) + list(c.friend_ops)] + list(ir.functions)
+        for params in [m.params for m in members]:
             for prm in params:
                 if prm.stream != StreamKind.NONE:
                     prm.binary = True
