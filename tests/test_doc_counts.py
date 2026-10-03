@@ -40,7 +40,7 @@ def _report() -> list[tuple[str, str, str]]:
 
 
 def _keep_views(text: str) -> Counter[str]:
-    """keep_view<R, Owned, Nurse, Elem, Patients...> (nanocct_common.h): R-OWNER when Owned; a result when Nurse is 0, an
+    """keep_view<R, Owned, Nurse, Elem, Patients...> (nanocct_call_policies.h): R-OWNER when Owned; a result when Nurse is 0, an
     argument written into otherwise; a tuple element when Elem >= 0."""
     out: Counter[str] = Counter()
     for m in re.finditer(r"nanocct::keep_view<.*?, (true|false), (\d+), (-?\d+)((?:, \d+)*)>", text):

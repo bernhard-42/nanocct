@@ -480,7 +480,7 @@ class Emitter:
         # R-FIXED-ARRAY: a const T[N] parameter is copied from the std::array into a C array for the call
         body += [f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0]
         # streams: an ostream& parameter becomes a returned str; an istream&/stringstream parameter takes a text file-like
-        # object (nanocct::TextInput caster in nanocct_common.h: typing.TextIO, never a str -- that would collide with the
+        # object (nanocct::TextInput caster in nanocct_casters.h: typing.TextIO, never a str -- that would collide with the
         # file-path overloads such as BRepTools::Read(shape, path, builder))
         body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
         body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
@@ -582,7 +582,7 @@ class Emitter:
             # reference_internal made every call fail ("Unable to convert function return value")
             policy = ", nb::rv_policy::reference"
         if m.result_kind == ResultKind.VALUE and m.result.rstrip().endswith("&"):
-            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_common.h), when its
+            # R-RESULT: a const T& is copied, or returned by reference when T cannot be copied (nanocct_call_policies.h), when its
             # copy constructor does not copy the state (overrides.toml [not_value_copy]) or when the copy would share what
             # the destructor frees (R-COPY)
             if _names_not_value_copy(m.result) or m.result_by_reference:

@@ -30,7 +30,7 @@ _PRIMITIVE_KINDS = {
     TK.ULONGLONG, TK.CHAR_S, TK.SCHAR, TK.WCHAR, TK.SHORT, TK.INT, TK.LONG, TK.LONGLONG,
     TK.FLOAT, TK.DOUBLE, TK.LONGDOUBLE, TK.ENUM,
 }
-# R-HANDLE, R-NCHANDLE: the smart pointers that are transparent in Python (a caster each in nanocct_common.h): the
+# R-HANDLE, R-NCHANDLE: the smart pointers that are transparent in Python (a caster each in nanocct_casters.h): the
 # object behind them is what gets bound, a null one is None -- opencascade::handle<T> for Transients and
 # NCollection_Handle<T>, OCCT's reference-counted owner of a non-Transient object
 _SMART_HANDLES = ("handle", "NCollection_Handle")
@@ -636,7 +636,7 @@ def _unsupported(t: cindex.Type, allow_out: bool) -> str | None:
             return "function pointer"
         if pk == TK.VOID:
             return "void pointer"
-        # R-CSTRING, R-CHAR16: const char* / const char16_t* (Standard_ExtString) are strings, casters in nanocct_common.h
+        # R-CSTRING, R-CHAR16: const char* / const char16_t* (Standard_ExtString) are strings, casters in nanocct_casters.h
         if pk in (TK.CHAR_S, TK.CHAR_U, TK.CHAR16) and pointee.is_const_qualified():
             return None
         if pk in _PRIMITIVE_KINDS or pk == TK.POINTER:
@@ -1750,7 +1750,7 @@ _instance_layouts: dict[str, _Held] = {}             # R-COPY: each binder insta
 _instance_owners: dict[str, str] = {}                # R-COPY: the instantiations among them whose elements are owners -> where
 
 
-# Binding-Rules.md R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_common.h, defined in
+# Binding-Rules.md R-OWNER: the OCAF types whose owner the bindings know -- mirrored by nanocct::owners (nanocct_lifetime.h, defined in
 # nanocct_ocaf.h); nanocct::keep_view checks this verdict against the C++ trait at compile time
 _OWNED_ROOTS = ("TDF_Label", "TDF_Data")
 _OWNED_BASE = "TDF_Attribute"

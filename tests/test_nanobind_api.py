@@ -25,8 +25,8 @@ INTERNAL = re.compile(r"NB_CALL\(\w+\)|NB_CTX\w*|NB_INLINE|nanobind/nb_\w+\.h|nb
 ALLOWED: dict[tuple[str, str], tuple[int, str]] = {
     ("src/cpp/common/nanocct_common.h", "nanobind/nb_defs.h"): (
         1, "MSVC: NB_INLINE is redefined from __forceinline to inline (math.cpp 1677 s -> 16 s, nanobind discussion 791)"),
-    ("src/cpp/common/nanocct_common.h", "NB_INLINE"): (
-        3, "the MSVC redefinition (#undef, #define) and the OptionalCString caster's can_cast, as nanobind's own casters"),
+    ("src/cpp/common/nanocct_common.h", "NB_INLINE"): (2, "the MSVC redefinition (#undef, #define)"),
+    ("src/cpp/common/nanocct_casters.h", "NB_INLINE"): (1, "the OptionalCString caster's can_cast, as nanobind's own casters"),
 }
 
 

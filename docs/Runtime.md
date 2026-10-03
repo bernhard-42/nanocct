@@ -18,7 +18,7 @@ Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.m
 
 ### `Standard_Transient` descendants
 
-- `nb::class_<T, Base>` plus a type caster for `opencascade::handle<T>` (alias `occ::handle<T>`, `Standard_Handle.hxx:419`) in `src/cpp/common/nanocct_common.h`, modeled on nanobind's `shared_ptr` caster.
+- `nb::class_<T, Base>` plus a type caster for `opencascade::handle<T>` (alias `occ::handle<T>`, `Standard_Handle.hxx:419`) in `src/cpp/common/nanocct_casters.h`, modeled on nanobind's `shared_ptr` caster.
 - The Python instance never owns the C++ object; a heap-allocated `handle<Standard_Transient>` is attached with `nb::keep_alive_cb`, so OCCT's intrusive reference count governs lifetime on both sides.
 - Constructors are `nb::new_` lambdas returning `handle<T>` so that Python-created objects go through the same path.
 - A class whose bound constructors or methods keep arguments (R-CTOR-KEEP, R-METHOD-KEEP) is constructed as `nanocct::Kept<T>`, a binding-side subclass that holds those arguments on the C++ object: they live as long as it does, also when an OCCT container or document holds it after Python dropped it. Python sees `T` (R-KEPT).
@@ -49,7 +49,7 @@ nanobind's default for a returned raw pointer is *take ownership*, which would `
 - nanobind supports one base and reuses the derived pointer as the base pointer without adjustment: a bound base must be at **offset 0** of the derived object.
 - Measured: `NCollection_HArray1<T>` (`: Array1<T>, Standard_Transient`) bound with base `Standard_Transient` returned `myLowerBound` from `GetRefCount()` (5 for an array starting at 5), and `NCollection_Shared<T>` (`: Standard_Transient, T`) bound with base `T` crashed on the first `T` method.
 - Rule for a class `S` with several bases:
-    - nanobind's base is the offset-0 one (`mi_traits<S>::base` in `nanocct_common.h`, declared for the NCollection H-types and `Shared` via forward declarations so every TU agrees);
+    - nanobind's base is the offset-0 one (`mi_traits<S>::base` in `nanocct_registry.h`, declared for the NCollection H-types and `Shared` via forward declarations so every TU agrees);
     - members of the other base are bound with lambdas taking `base&` and `static_cast`ing to `S&` (an adjusting downcast);
     - an **MI registry** (`nanocct_register_mi<S>`) gives the `handle<T>` caster two conversions: Python `S` → `handle<Standard_Transient>` (`to_transient` on the stored pointer, then `dynamic_cast<T*>`, so a wrong target type fails cleanly) and `handle<Standard_Transient>` holding an `S` → the stored pointer (`dynamic_cast<void*>` to the complete object, then to the base).
 - Verified: `HArray1(5, 9).GetRefCount() == 1`; a `Sequence<handle<Standard_Transient>>` round-trips an `HArray1` and a `Shared<Map<int>>` by identity with exact reference counts; `isinstance(h, NCollection_Array1[T])` is `True`, `isinstance(h, Standard_Transient)` is `False` (documented).

@@ -260,7 +260,7 @@ deps: clean_deps rapidjson freetype freeimage occt
 # Generate the OCCT bindings
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
-# Only the generated files. src/cpp/common/nanocct_common.h and nanocct_ncollection.h are hand-written and tracked,
+# Only the generated files. The headers in src/cpp/common/ (except ncollection_docs.h) are hand-written and tracked,
 # as are src/nanocct/_templates.py and py.typed -- never `rm -rf src/cpp`, which once cost a whole Windows build.
 clean_gen:
 	rm -rf $(ROOT)/src/cpp/TK*

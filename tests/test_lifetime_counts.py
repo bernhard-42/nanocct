@@ -37,7 +37,7 @@ CATEGORIES = ("copy", "kept", "lifetime", "view-guard")
 
 
 # an implicit copy constructor's helper call ends in its flags: `, View>(` or, for a Kept<T> class, `, View, true, Cpp,
-# nanocct_slots, N>(` (nanocct_common.h); the class name before them may hold any template arguments
+# nanocct_slots, N>(` (nanocct_class_helpers.h); the class name before them may hold any template arguments
 COPY_TAIL = re.compile(r"^\s*nanocct_implicit_copy_ctor<.*?(?:, (true|false)(, true, (?:true|false), nanocct_slots, \d+)?)?>\(", re.M)
 
 

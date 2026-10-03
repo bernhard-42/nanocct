@@ -64,7 +64,7 @@ class Param:
     out_keeps: tuple[int, ...] = ()  # ... it keeps self (a method) and these parameters (indices) alive
     owned: bool = False     # R-OWNER: an argument written into, or a returned out-handle, of a type whose OCAF owners are known
     guarded: bool = False   # R-VIEW-GUARD: a non-const reference/pointer to an NCollection container: the call may change it, so it
-                            # refuses (BufferError) while the container has live views (nanocct::guarded, nanocct_common.h)
+                            # refuses (BufferError) while the container has live views (nanocct::guarded, nanocct_guards.h)
     container: bool = False # R-VIEW-GUARD: a reference/pointer to an NCollection container, any constness: an iterator class (R-ITER)
                             # constructed or initialised from it is an iterator view of it
     kept_cpp: bool = False  # R-KEPT: a kept argument of a Transient that cannot own the object (parse._cycle_path): the C++ object

@@ -1071,7 +1071,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - Transparent, like R-HANDLE: a result is the bound `X`, **shared** with its owner (edits reach the entity) and kept alive by a heap copy of the handle (`keep_alive`), a null handle is `None`.
-    - A parameter takes an `X` or `None` and **copies** the `X` into a new handle (caster in `nanocct_common.h`; the generator treats it like `handle`: `.none()`, class behind it = `X`, never instantiated as a class).
+    - A parameter takes an `X` or `None` and **copies** the `X` into a new handle (caster in `nanocct_casters.h`; the generator treats it like `handle`: `.none()`, class behind it = `X`, never instantiated as a class).
 
 - **Python examples**
 
@@ -1117,7 +1117,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - A `const T` is returned as a **copy**.
-    - A mutable `T` is returned as a reference into its owner that keeps the owner alive (`reference_internal`): edits reach the map as in C++ (caster in `nanocct_common.h`).
+    - A mutable `T` is returned as a reference into its owner that keeps the owner alive (`reference_internal`): edits reach the map as in C++ (caster in `nanocct_casters.h`).
 
 - **Python examples**
 
@@ -1212,7 +1212,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - Wrapped in `handle<T>` (same Python object as before).
-    - A `T&` whose reference count is **0** at return is not handle-owned — a member held by value (`BRepAdaptor_Curve::Curve()` → its `GeomAdaptor_Curve`) or static storage — so it gets one permanent reference and, for methods, the owner is kept alive as long as the result — `keep_alive<0, 1>` except when the result is `self` (`nanocct::KeepOwnerUnlessSelf`, `nanocct_common.h`).
+    - A `T&` whose reference count is **0** at return is not handle-owned — a member held by value (`BRepAdaptor_Curve::Curve()` → its `GeomAdaptor_Curve`) or static storage — so it gets one permanent reference and, for methods, the owner is kept alive as long as the result — `keep_alive<0, 1>` except when the result is `self` (`nanocct::KeepOwnerUnlessSelf`, `nanocct_call_policies.h`).
 
 - **Python examples**
 
@@ -1370,7 +1370,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
     - Copied (`rv_policy::copy`) when `T` is copy-constructible.
     - Otherwise returned by reference -- `reference_internal` for a method (the result keeps its owner alive), `reference` for a static method or free function (no owner).
-    - `nanocct::cref_policy<R, HasOwner>` (`nanocct_common.h`) picks the policy at compile time from `std::is_copy_constructible`.
+    - `nanocct::cref_policy<R, HasOwner>` (`nanocct_call_policies.h`) picks the policy at compile time from `std::is_copy_constructible`.
     - Also by reference: an owner (R-COPY: its copy would share what its destructor frees, decided by the generator), and a result that names a class of `overrides.toml [not_value_copy]`, itself or as a container element -- classes whose copy constructor drops state (`IntRes2d_Intersection`/`Geom2dInt_GInter`: `done = false`, `Intf_SectionLine`: `closed = false`, `IntTools_CommonPrt`: `myAllNullFlag = false`).
 
 - **Python examples**
@@ -1762,7 +1762,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **Python**
 
-    - `str` (1 character / UTF-16 string), casters in `nanocct_common.h` (stable-ABI `PyUnicode_AsUTF16String` / `PyUnicode_DecodeUTF16`, `PyUnicode_ReadChar` / `PyUnicode_DecodeUTF32`).
+    - `str` (1 character / UTF-16 string), casters in `nanocct_casters.h` (stable-ABI `PyUnicode_AsUTF16String` / `PyUnicode_DecodeUTF16`, `PyUnicode_ReadChar` / `PyUnicode_DecodeUTF32`).
     - A `char32_t` is a 1-character `str` in both directions (`font.HasSymbol("€")`; an `int` is rejected).
     - A `char16_t` is one UTF-16 code unit: a character outside the Basic Multilingual Plane (`"😀"`) is a `TypeError` there.
 
@@ -1892,7 +1892,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Rule**
 
     - nanobind's arithmetic enums are Python `IntEnum`s, so the enumerators go in as ints and the ints that come back compare and hash equal to them (measured).
-    - The caster (`nanocct_common.h`) takes any iterable of indices — set, frozenset, list, tuple — and rejects `str`, `bytes`, `dict`, a negative index and an index ≥ N, so the name-taking twin stays reachable (`ShapeProcess.Perform_s(context, "sequence")` next to `Perform(context, flags)`).
+    - The caster (`nanocct_casters.h`) takes any iterable of indices — set, frozenset, list, tuple — and rejects `str`, `bytes`, `dict`, a negative index and an index ≥ N, so the name-taking twin stays reachable (`ShapeProcess.Perform_s(context, "sequence")` next to `Perform(context, flags)`).
     - 19<!-- count: bitset --> members in four toolkits (OCCT 8.0.1: `TKXSBase` 8, `TKDESTEP` 6, `TKDEIGES` 4, `TKShHealing` 1).
 
 - **Python**
@@ -3114,7 +3114,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - `nb::call_policy<nanocct::keep_slot<nanocct_slots, k, n>>()` (`nanocct_common.h`): the argument -- after an implicit conversion the converted object -- goes into slot `n` of the object and releases what the slot held.
+    - `nb::call_policy<nanocct::keep_slot<nanocct_slots, k, n>>()` (`nanocct_call_policies.h`): the argument -- after an implicit conversion the converted object -- goes into slot `n` of the object and releases what the slot held.
     - One slot per (declaration, parameter), numbered per generated file and named by the address of the file's `nanocct::slot_tag<nanocct_slots>::id` and that number (`namespace { struct nanocct_slots {}; }` per file).
     - The slots of all objects are in **one** table for all extension modules (`nanocct::slots()`, a capsule on the `nanocct` package like the MI registry -- a copy made by one toolkit must see what a method of another toolkit stored, R-COPY), found by the object's `PyObject*` (guarded by a mutex, not by the GIL), created on first use and released through `nb::keep_alive_cb`, which nanobind runs after the object's C++ destructor -- the destructor still sees its arguments.
     - An object passed to itself is not stored.
@@ -3186,7 +3186,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - Constructed as **`nanocct::Kept<T>`** (`nanocct_common.h`): `T` itself at offset 0 plus a `kept_base` holding the object's slots -- R-METHOD-KEEP's slots and the constructor's kept arguments move from the table onto the C++ object (`keep_slot<…, Self, true>`, `keep_arg<…>`; 106<!-- count: kept-slots-cpp --> method and 31<!-- count: kept-ctor-args-cpp --> constructor parameters), so they live exactly as long as the C++ object, whoever drops it last.
+    - Constructed as **`nanocct::Kept<T>`** (`nanocct_lifetime.h`): `T` itself at offset 0 plus a `kept_base` holding the object's slots -- R-METHOD-KEEP's slots and the constructor's kept arguments move from the table onto the C++ object (`keep_slot<…, Self, true>`, `keep_arg<…>`; 106<!-- count: kept-slots-cpp --> method and 31<!-- count: kept-ctor-args-cpp --> constructor parameters), so they live exactly as long as the C++ object, whoever drops it last.
     - `Kept<T>` overrides `Standard_Transient::Delete()` (the only definition in OCCT 8.0.1, Standard_Transient.hxx:134): it takes the slots out under the slot table's mutex, runs `T::Delete()` and releases afterwards -- `~kept_base` runs before `~T`, whose destructor may still read them. The mutex is looked up when the object is constructed (by a binding, with the GIL held): `Delete()` runs wherever the last handle goes, and the first lookup in a toolkit imports `nanocct`.
     - A release on a thread with a Python thread state takes the GIL (`nb::gil_scoped_acquire`); on an OCCT worker thread (no thread state) it never waits -- the references go into a per-module queue that one `Py_AddPendingCall` drains on the main thread (waiting deadlocks while the Python thread that started the algorithm holds the GIL, measured in a prototype); after finalisation nothing is released.
     - Python never sees the subclass: `nanocct::register_kept<T>` enters `typeid(Kept<T>)` into the MI registry with `T` as the type to show, which the handle caster looks up anyway.
@@ -3265,7 +3265,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - `nb::call_policy<nanocct::keep_view<R, false, nurse, elem, patients…>>()` (`nanocct_common.h`): the result (`nurse` 0; `elem`: its position in an out-parameter tuple) or the argument written into (`nurse` k) keeps `self` for a method, and every argument whose class, or a pointer in whose own layout, the result's layout can hold -- also for a static method or a free function (`Message_ProgressIndicator::Start_s(progress)` keeps `progress`) -- with `nb::keep_alive_obj`, and what those objects' method slots hold now (`nanocct::keep_view_of`, R-COPY: a producer's next `Initialize` must not free what the result points to).
+    - `nb::call_policy<nanocct::keep_view<R, false, nurse, elem, patients…>>()` (`nanocct_call_policies.h`): the result (`nurse` 0; `elem`: its position in an out-parameter tuple) or the argument written into (`nurse` k) keeps `self` for a method, and every argument whose class, or a pointer in whose own layout, the result's layout can hold -- also for a static method or a free function (`Message_ProgressIndicator::Start_s(progress)` keeps `progress`) -- with `nb::keep_alive_obj`, and what those objects' method slots hold now (`nanocct::keep_view_of`, R-COPY: a producer's next `Initialize` must not free what the result points to).
     - A fresh result holds one call's arguments; an argument written into keeps them for good, nanobind skipping duplicates.
     - R-ITER: `nanocct_def_iter<T, true>`, every element keeps the iterated object.
     - Decided after the layout probe (`parse._note_views`, `_decide_views`); a dependent spelling of a 7c walk is probed as the class behind it (`std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<…>>>`: `NCollection_Array1<T>::const_reference` hides a reference).
@@ -3358,7 +3358,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - `nanocct::owners<T>` (`nanocct_common.h`): `keep(nurse, value)` keeps the `TDF_Data` and, when it has one, the `TDocStd_Document`, through their handles' Python objects (`nb::keep_alive_obj`); a handle or container recurses into its elements.
+    - `nanocct::owners<T>` (`nanocct_lifetime.h`): `keep(nurse, value)` keeps the `TDF_Data` and, when it has one, the `TDocStd_Document`, through their handles' Python objects (`nb::keep_alive_obj`); a handle or container recurses into its elements.
     - The generator's verdict (`parse._owned`, by name: `TDF_Label`, `TDF_Data`, a `TDF_Attribute` or derived, the containers) is the `Owned` argument of `keep_view`, which `static_assert`s it against the trait.
     - The definitions (`nanocct_ocaf.h`, `struct ocaf_owners`) are complete only where the emitter includes that header, so a file applying the rule without it does not compile, and the header's TDF/TDocStd names reach R-LINK.
     - 448<!-- count: owner-results --> results, 17<!-- count: owner-tuple --> tuple elements, 114<!-- count: owner-args --> arguments written into, in 19<!-- count: owner-files --> generated files (OCCT 8.0.1).
@@ -3580,7 +3580,7 @@ The Python additions of Design.md, section 2.
 
     - One sequence parameter of the element type (`Sequence[gp_XYZ]`, `std::vector<T>` in the binding); the count is dropped and passed as its length.
     - A null default is the empty sequence, which passes `nullptr` as the C++ default does.
-    - `nanocct::allocator_copy` (nanocct_common.h) makes the copy; the sequence itself is not kept.
+    - `nanocct::allocator_copy` (`nanocct_lifetime.h`) makes the copy; the sequence itself is not kept.
 
 - **Python examples**
 
@@ -3975,7 +3975,7 @@ The Python additions of Design.md, section 2.
 
     - `__iter__` returning an `nb::make_iterator` over a cursor that yields `Value()` (or `Current()`) then calls `Next()` on the object itself, ending when `!More()` — the object is exhausted afterwards, like a file (a second `for` over it yields nothing).
     - No `__next__` on the object, and no C++ exception to end a loop (0.46 µs for a 6-face explorer, against 8.4 µs with an exception).
-    - `nanocct_def_iter` in `nanocct_common.h`, `Emitter._iter_getter`.
+    - `nanocct_def_iter` in `nanocct_class_helpers.h`, `Emitter._iter_getter`.
 
 - **Python examples**
 

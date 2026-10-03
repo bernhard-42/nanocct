@@ -37,7 +37,7 @@ template <typename T, typename = void> struct has_equal : std::false_type {};
 template <typename T>
 struct has_equal<T, std::void_t<decltype(std::declval<const T &>() == std::declval<const T &>())>> : std::true_type {};
 
-// R-VIEW-GUARD (nanocct_common.h, Binding-Rules.md): what a member hands out that points into the container. A view of self
+// R-VIEW-GUARD (nanocct_guards.h, Binding-Rules.md): what a member hands out that points into the container. A view of self
 // (an element reference, LinearVector::ToArray1's aliasing array), an iterator over self (__iter__), an iterator
 // constructed or initialised on its argument, an element reference handed out by such an iterator.
 using elem_view_of_self = nb::call_policy<view_of<view_kind::element>>;
@@ -188,7 +188,7 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
 }
 
 // Standard_Transient members of a multiple-inheritance type S bound with base B (offset 0): the lambdas
-// take B& and static_cast to S& (adjusting downcast), see mi_traits in nanocct_common.h
+// take B& and static_cast to S& (adjusting downcast), see mi_traits in nanocct_registry.h
 template <typename S, typename B, typename... Extra> void def_transient_members(nb::class_<S, B, Extra...> &c) {
     c.def("GetRefCount", [](const B &b) { return static_cast<const S &>(b).GetRefCount(); }, "Get the reference counter of this object (Standard_Transient).")
      .def("DynamicType", [](const B &b) { return static_cast<const S &>(b).DynamicType(); }, "Returns a type descriptor about this object (Standard_Transient).")
