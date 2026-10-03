@@ -17,9 +17,6 @@
 # Linux runs on the host runner and the Makefile starts the manylinux_2_28 container itself (deps/run-manylinux.sh),
 # exactly as on a Linux workstation -- there is one Linux build path, not a CI variant of it.
 # Windows runs under Git Bash (`shell: bash` on a Windows runner), as the Makefile requires.
-#
-# The macOS arm64 job also builds the OCP compatibility shim (`make shim`, cadquery-ocp-novtk 8.0.1.0.0+shim), so
-# packages that still `import OCP` run on nanocct while they are ported; release.yml attaches it next to the wheels.
 name: Build wheels
 
 # The platforms are check boxes in the "Run workflow" dialog, all ticked by default: a subset reruns only what failed
@@ -184,14 +181,6 @@ jobs:
       # the same cp312-abi3 wheel again on the oldest Python it supports
       - name: make test (Python 3.12)
         run: make test PY_VERSION=3.12
-
-      # The shim is pure Python (py3-none-any): generated from the bindings of one platform and installed on all five. A
-      # member another platform does not bind is looked up as None there (shim/OCP/_rt.py get()), so it is generated
-      # where the bindings are the widest: macOS binds every package the others do plus Cocoa (overrides.toml
-      # [platform]), and Windows binds fewer members (R-UNDEFINED). It lands in dist/ and so in this platform's cache.
-      - name: make shim (macOS arm64 only)
-        if: matrix.platform == 'macos-arm64'
-        run: make shim
 
       # ---- the wheel -----------------------------------------------------------------------------------------------
       # enableCrossOsArchive: release.yml restores all five on one Ubuntu runner, and without it a cache saved on

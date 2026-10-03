@@ -1,7 +1,7 @@
 # nanocct — one entry point for building it yourself, on macOS, Linux and Windows.
 #
 #   make deps        fetch and build RapidJSON, FreeType, FreeImage and OCCT from scratch (long: OCCT is ~4 min on an M5)
-#   make wheels      generate -> compile -> stubs -> wheel -> delocate -> test -> shim  (nanocct's wheel and the shim's, into dist/)
+#   make wheels      generate -> compile -> stubs -> wheel -> delocate -> test  (nanocct's wheel, into dist/)
 #   make generate compile stubs wheel delocate test     the same, step by step -- every step runs once: the wheel is packed
 #                    from what compile and stubs built, and the tests run against the repaired wheel in a fresh venv
 #
@@ -125,7 +125,7 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs wheel delocate test shim shim-parity nanocctbuild \
+.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs wheel delocate test \
         asan clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist clean_asan help
 
 
@@ -134,7 +134,7 @@ endif
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 help:
-	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | shim | wheels | shim-parity | nanocctbuild | asan"
+	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | wheels | asan"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist clean_asan"
 	@echo "platform: $(PLATFORM)"
 
@@ -362,24 +362,6 @@ endif
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-# Clean distribution files
-#
-# cadquery-ocp-novtk 8.0.1.0.0+shim: `import OCP.*` on top of nanocct (shim/). A pure-Python py3-none-any wheel built by
-# shim/build_wheel.py with the standard library only, so one build serves every platform. Into dist/, next to nanocct's.
-# Generation reads nanocct's own signatures, so the staged tree must be importable -- found the way `make stubs` finds it.
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-shim:
-ifeq ($(PLATFORM),macos)
-	$(PY) $(ROOT)/shim/build_wheel.py $(DIST_DIR)
-else ifeq ($(PLATFORM),windows)
-	cd $(ROOT) && PYTHONPATH="$(STAGE_DIR)" "$(WIN_PY)" shim/build_wheel.py $(DIST_DIR)
-else
-	$(CONTAINER) "cd /work && PYTHONPATH=/work/stage-ml $(ML_PY) shim/build_wheel.py /work/dist"
-endif
-
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 # Packaging - create wheels
 #
 # `make wheel` packs the staged tree -- the modules `make compile` built and the stubs `make stubs` wrote -- with
@@ -435,7 +417,7 @@ endif
 	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl
 
 
-wheels: generate compile stubs wheel delocate test shim
+wheels: generate compile stubs wheel delocate test
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -447,17 +429,6 @@ clean_dist:
 
 clean_asan:
 	rm -rf $(ASAN_DIR)
-
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-# Parity tests
-#
-# build123d's and ocp-tessellate's own suites through the shim against the real OCP, test by test (shim/parity.py).
-# Opt-in and not part of `wheels`: two venvs and the suites side by side, ~6 min on the M5. Needs the
-# wheels of `make wheels` in DIST_DIR, a build123d checkout (BUILD123D), which it only reads (`git archive HEAD`), and
-# the ocp_tessellate sdist nanocctbuild/nanocctbuild.sh fetches into build/nanocctbuild/sdist; everything else goes to
-# build/shim-parity. Host-only for now: on Linux the wheels live in the container's world.
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -486,41 +457,3 @@ else
 endif
 
 
-BUILD123D ?= $(HOME)/Development/CAD/build123d
-shim-parity:
-ifeq ($(PLATFORM),macos)
-	$(PY) $(ROOT)/shim/parity.py --build123d $(BUILD123D) --dist $(DIST_DIR) --work $(ROOT)/build/shim-parity --python $(PY_VERSION)
-else
-	@echo "shim-parity runs on macOS only so far (see shim/parity.py)"; exit 1
-endif
-
-
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-# Create nanocct-enabled packages
-#
-# build123d 0.13.0, ocpsvg 0.7.0, ocp_gordon 0.3.1, ocp_tessellate 3.5.3 and ocp_viewer_core 1.0.13 as sdists from PyPI (sha256-verified),
-# patched to import nanocct instead of OCP (nanocctbuild/patches, tracked). Output: build/nanocctbuild/src/<pkg>-<version>,
-# ready for `uv pip install dist/nanocct-*.whl build/nanocctbuild/src/*` into a fresh venv. Pure source work, so it runs
-# on the host on every platform.
-# Then a complete test environment in _scratch/.venv (Python 3.14, untracked): recreated on every run, with the nanocct
-# wheel from DIST_DIR (`make wheel delocate` first -- the wheel is what gets tested, not the staged tree) and the five patched
-# packages. Activation lasts one shell, so it shares the line with the install.
-# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-SCRATCH := $(ROOT)/_scratch
-ifeq ($(PLATFORM),windows)
-  SCRATCH_ACTIVATE := $(SCRATCH)/.venv/Scripts/activate
-else
-  SCRATCH_ACTIVATE := $(SCRATCH)/.venv/bin/activate
-endif
-nanocctbuild:
-	$(RUN_SH) $(ROOT)/nanocctbuild/nanocctbuild.sh
-	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
-	if [ -z "$$wheels" ]; then echo "nanocctbuild: no nanocct wheel in $(DIST_DIR) -- run 'make wheel delocate' first" >&2; exit 1; fi; \
-	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "nanocctbuild: more than one nanocct wheel in $(DIST_DIR): $$wheels" >&2; exit 1; fi
-	mkdir -p $(SCRATCH)
-	rm -rf $(SCRATCH)/.venv
-	uv venv -p 3.14 $(SCRATCH)/.venv
-	@# shell globs, not make's wildcard function: make expands the whole recipe before its first line has created build/nanocctbuild/src
-	. $(SCRATCH_ACTIVATE) && uv pip install $(DIST_DIR)/nanocct-*.whl $(ROOT)/build/nanocctbuild/src/*
-	@echo "nanocctbuild: test environment ready -- source $(SCRATCH_ACTIVATE)"

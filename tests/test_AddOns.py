@@ -168,7 +168,7 @@ def test_occt_still_breaks_the_closed_circle(closed_circle_cut):
     result = _unify(_OCCT, closed_circle_cut).Shape()
     broken = not BRepCheck.BRepCheck_Analyzer(result).IsValid() or _max_edge_tolerance(result) > 1e-3
     assert broken, ("OCCT issue #1541 looks fixed: ShapeUpgrade_UnifySameDomain now cleans the closed-circle "
-                    "reproducer correctly. Remove nanocct.AddOns.ShapeClean and its use in nanocctbuild's build123d patch.")
+                    "reproducer correctly. Remove nanocct.AddOns.ShapeClean and its use in the build123d port (nanocct-tests).")
 
 
 def test_shape_clean_carries_the_occt_name_and_signatures():

@@ -88,25 +88,17 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 
 ## How to start with build123d on nanocct
 
-Neither wheel is on PyPI yet: download them from the [release page](https://github.com/bernhard-42/nanocct/releases) to `dist`, or build them first (see [How to build nanocct](#how-to-build-nanocct)), they land in `dist/`.
-
-### Use the OCP shim
-
-The shim is a compatibility layer: a thin facade that maps OCP calls to nanocct calls, so packages that still import OCP run unchanged on top of nanocct while they are ported. In an environment with build123d installed, install nanocct and the shim wheel from `dist/`:
+[nanocct-tests](https://github.com/bernhard-42/nanocct-tests) sets up a Python environment with nanocct, build123d and the packages build123d and its viewer build on, ported to nanocct, and runs their test suites:
 
 ```bash
-uv pip install dist/nanocct-*.whl "dist/cadquery_ocp_novtk-8.0.1.0.0+shim-py3-none-any.whl"
+git clone https://github.com/bernhard-42/nanocct-tests
+cd nanocct-tests
+make env
+source .venv/bin/activate
+uv pip install ocp_vscode      # optional: the viewer
 ```
 
-The shim replaces the installed `cadquery-ocp-novtk` by itself; `uv pip list` shows it as `cadquery-ocp-novtk 8.0.1.0.0+shim`. build123d and ocp-tessellate then work as before — their full test suites pass through the shim with the same outcome, test by test, as with the original OCP bindings. The OCCT bug workarounds of nanocct's AddOns reach build123d only through nanocctbuild.
-
-### Use nanocctbuild
-
-```bash
-make nanocctbuild
-```
-
-This downloads ocpsvg, ocp-gordon, ocp-tessellate, build123d and ocp-viewer-core from PyPI, patches them to use nanocct directly, and installs them with the nanocct wheel from `dist/` into a new Python 3.14 environment `_scratch/.venv` (an existing one there is replaced). Install ocp-vscode or ocp-viewer into it if you want to view objects built with build123d on top of nanocct; both run on the patched ocp-viewer-core.
+It installs the nanocct wheel of the latest [release](https://github.com/bernhard-42/nanocct/releases), or the one you copy into its `wheels/` folder (a wheel built here lands in `dist/`).
 
 ## How to build nanocct
 
@@ -131,7 +123,7 @@ Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja;
     make deps
     ```
 
-- Build the bindings: generate, compile, stubs, pack and repair the wheel, test the repaired wheel in a fresh environment, and the shim's wheel -- both wheels into `dist/`
+- Build the bindings: generate, compile, stubs, pack and repair the wheel, test the repaired wheel in a fresh environment -- the wheel lands in `dist/`
 
     ```bash
     make wheels

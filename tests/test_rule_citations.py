@@ -18,8 +18,7 @@ IMPLEMENTATION = [*sorted((ROOT / "generator").glob("*.py")), ROOT / "generator"
 MENTIONS = [*IMPLEMENTATION, *sorted((ROOT / "generator" / "stubs").glob("*.pyi")), *sorted((ROOT / "docs").glob("*.md")),
             ROOT / "Readme.md", ROOT / "Pythonic-OCCT.md", ROOT / "CMakeLists.txt", ROOT / "Makefile",
             ROOT / "src" / "nanocct" / "_templates.py", *sorted((ROOT / "tests").rglob("*.py")),
-            *sorted((ROOT / "tools").rglob("*.py")), *sorted((ROOT / "shim").rglob("*.py")),
-            *sorted((ROOT / "nanocctbuild").rglob("*.py"))]
+            *sorted((ROOT / "tools").rglob("*.py"))]
 
 RULES = set(ENTRY.findall(DOC.read_text(encoding="utf-8")))
 
