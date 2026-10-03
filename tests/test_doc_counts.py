@@ -16,6 +16,8 @@ from pathlib import Path
 
 import pytest
 
+from test_lifetime_counts import COPY_TAIL
+
 ROOT = Path(__file__).parents[1]
 CPP = ROOT / "src" / "cpp"
 MARK = re.compile(r"(\d[\d ]*\d|\d)<!-- count: ([a-z0-9-]+) -->")
@@ -107,6 +109,7 @@ def counts() -> dict[str, int]:
         "null-bool": lambda: category["null-bool"],
         "copy-no-ctor": lambda: rep(r"no copy constructor -- an implicit copy"),
         "copy-heap": lambda: cpp(r"rv_policy::take_ownership"),
+        "copy-keep-original": lambda: sum(m.group(1) == "true" for m in COPY_TAIL.finditer(text)),   # R-COPY: implicit copies that keep the original
         "unhashable": lambda: rep(r"__hash__ = None added"),
         "ctor-keep": lambda: (sum(len(re.findall(r"nb::keep_alive<\d+, \d+>", l)) for l in ctor_lines)
                               + cpp(r"nanocct::keep_view_arg<") + cpp(r"nanocct::keep_arg<")),
@@ -132,6 +135,7 @@ def counts() -> dict[str, int]:
         "view-guard-wrapped": lambda: cpp(r"nanocct::guarded<"),
         "view-guard-lambda": lambda: cpp(r"nanocct::refuse_viewed_argument\("),
         "view-guard-iterators": lambda: cpp(r"nanocct::view_of<nanocct::view_kind::iterator"),
+        "view-guard-lines": lambda: category["view-guard"],
         "undefined-lines": lambda: category["undefined"],
         "array-lines": lambda: sum(1 for c, _, m in report if c == "array" and "static data member" not in m),
         "ncollection-eager": lambda: len(re.findall(r"^import nanocct\._TK", nc_init, re.M)),

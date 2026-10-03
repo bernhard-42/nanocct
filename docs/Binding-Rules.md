@@ -6,7 +6,7 @@ Every rule carries an identifier (`R-OUT`, `R-STREAM-OUT`, …) that the code ci
 
 Each rule is one entry: the **C++ Idiom** it covers, **OCCT examples** from the OCCT 8.0.1 headers, the **Rule** (why the binding does what it does), what the binding does in **Python**, and **Python examples**, which run as part of the test suite (`tests/test_doc_examples.py`). An identifier that covers several idioms has one case per idiom.
 
-Counts describe OCCT 8.0.1 as generated on macOS; a number marked in the source (`<!-- count: … -->`) is recounted by `tests/test_doc_counts.py` from the generated code, so it cannot go stale unseen. Timings are illustrative: measured on an Apple M5 (macOS), best of several runs, and not re-measured on every change.
+Counts describe OCCT 8.0.1 as generated on macOS; a number marked in the source (`<!-- count: … -->`) is recounted by `tests/test_doc_counts.py` from the generated code, so it cannot go stale unseen. An unmarked count says "measured once": it was counted when its rule was written and is not recounted. Timings are illustrative: measured on an Apple M5 (macOS), best of several runs, and not re-measured on every change.
 
 ## 7.1 The 1:1 baseline
 
@@ -2803,7 +2803,7 @@ The Python additions of Design.md, section 2.
 
 - **Rule**
 
-    - The copy shares the pointers and the second destructor frees them again: `IntPatch_PrmPrmIntersection_T3Bits(a)`, `BOPAlgo_PaveFiller(pf)`, `BOPAlgo_Builder(b)`, `IntPatch_Polyhedron(p)`, `LocOpe_CSIntersector(a)` crash (double free / use after free; 20 such classes, identified by their destructors' text, all owners by this rule), and a view's copy that kept only the original would read a freed curve after `ext.Initialize(c2)` (`Extrema_ExtCC2d`, heap-use-after-free).
+    - The copy shares the pointers and the second destructor frees them again: `IntPatch_PrmPrmIntersection_T3Bits(a)`, `BOPAlgo_PaveFiller(pf)`, `BOPAlgo_Builder(b)`, `IntPatch_Polyhedron(p)`, `LocOpe_CSIntersector(a)` crash (double free / use after free; 20 such classes (measured once), identified by their destructors' text, all owners by this rule), and a view's copy that kept only the original would read a freed curve after `ext.Initialize(c2)` (`Extrema_ExtCC2d`, heap-use-after-free).
     - In C++ nobody copies these classes; in Python `Cls(other)` looks harmless.
     - Derived from the headers, so it over-approximates: a destructor in a `.cxx` that frees nothing (`= default`, e.g. `Extrema_GenExtPS`) makes an owner too -- a lost copy constructor, never a crash.
     - Cost of the snapshot: +30 ns per view copy (`Extrema_ExtCC2d(ext)` 69 → 100 ns).
@@ -2816,7 +2816,7 @@ The Python additions of Design.md, section 2.
     - With out-parameters such a member is reported and skipped.
     - An R-ITER element is never copied out.
     - A binder instantiation over owner elements is skipped, and `NCollection_Shared<T>` loses its constructor from a `T` (`bind_NCollection_Shared<T, false>`: `NCollection_Shared<NCollection_EBTree<int, Bnd_Box2d>>`).
-    - Every other class holding pointers -- a **view** -- keeps its copy, which keeps the original **and what the original's method slots hold now** (`nanocct::keep_view_arg`, `keep_slots_of`; 539 implicit copies): the original's next `Initialize` would drop the argument the copy still points to.
+    - Every other class holding pointers -- a **view** -- keeps its copy, which keeps the original **and what the original's method slots hold now** (`nanocct::keep_view_arg`, `keep_slots_of`; 528<!-- count: copy-keep-original --> implicit copies): the original's next `Initialize` would drop the argument the copy still points to.
 
 - **Python examples**
 
@@ -3001,7 +3001,7 @@ The Python additions of Design.md, section 2.
 - **Python**
 
     - `nb::keep_alive<1, k>` on the argument (`<0, k>` for a Transient: `nb::new_` hands its extras to `__new__(cls, args…)`, which returns the object, and to a no-op `__init__`, where the nurse is `None` and nanobind ignores it -- `nb_class.h` `new_::execute`, `nb_type.cpp` `keep_alive_py`).
-    - A **copy constructor** of a class holding pointers keeps the original, whose pointers the copy shares, and what the original's slots hold (R-COPY) -- a declared one by the rule above, the implicit one through `nanocct_implicit_copy_ctor<T, true>` (539, OCCT 8.0.1; an owner's is not bound at all, R-COPY).
+    - A **copy constructor** of a class holding pointers keeps the original, whose pointers the copy shares, and what the original's slots hold (R-COPY) -- a declared one by the rule above, the implicit one through `nanocct_implicit_copy_ctor<T, true>` (528<!-- count: copy-keep-original -->, OCCT 8.0.1; an owner's is not bound at all, R-COPY).
     - A parameter kept because its own layout shares pointees with the object's gets `nanocct::keep_view_arg<1, k>` instead of `keep_alive` (89: it keeps the argument's slots' arguments too).
     - Move constructors are not bound.
     - The layout is read by `_Held` (generator/parse.py) from the class's cursor, the instantiated type's fields (`Type.get_fields()`) and, for an implicit instantiation, its template's bases with the arguments substituted.
@@ -3347,7 +3347,7 @@ The Python additions of Design.md, section 2.
 
 - **Rule**
 
-    - The owner is not in the layout: an XCAF tool (`ShapeTool_s(doc.Main())`) and every label it hands out (`AddShape`, 47 such methods in TKXCAF) would point into a document collected under them (segfaults).
+    - The owner is not in the layout: an XCAF tool (`ShapeTool_s(doc.Main())`) and every label it hands out (`AddShape`, 47 such methods in TKXCAF, measured once) would point into a document collected under them (segfaults).
     - Keeping only the producer would also tie each label to its tool, and `lbl = tool.NewShape(); tool.SetShape(lbl, s)` -- the tool keeping the label (R-METHOD-KEEP) -- would be a keep-alive cycle leaking the whole document.
     - The document too, not only the data: `TDocStd_Document.Get_s(label)` follows the owner attribute's raw pointer.
     - Bounded: the owners' Python objects are unique per C++ object, so repeated results add no records.
@@ -3793,7 +3793,7 @@ The Python additions of Design.md, section 2.
     - Consequence, as for `bytearray`: an iterator or view still referenced blocks the container until it is released (`del it`).
     - A numpy view taken before an OCCT call that fills the array blocks that call -- take the view after it.
     - Measured: a view handed out +40 to +55 ns (`ChangeValue` 44 → 83-99 ns), the same view returned again +7 ns, `np.asarray` +70 ns, a `for` loop +75 ns, a checked call +2 to +3 ns while nothing is viewed and +6 to +8 ns otherwise.
-    - Not covered (residual): what OCCT itself does to a container it owns -- the 149 reported methods, an OCCT object changing a container it was handed earlier or reaches through a handle (`handle<NCollection_HArray1<…>>` arguments are not checked), the R-VIEW classes of nanocct_views.h (`Poly_ArrayOfNodes` after `Poly_Triangulation::ResizeNodes`), and a container wrapped in `NCollection_Shared` (bound at a non-zero offset).
+    - Not covered (residual): what OCCT itself does to a container it owns -- the 149<!-- count: view-guard-lines --> reported methods, an OCCT object changing a container it was handed earlier or reaches through a handle (`handle<NCollection_HArray1<…>>` arguments are not checked), the R-VIEW classes of nanocct_views.h (`Poly_ArrayOfNodes` after `Poly_Triangulation::ResizeNodes`), and a container wrapped in `NCollection_Shared` (bound at a non-zero offset).
 
 - **Python**
 
@@ -3803,7 +3803,7 @@ The Python additions of Design.md, section 2.
     - Which call invalidates which view is OCCT's container code, read once (7a, the R-VIEW-GUARD table): the binder checks its own members exactly (a `Resize` to the same length, an `Assign` of the same size, an append below `Capacity()` pass; a hashed map's insert is checked against its iterators only, which cache the bucket array; `Remove(it)` through the iterator itself is allowed).
     - **Every generated function** taking a container by **non-const reference or pointer** (`Param.guarded`, parse.py `_mutable_container`; inside a 7c walk from the substituted spelling) checks it, after nanobind converted the arguments: a direct binding goes through `&nanocct::guarded<static_cast<…>(&C::M), k…>::call`, same signature, stubs unchanged; a lambda or constructor body starts with `nanocct::refuse_viewed_argument(x, k)` -- 1 867<!-- count: view-guard-params --> parameters in 35<!-- count: view-guard-toolkits --> toolkits (1 102<!-- count: view-guard-wrapped --> wrapped bindings, 106<!-- count: view-guard-lambda --> lambda checks).
     - A **container data member** (by value) gets a setter that checks (`nanocct_def_container_field`, 44).
-    - An R-ITER class's constructor or `Init`/`Initialize` taking a container registers the object as an iterator of it (`nanocct::view_of<iterator, …>`, 23 sites: `NCollection_Iterator<…>`, BRepGraph's iterators over a parents vector, `TopOpeBRepDS_InterferenceIterator`).
+    - An R-ITER class's constructor or `Init`/`Initialize` taking a container registers the object as an iterator of it (`nanocct::view_of<iterator, …>`, 23<!-- count: view-guard-iterators --> sites: `NCollection_Iterator<…>`, BRepGraph's iterators over a parents vector, `TopOpeBRepDS_InterferenceIterator`).
     - A method handing out a container its object owns by non-const reference is **reported**, category `view-guard` (149, OCCT 8.0.1: `TDF_DataSet::Labels()`, `AIS_ColoredShape::ChangeCustomAspectsMap()`, …).
 
 - **Python examples**
@@ -3911,7 +3911,7 @@ The Python additions of Design.md, section 2.
 
     - Python addition (Python additions).
     - The element is copied out before `Next()`, so `Value()` results that are Transient pointers/references are excluded (`Storage_BucketIterator`).
-    - **Dependent `const T&` results of a 7c instantiation**: libclang gives the pointee no declaration, so parse says `OTHER`; the emitter accepts `const X &` when `X` is not a Transient according to the manifest's bases (`Emitter._copyable_const_ref`) -- 49 more classes iterable: the `BRepGraph_Iterator<…Def>`, `RefsIterator::RefIterator<…Ref>` and `DefsIterator::DefsOfParent<…>` instantiations (`list(BRepGraph_EdgeIterator(g))`) and the flat maps' `Iterator`.
+    - **Dependent `const T&` results of a 7c instantiation**: libclang gives the pointee no declaration, so parse says `OTHER`; the emitter accepts `const X &` when `X` is not a Transient according to the manifest's bases (`Emitter._copyable_const_ref`) -- 49 more classes iterable (measured once): the `BRepGraph_Iterator<…Def>`, `RefsIterator::RefIterator<…Ref>` and `DefsIterator::DefsOfParent<…>` instantiations (`list(BRepGraph_EdgeIterator(g))`) and the flat maps' `Iterator`.
     - A `Key()`-only iterator (`TColStd_PackedMapOfInteger.Iterator`) is not covered.
     - An element of a class holding pointers keeps the iterated object and what its slots hold (R-RESULT-KEEP, `nanocct_def_iter<T, true>`).
     - An element of an owner class (R-COPY) is never copied out, so such a class is not iterable (none, OCCT 8.0.1).
@@ -4942,7 +4942,7 @@ What invalidates what, read in OCCT 8.0.1's container code. *Any view* = element
 - A private member typedef used in a public signature (`BRepGraph_MutGuard::TypeId`) is spelled by its underlying type.
 - **Instantiations named by the members of an instantiation:** inside a walk a member's type is dependent (`NCollection_Vec4<Element_t>::xyz()` returns `NCollection_Vec3<Element_t>`), libclang gives it no declaration, and without a record the member would be bound with an unregistered type (`Vec4__unsigned_char().xyz()` would raise `TypeError`). `parse._note_dependent_use` records the substituted spelling (`NCollection_Vec3<unsigned char>`) and the R-TEMPLATE-BASE probe instantiates it. Not recorded: binder kinds (7a), `handle`, `std::`, the walked instantiation itself spelled with its arguments (`NCollection_AliasedArray<MyAlignSize>` inside `NCollection_AliasedArray<>` would be bound twice under the keys `<>` and `<16>`, and the module would fail to initialise: nanobind's "already registered"), and the uses of a member that ends up skipped (the `begin()`/`end()` range iterators would add classes of their own).
 
-- **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured over all 297 7c instantiations (OCCT 8.0.1): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 7c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
+- **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured once over all 297 7c instantiations (OCCT 8.0.1): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 7c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
 - **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_FlatMap<K, H>::Iterator` → `<outer>.Iterator`, `NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). An STL-style iterator is not instantiated at all (R-ITERATOR), so neither is its helper `NCollection_ForwardRangeIterator::PostfixProxy`.
 
 ### Nested templates and dependent names (BRepGraph)
