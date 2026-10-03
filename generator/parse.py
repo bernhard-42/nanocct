@@ -3055,6 +3055,27 @@ def include_prelude(headers: list[str], include_dir: Path, args: list[str]) -> l
     return [h.strip("<>") for h in found]
 
 
+# The parser's module-level state, in four kinds. tests/test_generator.py finds every module-level object this file
+# changes (a mutating call, an item assignment, a `global` rebinding) and requires it in exactly one of these lists, so a
+# new one cannot be added without deciding when it is reset.
+_PACKAGE_STATE = (   # filled while parsing one package; emptied by _reset_package_state() before the next
+    "_instances_seen", "_owned_instance_args", "_template_bases", "_template_uses", "_dependent_bases", "_dependent_uses",
+    "_held_by_class", "_held_open", "_layout_of_type", "_views_open", "_class_layouts", "_kept_view_open", "_fields_open",
+    "_instance_layouts", "_instance_owners", "_cycle_open", "_strong_edges_of")
+_PACKAGE_SETTINGS = ("_INCLUDE_DIR",)   # assigned by parse_package for each package
+_PERSISTENT_STATE = (   # facts read from definitions, kept across packages on purpose and carried between processes
+    "_derives_cache", "_ancestors_cache", "_DETECTED_NONCOPYABLE")   # (collect_state / carry_state, merged at the barrier)
+_SCOPED_STATE = ("_derives_stack", "_SUBST")   # a recursion guard and the 7c substitution: idle between two calls
+
+
+def _reset_package_state() -> None:
+    """Empty the per-package state, and check that the scoped state is idle: left over, it would leak into this package."""
+    for name in _PACKAGE_STATE:
+        globals()[name].clear()
+    if len(_derives_stack) != 0 or _SUBST.active:
+        raise RuntimeError(f"parser state left over from the previous package: {_derives_stack or 'a 7c substitution'}")
+
+
 def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, known_elsewhere: set[str] | None = None) -> PackageIR:
     """known_elsewhere: C++ names of classes bound by earlier packages/runs (instantiations used in signatures are
     only instantiated when nobody has bound them yet)."""
@@ -3078,23 +3099,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
         elif allowed is not None and h not in allowed:
             ir.report.append(f"{h}: not in the allowlist (overrides.toml [include] headers)")
     headers = set(ir.headers)
-    _instances_seen.clear()
-    _owned_instance_args.clear()
-    _template_bases.clear()
-    _template_uses.clear()
-    _dependent_bases.clear()
-    _dependent_uses.clear()
-    _held_by_class.clear()
-    _held_open.clear()
-    _layout_of_type.clear()
-    _views_open.clear()
-    _class_layouts.clear()
-    _kept_view_open.clear()
-    _fields_open.clear()
-    _instance_layouts.clear()
-    _instance_owners.clear()
-    _cycle_open.clear()
-    _strong_edges_of.clear()
+    _reset_package_state()
     with tempfile.TemporaryDirectory() as td:
         umbrella = Path(td) / f"{pkg.name}__all.hxx"
         # prelude: some OCCT headers are not self-contained (MathUtils_Config.hxx uses size_t with only <limits>)

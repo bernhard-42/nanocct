@@ -1,6 +1,7 @@
 """Generator unit tests: the IR that parse_package builds from synthetic headers (one per Binding-Rules.md rule), the
 overload-collision resolver, the report categories, and the reproducibility of a regeneration against a previous one
 sources. No compiler is involved except the regeneration test's libclang parse (TKG2d, ~5 s)."""
+import ast
 import filecmp
 import os
 import re
@@ -1954,7 +1955,6 @@ def test_handwritten_namespaces_match_the_addons_submodules():
 def test_stub_annotations_are_not_shadowed_by_a_member_named_like_a_builtin():
     """LDOM_SBuffer (bound on Windows only) has a method `str`; inside its class body the annotation `s: str` of xsputn named
     that method (mypy: 'Function "...LDOM_SBuffer.str" is not valid as a type', 2026-09-30). Only that class is rewritten."""
-    import ast
     from generator.stubs import _unshadowed_class_names
     text = ('"""x"""\n\nimport enum\n\nclass B:\n    def str(self) -> str: ...\n\n    def xsputn(self, s: str, n: int) -> int: ...\n\n'
             'class Other:\n    def f(self, s: str) -> str: ...\n')
@@ -1981,7 +1981,6 @@ def test_stub_eq_and_ne_accept_any_object():
     """nanobind returns NotImplemented for an operand no overload takes, so `TopoDS_Shape() == 1` is False: __eq__/__ne__
     accept any object. A single definition gets `object`; an overload set keeps its overloads and gains a last one taking
     `object` (final review 2026-09-30: 177 [override] errors against object.__eq__)."""
-    import ast
     from generator.stubs import _eq_accepts_object
     single = "class A:\n    def __eq__(self, arg: A, /) -> bool: ...\n"
     assert "def __eq__(self, arg: object, /) -> bool" in _eq_accepts_object(single)
@@ -2421,6 +2420,68 @@ def test_every_skip_entry_still_skips_something():
         + [f"namespaces: {e}" for e in skip["namespaces"] if not namespace(e)])
     assert unmatched == []
 
+
+
+def _changed_module_state(source: str) -> set[str]:
+    """The module-level names a module's functions change: a mutating call (x.append, x.clear, ...), an item or attribute
+    assignment (x[k] = ..., x.attr = ...), a `del x[k]`, or a rebinding declared `global`."""
+    tree = ast.parse(source)
+    module_names = set()
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            module_names |= {t.id for t in node.targets if isinstance(t, ast.Name)}
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            module_names.add(node.target.id)
+    mutators = {"append", "extend", "add", "update", "clear", "pop", "popitem", "discard", "remove", "setdefault", "insert", "sort"}
+    changed = set()
+    for fn in ast.walk(tree):
+        if not isinstance(fn, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        declared_global = {n for g in ast.walk(fn) if isinstance(g, ast.Global) for n in g.names}
+        for node in ast.walk(fn):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name) \
+                    and node.func.attr in mutators:
+                changed.add(node.func.value.id)
+            if isinstance(node, (ast.Assign, ast.Delete)):
+                targets = node.targets
+            elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
+                targets = [node.target]
+            else:
+                targets = []
+            for t in targets:
+                if isinstance(t, (ast.Subscript, ast.Attribute)) and isinstance(t.value, ast.Name):
+                    changed.add(t.value.id)
+                elif isinstance(t, ast.Name) and t.id in declared_global:
+                    changed.add(t.id)
+    return changed & module_names
+
+
+def test_every_parser_state_object_is_reset_or_kept_on_purpose():
+    """parse.py keeps its state in module-level objects (review 2026-10-02, M1). A per-package one that is not reset
+    carries one package's findings into the next, which only shows as output that depends on the parse order. Every
+    object the module changes must be in exactly one of parse._PACKAGE_STATE (reset per package), _PACKAGE_SETTINGS
+    (assigned per package), _PERSISTENT_STATE (cross-package on purpose) or _SCOPED_STATE (idle between calls)."""
+    lists = {"_PACKAGE_STATE": parse._PACKAGE_STATE, "_PACKAGE_SETTINGS": parse._PACKAGE_SETTINGS,
+             "_PERSISTENT_STATE": parse._PERSISTENT_STATE, "_SCOPED_STATE": parse._SCOPED_STATE}
+    listed = [name for names in lists.values() for name in names]
+    assert len(listed) == len(set(listed)), "a name in two lists"
+    changed = _changed_module_state(Path(parse.__file__).read_text(encoding="utf-8"))
+    assert len(changed) > 20
+    assert sorted(changed - set(listed)) == []           # every changed object is classified ...
+    assert sorted(set(listed) - changed) == []           # ... and every listed one is still changed somewhere
+
+
+def test_reset_package_state_empties_it_and_refuses_left_over_scoped_state():
+    for name in parse._PACKAGE_STATE:
+        assert hasattr(getattr(parse, name), "clear"), name
+    parse._reset_package_state()
+    assert all(len(getattr(parse, name)) == 0 for name in parse._PACKAGE_STATE)
+    parse._derives_stack.add(("Left", "Over"))
+    try:
+        with pytest.raises(RuntimeError, match="left over"):
+            parse._reset_package_state()
+    finally:
+        parse._derives_stack.discard(("Left", "Over"))
 
 def test_every_member_override_names_an_occt_member():
     """[inout], [stream] binary_members, [array] and [not_value_copy] change how a member or a class is bound and leave no report
