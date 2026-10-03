@@ -124,7 +124,7 @@ PINNED: dict[str, dict[str, int]] = {
         "R-COPY implicit copies": 4918,
         "R-COPY implicit copies that keep the original": 528,
         "R-KEPT implicit copies": 27,
-        "report copy": 314,
+        "report copy": 315,
         "report kept": 45,
         "report lifetime": 91,
         "report view-guard": 149,
