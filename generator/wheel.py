@@ -30,6 +30,27 @@ def _digest(data: bytes) -> str:
     return "sha256=" + base64.urlsafe_b64encode(hashlib.sha256(data).digest()).rstrip(b"=").decode()
 
 
+def _readme(readme: str) -> tuple[str, str]:
+    """The long description and its content type from pyproject.toml's `readme` (a file name; .md or .rst)."""
+    types = {".md": "text/markdown", ".rst": "text/x-rst"}
+    path = ROOT / readme
+    if path.suffix not in types:
+        raise ValueError(f"readme {readme}: the content type of {path.suffix!r} files is not known")
+    return path.read_text(encoding="utf-8"), types[path.suffix]
+
+
+def _authors(authors: list[dict[str, str]]) -> list[str]:
+    """Author / Author-email lines (core metadata) from pyproject.toml's `authors` tables."""
+    named = [a["name"] for a in authors if "email" not in a]
+    mailed = [f"{a['name']} <{a['email']}>" if "name" in a else a["email"] for a in authors if "email" in a]
+    lines = []
+    if len(named) > 0:
+        lines.append(f"Author: {', '.join(named)}")
+    if len(mailed) > 0:
+        lines.append(f"Author-email: {', '.join(mailed)}")
+    return lines
+
+
 def _license_files(patterns: list[str]) -> list[str]:
     """The files the license-files globs of pyproject.toml match, sorted as one list (scikit-build-core's order)."""
     return sorted({path.relative_to(ROOT).as_posix() for pattern in patterns for path in ROOT.glob(pattern) if path.is_file()})
@@ -52,11 +73,18 @@ def main() -> int:
     tag = f"{py_api}-abi3-{platform_tag}"
     licenses = _license_files(project["license-files"])
 
-    metadata = ["Metadata-Version: 2.4", f"Name: {name}", f"Version: {version}", f"Summary: {project['description']}",
-                f"License-Expression: {project['license']}"]
+    description, description_type = _readme(project["readme"])
+
+    metadata = ["Metadata-Version: 2.4", f"Name: {name}", f"Version: {version}", f"Summary: {project['description']}"]
+    metadata += [f"Keywords: {','.join(project['keywords'])}"]
+    metadata += _authors(project["authors"])
+    metadata += [f"License-Expression: {project['license']}"]
     metadata += [f"License-File: {rel}" for rel in licenses]
+    metadata += [f"Classifier: {c}" for c in project["classifiers"]]
     metadata += [f"Requires-Python: {project['requires-python']}"]
     metadata += [f"Requires-Dist: {dep}" for dep in project["dependencies"]]
+    metadata += [f"Project-URL: {label}, {url}" for label, url in project["urls"].items()]
+    metadata += [f"Description-Content-Type: {description_type}", "", description]   # the body: the long description
     wheel = ["Wheel-Version: 1.0", "Generator: nanocct generator/wheel.py", "Root-Is-Purelib: false", f"Tag: {tag}"]
 
     info = f"{name}-{version}.dist-info"
