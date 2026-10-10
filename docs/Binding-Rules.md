@@ -1323,18 +1323,18 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
     - `gp_XYZ& gp_Pnt::ChangeCoord()`
     - `static BRepMesh_DiscretFactory& BRepMesh_DiscretFactory::Get()` (a singleton)
-    - `TopoDS_Vertex& TopoDS::Vertex(TopoDS_Shape& theShape)` (a free function)
+    - `TopOpeBRepTool_ShapeClassifier& FSC_GetPSC()` (a free function, returning a global)
 
 - **Rule**
 
     - In-place edits via `ChangeXxx()`.
-    - A free function has no `self` to tie the reference to. The mutable `TopoDS::Xxx(TopoDS_Shape&)` overloads are the ones bound (R-CONST-TWIN drops their `const&` twins), so their results are copies.
+    - A free function has no `self` to tie the reference to, so its result is copied — except a free function that hands back its own argument as a derived class (`TopoDS_Vertex& TopoDS::Vertex(TopoDS_Shape&)`), which is R-CAST.
 
 - **Python**
 
     - `rv_policy::reference_internal` for methods.
     - `rv_policy::reference` for static methods (`BRepMesh_DiscretFactory::Get()`, a singleton: `reference_internal` needs a `self`, and every call would fail with *"Unable to convert function return value"*).
-    - **Copied** for free functions (`TopoDS::Vertex(TopoDS_Shape&)`).
+    - **Copied** for free functions (`FSC_GetPSC()`), except R-CAST.
 
 - **Python examples**
 
@@ -1393,6 +1393,52 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     gc.collect()
     assert extrema.IsDone() and extrema.NbExt() == 1
     ```
+### R-CAST
+
+- **C++ Idiom**
+
+    A free function that hands back its argument as a derived class, through a mutable reference: one parameter, a non-const reference to a class `A`; the result, a non-const reference to `A` or a class derived from `A`
+
+- **OCCT examples**
+
+    The `TopoDS` casts (`Vertex`, `Edge`, `Wire`, `Face`, `Shell`, `Solid`, `CompSolid`, `Compound`):
+
+    - `TopoDS_Compound& TopoDS::Compound(TopoDS_Shape& theShape)`: `return *(TopoDS_Compound*)&theShape;`
+
+- **Rule**
+
+    - In C++ the result is the argument itself, so the two cannot drift apart: moving one moves the other.
+    - An argument that already is an object of the result's class comes back as that same Python object, which is what the C++ reference is.
+    - Any other argument (a `TopoDS_Shape` object) gets a copy of the result, as a free function's reference result does (R-RESULT); a reference into it would need the argument kept alive by the result.
+    - No `keep_alive`: when the result is the argument, the object would keep itself alive and never be freed.
+    - Derived from the signature (the result class is the parameter's class or derives from it), so a function returning a reference into global storage (`FSC_GetPSC(const TopoDS_Shape&)`, an unrelated class) stays a copy.
+
+- **Python**
+
+    - `nanocct::cast_result`: the argument's own Python object if it already is a result-class object, else a copy.
+    - The parameter stays typed (a wrong type raises `TypeError`), and the stub keeps the result class (`-> TopoDS_Compound`).
+
+- **Python examples**
+
+    ```python
+    from nanocct import TopoDS
+    from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from nanocct.gp import gp_Trsf, gp_Vec
+    from nanocct.TopLoc import TopLoc_Location
+
+    shape = BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()     # a TopoDS_Shape object
+    solid = TopoDS.Solid(shape)                             # a copy, as a TopoDS_Solid
+    assert solid is not shape
+    assert TopoDS.Solid(solid) is solid                     # already a TopoDS_Solid: the same object
+
+    trsf = gp_Trsf()
+    trsf.SetTranslation(gp_Vec(7.0, 0.0, 0.0))
+    same = TopoDS.Solid(solid)
+    solid.Location(TopLoc_Location(trsf))
+    assert same.Location().Transformation().TranslationPart().X() == 7.0   # one object: moving one moves the other
+    assert shape.Location().Transformation().TranslationPart().X() == 0.0  # the copy's source is unchanged
+    ```
+
 ### R-PTR-REF
 
 - **C++ Idiom**

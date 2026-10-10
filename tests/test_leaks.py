@@ -245,10 +245,21 @@ def test_mutable_reference_method():
 
 
 def test_mutable_reference_free_function_is_a_copy():
-    """TopOpeBRepTool's FSC_GetPSC() and TopoDS::Vertex(): no `self` to tie the reference to, so each call copies."""
+    """TopOpeBRepTool's FSC_GetPSC(): no `self` to tie the reference to, so each call copies; so does TopoDS::Vertex() of
+    a TopoDS_Shape object (R-CAST)."""
     _flat("from nanocct import TopOpeBRepTool\n" + BOX, """
         TopOpeBRepTool.FSC_GetPSC(box)
         TopoDS.Vertex(TopExp.TopExp_Explorer(box, TopAbs.TopAbs_VERTEX).Current())
+    """, 40000)
+
+
+def test_cast_of_its_own_class_is_the_same_object():
+    """R-CAST: TopoDS::Vertex() of a TopoDS_Vertex object hands back that object, without a keep_alive -- which would
+    make the object keep itself alive, one leaked vertex per argument."""
+    _flat(BOX, """
+        vertex = TopoDS.Vertex(TopExp.TopExp_Explorer(box, TopAbs.TopAbs_VERTEX).Current())
+        same = TopoDS.Vertex(vertex)
+        again = TopoDS.Vertex(same)
     """, 40000)
 
 

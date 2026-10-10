@@ -46,6 +46,29 @@ def test_shapes_copy_equality_and_hash():
     assert hash(gp.gp_Pnt(1.0, 2.0, 3.0)) == hash(gp.gp_Pnt(1.0, 2.0, 3.0))   # std::hash<gp_Pnt> too
 
 
+def test_casts_hand_back_their_argument():
+    """R-CAST: TopoDS::Compound(TopoDS_Shape&) returns its argument in C++. An argument that already is a TopoDS_Compound
+    comes back as the same object (moving one moves the other); a TopoDS_Shape object gets a copy; a wrong type is a
+    TypeError, a wrong shape type OCCT's Standard_TypeMismatch."""
+    c, v, e = _compound()
+    assert TopoDS.Compound(c) is c and TopoDS.Vertex(v) is v and TopoDS.Edge(e) is e
+    trsf = gp.gp_Trsf()
+    trsf.SetTranslation(gp.gp_Vec(7.0, 0.0, 0.0))
+    same = TopoDS.Compound(c)
+    c.Location(TopLoc.TopLoc_Location(trsf))
+    assert same.Location().Transformation().TranslationPart().X() == 7.0
+    s = TopoDS.TopoDS_Shape(v)                                     # a TopoDS_Shape object
+    copied = TopoDS.Vertex(s)
+    assert type(copied) is TopoDS.TopoDS_Vertex and copied is not s and copied.IsSame(s)
+    s.Location(TopLoc.TopLoc_Location(trsf))
+    assert copied.Location().IsIdentity()                          # a copy: s moved, the copy did not
+    assert TopoDS.Vertex(s) is not TopoDS.Vertex(s)                # each call on a TopoDS_Shape object copies
+    with pytest.raises(TypeError):
+        TopoDS.Vertex(gp.gp_Pnt())
+    with pytest.raises(Standard.Standard_TypeMismatch):
+        TopoDS.Edge(v)
+
+
 def test_explorer_iterator_and_shape_maps():
     c, v, e = _compound()
     assert c.NbChildren() == 2

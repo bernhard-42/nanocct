@@ -1,5 +1,9 @@
 # Changelog
 
+## v8.0.1.3 (unreleased)
+
+- The `TopoDS` casts (`TopoDS.Vertex`, `Edge`, `Wire`, `Face`, `Shell`, `Solid`, `CompSolid`, `Compound`) hand back their argument when it already is an object of the target class, as the C++ reference does: the result is the same object, so moving one moves the other. They returned a copy before, so a shape built from another shape's `TopoDS` object stayed behind when that object was moved. An argument of another class (a `TopoDS_Shape` object) still gets a copy. New binding rule R-CAST
+
 ## v8.0.1.2 (2026-10-10)
 
 - Metadata completed for the PyPI release: description (the Readme, with absolute links so that it renders on PyPI), author, keywords, classifiers and project URLs

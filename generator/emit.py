@@ -334,6 +334,34 @@ class Emitter:
             s += ", nb::is_operator()"           # R-OPERATOR
         return s
 
+    # Binding-Rules.md R-CAST
+    def _cast_param(self, fn: Function) -> Param | None:
+        """The parameter a free function hands back as a derived class (TopoDS::Compound(TopoDS_Shape&)): exactly one
+        parameter, a non-const reference to a class A, and a non-const reference result of A or a class derived from A.
+        Read from the signature alone; None for any other function (FSC_GetPSC(const TopoDS_Shape&) returns an
+        unrelated class and stays a copy, R-RESULT)."""
+        if fn.result_kind != ResultKind.REF_MUTABLE or len(fn.params) != 1:
+            return None
+        p = fn.params[0]
+        if p.class_name == "" or p.is_out or p.stream != StreamKind.NONE or not p.type.rstrip().endswith("&") \
+                or p.type.lstrip().startswith("const "):
+            return None
+        result = fn.result_class_name if fn.result_class_name != "" else fn.result_class
+        # the bases of the classes this package parsed (TopoDS_Compound : TopoDS_Shape, generated in the same run as the
+        # casts) and of every bound class (bases_of, the manifests of earlier runs)
+        ancestors: set[str] = set()
+        todo = [result]
+        while len(todo) > 0:
+            name = todo.pop()
+            local = self._class_named.get(name)
+            for b in [*self.bases_of.get(name, []), *(local.bases if local is not None else [])]:
+                if b not in ancestors:
+                    ancestors.add(b)
+                    todo.append(b)
+        if result != p.class_name and p.class_name not in ancestors:
+            return None
+        return p
+
     # Binding-Rules.md R-KEPT
     def _new_type(self, cls_name: str) -> str:
         """What `new` constructs for a Transient the bindings create: nanocct::Kept<T> for a class whose bindings keep arguments."""
@@ -1084,9 +1112,9 @@ class Emitter:
             if fn.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT):
                 self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
                 continue
-            # R-RESULT for free functions: a mutable reference result (TopoDS::Vertex(TopoDS_Shape&)) has no owner to tie
-            # it to (no self), so it is copied rather than returned as a dangling reference; for TopoDS::Vertex & co. this
-            # mutable overload is the bound one (R-CONST-TWIN drops the const& twin)
+            # R-RESULT for free functions: a mutable reference result (FSC_GetPSC(), a global) has no owner to tie it to
+            # (no self), so it is copied rather than returned as a dangling reference; a function handing back its own
+            # argument (TopoDS::Vertex(TopoDS_Shape&), whose const& twin R-CONST-TWIN drops) is R-CAST, below
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
                 # R-RESULT: no owner to tie a reference to
@@ -1098,6 +1126,13 @@ class Emitter:
                 py += fn.suffix
                 doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanocct R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
+            cast = self._cast_param(fn)
+            if cast is not None:
+                # R-CAST: TopoDS::Compound(TopoDS_Shape&) hands back its argument -- the same Python object when the
+                # argument already is a TopoDS_Compound, else a copy (nanocct::cast_result)
+                result, arg = fn.result.rstrip().rstrip("&").strip(), cast.type.rstrip().rstrip("&").strip()
+                module_fns.append(f'    {self._module(fn.scope)}.def("{py}", &nanocct::cast_result<{result}, {arg}, &{qualified}>{self._extras(doc, fn.params, False, False)});')
+                continue
             if (fn.result_on_heap or fn.result_by_reference) and any(p.is_out or p.stream == StreamKind.OUT for p in fn.params):
                 self.report.append(f"{qualified}({self._sig(fn.params)}): returns {fn.result} with out-parameters, and its "
                                    f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")

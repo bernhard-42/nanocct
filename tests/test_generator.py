@@ -591,11 +591,36 @@ public:
   static const double theAngle;     //!< defined in the .cxx (IntPatch_WLineTool::myMaxConcatAngle): needs the symbol
 };
 
+//! R-CAST: TopoDS_Shape and TopoDS_Compound, as far as the casts are concerned.
+class Rules_CastBase
+{
+public:
+  Rules_CastBase() {}
+  int Value() const { return 1; }
+};
+
+class Rules_CastDerived : public Rules_CastBase
+{
+public:
+  Rules_CastDerived() {}
+};
+
+class Rules_CastOther
+{
+public:
+  Rules_CastOther() {}
+};
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
   //! A free function with an out-parameter.
   inline int Helper(int theA, int& theB) { theB = theA; return theA + 1; }
+  //! R-CAST: hands back its argument as a derived class (TopoDS::Compound(TopoDS_Shape&)), and as its own class.
+  inline Rules_CastDerived& AsDerived(Rules_CastBase& theBase) { return *(Rules_CastDerived*)&theBase; }
+  inline Rules_CastBase& AsBase(Rules_CastBase& theBase) { return theBase; }
+  //! Not R-CAST: an unrelated class (FSC_GetPSC(const TopoDS_Shape&) returns a global) stays a copy (R-RESULT).
+  inline Rules_CastOther& Other(Rules_CastBase&) { static Rules_CastOther anOther; return anOther; }
   constexpr double THE_CONST = 1.5;
 }
 
@@ -1091,7 +1116,8 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_Owner", "Rules_OwnerMember", "Rules_OwnerTrusted", "Rules_EmptyDtor", "Rules_Interface",
                                "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields",
                                "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>",
-                               "Rules_KeptBase", "Rules_KeptNode", "Rules_KeptScene", "Rules_KeptChild", "Rules_KeptFinal"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_KeptBase", "Rules_KeptNode", "Rules_KeptScene", "Rules_KeptChild", "Rules_KeptFinal",
+                               "Rules_CastBase", "Rules_CastDerived", "Rules_CastOther"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1479,6 +1505,19 @@ def test_emitter_const_ref_result_policy_is_decided_by_the_compiler(rules_ir):
     assert "(&Rules_NoCopyHolder::Instance), nb::rv_policy::reference, " in cpp
 
 
+def test_emitter_cast_hands_back_its_argument(tmp_path_factory):
+    """R-CAST (2026-10-10): a free function returning its own argument as a derived class (TopoDS::Compound) is bound
+    through nanocct::cast_result -- the argument itself when it already is that class, else a copy -- read from the
+    signature; a reference result of an unrelated class stays a copy (R-RESULT)."""
+    rules_ir = rules_ir_of(tmp_path_factory, "cast")   # fresh: other emitters mark AsDerived unbound in the shared IR
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_CastBase": "Rules", "Rules_CastDerived": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert 'm.def("AsDerived", &nanocct::cast_result<Rules_CastDerived, Rules_CastBase, &Rules::AsDerived>, nb::arg("theBase")' in cpp
+    assert 'm.def("AsBase", &nanocct::cast_result<Rules_CastBase, Rules_CastBase, &Rules::AsBase>, nb::arg("theBase")' in cpp
+    assert "(&Rules::Other), nb::rv_policy::copy" in cpp
+
+
 def test_cmake_list_ignores_comments(tmp_path):
     """A FILES.cmake comment holding ')' ended the set() there and lost every file after it (ExtremaPC/FILES.cmake,
     "# Elementary curves (header-only, analytical solutions)": no ExtremaPC_* class was bound, 2026-09-30); and the words
@@ -1540,7 +1579,7 @@ def test_emitter_ambiguous_constructor_and_skipped_base_chain(rules_ir):
              "Rules_ChainBase": "Rules", "Rules_ChainDerived": "Rules", "Rules_KeepBase": "Rules", "Rules_Interface": "Rules",
              "Rules_TBase<double>": "Rules", "Rules_TDerived<double>": "Rules", "Rules_Crtp<int>": "Rules", "Rules_TTransient<int>": "Rules",
              "Rules_TTransient<double>": "Rules", "Rules_PBase<double, 3>": "Rules", "Rules_PTree<double, 3, Rules_PBin>": "Rules",
-             "Rules_KeptBase": "Rules", "Rules_KeptNode": "Rules"}
+             "Rules_KeptBase": "Rules", "Rules_KeptNode": "Rules", "Rules_CastBase": "Rules", "Rules_CastDerived": "Rules"}
     em = Emitter(rules_ir, OCCT_INC, known, {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {},
                  ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
