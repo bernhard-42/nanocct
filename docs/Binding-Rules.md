@@ -1365,10 +1365,13 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     - nanobind's copy of a class without a usable copy constructor is no error but an abort of the whole process (*"Critical nanobind error"*): `GeomAPI_ExtremaCurveCurve::Extrema()` returns `const Extrema_ExtCC&`, and `Extrema_ExtCC` deletes its copy constructor in the non-const form `T(T&)`; `Extrema_ExtPS` holds a non-copyable `Extrema_GenExtPS` by value.
     - The compiler knows exactly which classes cannot be copied -- a deleted `T(const T&)` or `T(T&)`, a non-copyable member or base -- where the header would have to be interpreted; nanobind 3.1 takes the policy as a compile-time tag type, hence a type alias.
     - A copy that drops state is not visible in the header: the list comes from reading every OCCT copy constructor that sets a member to a constant; caches recomputed on demand and containers that null their pointers before a deep copy are fine. `Geom2dAPI_InterCurveCurve::Intersector()`'s copy would raise `StdFail_NotDone` on every accessor.
+    - A copy is the one meaning that holds for every call. In C++ the caller chooses per call site between a reference (`const T& r = …`) and a copy (`T v = …`); Python gets one result, and a reference would let a const accessor's result change its owner (`point.XYZ().SetX(…)`) and make every value-type result (`TopoDS_Shape::Location()`) follow later changes of its owner.
+    - It stays a copy while a mutable reference to the same member is alive (`TopoDS_HShape::ChangeShape()`): handing back that existing object instead would make the result's aliasing depend on earlier, unrelated calls.
 
 - **Python**
 
     - Copied (`rv_policy::copy`) when `T` is copy-constructible — unless it may be an argument or `self`, which is R-CAST.
+    - The live member is reached through the mutable accessor (`ChangeShape()`, `ChangeCoord()`), which returns a reference (case 4).
     - Otherwise returned by reference -- `reference_internal` for a method (the result keeps its owner alive), `reference` for a static method or free function (no owner).
     - `nanocct::cref_policy<R, HasOwner>` (`nanocct_call_policies.h`) picks the policy at compile time from `std::is_copy_constructible`.
     - Also by reference: an owner (R-COPY: its copy would share what its destructor frees, decided by the generator), and a result that names a class of `overrides.toml [not_value_copy]`, itself or as a container element -- classes whose copy constructor drops state (`IntRes2d_Intersection`/`Geom2dInt_GInter`: `done = false`, `Intf_SectionLine`: `closed = false`, `IntTools_CommonPrt`: `myAllNullFlag = false`).
@@ -1379,12 +1382,24 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     import gc
     from nanocct.GC import GC_MakeSegment
     from nanocct.GeomAPI import GeomAPI_ExtremaCurveCurve
-    from nanocct.gp import gp_Pnt
+    from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from nanocct.gp import gp_Pnt, gp_Trsf, gp_Vec
+    from nanocct.TopLoc import TopLoc_Location
+    from nanocct.TopoDS import TopoDS_HShape
 
     point = gp_Pnt(1, 2, 3)
     xyz = point.XYZ()                 # a copy
     xyz.SetX(9.0)
     assert point.X() == 1.0
+
+    holder = TopoDS_HShape(BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape())
+    member = holder.ChangeShape()     # the live member (case 4)
+    shape = holder.Shape()            # a copy, also while `member` is alive
+    trsf = gp_Trsf()
+    trsf.SetTranslation(gp_Vec(7.0, 0.0, 0.0))
+    member.Location(TopLoc_Location(trsf))
+    assert holder.Shape().Location().Transformation().TranslationPart().X() == 7.0
+    assert shape.Location().IsIdentity() and shape is not member
 
     api = GeomAPI_ExtremaCurveCurve(GC_MakeSegment(gp_Pnt(0, 0, 0), gp_Pnt(1, 0, 0)).Value(),
                                     GC_MakeSegment(gp_Pnt(0, 1, 1), gp_Pnt(1, 1, 1)).Value())
