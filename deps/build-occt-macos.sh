@@ -14,6 +14,16 @@ SRC="$HERE/occt-src"
 BUILD="$HERE/occt-build"
 PREFIX="$HERE/occt-8.0.1"
 CPUS="$(sysctl -n hw.ncpu)"
+# OCCT's Production profile adds -fomit-frame-pointer (and -flto). On x86_64 that leaves every function with a stack probe
+# (a frame of more than 4 KB) with a compact unwind entry that reads its frame size from the wrong bytes, so a C++
+# exception unwinding through one crashes the process -- 309 functions in OCCT 8.0.1, ChFi3d_FilBuilder::PerformTwoCorner
+# among them. x86_64 therefore builds with the Default profile, which keeps the frame pointers (and drops LTO);
+# tools/check_compact_unwind.py checks the wheel. arm64 keeps Production. The build targets the machine it runs on.
+if [ "$(uname -m)" = "x86_64" ]; then
+  PROFILE=Default
+else
+  PROFILE=Production
+fi
 
 cmake -S "$SRC" -B "$BUILD" -G Ninja \
   -D CMAKE_C_COMPILER=/usr/bin/clang \
@@ -47,7 +57,7 @@ cmake -S "$SRC" -B "$BUILD" -G Ninja \
   -D BUILD_RELEASE_DISABLE_EXCEPTIONS=OFF \
   -D BUILD_MODULE_Draw=OFF \
   -D BUILD_GTEST=OFF \
-  -D BUILD_OPT_PROFILE=Production
+  -D BUILD_OPT_PROFILE="$PROFILE"
 
 ninja -C "$BUILD" -j "$CPUS"
 ninja -C "$BUILD" install

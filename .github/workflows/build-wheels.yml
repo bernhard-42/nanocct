@@ -182,6 +182,13 @@ jobs:
       - name: make test (Python 3.12)
         run: make test PY_VERSION=3.12
 
+      # No compact unwind entry of the x86_64 wheel may read a function's frame size from the wrong bytes: a C++ exception
+      # unwinding through it would crash the process (deps/build-occt-macos.sh, tools/check_compact_unwind.py). Before
+      # the wheel cache is saved, so such a wheel never reaches a release.
+      - name: (macOS x86_64) Check compact unwind
+        if: matrix.platform == 'macos-x86_64'
+        run: .venv/bin/python tools/check_compact_unwind.py dist/nanocct-*.whl
+
       # ---- the wheel -----------------------------------------------------------------------------------------------
       # enableCrossOsArchive: release.yml restores all five on one Ubuntu runner, and without it a cache saved on
       # Windows has a different cache version and cannot be restored anywhere else (actions/cache README). It is
