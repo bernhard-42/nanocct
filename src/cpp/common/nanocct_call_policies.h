@@ -101,17 +101,31 @@ template <typename R, bool HasOwner>
 using cref_policy = nb::rv_policy::policy_tag<
     std::is_copy_constructible_v<std::remove_cv_t<std::remove_reference_t<R>>> ? nb::rv_policy::copy_v
     : HasOwner ? nb::rv_policy::reference_internal_v : nb::rv_policy::reference_v>;
-// Binding-Rules.md R-CAST: a free function that hands back its argument as a derived class, through a mutable reference
-// (TopoDS::Compound(TopoDS_Shape&): `return *(TopoDS_Compound*)&theShape;`). An argument that already is a Result
-// Python object comes back as that same object, as the C++ reference is the same object: moving one moves the other.
-// Any other argument (a TopoDS_Shape) gets a copy of the Result, as R-RESULT copies a free function's reference result.
-// No keep_alive is involved: a result kept alive by the argument it is would keep itself alive and never be freed.
-// The parameter stays typed (nanobind converts it and raises TypeError), and nb::typed keeps `-> Result` in the stub.
-template <typename Result, typename Arg, Result &(*Cast)(Arg &)>
-nb::typed<nb::object, Result> cast_result(Arg &arg) {
-    Result &result = Cast(arg);
-    nb::object argument = nb::find(arg);                 // the argument's own Python object
-    if (argument.is_valid() && nb::isinstance<Result>(argument))
-        return nb::borrow<nb::typed<nb::object, Result>>(argument);
-    return nb::borrow<nb::typed<nb::object, Result>>(nb::cast(result, nb::rv_policy::copy));
-}
+// Binding-Rules.md R-CAST: a reference result that R-RESULT would copy, but which may be one of the arguments or self
+// (TopoDS::Compound(TopoDS_Shape&): `return *(TopoDS_Compound*)&theShape;`; BRepBuilderAPI_Sewing::Modified(S) returns S
+// when S was not modified; NCollection_UtfString::Assign() returns *this). An argument that already is an object of the
+// result's class comes back as that same object, as the C++ reference is the same object: moving one moves the other.
+// Every other result -- another class's object at that address, a member, global storage -- is copied, as before.
+// The result goes out by reference first, which copies nothing: nanobind hands back an existing Python object of the
+// result's class (or a subclass) at that address, or makes a new one referring to it; the postcall then keeps it only
+// when it is one of the arguments at Positions (args[0] is self for a method) and else replaces it with a copy, while
+// the referred-to object is still alive (the call's arguments and temporaries are). No keep_alive is involved: a result
+// kept alive by the argument it is would keep itself alive and never be freed. A class that cannot be copied keeps
+// cref_policy's reference (an existing object is handed back as is), and AliasResult does nothing.
+template <typename R, bool HasOwner>
+using alias_policy = nb::rv_policy::policy_tag<
+    std::is_copy_constructible_v<std::remove_cv_t<std::remove_reference_t<R>>> ? nb::rv_policy::reference_v
+    : HasOwner ? nb::rv_policy::reference_internal_v : nb::rv_policy::reference_v>;
+template <typename R, size_t... Positions> struct AliasResult {
+    using T = std::remove_cv_t<std::remove_reference_t<R>>;
+    static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
+    static void postcall(PyObject **args, size_t, PyObject *&ret) {
+        if constexpr (std::is_copy_constructible_v<T>) {
+            if (((ret == args[Positions]) || ...))
+                return;                                                      // the argument itself
+            nb::object copy = nb::cast(nb::cast<const T &>(nb::handle(ret)), nb::rv_policy::copy);
+            Py_DECREF(ret);
+            ret = copy.release().ptr();
+        }
+    }
+};

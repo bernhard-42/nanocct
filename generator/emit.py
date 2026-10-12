@@ -334,33 +334,49 @@ class Emitter:
             s += ", nb::is_operator()"           # R-OPERATOR
         return s
 
-    # Binding-Rules.md R-CAST
-    def _cast_param(self, fn: Function) -> Param | None:
-        """The parameter a free function hands back as a derived class (TopoDS::Compound(TopoDS_Shape&)): exactly one
-        parameter, a non-const reference to a class A, and a non-const reference result of A or a class derived from A.
-        Read from the signature alone; None for any other function (FSC_GetPSC(const TopoDS_Shape&) returns an
-        unrelated class and stays a copy, R-RESULT)."""
-        if fn.result_kind != ResultKind.REF_MUTABLE or len(fn.params) != 1:
-            return None
-        p = fn.params[0]
-        if p.class_name == "" or p.is_out or p.stream != StreamKind.NONE or not p.type.rstrip().endswith("&") \
-                or p.type.lstrip().startswith("const "):
-            return None
-        result = fn.result_class_name if fn.result_class_name != "" else fn.result_class
-        # the bases of the classes this package parsed (TopoDS_Compound : TopoDS_Shape, generated in the same run as the
-        # casts) and of every bound class (bases_of, the manifests of earlier runs)
+    def _class_ancestors(self, name: str) -> set[str]:
+        """Every base of a class: from the classes this package parsed (TopoDS_Compound : TopoDS_Shape, generated in the
+        same run as the casts) and from every bound class (bases_of, the manifests of earlier runs)."""
         ancestors: set[str] = set()
-        todo = [result]
+        todo = [name]
         while len(todo) > 0:
-            name = todo.pop()
-            local = self._class_named.get(name)
-            for b in [*self.bases_of.get(name, []), *(local.bases if local is not None else [])]:
+            current = todo.pop()
+            local = self._class_named.get(current)
+            for b in [*self.bases_of.get(current, []), *(local.bases if local is not None else [])]:
                 if b not in ancestors:
                     ancestors.add(b)
                     todo.append(b)
-        if result != p.class_name and p.class_name not in ancestors:
-            return None
-        return p
+        return ancestors
+
+    # Binding-Rules.md R-CAST
+    def _alias_positions(self, result_class: str, params: list[Param], self_class: str | None) -> list[int]:
+        """The arguments a copied reference result may be (TopoDS::Compound(TopoDS_Shape&) returns its argument,
+        BRepBuilderAPI_Sewing::Modified(const TopoDS_Shape&) returns it when unmodified, NCollection_UtfString::Assign()
+        returns *this): their positions as a call policy counts them (self is 0 for a method). An argument qualifies by its
+        class, a reference to the result's class, a base or a derived class of it. Read from the signature alone; empty for
+        a result of an unrelated class (FSC_GetPSC(const TopoDS_Shape&) returns a global and stays a copy, R-RESULT)."""
+        if result_class == "":
+            return []
+        ancestors = self._class_ancestors(result_class)
+
+        def related(name: str, its_ancestors: set[str]) -> bool:
+            return name == result_class or name in ancestors or result_class in its_ancestors
+
+        first = 0 if self_class is None else 1
+        out = [0] if self_class is not None and related(self_class, self._class_ancestors(self_class)) else []
+        for i, p in enumerate(params):
+            # a member of an instantiated template names no class behind its dependent types (parse._class_behind):
+            # its own instantiation, spelled out, is the one it can be (NCollection_UtfString<char>::Assign)
+            name = p.class_name if p.class_name != "" else result_class if _strip_ref(p.type) == result_class else ""
+            if name != "" and p.type.rstrip().endswith("&") and not p.type.rstrip().endswith("&&") \
+                    and related(name, self._ancestors(p) if p.class_name != "" else set()):
+                out.append(first + i)
+        return out
+
+    def _alias_policy(self, result: str, positions: list[int], owner: bool) -> str:
+        """R-CAST: the result by reference, then nanocct::AliasResult keeps it only when it is one of these arguments."""
+        return (f", nanocct::alias_policy<{result}, {'true' if owner else 'false'}>{{}}, "
+                f"nb::call_policy<nanocct::AliasResult<{result}, {', '.join(str(i) for i in positions)}>>()")
 
     # Binding-Rules.md R-KEPT
     def _new_type(self, cls_name: str) -> str:
@@ -663,6 +679,15 @@ class Emitter:
                 self._report_owned_container(cls, m)
             return f'.{defn}("{py}", {self._lambda_call(T, m, B)}{ptr_policy}{self._keep_slots(m)}{self._iterator_init(m)}{self._keep_views(m, not m.is_static)}{self._extras(doc, m.params, True, m.is_operator)})'
         ne = " noexcept" if m.is_noexcept else ""
+        if policy.startswith(", nanocct::cref_policy<") and not m.result_is_handle:
+            # R-CAST: a copied reference result that may be self or an argument (Sewing::Modified(S) returns S unmodified);
+            # a handle needs none of it, its caster hands back the Transient's own Python object (R-HANDLE)
+            result_class = m.result_class_name
+            if result_class == "" and _strip_ref(m.result) == cls.name:
+                result_class = cls.name      # a member of an instantiated template returning its instantiation (see _alias_positions)
+            positions = self._alias_positions(result_class, m.params, None if m.is_static else cls.name)
+            if len(positions) > 0:
+                policy = self._alias_policy(m.result, positions, not m.is_static)
         if m.result_kind in (ResultKind.PTR_CLASS, ResultKind.REF_MUTABLE):
             self._report_owned_container(cls, m)
         if m.is_static:
@@ -1113,8 +1138,8 @@ class Emitter:
                 self.report.append(f"{fn.name}({self._sig(fn.params)}): free function returning Transient pointer/reference not supported yet")
                 continue
             # R-RESULT for free functions: a mutable reference result (FSC_GetPSC(), a global) has no owner to tie it to
-            # (no self), so it is copied rather than returned as a dangling reference; a function handing back its own
-            # argument (TopoDS::Vertex(TopoDS_Shape&), whose const& twin R-CONST-TWIN drops) is R-CAST, below
+            # (no self), so it is copied rather than returned as a dangling reference; one that may be its own argument
+            # (TopoDS::Vertex(TopoDS_Shape&), whose const& twin R-CONST-TWIN drops) is R-CAST, below
             policy = {ResultKind.PTR_CLASS: ", nb::rv_policy::reference", ResultKind.REF_MUTABLE: ", nb::rv_policy::copy"}.get(fn.result_kind, "")
             if fn.result_kind == ResultKind.VALUE and fn.result.rstrip().endswith("&"):
                 # R-RESULT: no owner to tie a reference to
@@ -1126,13 +1151,6 @@ class Emitter:
                 py += fn.suffix
                 doc = f"{py}: the C++ overload {qualified}({self._sig(fn.params)}); the suffix lists its returned out-parameters (nanocct R-COLLISION).\n{fn.doc}"
                 self.report.append(f"{qualified}({self._sig(fn.params)}): same Python signature as another overload after out-param removal -> bound as {py}")
-            cast = self._cast_param(fn)
-            if cast is not None:
-                # R-CAST: TopoDS::Compound(TopoDS_Shape&) hands back its argument -- the same Python object when the
-                # argument already is a TopoDS_Compound, else a copy (nanocct::cast_result)
-                result, arg = fn.result.rstrip().rstrip("&").strip(), cast.type.rstrip().rstrip("&").strip()
-                module_fns.append(f'    {self._module(fn.scope)}.def("{py}", &nanocct::cast_result<{result}, {arg}, &{qualified}>{self._extras(doc, fn.params, False, False)});')
-                continue
             if (fn.result_on_heap or fn.result_by_reference) and any(p.is_out or p.stream == StreamKind.OUT for p in fn.params):
                 self.report.append(f"{qualified}({self._sig(fn.params)}): returns {fn.result} with out-parameters, and its "
                                    f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")
@@ -1149,6 +1167,13 @@ class Emitter:
                               else policy if fn.result_kind == ResultKind.PTR_CLASS or fn.result_by_reference else "")
                 module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {self._lambda_call(None, as_method)}{ptr_policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, True, False)});')
                 continue
+            if policy in (", nb::rv_policy::copy", f", nanocct::cref_policy<{fn.result}, false>{{}}") and not fn.result_is_handle:
+                # R-CAST: TopoDS::Compound(TopoDS_Shape&) hands back its argument -- the same Python object when the
+                # argument already is a TopoDS_Compound, else a copy
+                result_class = fn.result_class_name if fn.result_class_name != "" else fn.result_class
+                positions = self._alias_positions(result_class, fn.params, None)
+                if len(positions) > 0:
+                    policy = self._alias_policy(fn.result, positions, False)
             direct = self._guarded(f"static_cast<{fn.result} (*)({self._sig(fn.params)}){ne}>(&{qualified})", fn.params)
             module_fns.append(f'    {self._module(fn.scope)}.def("{py}", {direct}{policy}{self._keep_views(fn, False)}{self._extras(doc, fn.params, False, False)});')
         return free_ops, module_fns

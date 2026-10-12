@@ -1231,7 +1231,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_static=cursor.is_static_method(),
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
-               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type),
+               is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type), result_is_handle=_is_handle(cursor.result_type),
                result_instance_key=_binder_key(cursor.result_type), result_container=_mutable_container(cursor.result_type))
     result_stream = _stream_kind(cursor.result_type)
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
@@ -2611,7 +2611,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                               is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
                               skip_reason=reason, qualified=fr.spelling,
                               defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name,
-                              result_class_name=_class_behind(fr.result_type), result_instance_key=_binder_key(fr.result_type))
+                              result_class_name=_class_behind(fr.result_type), result_is_handle=_is_handle(fr.result_type), result_instance_key=_binder_key(fr.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, fr.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:
@@ -3229,7 +3229,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope,
                               defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name,
-                              result_class_name=_class_behind(cur.result_type), result_instance_key=_binder_key(cur.result_type))
+                              result_class_name=_class_behind(cur.result_type), result_is_handle=_is_handle(cur.result_type), result_instance_key=_binder_key(cur.result_type))
                 skip_sig = f"{ns}{cur.spelling}({', '.join(p.type for p in params)})"
                 if fn.skip_reason is None and skip_sig in _SKIP_METHODS:
                     # [skip] methods reaches a free function by its exact signature only: a name alone would take every

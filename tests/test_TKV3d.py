@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from nanocct import AIS, Aspect, BRepBndLib, BRepGProp, BRepPrimAPI, Bnd, Font, GProp, Graphic3d, Prs3d, PrsDim, Quantity, SelectMgr, StdPrs, TopAbs, TopExp, TopoDS, V3d, gp
+from nanocct import AIS, Aspect, BRepBndLib, BRepGProp, BRepPrimAPI, Bnd, Font, GProp, Graphic3d, Prs3d, PrsDim, Quantity, SelectBasics, SelectMgr, StdPrs, TopAbs, TopExp, TopoDS, V3d, gp
 from nanocct.NCollection import NCollection_String
 from nanocct.TCollection import TCollection_AsciiString
 
@@ -84,3 +84,11 @@ def test_report_is_small_and_known():
     assert any(l.startswith("copy\tAIS\tAIS_Shape: no copy constructor") for l in lines)
     assert any(l.startswith("raw-pointer\tV3d\tV3d_CircularGrid::V3d_CircularGrid(): param 'aViewer': reference to pointer") for l in lines)
     assert any(l.startswith("template\tPrs3d\tPrs3d_Point: template (not bound)") for l in lines)
+
+
+def test_min_of_two_pick_results_is_one_of_them():
+    """R-CAST: SelectBasics_PickResult::Min(a, b) returns a reference to the nearer argument, so the result is that object."""
+    near = SelectBasics.SelectBasics_PickResult(1.0, 0.0, gp.gp_Pnt())
+    far = SelectBasics.SelectBasics_PickResult(2.0, 0.0, gp.gp_Pnt())
+    assert SelectBasics.SelectBasics_PickResult.Min_s(near, far) is near
+    assert SelectBasics.SelectBasics_PickResult.Min_s(far, near) is near

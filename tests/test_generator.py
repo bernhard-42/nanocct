@@ -611,6 +611,36 @@ public:
   Rules_CastOther() {}
 };
 
+//! R-CAST for methods: a copied reference result that may be an argument or self.
+class Rules_AliasHolder
+{
+public:
+  Rules_AliasHolder() {}
+  //! BRepBuilderAPI_Sewing::Modified(S): S itself when it was not modified, else a stored shape.
+  const Rules_CastBase& Modified(const Rules_CastBase& theShape) const { return theShape; }
+  //! NCollection_UtfString::Assign(): *this.
+  const Rules_AliasHolder& Assign(const Rules_AliasHolder& theOther) { (void)theOther; return *this; }
+  //! SelectBasics_PickResult::Min(a, b): one of its arguments.
+  static const Rules_CastBase& Min(const Rules_CastBase& theA, const Rules_CastBase& theB) { (void)theB; return theA; }
+  //! An unrelated class: stays cref_policy (R-RESULT).
+  const Rules_CastOther& Other(const Rules_CastBase&) const { return myOther; }
+  //! A handle: its caster hands back the Transient's own Python object already (R-HANDLE), so not R-CAST.
+  const occ::handle<Rules_Thing>& Thing(const occ::handle<Rules_Thing>& theThing) const { return theThing; }
+private:
+  Rules_CastOther myOther;
+};
+
+//! R-CAST in an instantiated template, whose dependent types name no class in the IR (NCollection_UtfString<char>::Assign).
+template <typename T>
+class Rules_AliasT
+{
+public:
+  Rules_AliasT() = default;
+  const Rules_AliasT& Assign(const Rules_AliasT& theOther) { myValue = theOther.myValue; return *this; }
+  T myValue{};
+};
+typedef Rules_AliasT<int> Rules_AliasInt;
+
 //! A namespace named like the package is the package module itself.
 namespace Rules
 {
@@ -1117,7 +1147,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields",
                                "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>",
                                "Rules_KeptBase", "Rules_KeptNode", "Rules_KeptScene", "Rules_KeptChild", "Rules_KeptFinal",
-                               "Rules_CastBase", "Rules_CastDerived", "Rules_CastOther"}   # alias instantiations, probe bases, the reference-only instantiation
+                               "Rules_CastBase", "Rules_CastDerived", "Rules_CastOther", "Rules_AliasHolder", "Rules_AliasT<int>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
     nested = rules_ir.classes[2]
@@ -1506,16 +1536,30 @@ def test_emitter_const_ref_result_policy_is_decided_by_the_compiler(rules_ir):
 
 
 def test_emitter_cast_hands_back_its_argument(tmp_path_factory):
-    """R-CAST (2026-10-10): a free function returning its own argument as a derived class (TopoDS::Compound) is bound
-    through nanocct::cast_result -- the argument itself when it already is that class, else a copy -- read from the
-    signature; a reference result of an unrelated class stays a copy (R-RESULT)."""
+    """R-CAST (2026-10-10, generalized 2026-10-12): a copied reference result that may be one of the arguments or self
+    -- a reference to the result's class, a base or a derived class -- is handed out by reference and kept only when it
+    is one of them (nanocct::AliasResult, positions as a call policy counts them: self is 0); read from the signature.
+    A reference result of an unrelated class stays a copy (R-RESULT)."""
     rules_ir = rules_ir_of(tmp_path_factory, "cast")   # fresh: other emitters mark AsDerived unbound in the shared IR
-    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_CastBase": "Rules", "Rules_CastDerived": "Rules"},
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_CastBase": "Rules", "Rules_CastDerived": "Rules",
+                                      "Rules_CastOther": "Rules", "Rules_AliasHolder": "Rules"},
                  {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
     cpp = em.emit()
-    assert 'm.def("AsDerived", &nanocct::cast_result<Rules_CastDerived, Rules_CastBase, &Rules::AsDerived>, nb::arg("theBase")' in cpp
-    assert 'm.def("AsBase", &nanocct::cast_result<Rules_CastBase, Rules_CastBase, &Rules::AsBase>, nb::arg("theBase")' in cpp
+    assert ('(&Rules::AsDerived), nanocct::alias_policy<Rules_CastDerived &, false>{}, '
+            'nb::call_policy<nanocct::AliasResult<Rules_CastDerived &, 0>>(), nb::arg("theBase")') in cpp
+    assert ('(&Rules::AsBase), nanocct::alias_policy<Rules_CastBase &, false>{}, '
+            'nb::call_policy<nanocct::AliasResult<Rules_CastBase &, 0>>(), nb::arg("theBase")') in cpp
     assert "(&Rules::Other), nb::rv_policy::copy" in cpp
+    assert ('(&Rules_AliasHolder::Modified), nanocct::alias_policy<const Rules_CastBase &, true>{}, '
+            'nb::call_policy<nanocct::AliasResult<const Rules_CastBase &, 1>>()') in cpp
+    assert ('(&Rules_AliasHolder::Assign), nanocct::alias_policy<const Rules_AliasHolder &, true>{}, '
+            'nb::call_policy<nanocct::AliasResult<const Rules_AliasHolder &, 0, 1>>()') in cpp
+    assert ('(&Rules_AliasHolder::Min), nanocct::alias_policy<const Rules_CastBase &, false>{}, '
+            'nb::call_policy<nanocct::AliasResult<const Rules_CastBase &, 0, 1>>()') in cpp
+    assert "(&Rules_AliasHolder::Other), nanocct::cref_policy<const Rules_CastOther &, true>{}" in cpp
+    assert "(&Rules_AliasHolder::Thing), nanocct::cref_policy<const occ::handle<Rules_Thing> &, true>{}" in cpp
+    assert ('(&Rules_AliasT<int>::Assign), nanocct::alias_policy<const Rules_AliasT<int> &, true>{}, '
+            'nb::call_policy<nanocct::AliasResult<const Rules_AliasT<int> &, 0, 1>>()') in cpp
 
 
 def test_cmake_list_ignores_comments(tmp_path):

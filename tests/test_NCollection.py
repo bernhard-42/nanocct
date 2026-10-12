@@ -635,3 +635,10 @@ def test_h_collections_survive_occt_down_cast():
     lists.SetValue(1, arr)
     back = lists.Value(1)
     assert back is arr and back.Value(2) == 42
+
+
+def test_assign_returns_self():
+    """R-CAST: NCollection_UtfString::Assign() returns *this, a member of an instantiated template: the same object."""
+    text = NCollection.NCollection_String("a")
+    assert text.Assign(NCollection.NCollection_String("bc")) is text
+    assert text.ToCString() == "bc"

@@ -11,7 +11,7 @@ import pytest
 
 from generator.report import read_report
 from nanocct import (BRepBuilderAPI, BRepCheck, BRepClass, BRepClass3d, BRepExtrema, BRepGProp, BRepLib, BRepMAT2d, BRepPrimAPI, BRepTopAdaptor,
-                     GeomAbs, GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopoDS, gp)
+                     GeomAbs, GProp, MAT, MAT2d, NCollection, Bnd, BRepBndLib, Standard, StdFail, TopAbs, TopExp, TopLoc, TopoDS, gp)
 
 PACKAGES = ["IntCurvesFace", "MAT", "MAT2d", "Bisector", "BRepMAT2d", "BRepCheck", "BRepBndLib", "BRepExtrema", "BRepClass",
             "BRepClass3d", "BRepLib", "BRepGProp", "BRepIntCurveSurface", "BRepTopAdaptor", "BRepBuilderAPI", "BRepApprox"]
@@ -212,3 +212,35 @@ def test_bnd_box_tree_selectors_have_their_template_base():
                 BRepBuilderAPI.BRepBuilderAPI_BndBoxTreeSelector):
         assert cls.__mro__[1].__qualname__ == "NCollection_UBTree__int__Bnd_Box.Selector"
         assert all(hasattr(cls, name) for name in ("Reject", "Accept", "Stop"))
+
+
+def test_a_reference_result_that_is_its_argument_is_that_object():
+    """R-CAST: BRepBuilderAPI_Sewing::Modified(S) returns S itself when sewing did not modify it (`return aShape;`): the same
+    Python object, so moving one moves the other, also for an object of a derived class (a TopoDS_Face for a TopoDS_Shape
+    result). A face sewing did modify comes back as a copy of the stored face, a new object on every call."""
+    _, face = _rectangle()
+    sewing = BRepBuilderAPI.BRepBuilderAPI_Sewing()
+    assert sewing.Modified(face) is face
+    shape = TopoDS.TopoDS_Shape(face)
+    same = sewing.Modified(shape)
+    assert same is shape
+    trsf = gp.gp_Trsf()
+    trsf.SetTranslation(gp.gp_Vec(7.0, 0.0, 0.0))
+    shape.Location(TopLoc.TopLoc_Location(trsf))
+    assert same.Location().Transformation().TranslationPart().X() == 7.0
+    # two rectangles built apart share an edge position: sewing merges the edges and rebuilds both faces
+    p = [gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(10, 0, 0), gp.gp_Pnt(10, 5, 0), gp.gp_Pnt(0, 5, 0), gp.gp_Pnt(20, 0, 0), gp.gp_Pnt(20, 5, 0)]
+    faces = []
+    for corners in ((0, 1, 2, 3), (1, 4, 5, 2)):
+        mw = BRepBuilderAPI.BRepBuilderAPI_MakeWire()
+        for i in range(4):
+            mw.Add(BRepBuilderAPI.BRepBuilderAPI_MakeEdge(p[corners[i]], p[corners[(i + 1) % 4]]).Edge())
+        faces.append(BRepBuilderAPI.BRepBuilderAPI_MakeFace(mw.Wire(), True).Face())
+    sewing = BRepBuilderAPI.BRepBuilderAPI_Sewing()
+    for f in faces:
+        sewing.Add(f)
+    sewing.Perform()
+    assert sewing.IsModified(faces[0])
+    modified = sewing.Modified(faces[0])
+    assert modified is not faces[0] and not modified.IsSame(faces[0])
+    assert sewing.Modified(faces[0]) is not modified                    # a copy of the stored face, each call

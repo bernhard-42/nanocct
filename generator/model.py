@@ -87,6 +87,7 @@ class Method:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                # linker symbol (libclang mangling); R-UNDEFINED compares it with nm's list
     result_class_name: str = ""       # canonical class/enum behind the result ("" for void, scalars, strings), see parse._class_behind
+    result_is_handle: bool = False    # the result is a handle<T> (R-HANDLE), whose caster hands back the same Python object anyway (R-CAST)
     result_instance_key: str = ""     # R-UNBOUND-TYPE: the NCollection binder instantiation behind the result (parse._binder_key)
     is_deprecated: bool = False       # Standard_DEPRECATED: bound, the message leads the docstring
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
@@ -217,6 +218,7 @@ class Function:
     defined_in_header: bool = False   # inline definition seen in the TU (no library symbol needed)
     mangled: str = ""                 # linker symbol; R-UNDEFINED compares it with nm's list (FUN_scanloi in TopOpeBRepDS)
     result_class_name: str = ""       # canonical class/enum behind the result, as for methods (R-UNBOUND-TYPE)
+    result_is_handle: bool = False    # as for methods
     result_instance_key: str = ""     # as for methods
     result_view: bool = False         # R-RESULT-KEEP, R-OWNER: as for methods
     result_keeps: tuple[int, ...] = ()

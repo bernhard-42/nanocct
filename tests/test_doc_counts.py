@@ -101,6 +101,7 @@ def counts() -> dict[str, int]:
         "refwrap": lambda: cpp(r'\.def(?:_static)?\("\w+", [^;\n]*std::reference_wrapper'),
         "result-refcount0": lambda: cpp(r"IncrementRefCounter\(\)"),
         "result-value-transient": lambda: cpp(r"opencascade::handle<[\w:<>, ]*> nanocct_result\(new "),
+        "alias-result": lambda: cpp(r"nanocct::AliasResult<"),            # R-CAST: reference results that may be an argument
         "default-braced": lambda: cpp(r"= std::decay_t<[^;]*?>\{"),
         "bitset": lambda: cpp(r'\.def(?:_static)?\("\w+", [^;\n]*std::bitset'),
         "unreachable": lambda: rep(r"unreachable|reaches every call|takes over"),
