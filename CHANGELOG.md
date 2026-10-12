@@ -1,6 +1,6 @@
 # Changelog
 
-## v8.0.1.3 (unreleased)
+## v8.0.1.3 (2026-10-12)
 
 - macOS x86_64: an OCCT exception unwinding through one of 309 OCCT functions with a large stack frame (`ChFi3d_FilBuilder::PerformTwoCorner` in a failing fillet, `ShapeFix::SameParameter`, …) could crash the process, because their compact unwind entries read the frame size from the wrong bytes. OCCT is now built without `-fomit-frame-pointer` on x86_64 (the Default profile instead of Production), and the build checks the wheel's unwind entries (`tools/check_compact_unwind.py`)
 - The `TopoDS` casts (`TopoDS.Vertex`, `Edge`, `Wire`, `Face`, `Shell`, `Solid`, `CompSolid`, `Compound`) hand back their argument when it already is an object of the target class, as the C++ reference does: the result is the same object, so moving one moves the other. They returned a copy before, so a shape built from another shape's `TopoDS` object stayed behind when that object was moved. An argument of another class (a `TopoDS_Shape` object) still gets a copy. New binding rule R-CAST
