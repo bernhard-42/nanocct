@@ -1425,8 +1425,8 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Rule**
 
     - In C++ the result is then the argument itself, so the two cannot drift apart: moving one moves the other.
-    - An argument that already is an object of the result's class (or of a derived class) comes back as that same Python object, which is what the C++ reference is.
-    - Any other result is copied, as R-RESULT copies it: a member or global storage (`Sewing::Modified` of a modified shape), and an argument of a base class (a `TopoDS_Shape` object given to `TopoDS::Compound`), which a reference would need kept alive by the result.
+    - An argument whose class is exactly the result's comes back as that same Python object, which is what the C++ reference is (a Python subclass of that class included).
+    - Any other result is copied, as R-RESULT copies it: a member or global storage (`Sewing::Modified` of a modified shape), an argument of a base class (a `TopoDS_Shape` object given to `TopoDS::Compound`), which a reference would need kept alive by the result, and an argument of a derived class (a `TopoDS_Face` object given to `Sewing::Modified(const TopoDS_Shape&)`): code keeping the `TopoDS_Shape` result, a history of the sewing, would otherwise hold the caller's face itself and move it with its own in-place edits.
     - No `keep_alive`: when the result is the argument, the object would keep itself alive and never be freed.
     - Whether the result is an argument is known only at run time (`Modified` returns its argument only when the shape was not modified); which arguments it can be is read from the signature, so a result of an unrelated class (`FSC_GetPSC(const TopoDS_Shape&)` returns a global) stays a plain copy.
     - A handle result is not R-CAST: the handle caster hands back the Transient's own Python object anyway (R-HANDLE). A class that cannot be copied is not either: its reference result already comes back as an existing Python object (R-RESULT).
@@ -1436,7 +1436,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - `nanocct::alias_policy` hands the result out by reference, which copies nothing: nanobind returns an existing Python object of the result's class at that address, or makes a new one referring to it.
-    - `nanocct::AliasResult` (a call policy, `nanocct_call_policies.h`) keeps it when it is one of the candidate arguments (`self` included) and else replaces it with a copy, while the call's arguments still hold what it refers to.
+    - `nanocct::AliasResult` (a call policy, `nanocct_call_policies.h`) keeps it when it is one of the candidate arguments (`self` included) bound as exactly the result's class (`nb::type_info`), and else replaces it with a copy, while the call's arguments still hold what it refers to.
     - The parameters stay typed (a wrong type raises `TypeError`), and the stub keeps the result class (`-> TopoDS_Compound`).
 
 - **Python examples**
@@ -1460,7 +1460,9 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     assert same.Location().Transformation().TranslationPart().X() == 7.0   # one object: moving one moves the other
     assert shape.Location().Transformation().TranslationPart().X() == 0.0  # the copy's source is unchanged
 
-    assert BRepBuilderAPI_Sewing().Modified(solid) is solid   # not modified by sewing: its argument, the same object
+    sewing = BRepBuilderAPI_Sewing()
+    assert sewing.Modified(shape) is shape    # not modified by sewing: its argument, the same object
+    assert sewing.Modified(solid) is not solid  # a TopoDS_Solid for a TopoDS_Shape result: a copy
     ```
 
 ### R-PTR-REF

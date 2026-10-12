@@ -103,13 +103,16 @@ using cref_policy = nb::rv_policy::policy_tag<
     : HasOwner ? nb::rv_policy::reference_internal_v : nb::rv_policy::reference_v>;
 // Binding-Rules.md R-CAST: a reference result that R-RESULT would copy, but which may be one of the arguments or self
 // (TopoDS::Compound(TopoDS_Shape&): `return *(TopoDS_Compound*)&theShape;`; BRepBuilderAPI_Sewing::Modified(S) returns S
-// when S was not modified; NCollection_UtfString::Assign() returns *this). An argument that already is an object of the
-// result's class comes back as that same object, as the C++ reference is the same object: moving one moves the other.
-// Every other result -- another class's object at that address, a member, global storage -- is copied, as before.
+// when S was not modified; NCollection_UtfString::Assign() returns *this). An argument whose C++ class is exactly the
+// result's comes back as that same object, as the C++ reference is the same object: moving one moves the other (a Python
+// subclass of that class included). Every other result -- an argument of a derived class (a TopoDS_Face given to
+// Modified(const TopoDS_Shape&): code keeping the TopoDS_Shape result would otherwise hold the caller's face itself and
+// move it with its own in-place edits), another class's object at that address, a member, global storage -- is copied.
 // The result goes out by reference first, which copies nothing: nanobind hands back an existing Python object of the
 // result's class (or a subclass) at that address, or makes a new one referring to it; the postcall then keeps it only
-// when it is one of the arguments at Positions (args[0] is self for a method) and else replaces it with a copy, while
-// the referred-to object is still alive (the call's arguments and temporaries are). No keep_alive is involved: a result
+// when it is one of the arguments at Positions (args[0] is self for a method) bound as exactly the result's class, and
+// else replaces it with a copy, while the referred-to object is still alive (the call's arguments and temporaries are).
+// nb::type_info names the C++ class a Python type binds, the same for a Python subclass. No keep_alive is involved: a result
 // kept alive by the argument it is would keep itself alive and never be freed. A class that cannot be copied keeps
 // cref_policy's reference (an existing object is handed back as is), and AliasResult does nothing.
 template <typename R, bool HasOwner>
@@ -121,7 +124,7 @@ template <typename R, size_t... Positions> struct AliasResult {
     static void precall(PyObject **, size_t, nb::detail::cleanup_list *) {}
     static void postcall(PyObject **args, size_t, PyObject *&ret) {
         if constexpr (std::is_copy_constructible_v<T>) {
-            if (((ret == args[Positions]) || ...))
+            if (((ret == args[Positions]) || ...) && nb::type_info(nb::handle((PyObject *) Py_TYPE(ret))) == typeid(T))
                 return;                                                      // the argument itself
             nb::object copy = nb::cast(nb::cast<const T &>(nb::handle(ret)), nb::rv_policy::copy);
             Py_DECREF(ret);

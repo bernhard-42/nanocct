@@ -3,7 +3,7 @@
 ## v8.0.1.3 (unreleased)
 
 - The `TopoDS` casts (`TopoDS.Vertex`, `Edge`, `Wire`, `Face`, `Shell`, `Solid`, `CompSolid`, `Compound`) hand back their argument when it already is an object of the target class, as the C++ reference does: the result is the same object, so moving one moves the other. They returned a copy before, so a shape built from another shape's `TopoDS` object stayed behind when that object was moved. An argument of another class (a `TopoDS_Shape` object) still gets a copy. New binding rule R-CAST
-- The same for every other reference result that can be one of its arguments or `self` (46 call sites): `BRepBuilderAPI_Sewing.Modified(S)` of a shape sewing did not modify, `BRepOffset_Analyse.EdgeReplacement`, `ChFi2d_Builder.BasisEdge`, `SelectBasics_PickResult.Min_s`, `NCollection_String.Assign` and others return that argument's object instead of a copy; a result that is not an argument is still a copy
+- The same for every other reference result that can be one of its arguments or `self` (46 call sites): `BRepBuilderAPI_Sewing.Modified(S)` of a shape sewing did not modify, `BRepOffset_Analyse.EdgeReplacement`, `ChFi2d_Builder.BasisEdge`, `SelectBasics_PickResult.Min_s`, `NCollection_String.Assign` and others return that argument's object instead of a copy when its class is exactly the result's; any other result, an argument of a derived class included (a `TopoDS_Face` given to `Sewing.Modified`), is still a copy
 
 ## v8.0.1.2 (2026-10-10)
 

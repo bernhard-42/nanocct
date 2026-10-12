@@ -215,19 +215,24 @@ def test_bnd_box_tree_selectors_have_their_template_base():
 
 
 def test_a_reference_result_that_is_its_argument_is_that_object():
-    """R-CAST: BRepBuilderAPI_Sewing::Modified(S) returns S itself when sewing did not modify it (`return aShape;`): the same
-    Python object, so moving one moves the other, also for an object of a derived class (a TopoDS_Face for a TopoDS_Shape
-    result). A face sewing did modify comes back as a copy of the stored face, a new object on every call."""
+    """R-CAST: BRepBuilderAPI_Sewing::Modified(S) returns S itself when sewing did not modify it (`return aShape;`): a
+    TopoDS_Shape object comes back as the same Python object, so moving one moves the other. An object of a derived class
+    (a TopoDS_Face) gets a copy -- the same topological shape, its own location: code keeping the result (a history of
+    the sewing) must not move the caller's face with its own in-place edits. A face sewing did modify comes back as a copy
+    of the stored face, a new object on every call."""
     _, face = _rectangle()
     sewing = BRepBuilderAPI.BRepBuilderAPI_Sewing()
-    assert sewing.Modified(face) is face
     shape = TopoDS.TopoDS_Shape(face)
     same = sewing.Modified(shape)
     assert same is shape
+    copied = sewing.Modified(face)
+    assert copied is not face and type(copied) is TopoDS.TopoDS_Shape and copied.IsSame(face)
     trsf = gp.gp_Trsf()
     trsf.SetTranslation(gp.gp_Vec(7.0, 0.0, 0.0))
     shape.Location(TopLoc.TopLoc_Location(trsf))
     assert same.Location().Transformation().TranslationPart().X() == 7.0
+    copied.Location(TopLoc.TopLoc_Location(trsf))
+    assert face.Location().IsIdentity()                                 # the caller's face stays where it was
     # two rectangles built apart share an edge position: sewing merges the edges and rebuilds both faces
     p = [gp.gp_Pnt(0, 0, 0), gp.gp_Pnt(10, 0, 0), gp.gp_Pnt(10, 5, 0), gp.gp_Pnt(0, 5, 0), gp.gp_Pnt(20, 0, 0), gp.gp_Pnt(20, 5, 0)]
     faces = []

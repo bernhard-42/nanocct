@@ -264,12 +264,11 @@ def test_cast_of_its_own_class_is_the_same_object():
 
 
 def test_a_reference_result_that_is_its_argument():
-    """R-CAST: BRepBuilderAPI_Sewing::Modified(S) of an unmodified S hands back that object, without a keep_alive, for an
-    argument of the result's class and of a derived class alike. (The copy that replaces any other result:
-    test_mutable_reference_free_function_is_a_copy.)"""
+    """R-CAST: BRepBuilderAPI_Sewing::Modified(S) of an unmodified TopoDS_Shape object hands back that object, without a
+    keep_alive; a TopoDS_Face object (a derived class) gets a copy, and the reference it was handed out as is dropped."""
     _flat("from nanocct import BRepBuilderAPI\n" + BOX + "sewing = BRepBuilderAPI.BRepBuilderAPI_Sewing()\n", """
-        same = sewing.Modified(face)
-        shape = sewing.Modified(TopoDS.TopoDS_Shape(face))
+        copied = sewing.Modified(face)
+        same = sewing.Modified(TopoDS.TopoDS_Shape(face))
         sewing.Modified(TopoDS.TopoDS_Shape(face))
     """, 40000)
 
