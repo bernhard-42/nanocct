@@ -1,8 +1,21 @@
 # AddOns: workarounds for OCCT bugs
 
-`nanocct.AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` is a drop-in replacement for OCCT's `ShapeUpgrade_UnifySameDomain`: same class name, same signatures for the members it has (constructor, `AllowInternalEdges`, `Build`, `Shape`, `History`). Importing it from `nanocct.ShapeUpgrade` gives OCCT's behaviour, importing it from `nanocct.AddOns.ShapeClean` gives OCCT's behaviour with two defects worked around. OCCT's source is not patched and no OCCT code is copied; both workarounds only call OCCT's public API. Each has a canary test in `tests/test_AddOns.py` that fails once OCCT fixes the defect: then the workaround is deleted (Binding-Rules.md R-ADDON).
+`nanocct.AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` is a drop-in replacement for OCCT's `ShapeUpgrade_UnifySameDomain`: same class name, same signatures for the members it has (constructor, `AllowInternalEdges`, `Build`, `Shape`, `History`). Importing it from `nanocct.ShapeUpgrade` gives OCCT's behaviour, importing it from `nanocct.AddOns.ShapeClean` gives OCCT's behaviour with three defects worked around. OCCT's source is not patched and no OCCT code is copied; all three workarounds only call OCCT's public API. Each has a canary test in `tests/test_AddOns.py` that fails once OCCT fixes the defect: then the workaround is deleted (Binding-Rules.md R-ADDON).
 
 The class runs OCCT's unification as two passes, a face pass and then an edge pass, so that the steps below can sit between and after them.
+
+## When the workarounds act
+
+ShapeClean 1 is preventive: when it finds a full circle of arcs at risk, it protects it before the edge pass, without waiting to see whether OCCT would break it. ShapeClean 2 and 3 repair afterwards, and only what OCCT broke:
+
+| | ShapeClean 2: merged edge one period away | ShapeClean 3: face merged with its mirror image |
+| --- | --- | --- |
+| acts only if something is broken | yes: only faces the edge pass left invalid (periodic, an edge merged from >= 2 pieces, not a seam) | yes, it repairs only if an output face is invalid; but before every face pass it keeps the curves of all periodic input faces and checks the new faces afterwards (bookkeeping, nothing is changed) |
+| repairs only the broken shapes | yes: only the merged curve on the broken face | its whole group: every output face on the same surface, so a valid face sharing that surface with a broken one goes back to its input faces too |
+| keeps a repair only if it is valid | yes, checked per edge: a face that would need two curves shifted at once is not repaired | yes: the group's input faces must be valid with their own curves |
+| otherwise | OCCT's curve is put back | OCCT's curves are put back, the group stays as OCCT made it |
+
+"Valid" is OCCT's `BRepCheck_Analyzer` on the face, not a check of the whole shape.
 
 ## ShapeClean 1: a full circle made of arcs (OCCT issue #1541)
 
@@ -37,3 +50,17 @@ The defect: when the edge pass merges a chain of edges, the joined parameter-spa
         - keep the translation only if the face is valid then; otherwise put OCCT's curve back
 
 Why the midpoint and why only invalid faces: at a vertex a curve that wraps a period (a hole's loop around the tool's own cylinder) has two positions, so comparing there sees a period that is not there; and on valid faces a merged curve can sit a period away from its pieces and still be right -- shifting those broke fillets in build123d's examples.
+
+## ShapeClean 3: a face merged with its mirror image (build123d #902)
+
+The defect: when the face pass merges two same-domain faces on surfaces of opposite handedness -- a face and its mirror image, e.g. a revolved part mirrored -- it maps the mirrored face's parameter-space curves onto the other surface correctly only up to a whole period. Its check whether the shared edge's new curve is the one it already has then takes that period offset for a second curve, and the shared edge becomes a false seam: the pair is built as two faces, one of them not closed, or the merge is abandoned after the curves were already shifted, which is not undone. The input shape is changed too.
+
+- before OCCT's face pass (ShapeClean 1 step 1): keep the parameter-space curves of every face on a periodic surface as they are
+- run OCCT's face pass
+- check the output faces on periodic surfaces that the pass made, or kept with replaced curves (`BRepCheck_Analyzer`); valid faces stay as OCCT made them
+- for an invalid face, its group is every output face on the same surface, together with the input faces they came from:
+    - give those input faces their own curves back
+    - if they are valid then, replace the group's new faces by them (`BRepTools_ReShape`, its history added); a kept face is repaired in place
+    - otherwise put OCCT's curves back and leave the group as OCCT made it
+
+Merges OCCT gets right stay merged; only a group it broke goes back to its input faces.

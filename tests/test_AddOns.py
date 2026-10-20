@@ -326,6 +326,72 @@ def test_shape_clean_leaves_unshifted_merges_alone(tool_xdir):
         assert len(_subshapes(ours, kind)) == len(_subshapes(theirs, kind))
 
 
+# ---- AddOns.ShapeClean: a face merged with its mirror image -------------------------------------------------------------
+#
+# The reproducer is build123d #902 reduced to one pair: a hollow quarter-sphere shell and its mirror image, fused. The two
+# halves share the mirror edge and lie on spheres of opposite handedness. The face pass maps the mirrored half's pcurves
+# onto the other sphere one period away, takes the shared edge for a seam and builds the pair as two faces, one not
+# closed -- or abandons the merge after it has shifted the pcurves. The AddOn gives such a group its input faces back.
+
+
+def _mirrored_quarter_shells(start_degrees, mirror_normal):
+    import math
+    from nanocct import BRepBuilderAPI
+    axis = gp.gp_Ax2(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(0, 0, 1),
+                     gp.gp_Dir(math.cos(math.radians(start_degrees)), math.sin(math.radians(start_degrees)), 0))
+    shell = BRepAlgoAPI.BRepAlgoAPI_Cut(BRepPrimAPI.BRepPrimAPI_MakeSphere(axis, 40.0, math.pi / 2).Shape(),
+                                        BRepPrimAPI.BRepPrimAPI_MakeSphere(axis, 32.0, math.pi / 2).Shape()).Shape()
+    mirror = gp.gp_Trsf()
+    mirror.SetMirror(gp.gp_Ax2(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(*mirror_normal)))
+    return BRepAlgoAPI.BRepAlgoAPI_Fuse(shell, BRepBuilderAPI.BRepBuilderAPI_Transform(shell, mirror, True).Shape()).Shape()
+
+
+def test_occt_still_breaks_the_mirrored_merge():
+    """The canary. When this fails, OCCT merges a face with its mirror image validly: delete RunFacePass's repair
+    (step 0 in ShapeClean.cpp) and this block (Binding-Rules.md R-ADDON)."""
+    fused = _mirrored_quarter_shells(0, (0, 1, 0))
+    assert BRepCheck.BRepCheck_Analyzer(fused).IsValid()                    # the boolean itself is fine
+    assert not BRepCheck.BRepCheck_Analyzer(_unify(_OCCT, fused).Shape()).IsValid(), (
+        "ShapeUpgrade_UnifySameDomain now merges the mirrored pair validly. Remove step 0 of nanocct.AddOns.ShapeClean "
+        "(the repair in RunFacePass).")
+
+
+@pytest.mark.parametrize("start_degrees, mirror_normal", [(0, (0, 1, 0)), (90, (1, 0, 0)), (180, (0, 1, 0))],
+                         ids=["0-xz", "90-yz", "180-xz"])
+def test_shape_clean_repairs_the_mirrored_merge(start_degrees, mirror_normal):
+    """The pair OCCT broke is given back its input faces: valid, volume kept, as many faces as OCCT's result."""
+    ours = _unify(_ADDON, _mirrored_quarter_shells(start_degrees, mirror_normal)).Shape()
+    theirs = _unify(_OCCT, _mirrored_quarter_shells(start_degrees, mirror_normal)).Shape()
+    raw = _mirrored_quarter_shells(start_degrees, mirror_normal)
+    assert not BRepCheck.BRepCheck_Analyzer(theirs).IsValid()
+    assert BRepCheck.BRepCheck_Analyzer(ours).IsValid()
+    assert abs(_volume(ours) - _volume(raw)) < 1e-6 * _volume(raw)
+    assert len(_subshapes(ours, _FACE)) == len(_subshapes(theirs, _FACE))
+
+
+def test_shape_clean_leaves_unbroken_mirrored_shapes_to_occt():
+    """Halves that do not touch (the quarter starts at 45 degrees): nothing to repair, the result is OCCT's."""
+    ours = _unify(_ADDON, _mirrored_quarter_shells(45, (0, 1, 0))).Shape()
+    theirs = _unify(_OCCT, _mirrored_quarter_shells(45, (0, 1, 0))).Shape()
+    assert BRepCheck.BRepCheck_Analyzer(ours).IsValid() == BRepCheck.BRepCheck_Analyzer(theirs).IsValid() is True
+    assert abs(_volume(ours) - _volume(theirs)) < 1e-9 * _volume(theirs)
+    for kind in (_FACE, _EDGE, _VERTEX):
+        assert len(_subshapes(ours, kind)) == len(_subshapes(theirs, kind))
+
+
+def test_shape_clean_history_covers_the_repaired_group():
+    """Every input face of the repaired shape is in the result, removed, or maps to faces in the result."""
+    fused = _mirrored_quarter_shells(0, (0, 1, 0))
+    input_faces = _subshapes(fused, _FACE)
+    unifier = _unify(_ADDON, fused)
+    result, history = unifier.Shape(), unifier.History()
+    in_result = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
+    TopExp.TopExp.MapShapes_s(result, _FACE, in_result)
+    for f in input_faces:
+        images = list(history.Modified(f))
+        assert in_result.Contains(f) or history.IsRemoved(f) or (images and all(in_result.Contains(m) for m in images))
+
+
 def test_every_submodule_has_its_stub_in_the_package():
     """nanocct.AddOns was one module file, so nanobind's stubgen wrote the submodules' stubs as
     nanocct/ShapeClean.pyi and nanocct/Tessellator.pyi -- stubs of modules that do not exist -- and every AddOns name

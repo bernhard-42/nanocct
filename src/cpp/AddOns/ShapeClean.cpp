@@ -32,6 +32,17 @@
 //      translation only if the face is valid then. A translation is exact; the merge itself stays. Valid faces are not
 //      touched: a merged pcurve can sit a period away from its pieces and be right (measured in build123d's examples).
 //
+// A third defect, in the face pass (step 1). When it merges two same-domain faces on elementary surfaces of opposite
+// handedness -- a face and its mirror image -- TransformPCurves maps the mirrored face's pcurves onto the reference
+// surface correctly only up to a whole period (u mirrored, 2pi added, the unsigned angle added), and its check whether
+// the shared edge's new pcurve is the one it already has (|du| > period / 2) then takes the period offset for a
+// second pcurve: the shared edge becomes a false seam. The pair is built as two faces, one of them not closed, or the
+// merge is abandoned (isWireBuildingFailed) after the pcurves were already shifted, which is not undone. build123d
+// #902 hits it: a revolved part mirrored.
+//   0. around the face pass: keep the pcurves of every face on a periodic surface as they were; after it, where a face
+//      OCCT made or kept is invalid, give its group (the output faces on its surface) back its input faces with their
+//      own pcurves, kept only if those faces are valid then. Merges OCCT gets right stay.
+//
 // Removal: the class carries OCCT's name and the members build123d uses, with OCCT's signatures, so reverting is
 // changing the import back to nanocct.ShapeUpgrade. tests/test_AddOns.py holds the canaries that fail once OCCT
 // produces a valid shape on the reproducers -- that is the signal to delete the workaround (Binding-Rules.md R-ADDON).
@@ -69,6 +80,7 @@
 #include <TopLoc_Location.hxx>
 #include <TopTools_ShapeMapHasher.hxx>
 #include <TopoDS.hxx>
+#include <TopoDS_Compound.hxx>
 #include <TopoDS_Edge.hxx>
 #include <TopoDS_Face.hxx>
 #include <TopoDS_Shape.hxx>
@@ -81,6 +93,7 @@
 
 #include <cmath>
 #include <optional>
+#include <tuple>
 #include <vector>
 
 namespace nb = nanobind;
@@ -494,8 +507,67 @@ void RelocateMergedPCurves(const TopoDS_Shape &theBefore, const TopoDS_Shape &th
     }
 }
 
-//! ShapeUpgrade_UnifySameDomain with the closed-circle pcurve defect and the period-shifted merged pcurves worked
-//! around. Same name and, for the members it has, the same signatures as OCCT's class, so that switching back is
+//! The pcurves of a face's edges on its own surface; a seam edge has two (FORWARD, REVERSED).
+struct FacePCurves
+{
+    TopoDS_Face                                                                     face;
+    std::vector<std::tuple<TopoDS_Edge, occ::handle<Geom2d_Curve>, occ::handle<Geom2d_Curve>>> curves;
+};
+
+bool IsPeriodicFace(const TopoDS_Face &theFace)
+{
+    const occ::handle<Geom_Surface> aSurf = BRep_Tool::Surface(theFace);
+    return !aSurf.IsNull() && (aSurf->IsUPeriodic() || aSurf->IsVPeriodic());
+}
+
+FacePCurves SavePCurves(const TopoDS_Face &theFace)
+{
+    FacePCurves aSaved{ theFace, {} };
+    IndexedShapeMap anEdges;
+    TopExp::MapShapes(theFace, TopAbs_EDGE, anEdges);
+    for (int i = 1; i <= anEdges.Extent(); ++i)
+    {
+        const TopoDS_Edge anEdge = TopoDS::Edge(anEdges.FindKey(i).Oriented(TopAbs_FORWARD));
+        double            aFirst = 0.0, aLast = 0.0;
+        const occ::handle<Geom2d_Curve> aForward = BRep_Tool::CurveOnSurface(anEdge, theFace, aFirst, aLast);
+        occ::handle<Geom2d_Curve>       aReversed;
+        if (BRep_Tool::IsClosed(anEdge, theFace))
+            aReversed = BRep_Tool::CurveOnSurface(TopoDS::Edge(anEdge.Reversed()), theFace, aFirst, aLast);
+        aSaved.curves.emplace_back(anEdge, aForward, aReversed);
+    }
+    return aSaved;
+}
+
+void RestorePCurves(const FacePCurves &theSaved)
+{
+    BRep_Builder aBuilder;
+    for (const auto &[anEdge, aForward, aReversed] : theSaved.curves)
+    {
+        if (aForward.IsNull())
+            continue;
+        const double aTol = BRep_Tool::Tolerance(anEdge);
+        if (aReversed.IsNull())
+            aBuilder.UpdateEdge(anEdge, aForward, theSaved.face, aTol);
+        else
+            aBuilder.UpdateEdge(anEdge, aForward, aReversed, theSaved.face, aTol);
+    }
+}
+
+//! True when OCCT replaced a pcurve of this face (it never changes a pcurve object, it replaces it).
+bool PCurvesReplaced(const FacePCurves &theSaved)
+{
+    for (const auto &[anEdge, aForward, aReversed] : theSaved.curves)
+    {
+        double aFirst = 0.0, aLast = 0.0;
+        if (BRep_Tool::CurveOnSurface(anEdge, theSaved.face, aFirst, aLast) != aForward
+            || BRep_Tool::IsClosed(anEdge, theSaved.face) != !aReversed.IsNull())
+            return true;
+    }
+    return false;
+}
+
+//! ShapeUpgrade_UnifySameDomain with the closed-circle pcurve defect, the period-shifted merged pcurves and the
+//! mirrored-face merge worked around. Same name and, for the members it has, the same signatures as OCCT's class, so that switching back is
 //! changing the import.
 class ShapeUpgrade_UnifySameDomain
 {
@@ -513,7 +585,7 @@ public:
         myHistory = new BRepTools_History();
         TopoDS_Shape aShape = myInitShape;
         if (myUnifyFaces)
-            aShape = Run(aShape, false, true, ShapeMap());
+            aShape = RunFacePass(aShape);
         if (myUnifyEdges)
         {
             ShapeMap aKept;
@@ -556,6 +628,116 @@ private:
         if (thePassHistory != nullptr)
             *thePassHistory = aUnifier.History();
         return aUnifier.Shape();
+    }
+
+    //! Step 0: OCCT's face pass, with the groups it broke given back their input faces.
+    TopoDS_Shape RunFacePass(const TopoDS_Shape &theShape)
+    {
+        IndexedShapeMap anInputFaces;
+        TopExp::MapShapes(theShape, TopAbs_FACE, anInputFaces);
+        std::vector<std::optional<FacePCurves>> aSaved(anInputFaces.Extent() + 1);
+        for (int i = 1; i <= anInputFaces.Extent(); ++i)
+        {
+            const TopoDS_Face &aFace = TopoDS::Face(anInputFaces.FindKey(i));
+            if (IsPeriodicFace(aFace))
+                aSaved[i] = SavePCurves(aFace);
+        }
+
+        occ::handle<BRepTools_History> aPassHistory;
+        TopoDS_Shape                   aResult = Run(theShape, false, true, ShapeMap(), &aPassHistory);
+
+        // each output face's input faces: itself if kept, else the faces the pass merged into it
+        IndexedShapeMap anOutputFaces;
+        TopExp::MapShapes(aResult, TopAbs_FACE, anOutputFaces);
+        std::vector<std::vector<int>> aSources(anOutputFaces.Extent() + 1);
+        for (int i = 1; i <= anInputFaces.Extent(); ++i)
+        {
+            const TopoDS_Shape &aFace = anInputFaces.FindKey(i);
+            if (anOutputFaces.Contains(aFace))
+            {
+                aSources[anOutputFaces.FindIndex(aFace)].push_back(i);
+                continue;
+            }
+            for (const TopoDS_Shape &aMod : aPassHistory->Modified(aFace))
+            {
+                if (aMod.ShapeType() == TopAbs_FACE && anOutputFaces.Contains(aMod))
+                    aSources[anOutputFaces.FindIndex(aMod)].push_back(i);
+            }
+        }
+        const auto isKept = [&](int theOut) {
+            return aSources[theOut].size() == 1 && anInputFaces.FindKey(aSources[theOut][0]).IsSame(anOutputFaces.FindKey(theOut));
+        };
+
+        occ::handle<BRepTools_ReShape> aReShape = new BRepTools_ReShape();
+        std::vector<bool>              aDone(anOutputFaces.Extent() + 1, false);
+        bool                           isReshaped = false;
+        for (int k = 1; k <= anOutputFaces.Extent(); ++k)
+        {
+            const TopoDS_Face &aFace = TopoDS::Face(anOutputFaces.FindKey(k));
+            if (aDone[k] || !IsPeriodicFace(aFace) || aSources[k].empty())
+                continue;
+            // only faces the pass made, or kept with replaced pcurves; a valid face is OCCT's result
+            if (isKept(k) && (!aSaved[aSources[k][0]].has_value() || !PCurvesReplaced(*aSaved[aSources[k][0]])))
+                continue;
+            if (BRepCheck_Analyzer(aFace).IsValid())
+                continue;
+            // the group: every output face on the same surface object, and their input faces
+            TopLoc_Location                 aLoc;
+            const occ::handle<Geom_Surface> aSurf = BRep_Tool::Surface(aFace, aLoc);
+            std::vector<int>                aGroup, aGroupSources;
+            for (int g = 1; g <= anOutputFaces.Extent(); ++g)
+            {
+                TopLoc_Location aOtherLoc;
+                if (BRep_Tool::Surface(TopoDS::Face(anOutputFaces.FindKey(g)), aOtherLoc) == aSurf && aOtherLoc.IsEqual(aLoc))
+                {
+                    aGroup.push_back(g);
+                    aGroupSources.insert(aGroupSources.end(), aSources[g].begin(), aSources[g].end());
+                }
+            }
+            for (int g : aGroup)
+                aDone[g] = true;
+            bool isStored = true;
+            for (int i : aGroupSources)
+                isStored = isStored && aSaved[i].has_value();
+            if (!isStored)
+                continue;
+            // give the input faces their own pcurves back; keep that only if they are valid then
+            std::vector<FacePCurves> anOcctPCurves;
+            for (int i : aGroupSources)
+                anOcctPCurves.push_back(SavePCurves(aSaved[i]->face));
+            bool isValid = true;
+            for (int i : aGroupSources)
+                RestorePCurves(*aSaved[i]);
+            for (int i : aGroupSources)
+                isValid = isValid && BRepCheck_Analyzer(aSaved[i]->face).IsValid();
+            if (!isValid)
+            {
+                for (const FacePCurves &anOcct : anOcctPCurves)
+                    RestorePCurves(anOcct);
+                continue;
+            }
+            for (int g : aGroup)
+            {
+                if (isKept(g))
+                    continue;                   // a kept face is repaired in place
+                TopoDS_Shape aReplacement = anInputFaces.FindKey(aSources[g][0]);
+                if (aSources[g].size() > 1)
+                {
+                    TopoDS_Compound aCompound;
+                    BRep_Builder().MakeCompound(aCompound);
+                    for (int i : aSources[g])
+                        BRep_Builder().Add(aCompound, anInputFaces.FindKey(i));
+                    aReplacement = aCompound;
+                }
+                aReShape->Replace(anOutputFaces.FindKey(g), aReplacement);
+                isReshaped = true;
+            }
+        }
+        if (!isReshaped)
+            return aResult;
+        const TopoDS_Shape aRepaired = aReShape->Apply(aResult);
+        myHistory->Merge(aReShape->History());
+        return aRepaired;
     }
 
     //! Merge the circles that were protected from UnifySameDomain -- only those: a circle the edge pass left split
