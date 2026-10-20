@@ -261,6 +261,71 @@ def test_shape_clean_over_random_orientations():
     assert occt_broken > 0                      # the sweep did exercise the bug
 
 
+# ---- AddOns.ShapeClean: merged pcurves re-projected one period away -----------------------------------------------------
+#
+# The reproducer is build123d #1123: a 60-degree cylindrical shell whose UV domain straddles the period line (its arcs
+# run from -30 to +30 degrees, which OCCT keeps as [11pi/6, 13pi/6]), holed by a cylinder through that line. The edge
+# pass merges the hole's B-spline pieces into one closed edge; UnionPCurves' range check discards their concatenated
+# pcurve and projects the 3D curve again, which lands one period away from the face: the hole wire then lies outside the
+# outer wire. Where the pieces' junctions fall depends on the tool's own seam, so the tool's x direction picks the case.
+
+
+def _arc_shell_minus_hole(tool_xdir):
+    import math
+    from nanocct import BRepBuilderAPI, Geom
+    half, r_in, r_out = math.pi / 6, 50.0, 60.0
+    axis = gp.gp_Ax2(gp.gp_Pnt(0, 0, 0), gp.gp_Dir(0, 0, 1), gp.gp_Dir(1, 0, 0))
+    wire = BRepBuilderAPI.BRepBuilderAPI_MakeWire()
+    corner = lambda r, a: gp.gp_Pnt(r * math.cos(a), r * math.sin(a), 0)  # noqa: E731
+    for edge in (BRepBuilderAPI.BRepBuilderAPI_MakeEdge(Geom.Geom_Circle(axis, r_in), -half, half).Edge(),
+                 BRepBuilderAPI.BRepBuilderAPI_MakeEdge(corner(r_in, half), corner(r_out, half)).Edge(),
+                 BRepBuilderAPI.BRepBuilderAPI_MakeEdge(Geom.Geom_Circle(axis, r_out), -half, half).Edge(),
+                 BRepBuilderAPI.BRepBuilderAPI_MakeEdge(corner(r_in, -half), corner(r_out, -half)).Edge()):
+        wire.Add(edge)
+    profile = BRepBuilderAPI.BRepBuilderAPI_MakeFace(wire.Wire(), True).Face()
+    shell = BRepPrimAPI.BRepPrimAPI_MakePrism(profile, gp.gp_Vec(0, 0, 50)).Shape()
+    tool_axis = gp.gp_Ax2(gp.gp_Pnt(0, 0, 25), gp.gp_Dir(1, 0, 0), gp.gp_Dir(*tool_xdir))
+    tool = BRepPrimAPI.BRepPrimAPI_MakeCylinder(tool_axis, 10.0, 100.0).Shape()
+    return BRepAlgoAPI.BRepAlgoAPI_Cut(shell, tool).Shape()
+
+
+@pytest.fixture(scope="module")
+def period_shifted_cut():
+    return _arc_shell_minus_hole((0, 0, -1))    # the tool's seam along -Z, as build123d's Rot(Y=90) * Cylinder puts it
+
+
+def test_occt_still_shifts_the_merged_pcurve(period_shifted_cut):
+    """The canary. When this fails, OCCT keeps merged pcurves in their period: delete RelocateMergedPCurves (step 6 in
+    ShapeClean.cpp) and this block (Binding-Rules.md R-ADDON)."""
+    assert BRepCheck.BRepCheck_Analyzer(period_shifted_cut).IsValid()      # the boolean itself is fine
+    assert not BRepCheck.BRepCheck_Analyzer(_unify(_OCCT, period_shifted_cut).Shape()).IsValid(), (
+        "ShapeUpgrade_UnifySameDomain now cleans the period-shifted reproducer validly. Remove step 6 of "
+        "nanocct.AddOns.ShapeClean (RelocateMergedPCurves).")
+
+
+@pytest.mark.parametrize("tool_xdir", [(0, 0, -1), (0, 1, 0)], ids=["seam-minus-z", "seam-plus-y"])
+def test_shape_clean_keeps_merged_pcurves_in_their_period(tool_xdir):
+    """The same merge as OCCT's -- same topology -- with the pcurves back in the face's period: valid, volume kept."""
+    raw = _arc_shell_minus_hole(tool_xdir)
+    ours, theirs = _unify(_ADDON, raw).Shape(), _unify(_OCCT, raw).Shape()
+    assert not BRepCheck.BRepCheck_Analyzer(theirs).IsValid()
+    assert BRepCheck.BRepCheck_Analyzer(ours).IsValid()
+    assert abs(_volume(ours) - _volume(raw)) < 1e-5 * _volume(raw)
+    for kind in (_FACE, _EDGE, _VERTEX):
+        assert len(_subshapes(ours, kind)) == len(_subshapes(theirs, kind))
+
+
+@pytest.mark.parametrize("tool_xdir", [(0, 0, 1), (0, -1, 0)], ids=["seam-plus-z", "seam-minus-y"])
+def test_shape_clean_leaves_unshifted_merges_alone(tool_xdir):
+    """Where OCCT's merged pcurves are already in their period, nothing is moved: the result is OCCT's."""
+    raw = _arc_shell_minus_hole(tool_xdir)
+    ours, theirs = _unify(_ADDON, raw).Shape(), _unify(_OCCT, raw).Shape()
+    assert BRepCheck.BRepCheck_Analyzer(ours).IsValid() == BRepCheck.BRepCheck_Analyzer(theirs).IsValid() is True
+    assert abs(_volume(ours) - _volume(theirs)) < 1e-9 * _volume(raw)
+    for kind in (_FACE, _EDGE, _VERTEX):
+        assert len(_subshapes(ours, kind)) == len(_subshapes(theirs, kind))
+
+
 def test_every_submodule_has_its_stub_in_the_package():
     """nanocct.AddOns was one module file, so nanobind's stubgen wrote the submodules' stubs as
     nanocct/ShapeClean.pyi and nanocct/Tessellator.pyi -- stubs of modules that do not exist -- and every AddOns name

@@ -1,5 +1,9 @@
 # Changelog
 
+## v8.0.1.4 (unreleased)
+
+- `AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around a second defect of OCCT's edge merging: after merging an edge from several pieces, OCCT can recompute its curve in the face's parameter space one period away on a periodic face, so a hole through a cylindrical face across its period line left the face invalid. The merged curve is moved back to where its pieces were (an exact translation); the merge itself is OCCT's
+
 ## v8.0.1.3 (2026-10-12)
 
 - macOS x86_64: an OCCT exception unwinding through one of 309 OCCT functions with a large stack frame (`ChFi3d_FilBuilder::PerformTwoCorner` in a failing fillet, `ShapeFix::SameParameter`, …) could crash the process, because their compact unwind entries read the frame size from the wrong bytes. OCCT is now built without `-fomit-frame-pointer` on x86_64 (the Default profile instead of Production), and the build checks the wheel's unwind entries (`tools/check_compact_unwind.py`)

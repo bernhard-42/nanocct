@@ -20,9 +20,21 @@
 //   4. merge each protected circle into one closed edge, concatenating its pcurves with After = true,
 //   5. compose the three histories.
 //
+// A second defect of the same edge pass, worked around in step 6 below. When UnionPCurves merges a chain of edges,
+// the 2D concatenation of their pcurves gets a different parameter range than the 3D concatenation gave the merged
+// curve (measured: 4.0 against 2.0 for a hole's four B-spline pieces), so its range check discards the correct
+// pcurve and projects the 3D curve onto the surface again. The projection knows nothing of the face's UV domain: on
+// a periodic surface a loop that starts on the period line lands one period away from the rest of the face, and the
+// face is invalid (BRepCheck_InvalidImbricationOfWires). build123d #1123 and #1363 hit it: a hole through a
+// cylindrical face whose UV domain straddles the period line.
+//   6. on a face the edge pass left invalid, put each merged pcurve back where its pieces were: where it differs from
+//      one of them by whole periods at an interior point of that piece, translate it by those periods, and keep the
+//      translation only if the face is valid then. A translation is exact; the merge itself stays. Valid faces are not
+//      touched: a merged pcurve can sit a period away from its pieces and be right (measured in build123d's examples).
+//
 // Removal: the class carries OCCT's name and the members build123d uses, with OCCT's signatures, so reverting is
-// changing the import back to nanocct.ShapeUpgrade. tests/test_AddOns.py holds the canary that fails once OCCT
-// produces a valid shape on the reproducer -- that is the signal to delete this file (Binding-Rules.md R-ADDON).
+// changing the import back to nanocct.ShapeUpgrade. tests/test_AddOns.py holds the canaries that fail once OCCT
+// produces a valid shape on the reproducers -- that is the signal to delete the workaround (Binding-Rules.md R-ADDON).
 #include "nanocct_common.h"
 
 #include <BRepAdaptor_Curve.hxx>
@@ -39,6 +51,7 @@
 #include <Geom2dConvert.hxx>
 #include <Geom2dConvert_CompCurveToBSplineCurve.hxx>
 #include <Geom2d_BSplineCurve.hxx>
+#include <Geom2d_Curve.hxx>
 #include <Geom2d_TrimmedCurve.hxx>
 #include <Geom_Circle.hxx>
 #include <Geom_Surface.hxx>
@@ -48,9 +61,12 @@
 #include <NCollection_IndexedMap.hxx>
 #include <NCollection_List.hxx>
 #include <NCollection_Map.hxx>
+#include <Precision.hxx>
+#include <ShapeAnalysis_Curve.hxx>
 #include <ShapeUpgrade_UnifySameDomain.hxx>
 #include <TopAbs_ShapeEnum.hxx>
 #include <TopExp.hxx>
+#include <TopLoc_Location.hxx>
 #include <TopTools_ShapeMapHasher.hxx>
 #include <TopoDS.hxx>
 #include <TopoDS_Edge.hxx>
@@ -379,8 +395,108 @@ std::optional<MergedCircle> MergeCircle(const CircleCycle &theCycle, const Ances
     return aResult;
 }
 
-//! ShapeUpgrade_UnifySameDomain with the closed-circle pcurve defect worked around. Same name and, for the
-//! members it has, the same signatures as OCCT's class, so that switching back is changing the import.
+// A merged pcurve and its pieces differ by whole periods up to this fraction of a period. Compared at an interior
+// point, which the merged edge's re-parametrisation matches only approximately; a shift is a whole period.
+constexpr double THE_PERIOD_FRACTION = 1.0e-3;
+
+//! Step 6: put back the pcurves the edge pass moved by whole periods. theBefore is the edge pass's input, theAfter
+//! its result, theHistory its history. Only edges merged from >= 2 pieces, only on U- or V-periodic faces that the
+//! edge pass left invalid, and not seam edges (two pcurves); everything else is left as OCCT made it.
+//!
+//! The merged pcurve is compared with a piece at an interior point of that piece, not at a vertex: a pcurve that
+//! wraps a period (a hole's loop around the tool's own cylinder runs from u = 0 to u = 2pi) has two UV positions
+//! for its closing vertex, and comparing there would see a period that is not there.
+void RelocateMergedPCurves(const TopoDS_Shape &theBefore, const TopoDS_Shape &theAfter,
+                           const occ::handle<BRepTools_History> &theHistory)
+{
+    AncestorMap aPieces;                            // merged edge -> the input edges it was merged from
+    IndexedShapeMap anInputEdges;
+    TopExp::MapShapes(theBefore, TopAbs_EDGE, anInputEdges);
+    for (int i = 1; i <= anInputEdges.Extent(); ++i)
+    {
+        const TopoDS_Shape                   &anEdge = anInputEdges.FindKey(i);
+        const NCollection_List<TopoDS_Shape> &aMods  = theHistory->Modified(anEdge);
+        if (aMods.Size() != 1 || aMods.First().ShapeType() != TopAbs_EDGE || aMods.First().IsSame(anEdge))
+            continue;
+        if (!aPieces.Contains(aMods.First()))
+            aPieces.Add(aMods.First(), NCollection_List<TopoDS_Shape>());
+        aPieces.ChangeFromKey(aMods.First()).Append(anEdge);
+    }
+    if (aPieces.IsEmpty())
+        return;
+
+    AncestorMap aBeforeFaces, anAfterFaces;
+    TopExp::MapShapesAndAncestors(theBefore, TopAbs_EDGE, TopAbs_FACE, aBeforeFaces);
+    TopExp::MapShapesAndAncestors(theAfter, TopAbs_EDGE, TopAbs_FACE, anAfterFaces);
+    BRep_Builder aBuilder;
+    for (int i = 1; i <= aPieces.Extent(); ++i)
+    {
+        const TopoDS_Edge &aMerged = TopoDS::Edge(aPieces.FindKey(i));
+        if (aPieces(i).Size() < 2 || !anAfterFaces.Contains(aMerged) || BRep_Tool::Degenerated(aMerged))
+            continue;
+        const TopoDS_Edge &aPiece = TopoDS::Edge(aPieces(i).First());
+        if (!aBeforeFaces.Contains(aPiece) || BRep_Tool::Degenerated(aPiece))
+            continue;
+        // the piece's midpoint, and the merged edge's parameter there
+        const BRepAdaptor_Curve aPieceCurve(aPiece);
+        const double            aMid = 0.5 * (aPieceCurve.FirstParameter() + aPieceCurve.LastParameter());
+        gp_Pnt                  aProjected;
+        double                  aMergedParam = 0.0;
+        ShapeAnalysis_Curve().Project(BRepAdaptor_Curve(aMerged), aPieceCurve.Value(aMid), Precision::Confusion(),
+                                      aProjected, aMergedParam, false);
+        ShapeMap aDone;
+        for (const TopoDS_Shape &aShape : anAfterFaces.FindFromKey(aMerged))
+        {
+            const TopoDS_Face &aFace = TopoDS::Face(aShape);
+            // the defect leaves the face invalid; a valid face is OCCT's result and stays as it is (on a cylinder a
+            // merged pcurve can sit a period away from its pieces and be right, the rest of the face with it)
+            if (!aDone.Add(aFace) || BRep_Tool::IsClosed(aMerged, aFace) || BRepCheck_Analyzer(aFace).IsValid())
+                continue;
+            TopLoc_Location                 aLoc;
+            const occ::handle<Geom_Surface> aSurf = BRep_Tool::Surface(aFace, aLoc);
+            const bool isUPeriodic = aSurf->IsUPeriodic(), isVPeriodic = aSurf->IsVPeriodic();
+            if (!isUPeriodic && !isVPeriodic)
+                continue;
+            // the piece's face on the same surface, in the edge pass's input
+            TopoDS_Face aPieceFace;
+            for (const TopoDS_Shape &f : aBeforeFaces.FindFromKey(aPiece))
+            {
+                TopLoc_Location aPieceLoc;
+                if (BRep_Tool::Surface(TopoDS::Face(f), aPieceLoc) == aSurf && aPieceLoc.IsEqual(aLoc))
+                    aPieceFace = TopoDS::Face(f);
+            }
+            if (aPieceFace.IsNull())
+                continue;
+            double                          aFirst = 0.0, aLast = 0.0;
+            const occ::handle<Geom2d_Curve> aMergedPCurve = BRep_Tool::CurveOnSurface(aMerged, aFace, aFirst, aLast);
+            if (aMergedPCurve.IsNull() || BRep_Tool::CurveOnSurface(aPiece, aPieceFace, aFirst, aLast).IsNull())
+                continue;
+            const gp_Vec2d aGap(BRepAdaptor_Curve2d(aMerged, aFace).Value(aMergedParam),
+                                BRepAdaptor_Curve2d(aPiece, aPieceFace).Value(aMid));
+            const double aUPeriods = isUPeriodic ? std::round(aGap.X() / aSurf->UPeriod()) : 0.0;
+            const double aVPeriods = isVPeriodic ? std::round(aGap.Y() / aSurf->VPeriod()) : 0.0;
+            if (aUPeriods == 0.0 && aVPeriods == 0.0)
+                continue;
+            // not a move by whole periods: not this defect
+            if (isUPeriodic && std::abs(aGap.X() - aUPeriods * aSurf->UPeriod()) > THE_PERIOD_FRACTION * aSurf->UPeriod())
+                continue;
+            if (isVPeriodic && std::abs(aGap.Y() - aVPeriods * aSurf->VPeriod()) > THE_PERIOD_FRACTION * aSurf->VPeriod())
+                continue;
+            const gp_Vec2d aShift(isUPeriodic ? aUPeriods * aSurf->UPeriod() : 0.0,
+                                  isVPeriodic ? aVPeriods * aSurf->VPeriod() : 0.0);
+            occ::handle<Geom2d_Curve> aMoved = occ::down_cast<Geom2d_Curve>(aMergedPCurve->Copy());
+            aMoved->Translate(aShift);
+            const double aTol = BRep_Tool::Tolerance(aMerged);
+            aBuilder.UpdateEdge(aMerged, aMoved, aFace, aTol);
+            if (!BRepCheck_Analyzer(aFace).IsValid())
+                aBuilder.UpdateEdge(aMerged, aMergedPCurve, aFace, aTol);   // not what broke this face: OCCT's pcurve back
+        }
+    }
+}
+
+//! ShapeUpgrade_UnifySameDomain with the closed-circle pcurve defect and the period-shifted merged pcurves worked
+//! around. Same name and, for the members it has, the same signatures as OCCT's class, so that switching back is
+//! changing the import.
 class ShapeUpgrade_UnifySameDomain
 {
 public:
@@ -412,7 +528,10 @@ public:
                 for (int i = 0; i < 2 - aCycle.blocked; ++i)
                     aKept.Add(aCycle.free[i]);
             }
-            aShape = Run(aShape, true, false, aKept);
+            const TopoDS_Shape             aBeforeEdges = aShape;
+            occ::handle<BRepTools_History> anEdgeHistory;
+            aShape = Run(aShape, true, false, aKept, &anEdgeHistory);
+            RelocateMergedPCurves(aBeforeEdges, aShape, anEdgeHistory);
             if (!aKept.IsEmpty())
                 aShape = MergeCircles(aShape, aKept);
         }
@@ -424,7 +543,9 @@ public:
     occ::handle<BRepTools_History> &History() { return myHistory; }
 
 private:
-    TopoDS_Shape Run(const TopoDS_Shape &theShape, bool theEdges, bool theFaces, const ShapeMap &theKeep)
+    //! One OCCT pass; its own history is merged into ours and, if asked for, handed back (step 6 needs it alone).
+    TopoDS_Shape Run(const TopoDS_Shape &theShape, bool theEdges, bool theFaces, const ShapeMap &theKeep,
+                     occ::handle<BRepTools_History> *thePassHistory = nullptr)
     {
         ::ShapeUpgrade_UnifySameDomain aUnifier(theShape, theEdges, theFaces, myConcatBSplines);
         aUnifier.AllowInternalEdges(myAllowInternal);
@@ -432,6 +553,8 @@ private:
             aUnifier.KeepShapes(theKeep);
         aUnifier.Build();
         myHistory->Merge(aUnifier.History());
+        if (thePassHistory != nullptr)
+            *thePassHistory = aUnifier.History();
         return aUnifier.Shape();
     }
 
@@ -514,10 +637,12 @@ void nanocct_def_ShapeClean(nb::module_ &m)
     using Cls = nanocct_addons::ShapeUpgrade_UnifySameDomain;
     // Signatures, defaults and docstrings as nanocct.ShapeUpgrade.ShapeUpgrade_UnifySameDomain binds them.
     nb::class_<Cls>(m, "ShapeUpgrade_UnifySameDomain",
-                    "ShapeUpgrade_UnifySameDomain with OCCT issue #1541 worked around: a full circle made of two or "
-                    "more arcs on a non-planar face is merged with correctly concatenated pcurves instead of an "
-                    "invalid, tolerance-inflated edge. Everything else is OCCT's own ShapeUpgrade_UnifySameDomain, "
-                    "run as a face pass followed by an edge pass. Remove once OCCT is fixed.")
+                    "ShapeUpgrade_UnifySameDomain with two OCCT defects worked around: a full circle made of two "
+                    "or more arcs on a non-planar face is merged with correctly concatenated pcurves instead of an "
+                    "invalid, tolerance-inflated edge (OCCT issue #1541), and a merged edge whose pcurve OCCT "
+                    "re-projects one period away on a periodic face is moved back to where its pieces were. "
+                    "Everything else is OCCT's own ShapeUpgrade_UnifySameDomain, run as a face pass followed by an "
+                    "edge pass. Remove once OCCT is fixed.")
         .def(nb::init<const TopoDS_Shape &, bool, bool, bool>(), nb::arg("aShape"), nb::arg("UnifyEdges") = true,
              nb::arg("UnifyFaces") = true, nb::arg("ConcatBSplines") = false,
              "Constructor defining input shape and necessary flags.\nIt does not perform unification.")
