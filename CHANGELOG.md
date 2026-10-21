@@ -1,6 +1,6 @@
 # Changelog
 
-## v8.0.1.4 (unreleased)
+## v8.0.1.4 (2026-10-21)
 
 - `AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around a third defect, in OCCT's face merging: a face merged with its mirror image (a mirrored revolved part) became two faces, one not closed, or was left with shifted curves when OCCT gave the merge up. A group OCCT broke gets its input faces back; merges OCCT gets right stay
 - `AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around a second defect of OCCT's edge merging: after merging an edge from several pieces, OCCT can recompute its curve in the face's parameter space one period away on a periodic face, so a hole through a cylindrical face across its period line left the face invalid. The merged curve is moved back to where its pieces were (an exact translation); the merge itself is OCCT's
