@@ -1,6 +1,6 @@
 [project]
 name = "nanocct"
-version = "8.0.1.4"
+version = "8.0.1.5"
 description = "nanobind (stable ABI) Python bindings for Open CASCADE Technology, 1:1 with the OCCT API"
 authors = [{ name = "Bernhard Walter", email = "b_walter@arcor.de" }]
 readme = "Readme.md"

@@ -1,5 +1,9 @@
 # Changelog
 
+## v8.0.1.5 (unreleased)
+
+- Building from source on Windows with MSVC 14.51 (Visual Studio 18): the generator's parse of the OCCT headers failed in every package with `use of undeclared identifier '__builtin_verbose_trap'`, because that STL's assertion macros use a clang 19 builtin under clang and the pip libclang is 18.1.1. The parse now defines `_MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION`, the STL's own switch to `abort()` for those macros; the generated bindings are unchanged
+
 ## v8.0.1.4 (2026-10-21)
 
 - `AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around a third defect, in OCCT's face merging: a face merged with its mirror image (a mirrored revolved part) became two faces, one not closed, or was left with shifted curves when OCCT gave the merge up. A group OCCT broke gets its input faces back; merges OCCT gets right stay

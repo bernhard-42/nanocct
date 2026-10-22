@@ -162,11 +162,17 @@ def clang_args(tree: OcctTree) -> list[str]:
             args += ["-isysroot", sdk]
     elif platform.system() == "Windows":
         # libclang finds the MSVC toolchain and the Windows SDK by itself, but MSVC's STL refuses a clang older than
-        # its own vintage (yvals_core.h:899-917: "STL1000: Unexpected compiler version, expected Clang 19.0.0 or
-        # newer" against MSVC 14.44), and the pip libclang wheel is 18.1.1 -- the newest there is. This parse is not
-        # a compile: nothing is codegen'd and the STL headers are only read for declarations, so the documented
-        # opt-out applies (8.2, 2026-09-23).
+        # its own vintage (yvals_core.h: "STL1000: Unexpected compiler version, expected Clang 19.0.0 or newer"
+        # against MSVC 14.44, "Clang 20 or newer" against 14.51), and the pip libclang wheel is 18.1.1 -- the newest
+        # there is. This parse is not a compile: nothing is codegen'd and the STL headers are only read for
+        # declarations, so the documented opt-out applies (8.2, 2026-09-23).
         args += ["-D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH"]
+        # MSVC 14.51 (Visual Studio 18, 2026) goes one step further: under `__clang__` its assertion macros expand to
+        # `__builtin_verbose_trap`, a clang 19 builtin, so every <xmemory> user fails with "use of undeclared
+        # identifier '__builtin_verbose_trap'" (2026-10-22). The STL's own knob for that line is this define
+        # (__msvc_doom_core.hpp:34-38, "The user wants to use abort()"): the assertion bodies then call abort(),
+        # which changes nothing in the declarations this parse reads.
+        args += ["-D_MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION"]
     # An escape hatch for an environment libclang cannot work out by itself. It exists for the manylinux container,
     # where the compiler is gcc-toolset-14 under /opt/rh but libclang's GCC detection only searches /usr/lib/gcc and
     # would read the image's gcc 8 standard library instead (deps/manylinux.Dockerfile sets --gcc-install-dir).
