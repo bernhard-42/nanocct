@@ -421,6 +421,14 @@ members = [
                                              # a 3D mouse's raw HID report (WNT is built on every platform)
 ]
 
+# R-OPTIONAL-PTR for a pointer parameter *without* a null default: member -> the parameters dropped from the signature,
+# the callee gets nullptr. Only where OCCT's .cxx gives NULL a meaning of its own, read and cited per entry; without the
+# entry the whole member is skipped (void pointer), and for these that is the only way to create the object.
+[null_ok]
+"WNT_WClass::WNT_WClass" = ["theWndProc"]   # `theWndProc != NULL ? (WNDPROC)theWndProc : DefWindowProcW` (WNT_WClass.cxx):
+                                            # NULL is the default window procedure. Without a WNT_WClass there is no
+                                            # WNT_Window, and without one no real window to render into on Windows
+
 # Classes whose copy constructor does not copy the object's state, so a copied const T& result is a different object
 # (R-RESULT): a const& result of one of them -- or an NCollection container of them -- is returned by reference, tied
 # to its owner, instead of copied. Found by reading every OCCT copy constructor that sets a member to a constant

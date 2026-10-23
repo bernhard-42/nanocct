@@ -234,6 +234,32 @@ def test_the_space_mouse_keeps_its_raw_report_alive():
     assert m.IsKeyState() is True and m.KeyState() == 0x2A
 
 
+@pytest.mark.skipif(platform.system() != "Windows", reason="WNT_WClass and WNT_Window exist on Windows only (#if defined(_WIN32))")
+def test_a_window_class_registers_with_the_default_window_procedure():
+    """WNT_WClass(name, void* theWndProc, style, ...) was skipped whole (void pointer), and with it every WNT_Window: a
+    window needs a registered class. overrides.toml [null_ok] drops theWndProc (R-OPTIONAL-PTR) because WNT_WClass.cxx
+    gives NULL a meaning, DefWindowProcW; theCursor and theIcon have null defaults and go by the same rule. Python never
+    sees a function pointer. The class is registered by the constructor and a second one of the same name is refused."""
+    from nanocct import WNT
+
+    sig = WNT.WNT_WClass.__init__.__nb_signature__[0][0]
+    assert "theWndProc" not in sig and "theCursor" not in sig and "theIcon" not in sig
+    assert "theClassName" in sig and "theStyle" in sig and "theMenuName" in sig
+    CS_VREDRAW, CS_HREDRAW = 0x0001, 0x0002
+    wclass = WNT.WNT_WClass("nanocct test_TKService", CS_VREDRAW | CS_HREDRAW)
+    assert wclass.Name().ToCString() == "nanocct test_TKService"
+    with pytest.raises(WNT.WNT_ClassDefinitionError, match="Unable to register window class"):
+        WNT.WNT_WClass("nanocct test_TKService", 0)
+
+    WS_POPUP = 0x80000000
+    window = WNT.WNT_Window("nanocct test_TKService", wclass, WS_POPUP, 10, 20, 320, 200)
+    assert window.Size() == (320, 200) and window.Position() == (10, 20, 330, 220)
+    # created without WS_VISIBLE, so nothing is on screen until Map() -- but IsMapped() answers True already: OCCT reads
+    # GetWindowPlacement's showCmd (WNT_Window.cxx), SW_SHOWNORMAL for a window never shown, not its visibility
+    assert window.IsMapped() is True
+    assert not window.IsVirtual()
+
+
 def test_members_of_an_instantiation_return_bound_instantiations():
     """7c follows the members of an instantiation: NCollection_Vec4<unsigned char>::xyz() returns
     NCollection_Vec3<unsigned char>, which was not instantiated -- the call raised TypeError (unregistered type)."""

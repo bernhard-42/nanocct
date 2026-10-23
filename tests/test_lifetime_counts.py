@@ -111,14 +111,16 @@ PINNED: dict[str, dict[str, int]] = {
     # Xw_Window's Aspect_Drawable is `void*` there and `unsigned long` elsewhere (Aspect_Drawable.hxx:25-29). The layout rule
     # cannot tell what a void* holds and keeps the arguments it could point to (a title, a source name): the same API, a
     # more cautious keep. The other differences from macOS/Linux are the members R-UNDEFINED drops on Windows.
+    # WNT_WClass is the fourth (2026-10-22): its constructor is bound since overrides.toml [null_ok] (R-OPTIONAL-PTR), and
+    # with void* members (myAppInstance, myWndProc) its layout keeps theClassName and theMenuName -- +1 class, +2 arguments.
     "win32": {
         "R-CTOR-KEEP keep_alive": 448,
         "R-COPY keep_view_arg": 80,
         "R-METHOD-KEEP slots": 812,
         "R-KEPT slots on the C++ object": 109,
-        "R-KEPT constructor arguments": 36,
-        "R-KEPT constructor arguments on the C++ object": 32,
-        "R-KEPT classes": 57,
+        "R-KEPT constructor arguments": 38,
+        "R-KEPT constructor arguments on the C++ object": 34,
+        "R-KEPT classes": 58,
         "R-RESULT-KEEP / R-OWNER keep_view": 1091,
         "R-RESULT reference_internal": 724,
         "R-FIELD pointer fields": 28,

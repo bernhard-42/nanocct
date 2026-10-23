@@ -72,6 +72,7 @@ _BINARY_PACKAGES = set(_OVERRIDES.get("stream", {}).get("binary_packages", [])) 
 _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))     # single members ("TDocStd_Application::Open") in a text package
 _BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter
 _ARRAY_MEMBERS: dict[str, str] = dict(_OVERRIDES.get("array", {}).get("members", {}))   # R-ARRAY-PTR: member -> the allocator's owner
+NULL_OK: dict[str, list[str]] = dict(_OVERRIDES.get("null_ok", {}))   # R-OPTIONAL-PTR without a null default: member -> parameters
 
 _UNSUPPORTED_RE = re.compile(
     # basic_streambuf and basic_ios too: OSD_FileSystem::OpenStreamBuffer (shared_ptr<std::streambuf>) was reported as
@@ -958,12 +959,14 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         if name == "":
             name = f"arg{i}"
         if reason in _OPTIONAL_PTR_REASONS and (
-                p.type.get_canonical().kind == TK.POINTER and _default_expr(p, scope, members) in ("NULL", "nullptr", "0")
+                p.type.get_canonical().kind == TK.POINTER and (_default_expr(p, scope, members) in ("NULL", "nullptr", "0")
+                                                               or p.spelling in NULL_OK.get(qualified, ()))
                 or _is_empty_shared_ptr_default(p, _default_expr(p, scope, members))):
             # R-OPTIONAL-PTR: an optional output/context pointer (BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode
             # = nullptr), BRep_Tool::CurveOnSurface(..., bool* theIsStored = nullptr)) is dropped; the callee gets nullptr -- and
             # so is a std::shared_ptr<std::ostream> defaulted to its own empty form (RWPly_PlyWriterContext::Open), for which
-            # nullptr is exactly that default (shared_ptr's nullptr_t constructor)
+            # nullptr is exactly that default (shared_ptr's nullptr_t constructor). A pointer without a default only when
+            # overrides.toml [null_ok] lists it: the .cxx gives NULL a meaning (WNT_WClass's theWndProc: DefWindowProcW)
             params.append(Param(name=name, type=_type_spelling(p.type), default=None, is_out=False, omitted=True))
             continue
         if reason == "array" and not _SUBST.active:

@@ -2474,6 +2474,24 @@ def test_every_byte_buffer_pair_in_occt_is_listed_for_r_bytes():
     assert sorted(listed - found) == []                                    # and no stale entry
 
 
+def test_every_null_ok_entry_names_a_pointer_parameter_of_occt():
+    """overrides.toml [null_ok] drops pointer parameters *without* a null default (R-OPTIONAL-PTR) by member and parameter
+    name, so an entry that stops matching would silently skip the member again (WNT_WClass's constructor, and with it
+    every WNT_Window). Each entry must name a `void*`-like parameter of that member in OCCT's header; where the class is
+    generated (Windows for WNT_WClass), its report must not list the member as skipped."""
+    assert len(parse.NULL_OK) > 0
+    report = [line for p in (ROOT / "src" / "cpp").glob("TK*/report.txt") for line in p.read_text(encoding="utf-8").splitlines()]
+    for member, names in parse.NULL_OK.items():
+        cls, name = member.split("::")
+        [header] = list((OCCT_SRC / "src").rglob(f"{cls}.hxx"))
+        text = header.read_text(errors="replace")
+        decl = re.search(rf"\b{name}\s*\(([^;{{]*)\)", text)
+        assert decl is not None, member
+        for param in names:
+            assert re.search(rf"\*\s*(const\s+)?{param}\b", decl.group(1)), f"{member}: no pointer parameter {param}"
+            assert not [line for line in report if f"{member}(" in line and f"param '{param}'" in line]
+
+
 def _override_lines() -> list[str]:
     """The messages of the `override` lines of this platform's generator reports (src/cpp/TK*/report.txt)."""
     out = []

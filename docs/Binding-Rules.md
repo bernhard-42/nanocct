@@ -724,22 +724,26 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **C++ Idiom**
 
-    Pointer parameter with a null default whose pointee Python cannot pass: a primitive or an enum (`bool*`, `unsigned int*`), `void`, another pointer, a function, a stream (`Standard_OStream*`), or a class only forward-declared and without an installed header; or a `std::shared_ptr` to a stream defaulted to its own empty form. A pointer to a bound class is R-PTR-NULL, a `const char*` R-CSTR-NULL
+    Pointer parameter with a null default whose pointee Python cannot pass: a primitive or an enum (`bool*`, `unsigned int*`), `void`, another pointer, a function, a stream (`Standard_OStream*`), or a class only forward-declared and without an installed header; or a `std::shared_ptr` to a stream defaulted to its own empty form. The same pointer *without* a default where OCCT's implementation gives NULL a meaning of its own, listed in `overrides.toml [null_ok]`. A pointer to a bound class is R-PTR-NULL, a `const char*` R-CSTR-NULL
 
 - **OCCT examples**
 
-    `bool* theIsStored = nullptr` in `BRep_Tool::CurveOnSurface`, `unsigned int* theErrorCode = nullptr` in `BRepFill_AdvancedEvolved::IsDone`, `Standard_OStream* = nullptr` in `BRepBuilderAPI_FastSewing::GetStatuses`, `void* const Addr = nullptr` in `TopOpeBRepBuild_WireEdgeSet`, `RWPly_PlyWriterContext::Open`:
+    `bool* theIsStored = nullptr` in `BRep_Tool::CurveOnSurface`, `unsigned int* theErrorCode = nullptr` in `BRepFill_AdvancedEvolved::IsDone`, `Standard_OStream* = nullptr` in `BRepBuilderAPI_FastSewing::GetStatuses`, `void* const Addr = nullptr` in `TopOpeBRepBuild_WireEdgeSet`, `RWPly_PlyWriterContext::Open`; without a default, `void* const theWndProc` in `WNT_WClass` (Windows only), which `WNT_WClass.cxx` turns into `DefWindowProcW` when it is NULL:
 
     - `static occ::handle<Geom2d_Curve> BRep_Tool::CurveOnSurface(const TopoDS_Edge& E, const TopoDS_Face& F, double& First, double& Last, bool* theIsStored = nullptr)`
     - `bool BRepFill_AdvancedEvolved::IsDone(unsigned int* theErrorCode = nullptr) const`
     - `FS_VARStatuses BRepBuilderAPI_FastSewing::GetStatuses(Standard_OStream* const theOS = nullptr)`
     - `TopOpeBRepBuild_WireEdgeSet::TopOpeBRepBuild_WireEdgeSet(const TopoDS_Shape& F, void* const Addr = nullptr)` (a constructor)
     - `bool RWPly_PlyWriterContext::Open(const TCollection_AsciiString& theName, const std::shared_ptr<std::ostream>& theStream = std::shared_ptr<std::ostream>())`
+    - `WNT_WClass::WNT_WClass(const TCollection_AsciiString& theClassName, void* const theWndProc, const unsigned int theStyle, const int theClassExtra = 0, const int theWindowExtra = 0, const Aspect_Handle theCursor = NULL, const Aspect_Handle theIcon = NULL, const TCollection_AsciiString& theMenuName = TCollection_AsciiString::EmptyString())` (a constructor; `Aspect_Handle` is `void*`)
 
 - **Rule**
 
     - Decided by the pointee type alone (`_OPTIONAL_PTR_REASONS` in `parse.py`), not by what the callee does with it: no caster exists for such a pointer, so the parameter cannot be passed from Python at all, and only its null default makes the member callable.
     - Without the rule 59<!-- count: optional-ptr --> members (each overload counted, OCCT 8.0.1) would be skipped entirely (`AdvancedEvolved` would have no `IsDone`), and `Open` is the only way to use `RWPly_PlyWriterContext` at all.
+    - A pointer without a default is dropped only when `overrides.toml [null_ok]` names it (member -> parameters), and an entry is made only after reading the `.cxx`: the type alone says nothing about whether the callee accepts NULL.
+    - The one entry is `WNT_WClass`'s window procedure: without its constructor there is no `WNT_Window`, so no real window to render into on Windows -- the virtual `Aspect_NeutralWindow` falls back to the screen's device context (`GetDC(NULL)`, `OpenGl_Window.cxx`), whose pixel format a driver may refuse (`SetPixelFormat failed. Error code: -1073283066`, seen 2026-10-22; Microsoft documents no pixel format for the screen DC).
+    - NULL is OCCT's own default there (`DefWindowProcW`), so the window gets the Win32 default behaviour and Python never sees a function pointer. `theCursor` and `theIcon` have null defaults and are dropped by the first bullet: OCCT then uses `IDC_NO` and `IDI_APPLICATION`.
 
 - **Python**
 
@@ -780,6 +784,20 @@ How arguments go in and results come out (the user-facing summary is 3.2).
         assert context.Open(path)                     # no theStream: OCCT opens the file itself
         assert context.Close()
         assert os.path.exists(path)
+    ```
+
+    ```python
+    import sys
+
+    if sys.platform == "win32":                   # WNT_WClass and WNT_Window exist on Windows only (#if defined(_WIN32))
+        from nanocct.WNT import WNT_WClass, WNT_Window
+
+        CS_VREDRAW, CS_HREDRAW = 0x0001, 0x0002                   # <winuser.h>
+        WS_POPUP, WS_CLIPCHILDREN, WS_CLIPSIBLINGS = 0x80000000, 0x02000000, 0x04000000
+        wclass = WNT_WClass("nanocct R-OPTIONAL-PTR", CS_VREDRAW | CS_HREDRAW)    # no theWndProc: DefWindowProcW
+        assert wclass.Name().ToCString() == "nanocct R-OPTIONAL-PTR"
+        window = WNT_Window("never shown", wclass, WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 0, 0, 320, 200)
+        assert window.Size() == (320, 200)                       # created hidden: only Map() shows it
     ```
 ### R-CSTR-NULL
 
