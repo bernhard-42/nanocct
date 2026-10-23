@@ -42,9 +42,6 @@ def _occt_install() -> Path:
 OCCT = _occt_install()
 OCCT_INC = OcctTree(src=OCCT_SRC, install=OCCT).include_dir    # <install>/inc on Windows, else include/opencascade
 
-pytestmark = pytest.mark.skipif(not (OcctTree(src=OCCT_SRC, install=OCCT).include_dir / "Standard_Transient.hxx").exists(),
-                                reason="no local OCCT build (deps/occt-8.0.1[-manylinux]) -- run 'make occt'")
-
 # Every generator subprocess below must be told which OCCT to parse, for the same reason OCCT is resolved above:
 # the default is deps/occt-8.0.1, which does not exist in the container, and the run then dies with
 # "fatal error: 'Adaptor2d_Curve2d.hxx' file not found" instead of producing anything to compare.
@@ -2502,7 +2499,6 @@ def _override_lines() -> list[str]:
     return out
 
 
-@pytest.mark.skipif(not (ROOT / "src" / "cpp" / "manifest.json").exists(), reason="needs a generation (make generate)")
 def test_every_skip_entry_still_skips_something():
     """overrides.toml [skip] names classes, headers, constructors, methods and namespaces by exact spelling, and an entry
     that stops matching is silent: what it named is bound again. For the PLib/BSplCLib entries that is a member OCCT reads

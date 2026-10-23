@@ -73,15 +73,15 @@ def test_edge_segments_are_consecutive_point_pairs(meshed):
     # two endpoints per segment, and the counts account for every point
     assert len(seg) == 2 * int(per_edge.sum())
     # consecutive pairs share a point: segment i's end is segment i+1's start, within one edge.
-    # Not every edge has two segments -- find one that does rather than assume the first.
-    start = 0
+    # Not every edge has two segments -- find one that does rather than assume the first. The fixture is a fixed shape
+    # meshed with fixed parameters, so it has one: without it the check below would test nothing.
+    start, count = 0, 0
     for count in per_edge:
         if count >= 2:
-            assert np.allclose(seg[2 * start + 1], seg[2 * start + 2])
             break
         start += int(count)
-    else:
-        pytest.skip("no edge with more than one segment")
+    assert count >= 2, "the fixture has no edge with more than one segment"
+    assert np.allclose(seg[2 * start + 1], seg[2 * start + 2])
 
 
 def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):

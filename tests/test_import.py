@@ -19,12 +19,8 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).parents[1]
 MANIFEST = ROOT / "src" / "cpp" / "manifest.json"
-
-pytestmark = pytest.mark.skipif(not MANIFEST.exists(), reason="generated sources not present (run the generator)")
 
 
 def _toolkits() -> list[str]:

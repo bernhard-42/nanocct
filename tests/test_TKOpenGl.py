@@ -21,6 +21,7 @@ from nanocct.Graphic3d import Graphic3d_BT_RGB
 from nanocct.Image import Image_PixMap
 from nanocct.OpenGl import OpenGl_Caps, OpenGl_GraphicDriver
 from nanocct.V3d import V3d_Viewer
+from nanocct.Xw import Xw_Window                                  # generated everywhere; it opens windows on Linux only
 
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOpenGl" / "report.txt"
 
@@ -38,21 +39,27 @@ def quiet_messenger():
 
 
 # GitHub's macOS runners are virtual machines without a GPU, and OCCT asks for an accelerated context by default
-# (NSOpenGLPFAAccelerated, OpenGl_Window_1.mm), so every test that creates a GL context fails there with
-# "OpenGl_Window::CreateWindow: NSOpenGLContext creation failed" (the first CI run, 2026-09-28). Skipped on that runner
-# only: locally, and on the other platforms, these tests run. The driver itself constructs there, so its test stays.
-needs_gl_context = pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS") == "true" and platform.system() == "Darwin",
-    reason="GitHub's macOS runner has no GPU, so OCCT's accelerated NSOpenGLContext cannot be created there")
+# (NSOpenGLPFAAccelerated, OpenGl_Window_1.mm), so every GL context failed there with "OpenGl_Window::CreateWindow:
+# NSOpenGLContext creation failed" (the first CI run, 2026-09-28). OCCT's own switch for that is
+# OpenGl_Caps.contextNoAccel: Apple's software renderer (kCGLRendererGenericFloatID) on macOS, WGL_NO_ACCELERATION_ARB
+# on Windows. So the tests run on that runner too, with the software renderer, and everywhere else on the GPU.
+SOFTWARE_GL = os.environ.get("GITHUB_ACTIONS") == "true" and platform.system() == "Darwin"
+
+
+def gl_driver(display):
+    """The graphic driver every test here renders with. OCCT talks to a window system: X11 on Linux (USE_XLIB=ON, its
+    own default; `make test` runs the suite under xvfb-run), CGL on macOS, WGL on Windows. The options are read when a
+    window's GL context is created, so they can be set after construction."""
+    driver = OpenGl_GraphicDriver(display)
+    driver.ChangeOptions().contextNoAccel = SOFTWARE_GL
+    return driver
 
 
 @pytest.fixture
 def display():
-    """The display connection, or a skip where no display server can be reached."""
-    try:
-        return Aspect_DisplayConnection()
-    except Exception as exc:
-        pytest.skip(f"no display server: {type(exc).__name__}: {exc}")
+    """The display connection. Without a display server (an empty DISPLAY: over ssh, or a container without xvfb) it
+    raises -- a broken test environment, which fails rather than being skipped."""
+    return Aspect_DisplayConnection()
 
 
 _WNT_CLASS = []      # the one window class of the test process: RegisterClassW refuses a second class of the same name
@@ -83,8 +90,7 @@ def offscreen_window(display, width, height):
     same pixel format on a hidden window is accepted). So Windows gets a real, hidden WNT_Window too.
     """
     if platform.system() == "Linux":
-        Xw = pytest.importorskip("nanocct.Xw")
-        return Xw.Xw_Window(display, "nanocct test", 100, 100, width, height)
+        return Xw_Window(display, "nanocct test", 100, 100, width, height)
     if platform.system() == "Windows":
         return wnt_window("nanocct test", width, height)
     window = Aspect_NeutralWindow()
@@ -95,14 +101,7 @@ def offscreen_window(display, width, height):
 
 @pytest.fixture
 def driver(display):
-    """A graphic driver, or a skip where no display server can be reached.
-
-    OCCT talks to a window system here: X11 on Linux (USE_XLIB=ON, its own default), CGL on macOS, WGL on Windows.
-    Over ssh or in a container there is no DISPLAY, and Aspect_DisplayConnection raises rather than returning a
-    headless driver -- an environment limitation, not a binding defect, so the tests that need a driver skip
-    (banach, 2026-09-23: "Can not connect to the server", DISPLAY empty). A Linux CI runner needs xvfb for these.
-    """
-    return OpenGl_GraphicDriver(display)
+    return gl_driver(display)
 
 
 @pytest.mark.parametrize("pkg", ["OpenGl", "Textures"])
@@ -119,7 +118,6 @@ def test_the_driver_constructs_and_initialises(driver):
     assert isinstance(caps.contextDebug, bool)                    # a plain bool field, nanocct_def_field (R-FIELD)
 
 
-@needs_gl_context
 def test_displaying_a_shape_no_longer_segfaults(driver, display, quiet_messenger):
     """Until TKOpenGl was generated, V3d_Viewer(None) was the only viewer available and anything that builds a
     Graphic3d_Structure -- AIS_InteractiveContext.Display, TPrsStd_AISPresentation.Display -- dereferenced the null
@@ -167,38 +165,26 @@ def test_report_is_the_gl_entry_point_tables():
 
 @contextlib.contextmanager
 def real_window(width, height):
-    """A native window of this platform, never shown, or a skip where there is none.
+    """A native window of this platform, never shown.
 
-    Windows: a WNT_Window (wnt_window). Linux: an Xw_Window on the X display (xvfb in CI). macOS: a Cocoa_Window,
-    which needs an NSApplication before it can create its NSWindow (OCCT raises Aspect_WindowDefinitionError
-    otherwise), and tkinter's Tk() creates one -- no PyObjC needed."""
+    Windows: a WNT_Window (wnt_window). Linux: an Xw_Window on the X display (xvfb-run in `make test`). macOS: a
+    Cocoa_Window, which needs an NSApplication before it can create its NSWindow (OCCT raises
+    Aspect_WindowDefinitionError otherwise), and tkinter's Tk() creates one -- no PyObjC needed."""
     if platform.system() == "Windows":
         yield wnt_window("nanocct test", width, height)
         return
     if platform.system() == "Linux":
-        Xw = pytest.importorskip("nanocct.Xw")
-        try:
-            display = Aspect_DisplayConnection()
-        except Exception as exc:                              # over ssh or in a container: no DISPLAY
-            pytest.skip(f"no display server: {type(exc).__name__}: {exc}")
-        yield Xw.Xw_Window(display, "nanocct test", 100, 100, width, height)
+        yield Xw_Window(Aspect_DisplayConnection(), "nanocct test", 100, 100, width, height)
         return
-    tkinter = pytest.importorskip("tkinter")
-    try:
-        root = tkinter.Tk()
-    except tkinter.TclError as exc:                               # headless CI: no display
-        pytest.skip(f"no display for tkinter: {exc}")
+    import tkinter
+    root = tkinter.Tk()
     try:
         root.withdraw()
         root.update()
         # Cocoa is only generated on macOS (overrides.toml [platform]), so the module itself is absent elsewhere --
         # importing it at the top of the file would fail collection of the whole module on Linux and Windows.
-        Cocoa = pytest.importorskip("nanocct.Cocoa", reason="Cocoa is built on macOS only")
-        try:
-            window = Cocoa.Cocoa_Window("nanocct test", 100, 100, width, height)
-        except Exception as exc:                                  # no window server
-            pytest.skip(f"Cocoa_Window unavailable: {type(exc).__name__}: {exc}")
-        yield window
+        Cocoa = importlib.import_module("nanocct.Cocoa")
+        yield Cocoa.Cocoa_Window("nanocct test", 100, 100, width, height)
     finally:
         root.destroy()
 
@@ -206,7 +192,7 @@ def real_window(width, height):
 def _box_colours(window, width, height):
     """Render a unit box in a view on `window` and dump it at width x height: the set of colours sampled from the image.
     The box comes back in OCCT's default yellow, which is how a caller knows the image is not an empty buffer."""
-    driver = OpenGl_GraphicDriver(Aspect_DisplayConnection())
+    driver = gl_driver(Aspect_DisplayConnection())
     viewer = V3d_Viewer(driver)
     viewer.SetDefaultLights()
     viewer.SetLightOn()
@@ -224,7 +210,6 @@ def _box_colours(window, width, height):
             for c in (pixmap.PixelColor(x, y).GetRGB() for x in range(0, width, 13) for y in range(0, height, 13))}
 
 
-@needs_gl_context
 def test_a_real_window_renders_the_box(quiet_messenger):
     """The whole point of the driver: a rendered image, in a native window (real_window). The window is never mapped,
     so nothing appears on screen; ToPixMap still renders."""
@@ -234,7 +219,6 @@ def test_a_real_window_renders_the_box(quiet_messenger):
         assert len(colours) >= 2                                  # ... and a background
 
 
-@needs_gl_context
 def test_a_real_window_marked_virtual_renders_offscreen(quiet_messenger):
     """OCCT's own offscreen route -- the Draw harness's `vinit -virtual` (ViewerTest_ViewerCommands.cxx), described in
     "Offscreen OCCT viewer" (unlimited3d.wordpress.com, 2022-01-30): a real native window that is never mapped, marked

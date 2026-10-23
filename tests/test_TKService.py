@@ -3,6 +3,7 @@ manager and FreeType fonts (build123d's text path), materials, vectors with thei
 iteration, the enum aliases OCCT keeps for 7.x code, the in/out FindFont aspect. Images are read and written through
 FreeImage, also from and to memory; the OCCT build has no FFmpeg, so the Media package is stubs (Excluded.md)."""
 import importlib
+import importlib.util
 import io
 import platform
 import re
@@ -23,9 +24,16 @@ def test_every_package_imports(pkg):
     assert importlib.import_module(f"nanocct.{pkg}").__name__ == f"nanocct.{pkg}"
 
 
-@pytest.mark.skipif(platform.system() != "Darwin", reason="Cocoa is built on macOS only (overrides.toml [platform])")
-def test_cocoa_imports_on_macos():
-    assert importlib.import_module("nanocct.Cocoa").__name__ == "nanocct.Cocoa"
+# One native window per platform, and every platform runs all three tests: its own window works, the other two are not
+# there or not implemented -- what nanocct provides off a platform is part of its API too. Cocoa:
+# test_cocoa_exists_on_macos_only; WNT_WClass/WNT_Window: test_a_window_class_registers_with_the_default_window_procedure;
+# Xw_Window: test_an_x11_window_exists_on_linux_only.
+def test_cocoa_exists_on_macos_only():
+    """OCCT compiles the Cocoa package on macOS only, so it is generated there only (overrides.toml [platform])."""
+    if platform.system() == "Darwin":
+        assert importlib.import_module("nanocct.Cocoa").__name__ == "nanocct.Cocoa"
+    else:
+        assert importlib.util.find_spec("nanocct.Cocoa") is None
 
 
 @pytest.fixture
@@ -234,14 +242,17 @@ def test_the_space_mouse_keeps_its_raw_report_alive():
     assert m.IsKeyState() is True and m.KeyState() == 0x2A
 
 
-@pytest.mark.skipif(platform.system() != "Windows", reason="WNT_WClass and WNT_Window exist on Windows only (#if defined(_WIN32))")
 def test_a_window_class_registers_with_the_default_window_procedure():
     """WNT_WClass(name, void* theWndProc, style, ...) was skipped whole (void pointer), and with it every WNT_Window: a
     window needs a registered class. overrides.toml [null_ok] drops theWndProc (R-OPTIONAL-PTR) because WNT_WClass.cxx
     gives NULL a meaning, DefWindowProcW; theCursor and theIcon have null defaults and go by the same rule. Python never
-    sees a function pointer. The class is registered by the constructor and a second one of the same name is refused."""
+    sees a function pointer. The class is registered by the constructor and a second one of the same name is refused.
+    On macOS and Linux both classes are absent: their headers declare them under #if defined(_WIN32)."""
     from nanocct import WNT
 
+    if platform.system() != "Windows":
+        assert not hasattr(WNT, "WNT_WClass") and not hasattr(WNT, "WNT_Window")
+        return
     sig = WNT.WNT_WClass.__init__.__nb_signature__[0][0]
     assert "theWndProc" not in sig and "theCursor" not in sig and "theIcon" not in sig
     assert "theClassName" in sig and "theStyle" in sig and "theMenuName" in sig
@@ -258,6 +269,22 @@ def test_a_window_class_registers_with_the_default_window_procedure():
     # GetWindowPlacement's showCmd (WNT_Window.cxx), SW_SHOWNORMAL for a window never shown, not its visibility
     assert window.IsMapped() is True
     assert not window.IsVirtual()
+
+
+def test_an_x11_window_exists_on_linux_only():
+    """Xw_Window is generated on every platform (OCCT exports its symbols on all three), but only the Linux build has
+    X11 (USE_XLIB=ON, deps/build-occt-manylinux.sh): there it creates a real X window, on the display xvfb-run gives
+    `make test`. On macOS and Windows (USE_XLIB=OFF) the constructor checks its size and display and then throws
+    "not implemented" (Xw_Window.cxx, without HAVE_XLIB)."""
+    from nanocct import Xw
+
+    display = Aspect.Aspect_DisplayConnection()
+    if platform.system() == "Linux":
+        window = Xw.Xw_Window(display, "nanocct test_TKService", 10, 20, 320, 200)
+        assert window.Size() == (320, 200) and not window.IsVirtual()
+    else:
+        with pytest.raises(Aspect.Aspect_WindowDefinitionError, match="not implemented"):
+            Xw.Xw_Window(display, "nanocct test_TKService", 10, 20, 320, 200)
 
 
 def test_members_of_an_instantiation_return_bound_instantiations():
