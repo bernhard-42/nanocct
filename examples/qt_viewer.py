@@ -28,7 +28,7 @@ import sys
 if sys.platform == "linux":
     os.environ.setdefault("QT_QPA_PLATFORM", "xcb")              # before Qt starts
 
-from PySide6.QtCore import Qt, QTimer, Signal
+from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
@@ -119,10 +119,14 @@ class OcctWidget(QWidget):
 
         # the view cube turns the view when one of its faces, edges or corners is clicked, animated by the controller
         self.cube = AIS_ViewCube()
-        self.cube.SetSize(55.0)
         self.cube.SetViewAnimation(self.controller.ViewAnimation())
         self.cube.SetFixedAnimationLoop(False)
         self.cube.SetAutoStartAnimation(True)
+        # the cube's sizes are pixels; these are the values for a device pixel ratio of 1, see _apply_device_ratio
+        self.cube_size = 55.0
+        self.cube_axes = (self.cube.AxesRadius(), self.cube.AxesConeRadius(), self.cube.AxesSphereRadius())
+        offset = self.cube.TransformPersistence().Offset2d()
+        self.cube_offset = (offset.x(), offset.y())
 
     # ---- the native window ------------------------------------------------------------------------------------------
     def paintEngine(self):                                        # noqa: N802 (Qt's name)
@@ -133,9 +137,27 @@ class OcctWidget(QWidget):
         ratio = self.devicePixelRatioF()
         return round(self.width() * ratio), round(self.height() * ratio)
 
+    def _apply_device_ratio(self) -> None:
+        """Scale what OCCT draws in pixels to the screen's device pixel ratio (2 on a Retina display), so the view
+        looks the same on every screen. Line widths and text follow RenderingParams.Resolution (72 is a ratio of 1).
+        The view cube lives in pixel coordinates, which ignore the resolution (Graphic3d_TransformPers.hxx), so its
+        size, axes and corner offset are scaled here -- but not its font: the resolution scales text already, and
+        SetSize's own font scaling would make the labels twice too large."""
+        ratio = self.devicePixelRatioF()
+        self.view.ChangeRenderingParams().Resolution = round(72 * ratio)
+        self.cube.SetSize(self.cube_size * ratio)                 # scales the facet extension and padding too ...
+        self.cube.SetFontHeight(0.16 * self.cube_size)            # ... and the font, back to what SetSize gives at 1
+        radius, cone, sphere = self.cube_axes
+        self.cube.SetAxesRadius(radius * ratio)
+        self.cube.SetAxesConeRadius(cone * ratio)
+        self.cube.SetAxesSphereRadius(sphere * ratio)
+        persistence = self.cube.TransformPersistence()
+        persistence.SetOffset2d(BVH_Vec2i(round(self.cube_offset[0] * ratio), round(self.cube_offset[1] * ratio)))
+        self.cube.SetTransformPersistence(persistence)
+
     def _attach(self) -> None:
         """Hand the widget's native window to OCCT, at the first paint. Not when the widget is shown: on macOS the
-        NSView then still has the widget's minimum size (400x300 while Qt reported 1000x699, seen 2026-10-23), OCCT
+        NSView then still has the widget's minimum size (400x300 while Qt reported 1000x699), OCCT
         sizes its GL surface from the NSView, and nothing resizes it afterwards -- macOS stretched the small image to
         the window, with fat edges and a huge view cube until the first resize."""
         if self.window is not None:
@@ -150,8 +172,24 @@ class OcctWidget(QWidget):
         self.context.SetDisplayMode(self.part, AIS_Shaded, False)
         self.context.Deactivate(self.part)                        # select faces rather than the whole shape
         self.context.Activate(self.part, AIS_Shape.SelectionMode_s(TopAbs_ShapeEnum.TopAbs_FACE))
+        self._apply_device_ratio()
         self.context.Display(self.cube, False)
         self.set_projection(V3d_XposYnegZpos)
+
+    def event(self, event) -> bool:
+        # moved to a screen with another device pixel ratio: the size in points stays, so no resizeEvent follows,
+        # and OCCT reads the new backing scale only when told that the window changed
+        if event.type() == QEvent.Type.DevicePixelRatioChange and self.window is not None:
+            self._apply_device_ratio()
+            self.context.Redisplay(self.cube, False)
+            self.window.SetSize(*self._pixels())
+            self.view.MustBeResized()
+            self.update()
+            # a native child window (WA_NativeWindow, which OCCT needs) leaves Qt's toolbar at the old screen's scale
+            # until the mouse enters the view or the window loses focus; a repaint right away was not enough, one
+            # 100 ms later was (seen on macOS, also without OCCT). QWidget.window: self.window is OCCT's
+            QTimer.singleShot(100, QWidget.window(self).repaint)
+        return super().event(event)
 
     def resizeEvent(self, event) -> None:                        # noqa: N802
         super().resizeEvent(event)
