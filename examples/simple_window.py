@@ -1,4 +1,4 @@
-"""Show a unit box in a real OCCT window, driven from Python -- one script for macOS and Windows.
+"""Show a unit box in a real OCCT window, driven from Python -- one script for macOS, Windows and Linux.
 
 The one part that differs between the platforms, creating the window, is `native_window()`:
 
@@ -7,9 +7,11 @@ The one part that differs between the platforms, creating the window, is `native
 - Windows: `WNT_Window` is created from a registered `WNT_WClass`; nanocct leaves out the class's window procedure
   and OCCT then uses the Win32 default, `DefWindowProcW` (Binding-Rules.md R-OPTIONAL-PTR). With no cursor
   given, OCCT's class shows the "unavailable" cursor over the window.
+- Linux: `Xw_Window` creates an X11 window on the display connection (the Linux build has USE_XLIB=ON); under WSL
+  that is WSLg's X server.
 
-On both, tkinter's loop keeps the OCCT window alive -- it runs NSApp on macOS and dispatches the thread's messages on
-Windows -- and we redraw from its timer.
+On all three, tkinter's loop keeps the OCCT window alive -- it runs NSApp on macOS and dispatches the thread's messages
+on Windows -- and we redraw from its timer.
 
 Run it with:   uv run python examples/simple_window.py
 Ctrl-C in the terminal, or closing the Tk control window, ends it.
@@ -31,8 +33,11 @@ FRAME_MS = 16                      # ~60 Hz
 TITLE = "OCCT 8.0.1 - unit box"
 
 
-def native_window(title: str, x: int, y: int, width: int, height: int) -> Aspect_Window:
+def native_window(display: Aspect_DisplayConnection, title: str, x: int, y: int, width: int, height: int) -> Aspect_Window:
     """This platform's window, created by OCCT itself (no native handle needed) and hidden until Map()."""
+    if sys.platform == "linux":
+        from nanocct.Xw import Xw_Window                    # X11 only in the Linux build
+        return Xw_Window(display, title, x, y, width, height)
     if sys.platform == "darwin":
         from nanocct.Cocoa import Cocoa_Window             # macOS only
         return Cocoa_Window(title, x, y, width, height)
@@ -45,7 +50,7 @@ def native_window(title: str, x: int, y: int, width: int, height: int) -> Aspect
         wclass = WNT_WClass("nanocct example", CS_VREDRAW | CS_HREDRAW)
         return WNT_Window(title, wclass, WS_CAPTION | WS_THICKFRAME | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
                           x, y, width, height)
-    sys.exit(f"simple_window.py runs on macOS and Windows, not on {sys.platform}")
+    sys.exit(f"simple_window.py runs on macOS, Windows and Linux, not on {sys.platform}")
 
 
 def main() -> None:
@@ -68,7 +73,7 @@ def main() -> None:
     context = AIS_InteractiveContext(viewer)
 
     # 3. a real window. Map() unconditionally: WNT_Window::IsMapped() answers True for a window never shown
-    window = native_window(TITLE, 100, 100, WIDTH, HEIGHT)
+    window = native_window(display, TITLE, 100, 100, WIDTH, HEIGHT)
     view.SetWindow(window)
     window.Map()
 
