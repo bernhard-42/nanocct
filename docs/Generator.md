@@ -76,7 +76,7 @@ The parse iterates to a fixpoint. **Round 1 runs with the manifest alone** — a
 Two checks, one free and one on demand:
 
 - **Every parallel run** re-computes `known_elsewhere` the sequential way as the loop walks the packages and compares it with what the pool was given, naming the package and the differing entries and exiting 1 on a mismatch — the derivation simulated from IRs against the accumulation itself.
-- **`tests/test_generator.py::test_a_parallel_run_reproduces_a_serial_one_byte_for_byte`**, six toolkits, **skipped unless `NANOCCT_AB=1`**: it has to run the generator serially to have something to compare against, which costs 43 s against the parallel run's 15 s — the whole speedup, spent to re-prove it. Run it after a change to the parse or the emit phase.
+- **`make check-parallel`** (`tools/check_parallel.py`), three toolkits (`TKernel`, `TKMath`, `TKG2d`: an instantiation owned by an earlier toolkit and a class deriving from one): the generator serially and in parallel into a temporary directory, every file compared byte for byte. It is not part of `make test`, because it has to run the generator serially to have something to compare against, which costs what the parallel run saves (76 s against 22 s on 24 cores, Windows, measured once). Run it after a change to the parse or the emit phase.
 
 ### `overrides.toml` — the only hand-maintained input
 

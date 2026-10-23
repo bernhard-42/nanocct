@@ -125,7 +125,7 @@ else
   STAGE_DIR := $(ROOT)/stage-ml
 endif
 
-.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate compile stubs wheel delocate test \
+.PHONY: wheels env deps sources occt freetype freeimage rapidjson generate check-parallel compile stubs wheel delocate test \
         asan clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist clean_asan help
 
 
@@ -135,6 +135,7 @@ endif
 
 help:
 	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | wheels | asan"
+	@echo "         check-parallel (after a change to the generator's parse or emit phase)"
 	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist clean_asan"
 	@echo "platform: $(PLATFORM)"
 
@@ -282,6 +283,18 @@ else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && "$(WIN_PY)" -m generator $(TK_FLAGS)
 else
 	$(CONTAINER) "$(ML_PY) -m generator --occt /work/deps/occt-8.0.1-manylinux --occt-src /work/deps/occt-src $(TK_FLAGS)"
+endif
+
+# The parallel generation reproduces a serial one byte for byte, over three toolkits (tools/check_parallel.py). Run it
+# after a change to the parse or the emit phase; it is not part of `make test`, because the serial run costs what the
+# parallel one saves. It writes into a temporary directory and leaves src/ alone.
+check-parallel:
+ifeq ($(PLATFORM),macos)
+	cd $(ROOT) && $(PY) tools/check_parallel.py
+else ifeq ($(PLATFORM),windows)
+	cd $(ROOT) && "$(WIN_PY)" tools/check_parallel.py
+else
+	$(CONTAINER) "cd /work && $(ML_PY) tools/check_parallel.py --occt /work/deps/occt-8.0.1-manylinux --occt-src /work/deps/occt-src"
 endif
 
 
