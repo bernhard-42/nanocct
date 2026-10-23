@@ -1,7 +1,12 @@
 .venv/
 # the other venvs: .venv-ml (Linux, in the container), .venv-test / .venv-test-ml (`make test`, the repaired wheel)
 .venv-*/
+# the cmake/ninja build directories of `make compile` (Makefile BUILD_DIR): build/dev on macOS, build-win on Windows,
+# build-ml on Linux (in the container); on Windows the batch file deps/build-nanocct-windows.sh writes for each build
 build/
+build-win/
+build-ml/
+/_build_nanocct.bat
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -11,9 +16,13 @@ deps/occt-src/
 deps/occt-build/
 deps/occt-8.0.1/
 deps/occt-build.log
+deps/occt-build-ml/
+deps/occt-8.0.1-manylinux/
 deps/freetype-src/
 deps/freetype-build/
 deps/freetype/
+deps/freetype-build-ml/
+deps/freetype-ml/
 deps/freetype-2.14.3.tar.xz
 deps/freeimage-src/
 deps/freeimage-build/
@@ -24,6 +33,8 @@ deps/rapidjson-src/
 deps/rapidjson/
 deps/rapidjson-1.1.0.tar.gz
 deps/rapidjson-1.1.0-718.patch
+# the batch files the deps/build-*-windows.sh scripts write for each Windows build (they call vcvars64.bat)
+deps/_build_*.bat
 .mypy_cache/
 .ruff_cache/
 
