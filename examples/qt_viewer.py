@@ -134,7 +134,10 @@ class OcctWidget(QWidget):
         return round(self.width() * ratio), round(self.height() * ratio)
 
     def _attach(self) -> None:
-        """Hand the widget's native window to OCCT, once it exists (after the widget is shown)."""
+        """Hand the widget's native window to OCCT, at the first paint. Not when the widget is shown: on macOS the
+        NSView then still has the widget's minimum size (400x300 while Qt reported 1000x699, seen 2026-10-23), OCCT
+        sizes its GL surface from the NSView, and nothing resizes it afterwards -- macOS stretched the small image to
+        the window, with fat edges and a huge view cube until the first resize."""
         if self.window is not None:
             return
         self.window = Aspect_NeutralWindow()
@@ -149,10 +152,6 @@ class OcctWidget(QWidget):
         self.context.Activate(self.part, AIS_Shape.SelectionMode_s(TopAbs_ShapeEnum.TopAbs_FACE))
         self.context.Display(self.cube, False)
         self.set_projection(V3d_XposYnegZpos)
-
-    def showEvent(self, event) -> None:                          # noqa: N802
-        super().showEvent(event)
-        self._attach()
 
     def resizeEvent(self, event) -> None:                        # noqa: N802
         super().resizeEvent(event)
