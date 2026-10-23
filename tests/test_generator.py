@@ -1066,6 +1066,25 @@ public:
   Rules_KeptFinal() = default;
 };
 
+//! R-NATIVE-HANDLE: a window-system handle typedef that is void* (Aspect_Drawable on Windows; spelled here the same on
+//! every platform) is taken and returned as an integer instead of skipping the member.
+typedef void* Aspect_Drawable;
+class Rules_NativeWindow
+{
+public:
+  Rules_NativeWindow(Aspect_Drawable theHandle) : myHandle(theHandle) {}
+  bool SetNativeHandle(Aspect_Drawable theWindow, Aspect_Drawable theParent = NULL)
+  {
+    const bool changed = theWindow != myHandle;
+    myHandle = theWindow;
+    (void)theParent;
+    return changed;
+  }
+  Aspect_Drawable NativeHandle() const { return myHandle; }
+private:
+  Aspect_Drawable myHandle;
+};
+
 //! Another namespace becomes a submodule.
 namespace RulesNs
 {
@@ -1143,6 +1162,7 @@ def test_ir_classes_and_nesting(rules_ir):
                                "Rules_ViewImpl", "Rules_OwnerSource", "Rules_Fields",
                                "Rules_Guard", "Rules_GuardIter", "Rules_GuardT<NCollection_Array1<gp_Pnt>>",
                                "Rules_KeptBase", "Rules_KeptNode", "Rules_KeptScene", "Rules_KeptChild", "Rules_KeptFinal",
+                               "Rules_NativeWindow",
                                "Rules_CastBase", "Rules_CastDerived", "Rules_CastOther", "Rules_AliasHolder", "Rules_AliasT<int>"}   # alias instantiations, probe bases, the reference-only instantiation
     thing = rules_ir.classes[0]
     assert thing.is_transient is True and thing.bases == ["Standard_Transient"]
@@ -1789,6 +1809,32 @@ def test_ir_shared_ptr_parameter_with_its_own_empty_default_is_dropped(rules_ir)
     assert "self.Open(theName, nullptr)" in cpp              # the omitted stream is passed as nullptr
     assert '.def("Open", [](const Rules_Sink &self, const char * theName)' in cpp   # ... and is gone from the signature
     assert not any("Rules_Sink::Open" in r for r in em.report + rules_ir.report)
+
+
+def test_ir_native_handle_typedefs_are_integers(rules_ir):
+    """R-NATIVE-HANDLE: Aspect_Drawable and Aspect_Handle are void* on Windows and unsigned long elsewhere, so a member
+    taking or returning one was skipped on Windows only ("void pointer") -- Aspect_NeutralWindow::SetNativeHandle, the
+    way into another toolkit's window, above all. A listed handle typedef that is a pointer is taken as std::uintptr_t
+    and converted back for the call; a result goes out as the integer; a defaulted one keeps its parameter (NULL -> 0);
+    and a constructor from a handle does not make every int implicitly convertible to the class."""
+    c = next(c for c in rules_ir.classes if c.name == "Rules_NativeWindow")
+    [ctor] = c.ctors
+    assert ctor.skip_reason is None and not ctor.is_implicit
+    assert [(p.type, p.native_handle) for p in ctor.params] == [("std::uintptr_t", "Aspect_Drawable")]
+    setter = _method(rules_ir, "Rules_NativeWindow", "SetNativeHandle")
+    assert setter.skip_reason is None
+    assert [(p.name, p.type, p.default) for p in setter.params] == [("theWindow", "std::uintptr_t", None),
+                                                                     ("theParent", "std::uintptr_t", "0")]
+    getter = _method(rules_ir, "Rules_NativeWindow", "NativeHandle")
+    assert getter.skip_reason is None and getter.result == "std::uintptr_t" and getter.result_native_handle
+    em = Emitter(rules_ir, OCCT_INC, {"gp_Pnt": "gp", "gp_XYZ": "gp", "Standard_Transient": "Standard", "Rules_Fwd": "Rules", "Rules_Value": "Rules"},
+                 {"gp": "TKMath", "Standard": "TKernel", "Rules": "TKRules"}, {}, ["TKernel", "TKMath", "TKRules"], {})
+    cpp = em.emit()
+    assert "Rules_NativeWindow(reinterpret_cast<Aspect_Drawable>(theHandle))" in cpp
+    assert "self.SetNativeHandle(reinterpret_cast<Aspect_Drawable>(theWindow), reinterpret_cast<Aspect_Drawable>(theParent))" in cpp
+    assert "reinterpret_cast<std::uintptr_t>(self.NativeHandle())" in cpp
+    assert "implicitly_convertible<std::decay_t<std::uintptr_t>, Rules_NativeWindow>" not in cpp
+    assert not any("Rules_NativeWindow" in r and "void pointer" in r for r in em.report + rules_ir.report)
 
 
 def test_ir_non_public_base_blocks_construction_only_when_it_provides_operator_new(rules_ir):

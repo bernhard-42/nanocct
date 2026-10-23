@@ -69,6 +69,8 @@ class Param:
                             # constructed or initialised from it is an iterator view of it
     kept_cpp: bool = False  # R-KEPT: a kept argument of a Transient that cannot own the object (parse._cycle_path): the C++ object
                             # of a nanocct::Kept<T> keeps it; one that can stays kept by the Python object (a cycle no GC sees)
+    native_handle: str = "" # R-NATIVE-HANDLE: a window-system handle typedef that is a pointer here (Aspect_Drawable, Aspect_Handle
+                            # on Windows): `type` is std::uintptr_t, and the call converts it back to this typedef
 
 
 @dataclass
@@ -93,6 +95,7 @@ class Method:
     suffix: str = ""                  # R-COLLISION: "__float__float" appended to the Python name when overloads collide after out-param removal
     via_using: str = ""               # R-USING: the base class whose member a `using Base::name;` re-exports on this class
     force_lambda: bool = False        # bound through a lambda even without out-parameters (R-PTR-REF: a T*& result returned as T*)
+    result_native_handle: bool = False  # R-NATIVE-HANDLE: the result is a handle typedef that is a pointer here; returned as std::uintptr_t
     result_view: bool = False         # R-RESULT-KEEP: a class by value/const& whose layout holds pointers: keeps self and result_keeps
     result_keeps: tuple[int, ...] = ()  # ... the parameters (indices) whose objects it may point into
     result_keeps_producer: bool = False   # R-ALLOCATOR: a Transient/handle result of a class holding an allocator keeps self

@@ -245,8 +245,9 @@ def test_the_space_mouse_keeps_its_raw_report_alive():
 def test_a_window_class_registers_with_the_default_window_procedure():
     """WNT_WClass(name, void* theWndProc, style, ...) was skipped whole (void pointer), and with it every WNT_Window: a
     window needs a registered class. overrides.toml [null_ok] drops theWndProc (R-OPTIONAL-PTR) because WNT_WClass.cxx
-    gives NULL a meaning, DefWindowProcW; theCursor and theIcon have null defaults and go by the same rule. Python never
-    sees a function pointer. The class is registered by the constructor and a second one of the same name is refused.
+    gives NULL a meaning, DefWindowProcW; Python never sees a function pointer. theCursor and theIcon are Aspect_Handles,
+    so integers defaulted to 0 (R-NATIVE-HANDLE). The class is registered by the constructor and a second one of the
+    same name is refused.
     On macOS and Linux both classes are absent: their headers declare them under #if defined(_WIN32)."""
     from nanocct import WNT
 
@@ -254,7 +255,8 @@ def test_a_window_class_registers_with_the_default_window_procedure():
         assert not hasattr(WNT, "WNT_WClass") and not hasattr(WNT, "WNT_Window")
         return
     sig = WNT.WNT_WClass.__init__.__nb_signature__[0][0]
-    assert "theWndProc" not in sig and "theCursor" not in sig and "theIcon" not in sig
+    # nanobind writes a default as a placeholder (`theCursor: int = \2`); the value itself, 0, is in __nb_signature__[0][2]
+    assert "theWndProc" not in sig and "theCursor: int =" in sig and "theIcon: int =" in sig
     assert "theClassName" in sig and "theStyle" in sig and "theMenuName" in sig
     CS_VREDRAW, CS_HREDRAW = 0x0001, 0x0002
     wclass = WNT.WNT_WClass("nanocct test_TKService", CS_VREDRAW | CS_HREDRAW)
@@ -269,6 +271,29 @@ def test_a_window_class_registers_with_the_default_window_procedure():
     # GetWindowPlacement's showCmd (WNT_Window.cxx), SW_SHOWNORMAL for a window never shown, not its visibility
     assert window.IsMapped() is True
     assert not window.IsVirtual()
+
+
+def test_a_native_window_handle_is_an_int_on_every_platform():
+    """R-NATIVE-HANDLE: Aspect_Drawable is void* on Windows and unsigned long elsewhere, and nanocct takes it as an int on
+    all three, so a toolkit's window handle (Qt's QWidget.winId()) goes into an Aspect_NeutralWindow the same way
+    everywhere. On Windows a real HWND makes the round trip: WNT_Window.HWindow() is the int, and WNT_Window(handle)
+    wraps that window (a foreign window, which OCCT does not destroy)."""
+    window = Aspect.Aspect_NeutralWindow()
+    assert window.NativeHandle() == 0
+    assert window.SetNativeHandle(0x1234) is True and window.NativeHandle() == 0x1234
+    assert window.SetNativeHandle(0x1234) is False                # unchanged
+    if platform.system() != "Windows":
+        return
+    from nanocct import WNT
+
+    WS_POPUP = 0x80000000
+    wclass = WNT.WNT_WClass("nanocct test_TKService handles", 0)
+    owner = WNT.WNT_Window("nanocct test_TKService handles", wclass, WS_POPUP, 0, 0, 200, 100)
+    hwnd = owner.HWindow()
+    assert isinstance(hwnd, int) and hwnd != 0
+    assert owner.NativeHandle() == hwnd
+    foreign = WNT.WNT_Window(hwnd)
+    assert foreign.HWindow() == hwnd and foreign.Size() == (200, 100)
 
 
 def test_an_x11_window_exists_on_linux_only():

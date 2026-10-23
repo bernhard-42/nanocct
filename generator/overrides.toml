@@ -424,6 +424,14 @@ members = [
 # R-OPTIONAL-PTR for a pointer parameter *without* a null default: member -> the parameters dropped from the signature,
 # the callee gets nullptr. Only where OCCT's .cxx gives NULL a meaning of its own, read and cited per entry; without the
 # entry the whole member is skipped (void pointer), and for these that is the only way to create the object.
+# R-NATIVE-HANDLE: window-system handle typedefs bound as an integer where they are a pointer. Aspect_Drawable and
+# Aspect_Handle are `void*` on Windows (an HWND, an HINSTANCE, a cursor) and `unsigned long` elsewhere (an X window id, an
+# NSView* on macOS), so macOS and Linux already bind them as int; on Windows they took `void*` and every member using one
+# was skipped -- Aspect_NeutralWindow::SetNativeHandle above all, the way to put an OCCT view into another toolkit's
+# window (Qt's QWidget.winId()). Python passes the number through and never dereferences it.
+[native_handle]
+types = ["Aspect_Drawable", "Aspect_Handle"]
+
 [null_ok]
 "WNT_WClass::WNT_WClass" = ["theWndProc"]   # `theWndProc != NULL ? (WNDPROC)theWndProc : DefWindowProcW` (WNT_WClass.cxx):
                                             # NULL is the default window procedure. Without a WNT_WClass there is no

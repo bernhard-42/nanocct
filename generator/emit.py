@@ -550,6 +550,7 @@ class Emitter:
                               else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
                               else f"{p.seq_of}.size()" if p.seq_of != ""                 # ... and its count
                               else "nullptr" if p.omitted                                   # R-OPTIONAL-PTR
+                              else f"reinterpret_cast<{p.native_handle}>({p.name})" if p.native_handle != ""   # R-NATIVE-HANDLE
                               else f"{p.name}.ptr" if p.cstr_none                        # R-CSTR-NULL
                               else f"{p.name}_stream" if p.stream != StreamKind.NONE
                               else f"{p.name}_arr" if p.array_len > 0 and not p.is_out else p.name for p in m.params)
@@ -587,6 +588,10 @@ class Emitter:
             # R-COPY: `auto` would copy the result; the reference goes out as it is (reference_internal, _method)
             body.append(f"return {callee};")
             return f"[]({', '.join(lam_params)}) -> {m.result} {{ {' '.join(body)} }}"
+        elif m.result_native_handle:
+            # R-NATIVE-HANDLE: the void* handle typedef goes out as the integer it holds
+            body.append(f"auto nanocct_result = reinterpret_cast<std::uintptr_t>({callee});")
+            results.append("nanocct_result")
         elif m.result_on_heap:
             # R-COPY: nanobind would move the value into its own object -- for a class without its own move or copy
             # constructor a copy sharing the pointers the temporary's destructor frees; the prvalue initialises the heap
@@ -662,7 +667,7 @@ class Emitter:
             self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): returns {m.result} with out-parameters, and its "
                                f"copy would share the pointers its destructor frees (R-COPY) -> method skipped")
             return None
-        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" for p in m.params):
+        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.native_handle != "" for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
@@ -737,7 +742,8 @@ class Emitter:
         T = type_name if type_name is not None else cls.bound_type
         # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL / R-BYTES: nb::init cannot drop or convert
         # R-VIEW-GUARD: a container argument the constructor may change is checked in the body, after nanobind's conversion
-        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.guarded for p in params)
+        special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.guarded
+                      or p.native_handle != "" for p in params)                       # R-NATIVE-HANDLE: converted in the body
         ins = [p for p in params if not p.omitted and p.bytes_of == "" and p.seq_of == ""]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
                                else f"nanocct::OptionalCString {p.name}" if p.cstr_none
@@ -747,6 +753,7 @@ class Emitter:
         pre = "".join(c + " " for c in self._guard_checks(params))
         pre += " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
         call = ", ".join("nullptr" if p.omitted else f"{p.name}_arr" if p.array_len > 0 else f"{p.name}.ptr" if p.cstr_none
+                         else f"reinterpret_cast<{p.native_handle}>({p.name})" if p.native_handle != ""   # R-NATIVE-HANDLE
                          else f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes         # R-BYTES: the buffer ...
                          else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
                          else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
@@ -1156,7 +1163,8 @@ class Emitter:
                                    f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")
                 continue
             if fn.result_kind == ResultKind.VALUE_TRANSIENT or fn.result_on_heap or any(
-                    p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" for p in fn.params):
+                    p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != ""
+                    or p.native_handle != "" for p in fn.params):
                 # R-OUT: out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL
                 # need the lambda too, and so does a Transient returned by value (R-RESULT: into a handle, never a
                 # nanobind-owned copy)

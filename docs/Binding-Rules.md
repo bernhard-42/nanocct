@@ -743,7 +743,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     - Without the rule each such member (counted per platform in `tests/test_counts.py`, `optional-ptr`, each overload counted) would be skipped entirely (`AdvancedEvolved` would have no `IsDone`), and `Open` is the only way to use `RWPly_PlyWriterContext` at all.
     - A pointer without a default is dropped only when `overrides.toml [null_ok]` names it (member -> parameters), and an entry is made only after reading the `.cxx`: the type alone says nothing about whether the callee accepts NULL.
     - The one entry is `WNT_WClass`'s window procedure: without its constructor there is no `WNT_Window`, so no real window to render into on Windows -- the virtual `Aspect_NeutralWindow` falls back to the screen's device context (`GetDC(NULL)`, `OpenGl_Window.cxx`), whose pixel format a driver may refuse (`SetPixelFormat failed. Error code: -1073283066`, seen 2026-10-22; Microsoft documents no pixel format for the screen DC).
-    - NULL is OCCT's own default there (`DefWindowProcW`), so the window gets the Win32 default behaviour and Python never sees a function pointer. `theCursor` and `theIcon` have null defaults and are dropped by the first bullet: OCCT then uses `IDC_NO` and `IDI_APPLICATION`.
+    - NULL is OCCT's own default there (`DefWindowProcW`), so the window gets the Win32 default behaviour and Python never sees a function pointer. `theCursor` and `theIcon` are `Aspect_Handle`s, so integers defaulted to 0 (R-NATIVE-HANDLE): OCCT then uses `IDC_NO` and `IDI_APPLICATION`.
 
 - **Python**
 
@@ -799,6 +799,43 @@ How arguments go in and results come out (the user-facing summary is 3.2).
         window = WNT_Window("never shown", wclass, WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, 0, 0, 320, 200)
         assert window.Size() == (320, 200)                       # created hidden: only Map() shows it
     ```
+### R-NATIVE-HANDLE
+
+- **C++ Idiom**
+
+    A window-system handle typedef that is a pointer on one platform and an integer on the others: `Aspect_Drawable` (a window) and `Aspect_Handle` (a window, an instance, a cursor, an icon) are `void*` on Windows and `unsigned long` on Linux (an X window id) and macOS (an `NSView*`)
+
+- **OCCT examples**
+
+    - `bool Aspect_NeutralWindow::SetNativeHandle(Aspect_Drawable theWindow)`
+    - `Aspect_Drawable Aspect_NeutralWindow::NativeHandle() const override`
+    - `WNT_Window::WNT_Window(const Aspect_Handle theHandle, const Quantity_NameOfColor theBackColor = Quantity_NOC_MATRAGRAY)` (Windows only)
+    - `WNT_WClass::WNT_WClass(…, const Aspect_Handle theCursor = NULL, const Aspect_Handle theIcon = NULL, …)` (Windows only)
+
+- **Rule**
+
+    - The typedefs are listed in `overrides.toml [native_handle]` and recognised by their declared spelling (`_native_handle` in `parse.py`): the canonical `void*` says nothing about being a handle.
+    - Only where the typedef is a pointer, i.e. on Windows. Elsewhere it is an integer and bound as one already, so the Python API is the same on all three platforms: an `int`.
+    - Without the rule every such member was skipped on Windows only ("void pointer", R-UNSUPPORTED) -- `SetNativeHandle` among them, the way to put an OCCT view into another toolkit's window: Qt's `QWidget.winId()` is that integer on every platform (an HWND, an X window id, an `NSView*`).
+    - A defaulted handle keeps its parameter (`NULL` becomes 0) instead of being dropped by R-OPTIONAL-PTR, and a constructor from a handle is no implicit conversion (an `int` is no `WNT_Window`).
+    - Python passes the number through and never dereferences it; that it names a live window of the right kind is the caller's responsibility, as in C++.
+
+- **Python**
+
+    - `int`, as a parameter and as a result (`std::uintptr_t` in the lambda, `reinterpret_cast` to and from the typedef).
+
+- **Python examples**
+
+    ```python
+    from nanocct.Aspect import Aspect_NeutralWindow
+
+    window = Aspect_NeutralWindow()
+    assert window.NativeHandle() == 0
+    assert window.SetNativeHandle(0x1234) is True    # e.g. QWidget.winId(); stored, never dereferenced here
+    assert window.NativeHandle() == 0x1234
+    assert window.SetNativeHandle(0x1234) is False   # unchanged
+    ```
+
 ### R-CSTR-NULL
 
 - **C++ Idiom**

@@ -73,6 +73,18 @@ _BINARY_MEMBERS = set(_OVERRIDES.get("stream", {}).get("binary_members", []))   
 _BYTES_MEMBERS = set(_OVERRIDES.get("bytes", {}).get("members", []))              # R-BYTES: `const uint8_t*` + length -> one `bytes` parameter
 _ARRAY_MEMBERS: dict[str, str] = dict(_OVERRIDES.get("array", {}).get("members", {}))   # R-ARRAY-PTR: member -> the allocator's owner
 NULL_OK: dict[str, list[str]] = dict(_OVERRIDES.get("null_ok", {}))   # R-OPTIONAL-PTR without a null default: member -> parameters
+NATIVE_HANDLES: set[str] = set(_OVERRIDES.get("native_handle", {}).get("types", []))   # R-NATIVE-HANDLE: handle typedefs -> int
+
+
+# Binding-Rules.md R-NATIVE-HANDLE
+def _native_handle(t: cindex.Type) -> str:
+    """The handle typedef `t` is spelled as (Aspect_Drawable, `const Aspect_Handle`) when it is listed in overrides.toml
+    [native_handle] and is a pointer on this platform, else "". Decided by the declared spelling: the canonical type is
+    a plain void* that says nothing about being a window handle."""
+    name = t.spelling.replace("const ", "").strip()
+    if name in NATIVE_HANDLES and t.get_canonical().kind == TK.POINTER:
+        return name
+    return ""
 
 _UNSUPPORTED_RE = re.compile(
     # basic_streambuf and basic_ios too: OSD_FileSystem::OpenStreamBuffer (shared_ptr<std::streambuf>) was reported as
@@ -958,6 +970,15 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         name = py_safe(p.spelling)                 # R-KEYWORD: TDF_TagSource::Restore(const handle<TDF_Attribute>& with) -> with_
         if name == "":
             name = f"arg{i}"
+        native = _native_handle(p.type)
+        if native != "":
+            # R-NATIVE-HANDLE: an HWND/X window/NSView handle typedef that is void* here (Windows) is taken as an integer, as
+            # it already is where the typedef is unsigned long; the lambda converts it back. Before R-OPTIONAL-PTR, so a
+            # defaulted one (WNT_WClass's theCursor = NULL) stays a parameter, defaulted to 0
+            default = _default_expr(p, scope, members)
+            params.append(Param(name=name, type="std::uintptr_t", default="0" if default in ("NULL", "nullptr") else default,
+                                is_out=False, native_handle=native))
+            continue
         if reason in _OPTIONAL_PTR_REASONS and (
                 p.type.get_canonical().kind == TK.POINTER and (_default_expr(p, scope, members) in ("NULL", "nullptr", "0")
                                                                or p.spelling in NULL_OK.get(qualified, ()))
@@ -1262,6 +1283,10 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
         m.result, m.result_kind, m.result_class = "void", ResultKind.VALUE, ""
     if m.skip_reason is None:
         m.skip_reason = _unsupported(cursor.result_type, allow_out=False) if not returns_stream else None
+        if m.skip_reason == "void pointer" and _native_handle(cursor.result_type) != "":
+            # R-NATIVE-HANDLE: Aspect_NeutralWindow::NativeHandle(), WNT_Window::HWindow() -> the handle as an integer
+            m.skip_reason = None
+            m.result, m.result_native_handle, m.force_lambda = "std::uintptr_t", True, True
         if m.skip_reason is None:
             m.skip_reason = _stl_iterator_in_6c(cursor.result_type)
         rc0 = cursor.result_type.get_canonical()
@@ -2313,7 +2338,8 @@ def _ctor(ch: cindex.Cursor, c: Class, members: set[str]) -> Constructor:
     # R-IMPLICIT-CONV: a non-explicit constructor callable with one argument converts implicitly (nb::implicitly_convertible
     # in the emitter); copy and move constructors do not
     implicit = (len(params) >= 1 and len(required) <= 1 and not ch.is_explicit_method()
-                and not ch.is_copy_constructor() and not ch.is_move_constructor())
+                and not ch.is_copy_constructor() and not ch.is_move_constructor()
+                and params[0].native_handle == "")     # R-NATIVE-HANDLE: an int is no WNT_Window (WNT_Window(Aspect_Handle))
     # defined_in_header feeds the nm checks in __main__ (R-UNDEFINED, R-UNDEFINED-COPY): `= default` counts as defined
     ctor = Constructor(params=params, doc=_doc_with_deprecation(ch), skip_reason=reason, is_implicit=implicit, is_copy=ch.is_copy_constructor(),
                        defined_in_header=ch.is_definition() or ch.get_definition() is not None or ch.is_default_method() or _SUBST.active,
