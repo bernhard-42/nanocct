@@ -358,22 +358,22 @@ test:
 	@# the dev tools (pytest, mypy, ty, libclang for the generator tests) -- not against the staged tree, and not in .venv,
 	@# where the staged tree's .pth would put a second copy of the modules into the process (the one-copy rule).
 	@# tools/pytest_leakcheck.py runs pytest and fails on nanobind's "leaked" report at interpreter exit, which comes after
-	@# pytest's own summary (a reference cycle no garbage collector sees, R-KEPT). -v names every test and -rs lists the
-	@# skipped ones with their reasons in the summary, so a log shows what a platform leaves out, the same on all three.
+	@# pytest's own summary (a reference cycle no garbage collector sees, R-KEPT). pytest's default output (a line per
+	@# file, a dot per test) and -rs, which lists the skipped tests with their reasons in the summary, the same on all three.
 	@wheels=$$(ls $(DIST_DIR)/nanocct-*.whl 2>/dev/null); \
 	if [ $$(echo $$wheels | wc -w) -ne 1 ]; then echo "test: need exactly one repaired wheel in $(DIST_DIR) -- run make wheel delocate" >&2; exit 1; fi
 ifeq ($(PLATFORM),macos)
 	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
 	    && uv pip install -q --python $(TEST_VENV)/bin/python --group dev $(DIST_DIR)/nanocct-*.whl
-	cd $(ROOT) && $(TEST_VENV)/bin/python tools/pytest_leakcheck.py tests -v -rs -p no:cacheprovider
+	cd $(ROOT) && $(TEST_VENV)/bin/python tools/pytest_leakcheck.py tests -rs -p no:cacheprovider
 else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && uv venv -q --clear -p $(PY_VERSION) $(TEST_VENV) \
 	    && uv pip install -q --python "$(TEST_VENV)/Scripts/python.exe" --group dev $(DIST_DIR)/nanocct-*.whl
-	cd $(ROOT) && "$(TEST_VENV)/Scripts/python.exe" tools/pytest_leakcheck.py tests -v -rs -p no:cacheprovider
+	cd $(ROOT) && "$(TEST_VENV)/Scripts/python.exe" tools/pytest_leakcheck.py tests -rs -p no:cacheprovider
 else
 	$(CONTAINER) "cd /work && uv venv -q --clear -p $(ML_SYSPY) /work/.venv-test-ml \
 	    && uv pip install -q --python /work/.venv-test-ml/bin/python --group dev /work/dist/nanocct-*.whl \
-	    && xvfb-run -a /work/.venv-test-ml/bin/python tools/pytest_leakcheck.py tests -v -rs -p no:cacheprovider"
+	    && xvfb-run -a /work/.venv-test-ml/bin/python tools/pytest_leakcheck.py tests -rs -p no:cacheprovider"
 endif
 
 
