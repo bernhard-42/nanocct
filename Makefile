@@ -15,7 +15,9 @@
 #            Start it from a real session: launched over ssh, cl.exe fails sporadically with 0xC0000142.
 #
 # Every step orchestrates its own parallelism (ninja -j, NANOCCT_JOBS = one worker per core), so the targets
-# themselves are serial.
+# themselves are serial. NINJA_JOBS=N limits the compilers `make compile` runs at once (ninja's default is one per core
+# plus two): a large binding translation unit takes ~1.5 GB, so a machine with little RAM per core needs it -- WSL with
+# 15 GB on 24 cores hung with the default and builds with NINJA_JOBS=8 (2026-10-23).
 .NOTPARALLEL:
 .DEFAULT_GOAL := wheels
 
@@ -313,7 +315,7 @@ ifeq ($(PLATFORM),macos)
 	@# (pyproject.toml), and delocate refuses the wheel: "has a minimum target of 26.0" (2026-09-28).
 	cd $(ROOT) && cmake -S . -B $(BUILD_DIR) -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=$(MACOS_TARGET) \
 	    -DPython_EXECUTABLE=$(ROOT)/.venv/bin/python -DNANOCCT_RAPIDJSON_DIR=$(DEPS)/rapidjson/include
-	cd $(ROOT) && cmake --build $(BUILD_DIR)
+	cd $(ROOT) && cmake --build $(BUILD_DIR) $(if $(NINJA_JOBS),--parallel $(NINJA_JOBS))
 	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 	@# Exactly one copy of the extension modules may be in a process: nanobind registers its types per domain, and
 	@# a wheel-installed nanocct next to the staged one aborts the import with "Critical nanobind error".
@@ -325,7 +327,7 @@ else
 	$(CONTAINER) "cmake -S /work -B /work/build-ml -G Ninja -DCMAKE_BUILD_TYPE=Release \
 	    -DPython_EXECUTABLE=$(ML_PY) -DNANOCCT_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
 	    -DNANOCCT_RAPIDJSON_DIR=/work/deps/rapidjson/include"
-	$(CONTAINER) "ninja -k 0 -C /work/build-ml"
+	$(CONTAINER) "ninja -k 0 $(if $(NINJA_JOBS),-j $(NINJA_JOBS)) -C /work/build-ml"
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
 endif
 
