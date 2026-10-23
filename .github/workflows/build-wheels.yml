@@ -5,11 +5,14 @@
 # `make sources`, `make generate compile stubs wheel delocate test` -- each step once: the wheel is packed from what
 # `compile` built (until 2026-09-28 `make wheel` compiled everything a second time), and the tests run against the
 # repaired wheel in a fresh venv. The workflow adds only what the Makefile cannot know --
-# the runner's missing tools, the two caches and the third-party suites of nanocct-tests, run by its own Makefile.
+# the runner's missing tools, the three caches and the third-party suites of nanocct-tests, run by its own Makefile.
 #
 #   deps cache    deps/ install trees after `make deps` (OCCT, FreeType, FreeImage, RapidJSON), keyed on the scripts
 #                 that build them, so the long OCCT build runs only when one of those scripts changes. GitHub drops
 #                 a cache that has not been read for 7 days, so a quiet week costs one cold build.
+#   build cache   the repaired wheel in dist/ and the generated sources, keyed on the build inputs (all tracked files
+#                 but tests, docs, examples and CI), saved before the tests: a change to tests only reuses them instead
+#                 of generating and compiling again.
 #   wheel cache   the repaired wheel in dist/, keyed on the commit. release.yml restores it from there when that
 #                 commit is tagged -- run this workflow on main: a tag run can read caches of the default branch,
 #                 not of other branches.
@@ -33,6 +36,10 @@ on:
 env:
   # Bump to throw away every deps cache without touching a build script.
   DEPS_CACHE_VERSION: "1"
+  # uv's own Python builds, as on a workstation, not whatever the runner has: on macOS uv took Homebrew's python@3.14,
+  # which comes without Tk, and the window tests failed with "No module named '_tkinter'" (tkinter creates the
+  # NSApplication Cocoa_Window needs). The Linux build runs in the container, which gets only HOME.
+  UV_MANAGED_PYTHON: "1"
 
 jobs:
   # The platform table, filtered by the dispatch inputs. `platform` names the caches (deps-<platform>-...,
@@ -159,23 +166,65 @@ jobs:
         run: make sources
 
       # ---- the build -----------------------------------------------------------------------------------------------
+      # The build cache holds the repaired wheel, keyed on everything the build reads: the blob hashes of all tracked
+      # files except what only tests, documents or CI use. A change there alone (a test, the nanocct-tests step) reuses
+      # the wheel instead of compiling for an hour; any other file -- a new one too -- builds anew. Readme.md and
+      # LICENSE stay in: the wheel carries them. The workflow file is out, so a change to a build step below needs a
+      # change to a build input too (the steps are Makefile targets, which are in). Saved right after `make delocate`,
+      # before any test, so a failing test keeps the build; the release cache further down is saved only after all tests.
+      - name: Build inputs
+        id: inputs
+        run: |
+          hash=$(git ls-files -s -- . ':(exclude)tests' ':(exclude)docs' ':(exclude)examples' ':(exclude)CHANGELOG.md' \
+                   ':(exclude).github' | git hash-object --stdin)
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          echo "build inputs: $hash"
+
+      # With the wheel, the generated sources (src/cpp, src/nanocct; 42 MB, measured locally): the tests read them
+      # (src/cpp reports and manifest), and `make generate` alone takes 5-21 minutes on the runners. The tracked files in
+      # those directories are build inputs, so a restore writes back their own content.
+      - name: Restore build cache
+        id: build
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
+        with:
+          path: |
+            dist/*.whl
+            src/cpp
+            src/nanocct
+          key: nanocct-build-${{ matrix.platform }}-${{ steps.inputs.outputs.hash }}
+
       - name: make env
         run: make env
 
       - name: make generate
+        if: steps.build.outputs.cache-hit != 'true'
         run: make generate
 
       - name: make compile
+        if: steps.build.outputs.cache-hit != 'true'
         run: make compile
 
       - name: make stubs
+        if: steps.build.outputs.cache-hit != 'true'
         run: make stubs
 
       - name: make wheel
+        if: steps.build.outputs.cache-hit != 'true'
         run: make wheel
 
       - name: make delocate
+        if: steps.build.outputs.cache-hit != 'true'
         run: make delocate
+
+      - name: Save build cache
+        if: steps.build.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 #v6.1.0
+        with:
+          path: |
+            dist/*.whl
+            src/cpp
+            src/nanocct
+          key: ${{ steps.build.outputs.cache-primary-key }}
 
       - name: make test
         run: make test
