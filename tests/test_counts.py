@@ -1,10 +1,9 @@
-"""The counts in the design documents stay true: every number marked `N<!-- count: key -->` in docs/*.md is recounted
-here from the generated sources, the generator's reports, the manifest and the stubs, and must match.
+"""The counts of the generated code, pinned per platform (PINNED): how often each binding rule fires, taken from the
+generated sources, the generator's reports, the manifest and the stubs. They are the evidence for the rules in
+docs/Binding-Rules.md, which describe the rules without repeating the numbers.
 
-A generator change or an OCCT update moves these numbers; the test then fails with the key, the documented and the
-found value, and the document is updated on purpose -- a number in the rule book cannot go stale unseen. The documents
-state the macOS numbers (the generated API is not the same on every platform, see tests/test_lifetime_counts.py), so
-the comparison runs on macOS."""
+A generator change or an OCCT update moves them; the test then fails with the key, the pinned and the found value and
+prints the complete table to adopt, and the pin is updated on purpose -- a count cannot move unseen."""
 from __future__ import annotations
 
 import json
@@ -20,9 +19,158 @@ from test_lifetime_counts import COPY_TAIL
 
 ROOT = Path(__file__).parents[1]
 CPP = ROOT / "src" / "cpp"
-MARK = re.compile(r"(\d[\d ]*\d|\d)<!-- count: ([a-z0-9-]+) -->")
 
-pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="the documents state the macOS counts")
+# The counts this platform's generation must produce, one complete table per platform: the truth the generated code is
+# checked against. Why the platforms differ (tests/test_lifetime_counts.py pins its numbers per platform for the same
+# reasons):
+# - OCCT's headers differ: WNT_Window and WNT_WClass exist only under #if defined(_WIN32), Cocoa only on macOS;
+# - the export tables differ: macOS and Linux export everything a header declares, MSVC only what OCCT marks
+#   Standard_EXPORT, so R-UNDEFINED drops more members on Windows (undefined-lines), and with them what they used;
+# - types differ: size_t is unsigned long long on Windows (LLP64), and Aspect_Drawable is void* there and unsigned
+#   long elsewhere -- a void* member makes the layout rule keep constructor arguments (the kept-* counts).
+PINNED: dict[str, dict[str, int]] = {
+    "darwin": {                                    # the numbers docs/*.md quoted until 2026-10-23, not yet measured here
+        "alias-result": 46,
+        "array-lines": 7,
+        "bitset": 19,
+        "copy-heap": 20,
+        "copy-keep-original": 528,
+        "copy-no-ctor": 308,
+        "cstr-null": 15,
+        "ctor-keep": 568,
+        "default-braced": 8,
+        "enum-arg": 2639,
+        "iter-keeps": 20,
+        "kept-base": 7,
+        "kept-classes": 54,
+        "kept-ctor-args-cpp": 31,
+        "kept-own": 47,
+        "kept-slots-cpp": 106,
+        "lifetime-lines": 91,
+        "lifetime-topopebrepbuild": 56,
+        "method-keep-files": 50,
+        "method-keep-slots": 811,
+        "ncollection-eager": 33,
+        "null-bool": 7,
+        "optional-ptr": 59,
+        "overload-order": 53,
+        "owner-args": 114,
+        "owner-files": 19,
+        "owner-results": 448,
+        "owner-tuple": 17,
+        "refwrap": 5,
+        "result-keep-args": 308,
+        "result-keep-results": 207,
+        "result-refcount0": 71,
+        "result-value-transient": 12,
+        "str-ops": 40,
+        "stub-enum-defaults": 217,
+        "unbound-type": 38,
+        "undefined-lines": 133,
+        "unhashable": 57,
+        "unreachable": 72,
+        "view-guard-iterators": 23,
+        "view-guard-lambda": 106,
+        "view-guard-lines": 149,
+        "view-guard-params": 1867,
+        "view-guard-toolkits": 35,
+        "view-guard-wrapped": 1102,
+    },
+    "linux": {                                     # assumed equal to macOS (both Unix), not yet measured
+        "alias-result": 46,
+        "array-lines": 7,
+        "bitset": 19,
+        "copy-heap": 20,
+        "copy-keep-original": 528,
+        "copy-no-ctor": 308,
+        "cstr-null": 15,
+        "ctor-keep": 568,
+        "default-braced": 8,
+        "enum-arg": 2639,
+        "iter-keeps": 20,
+        "kept-base": 7,
+        "kept-classes": 54,
+        "kept-ctor-args-cpp": 31,
+        "kept-own": 47,
+        "kept-slots-cpp": 106,
+        "lifetime-lines": 91,
+        "lifetime-topopebrepbuild": 56,
+        "method-keep-files": 50,
+        "method-keep-slots": 811,
+        "ncollection-eager": 33,
+        "null-bool": 7,
+        "optional-ptr": 59,
+        "overload-order": 53,
+        "owner-args": 114,
+        "owner-files": 19,
+        "owner-results": 448,
+        "owner-tuple": 17,
+        "refwrap": 5,
+        "result-keep-args": 308,
+        "result-keep-results": 207,
+        "result-refcount0": 71,
+        "result-value-transient": 12,
+        "str-ops": 40,
+        "stub-enum-defaults": 217,
+        "unbound-type": 38,
+        "undefined-lines": 133,
+        "unhashable": 57,
+        "unreachable": 72,
+        "view-guard-iterators": 23,
+        "view-guard-lambda": 106,
+        "view-guard-lines": 149,
+        "view-guard-params": 1867,
+        "view-guard-toolkits": 35,
+        "view-guard-wrapped": 1102,
+    },
+    "win32": {                                     # measured 2026-10-23
+        "alias-result": 46,
+        "array-lines": 7,
+        "bitset": 19,
+        "copy-heap": 20,
+        "copy-keep-original": 528,
+        "copy-no-ctor": 313,
+        "cstr-null": 15,
+        "ctor-keep": 565,
+        "default-braced": 8,
+        "enum-arg": 2579,
+        "iter-keeps": 20,
+        "kept-base": 7,
+        "kept-classes": 58,
+        "kept-ctor-args-cpp": 34,
+        "kept-own": 51,
+        "kept-slots-cpp": 109,
+        "lifetime-lines": 91,
+        "lifetime-topopebrepbuild": 56,
+        "method-keep-files": 53,
+        "method-keep-slots": 812,
+        "ncollection-eager": 33,
+        "null-bool": 7,
+        "optional-ptr": 60,
+        "overload-order": 53,
+        "owner-args": 114,
+        "owner-files": 19,
+        "owner-results": 448,
+        "owner-tuple": 17,
+        "refwrap": 5,
+        "result-keep-args": 305,
+        "result-keep-results": 207,
+        "result-refcount0": 71,
+        "result-value-transient": 12,
+        "str-ops": 40,
+        "stub-enum-defaults": 218,
+        "unbound-type": 35,
+        "undefined-lines": 277,
+        "unhashable": 57,
+        "unreachable": 72,
+        "view-guard-iterators": 23,
+        "view-guard-lambda": 106,
+        "view-guard-lines": 149,
+        "view-guard-params": 1863,
+        "view-guard-toolkits": 35,
+        "view-guard-wrapped": 1100,
+    },
+}
 
 
 def _sources() -> dict[Path, str]:
@@ -147,23 +295,21 @@ def counts() -> dict[str, int]:
     return {key: f() for key, f in table.items()}
 
 
-def _marked() -> list[tuple[str, str, int]]:
-    """(document, key, documented value) for every marked number."""
-    out = []
-    for doc in sorted((ROOT / "docs").glob("*.md")):
-        for m in MARK.finditer(doc.read_text(encoding="utf-8")):
-            out.append((doc.name, m.group(2), int(m.group(1).replace(" ", ""))))
-    return out
+def test_every_platform_pins_the_same_counts():
+    keys = {platform: sorted(table) for platform, table in PINNED.items()}
+    assert sorted(PINNED) == ["darwin", "linux", "win32"]
+    assert keys["linux"] == keys["darwin"] and keys["win32"] == keys["darwin"]
 
 
-def test_the_documents_mark_their_counts():
-    assert len(_marked()) > 30
-
-
-def test_every_marked_count_is_what_the_generated_code_says():
+def test_the_generated_code_has_the_pinned_counts():
+    """This platform's generation produces exactly PINNED[sys.platform]. On a difference the message lists the keys and
+    the complete table to adopt -- on purpose, after reading why the number moved."""
     found = counts()
-    marked = _marked()
-    unknown = sorted({key for _, key, _ in marked if key not in found})
-    assert unknown == [], f"marked keys this test does not count: {unknown}"
-    wrong = [f"  {doc}: {key:28} documented {n:>6}  found {found[key]:>6}" for doc, key, n in marked if found[key] != n]
-    assert wrong == [], "counts in the documents no longer hold -- update them on purpose:\n" + "\n".join(wrong)
+    pinned = PINNED[sys.platform]
+    if found == pinned:
+        return
+    wrong = [f"  {key:28} pinned {pinned.get(key, '-'):>6}  found {found.get(key, '-'):>6}"
+             for key in sorted(set(found) | set(pinned)) if found.get(key) != pinned.get(key)]
+    table = "\n".join(f'        "{key}": {n},' for key, n in sorted(found.items()))
+    pytest.fail(f"the counts of this generation moved -- update PINNED[{sys.platform!r}] on purpose:\n" + "\n".join(wrong)
+                + f"\n\n    {sys.platform!r}: {{\n{table}\n    }},")
