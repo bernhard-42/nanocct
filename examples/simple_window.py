@@ -20,12 +20,17 @@ Ctrl-C in the terminal, or closing the Tk control window, ends it.
 import sys
 import tkinter as tk
 
-from nanocct.AIS import AIS_InteractiveContext, AIS_Shape, AIS_Shaded
+from nanocct.AIS import AIS_InteractiveContext, AIS_Shaded, AIS_Shape
 from nanocct.Aspect import Aspect_DisplayConnection, Aspect_TOL_SOLID, Aspect_Window
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanocct.OpenGl import OpenGl_GraphicDriver
 from nanocct.Prs3d import Prs3d_LineAspect
-from nanocct.Quantity import Quantity_Color, Quantity_NOC_BLACK, Quantity_NOC_STEELBLUE, Quantity_TOC_sRGB
+from nanocct.Quantity import (
+    Quantity_Color,
+    Quantity_NOC_BLACK,
+    Quantity_NOC_STEELBLUE,
+    Quantity_TOC_sRGB,
+)
 from nanocct.V3d import V3d_Viewer, V3d_XposYnegZpos
 
 WIDTH, HEIGHT = 900, 700
@@ -36,13 +41,13 @@ TITLE = "OCCT 8.0.1 - unit box"
 def native_window(display: Aspect_DisplayConnection, title: str, x: int, y: int, width: int, height: int) -> Aspect_Window:
     """This platform's window, created by OCCT itself (no native handle needed) and hidden until Map()."""
     if sys.platform == "linux":
-        from nanocct.Xw import Xw_Window                    # X11 only in the Linux build
+        from nanocct.Xw import Xw_Window                    # X11 only in the Linux build  # noqa: I001
         return Xw_Window(display, title, x, y, width, height)
     if sys.platform == "darwin":
-        from nanocct.Cocoa import Cocoa_Window             # macOS only
+        from nanocct.Cocoa import Cocoa_Window             # macOS only  # noqa: I001
         return Cocoa_Window(title, x, y, width, height)
     if sys.platform == "win32":
-        from nanocct.WNT import WNT_WClass, WNT_Window      # Windows only
+        from nanocct.WNT import WNT_WClass, WNT_Window      # Windows only  # noqa: I001
         # <winuser.h>: redraw the whole window on resize; a resizable window with a title bar but no close button,
         # so that it is closed together with the Tk window
         CS_VREDRAW, CS_HREDRAW = 0x0001, 0x0002

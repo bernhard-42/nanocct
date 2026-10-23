@@ -26,29 +26,52 @@ import os
 import sys
 
 if sys.platform == "linux":
-    os.environ.setdefault("QT_QPA_PLATFORM", "xcb")              # before Qt starts
+    os.environ.setdefault("QT_QPA_PLATFORM", "xcb")  # before Qt starts
 
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
 from nanocct import TopoDS
-from nanocct.AIS import AIS_InteractiveContext, AIS_Shape, AIS_Shaded, AIS_ViewController, AIS_ViewCube, AIS_WireFrame
-from nanocct.Aspect import (Aspect_DisplayConnection, Aspect_GFM_VER, Aspect_NeutralWindow, Aspect_ScrollDelta,
-                            Aspect_TOL_SOLID, Aspect_VKeyFlags_ALT, Aspect_VKeyFlags_CTRL, Aspect_VKeyFlags_NONE,
-                            Aspect_VKeyFlags_SHIFT, Aspect_VKeyMouse_LeftButton, Aspect_VKeyMouse_MiddleButton,
-                            Aspect_VKeyMouse_NONE, Aspect_VKeyMouse_RightButton)
+from nanocct.AIS import (
+    AIS_InteractiveContext,
+    AIS_Shaded,
+    AIS_Shape,
+    AIS_ViewController,
+    AIS_ViewCube,
+    AIS_WireFrame,
+)
+from nanocct.Aspect import (
+    Aspect_DisplayConnection,
+    Aspect_GFM_VER,
+    Aspect_NeutralWindow,
+    Aspect_ScrollDelta,
+    Aspect_TOL_SOLID,
+    Aspect_VKeyFlags_ALT,
+    Aspect_VKeyFlags_CTRL,
+    Aspect_VKeyFlags_NONE,
+    Aspect_VKeyFlags_SHIFT,
+    Aspect_VKeyMouse_LeftButton,
+    Aspect_VKeyMouse_MiddleButton,
+    Aspect_VKeyMouse_NONE,
+    Aspect_VKeyMouse_RightButton,
+)
 from nanocct.BRepAdaptor import BRepAdaptor_Surface
 from nanocct.BRepAlgoAPI import BRepAlgoAPI_Cut
 from nanocct.BRepFilletAPI import BRepFilletAPI_MakeFillet
 from nanocct.BRepGProp import BRepGProp
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
 from nanocct.BVH import BVH_Vec2i
-from nanocct.GProp import GProp_GProps
 from nanocct.gp import gp_Ax2, gp_Dir, gp_Pnt
+from nanocct.GProp import GProp_GProps
 from nanocct.OpenGl import OpenGl_GraphicDriver
 from nanocct.Prs3d import Prs3d_LineAspect
-from nanocct.Quantity import Quantity_Color, Quantity_NOC_BLACK, Quantity_NOC_STEELBLUE, Quantity_TOC_sRGB
+from nanocct.Quantity import (
+    Quantity_Color,
+    Quantity_NOC_BLACK,
+    Quantity_NOC_STEELBLUE,
+    Quantity_TOC_sRGB,
+)
 from nanocct.TopAbs import TopAbs_ShapeEnum
 from nanocct.TopExp import TopExp_Explorer
 from nanocct.TopoDS import TopoDS_Shape
@@ -61,13 +84,15 @@ def make_part() -> TopoDS_Shape:
     fillet = BRepFilletAPI_MakeFillet(box)
     edges = []
     explorer = TopExp_Explorer(box, TopAbs_ShapeEnum.TopAbs_EDGE)
-    while explorer.More():                                        # an edge is met once per face it bounds
+    while explorer.More():  # an edge is met once per face it bounds
         edge = TopoDS.Edge(explorer.Current())
         if not any(edge.IsSame(seen) for seen in edges):
             edges.append(edge)
             fillet.Add(4.0, edge)
         explorer.Next()
-    hole = BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0.0, 0.0, -30.0), gp_Dir(0.0, 0.0, 1.0)), 8.0, 60.0).Shape()
+    hole = BRepPrimAPI_MakeCylinder(
+        gp_Ax2(gp_Pnt(0.0, 0.0, -30.0), gp_Dir(0.0, 0.0, 1.0)), 8.0, 60.0
+    ).Shape()
     return BRepAlgoAPI_Cut(fillet.Shape(), hole).Shape()
 
 
@@ -97,7 +122,7 @@ class OcctWidget(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_NativeWindow)
         self.setAttribute(Qt.WidgetAttribute.WA_PaintOnScreen)
         self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
-        self.setMouseTracking(True)                               # hover highlighting without a pressed button
+        self.setMouseTracking(True)  # hover highlighting without a pressed button
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setMinimumSize(400, 300)
 
@@ -109,13 +134,15 @@ class OcctWidget(QWidget):
         self.controller = AIS_ViewController()
         self.window: Aspect_NeutralWindow | None = None
         self.selection = ""
-        self.clicked = False                                      # a button was released: the selection may have changed
+        self.clicked = False  # a button was released: the selection may have changed
 
         self.part = AIS_Shape(make_part())
         self.part.SetColor(Quantity_Color(Quantity_NOC_STEELBLUE))
-        drawer = self.part.Attributes()                           # the edges, drawn on the shaded faces
+        drawer = self.part.Attributes()  # the edges, drawn on the shaded faces
         drawer.SetFaceBoundaryDraw(True)
-        drawer.SetFaceBoundaryAspect(Prs3d_LineAspect(Quantity_Color(Quantity_NOC_BLACK), Aspect_TOL_SOLID, 1.5))
+        drawer.SetFaceBoundaryAspect(
+            Prs3d_LineAspect(Quantity_Color(Quantity_NOC_BLACK), Aspect_TOL_SOLID, 1.5)
+        )
 
         # the view cube turns the view when one of its faces, edges or corners is clicked, animated by the controller
         self.cube = AIS_ViewCube()
@@ -124,13 +151,17 @@ class OcctWidget(QWidget):
         self.cube.SetAutoStartAnimation(True)
         # the cube's sizes are pixels; these are the values for a device pixel ratio of 1, see _apply_device_ratio
         self.cube_size = 55.0
-        self.cube_axes = (self.cube.AxesRadius(), self.cube.AxesConeRadius(), self.cube.AxesSphereRadius())
+        self.cube_axes = (
+            self.cube.AxesRadius(),
+            self.cube.AxesConeRadius(),
+            self.cube.AxesSphereRadius(),
+        )
         offset = self.cube.TransformPersistence().Offset2d()
         self.cube_offset = (offset.x(), offset.y())
 
     # ---- the native window ------------------------------------------------------------------------------------------
-    def paintEngine(self):                                        # noqa: N802 (Qt's name)
-        return None                                               # WA_PaintOnScreen: OCCT, not Qt, paints
+    def paintEngine(self):
+        return None  # WA_PaintOnScreen: OCCT, not Qt, paints
 
     def _pixels(self) -> tuple[int, int]:
         """The widget's size in device pixels -- OCCT's window is physical, Qt's sizes are logical on a HiDPI screen."""
@@ -145,14 +176,22 @@ class OcctWidget(QWidget):
         SetSize's own font scaling would make the labels twice too large."""
         ratio = self.devicePixelRatioF()
         self.view.ChangeRenderingParams().Resolution = round(72 * ratio)
-        self.cube.SetSize(self.cube_size * ratio)                 # scales the facet extension and padding too ...
-        self.cube.SetFontHeight(0.16 * self.cube_size)            # ... and the font, back to what SetSize gives at 1
+        self.cube.SetSize(
+            self.cube_size * ratio
+        )  # scales the facet extension and padding too ...
+        self.cube.SetFontHeight(
+            0.16 * self.cube_size
+        )  # ... and the font, back to what SetSize gives at 1
         radius, cone, sphere = self.cube_axes
         self.cube.SetAxesRadius(radius * ratio)
         self.cube.SetAxesConeRadius(cone * ratio)
         self.cube.SetAxesSphereRadius(sphere * ratio)
         persistence = self.cube.TransformPersistence()
-        persistence.SetOffset2d(BVH_Vec2i(round(self.cube_offset[0] * ratio), round(self.cube_offset[1] * ratio)))
+        persistence.SetOffset2d(
+            BVH_Vec2i(
+                round(self.cube_offset[0] * ratio), round(self.cube_offset[1] * ratio)
+            )
+        )
         self.cube.SetTransformPersistence(persistence)
 
     def _attach(self) -> None:
@@ -163,15 +202,23 @@ class OcctWidget(QWidget):
         if self.window is not None:
             return
         self.window = Aspect_NeutralWindow()
-        self.window.SetNativeHandle(int(self.winId()))           # HWND, X window or NSView*: an int everywhere
+        self.window.SetNativeHandle(
+            int(self.winId())
+        )  # HWND, X window or NSView*: an int everywhere
         self.window.SetSize(*self._pixels())
         self.view.SetWindow(self.window)
-        self.view.SetBgGradientColors(Quantity_Color(0.30, 0.35, 0.42, Quantity_TOC_sRGB),
-                                      Quantity_Color(0.08, 0.09, 0.11, Quantity_TOC_sRGB), Aspect_GFM_VER, False)
+        self.view.SetBgGradientColors(
+            Quantity_Color(0.30, 0.35, 0.42, Quantity_TOC_sRGB),
+            Quantity_Color(0.08, 0.09, 0.11, Quantity_TOC_sRGB),
+            Aspect_GFM_VER,
+            False,
+        )
         self.context.Display(self.part, False)
         self.context.SetDisplayMode(self.part, AIS_Shaded, False)
-        self.context.Deactivate(self.part)                        # select faces rather than the whole shape
-        self.context.Activate(self.part, AIS_Shape.SelectionMode_s(TopAbs_ShapeEnum.TopAbs_FACE))
+        self.context.Deactivate(self.part)  # select faces rather than the whole shape
+        self.context.Activate(
+            self.part, AIS_Shape.SelectionMode_s(TopAbs_ShapeEnum.TopAbs_FACE)
+        )
         self._apply_device_ratio()
         self.context.Display(self.cube, False)
         self.set_projection(V3d_XposYnegZpos)
@@ -179,7 +226,10 @@ class OcctWidget(QWidget):
     def event(self, event) -> bool:
         # moved to a screen with another device pixel ratio: the size in points stays, so no resizeEvent follows,
         # and OCCT reads the new backing scale only when told that the window changed
-        if event.type() == QEvent.Type.DevicePixelRatioChange and self.window is not None:
+        if (
+            event.type() == QEvent.Type.DevicePixelRatioChange
+            and self.window is not None
+        ):
             self._apply_device_ratio()
             self.context.Redisplay(self.cube, False)
             self.window.SetSize(*self._pixels())
@@ -191,20 +241,24 @@ class OcctWidget(QWidget):
             QTimer.singleShot(100, QWidget.window(self).repaint)
         return super().event(event)
 
-    def resizeEvent(self, event) -> None:                        # noqa: N802
+    def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
         if self.window is not None:
             self.window.SetSize(*self._pixels())
             self.view.MustBeResized()
             self.update()
 
-    def paintEvent(self, event) -> None:                         # noqa: N802
+    def paintEvent(self, event) -> None:
         self._attach()
         self.view.InvalidateImmediate()
-        self.controller.FlushViewEvents(self.context, self.view, True)   # navigation, highlighting, picking, redraw
+        self.controller.FlushViewEvents(
+            self.context, self.view, True
+        )  # navigation, highlighting, picking, redraw
         if not self.controller.ViewAnimation().IsStopped():
-            QTimer.singleShot(16, self.update)                    # the view cube's camera animation: next frame
-        if self.clicked:                                          # the controller picks during the flush above
+            QTimer.singleShot(
+                16, self.update
+            )  # the view cube's camera animation: next frame
+        if self.clicked:  # the controller picks during the flush above
             self.clicked = False
             text = describe_selection(self.context)
             if text != self.selection:
@@ -220,9 +274,11 @@ class OcctWidget(QWidget):
     @staticmethod
     def _buttons(buttons) -> int:
         mask = int(Aspect_VKeyMouse_NONE)
-        for qt_button, occt_button in ((Qt.MouseButton.LeftButton, Aspect_VKeyMouse_LeftButton),
-                                       (Qt.MouseButton.MiddleButton, Aspect_VKeyMouse_MiddleButton),
-                                       (Qt.MouseButton.RightButton, Aspect_VKeyMouse_RightButton)):
+        for qt_button, occt_button in (
+            (Qt.MouseButton.LeftButton, Aspect_VKeyMouse_LeftButton),
+            (Qt.MouseButton.MiddleButton, Aspect_VKeyMouse_MiddleButton),
+            (Qt.MouseButton.RightButton, Aspect_VKeyMouse_RightButton),
+        ):
             if buttons & qt_button:
                 mask |= int(occt_button)
         return mask
@@ -230,32 +286,51 @@ class OcctWidget(QWidget):
     @staticmethod
     def _modifiers(modifiers) -> int:
         mask = int(Aspect_VKeyFlags_NONE)
-        for qt_key, occt_flag in ((Qt.KeyboardModifier.ShiftModifier, Aspect_VKeyFlags_SHIFT),
-                                  (Qt.KeyboardModifier.ControlModifier, Aspect_VKeyFlags_CTRL),
-                                  (Qt.KeyboardModifier.AltModifier, Aspect_VKeyFlags_ALT)):
+        for qt_key, occt_flag in (
+            (Qt.KeyboardModifier.ShiftModifier, Aspect_VKeyFlags_SHIFT),
+            (Qt.KeyboardModifier.ControlModifier, Aspect_VKeyFlags_CTRL),
+            (Qt.KeyboardModifier.AltModifier, Aspect_VKeyFlags_ALT),
+        ):
             if modifiers & qt_key:
                 mask |= int(occt_flag)
         return mask
 
-    def mousePressEvent(self, event) -> None:                    # noqa: N802
-        self.controller.UpdateMouseButtons(self._point(event), self._buttons(event.buttons()),
-                                           self._modifiers(event.modifiers()), False)
+    def mousePressEvent(self, event) -> None:
+        self.controller.UpdateMouseButtons(
+            self._point(event),
+            self._buttons(event.buttons()),
+            self._modifiers(event.modifiers()),
+            False,
+        )
         self.update()
 
-    def mouseReleaseEvent(self, event) -> None:                  # noqa: N802
-        self.controller.UpdateMouseButtons(self._point(event), self._buttons(event.buttons()),
-                                           self._modifiers(event.modifiers()), False)
+    def mouseReleaseEvent(self, event) -> None:
+        self.controller.UpdateMouseButtons(
+            self._point(event),
+            self._buttons(event.buttons()),
+            self._modifiers(event.modifiers()),
+            False,
+        )
         self.clicked = True
         self.update()
 
-    def mouseMoveEvent(self, event) -> None:                     # noqa: N802
-        self.controller.UpdateMousePosition(self._point(event), self._buttons(event.buttons()),
-                                            self._modifiers(event.modifiers()), False)
+    def mouseMoveEvent(self, event) -> None:
+        self.controller.UpdateMousePosition(
+            self._point(event),
+            self._buttons(event.buttons()),
+            self._modifiers(event.modifiers()),
+            False,
+        )
         self.update()
 
-    def wheelEvent(self, event) -> None:                         # noqa: N802
-        self.controller.UpdateZoom(Aspect_ScrollDelta(self._point(event), event.angleDelta().y() / 8.0,
-                                                      self._modifiers(event.modifiers())))
+    def wheelEvent(self, event) -> None:
+        self.controller.UpdateZoom(
+            Aspect_ScrollDelta(
+                self._point(event),
+                event.angleDelta().y() / 8.0,
+                self._modifiers(event.modifiers()),
+            )
+        )
         self.update()
 
     # ---- what the toolbar does ----------------------------------------------------------------------------------------
@@ -269,7 +344,12 @@ class OcctWidget(QWidget):
         self.update()
 
     def set_wireframe(self, wireframe: bool) -> None:
-        self.context.SetDisplayMode(self.part, AIS_WireFrame if wireframe else AIS_Shaded, False)
+        self.context.SetDisplayMode(
+            self.part, AIS_WireFrame if wireframe else AIS_Shaded, False
+        )
+        # the controller redraws the whole view only when it is invalidated -- a camera change does that, a new
+        # display mode does not -- and otherwise just the highlighting layer
+        self.view.Invalidate()
         self.update()
 
 
@@ -281,11 +361,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.viewer)
 
         toolbar = self.addToolBar("View")
-        for label, slot in (("Fit", self.viewer.fit_all),
-                            ("Iso", lambda: self.viewer.set_projection(V3d_XposYnegZpos)),
-                            ("Front", lambda: self.viewer.set_projection(V3d_Yneg)),
-                            ("Right", lambda: self.viewer.set_projection(V3d_Xpos)),
-                            ("Top", lambda: self.viewer.set_projection(V3d_Zpos))):
+        for label, slot in (
+            ("Fit", self.viewer.fit_all),
+            ("Iso", lambda: self.viewer.set_projection(V3d_XposYnegZpos)),
+            ("Front", lambda: self.viewer.set_projection(V3d_Yneg)),
+            ("Right", lambda: self.viewer.set_projection(V3d_Xpos)),
+            ("Top", lambda: self.viewer.set_projection(V3d_Zpos)),
+        ):
             action = QAction(label, self)
             action.triggered.connect(slot)
             toolbar.addAction(action)
@@ -296,9 +378,11 @@ class MainWindow(QMainWindow):
         toolbar.addAction(wireframe)
 
         self.viewer.selection_changed.connect(self.statusBar().showMessage)
-        self.statusBar().showMessage("drag to rotate, wheel to zoom, click a face to select it")
+        self.statusBar().showMessage(
+            "drag to rotate, wheel to zoom, click a face to select it"
+        )
 
-    def closeEvent(self, event) -> None:                         # noqa: N802
+    def closeEvent(self, event) -> None:
         self.viewer.view.Remove()
         super().closeEvent(event)
 
