@@ -1,7 +1,10 @@
 # Changelog
 
-## v8.0.1.5 (unreleased)
+## v8.0.1.5 (2026-10-23)
 
+- Window handles (`Aspect_Drawable`, `Aspect_Handle`) are Python ints on every platform, as they already were on macOS and Linux; on Windows the 8 parameters and 15 results spelled with them were left out before. `Aspect_NeutralWindow.SetNativeHandle` among them puts an OCCT view into another toolkit's window, `SetNativeHandle(widget.winId())` with Qt. New binding rule R-NATIVE-HANDLE
+- Windows: `WNT_WClass` is constructible -- its window-procedure parameter is left out, and OCCT then uses `DefWindowProcW` -- so Python can create a real `WNT_Window`
+- New examples: `examples/simple_window.py`, a box in a native OCCT window on macOS, Windows and Linux (it replaces `window.py`), and `examples/qt_viewer.py`, OCCT in a PySide6 window with OCCT's own navigation, face selection and view cube, the same on Retina and other screens
 - Building from source on Windows with MSVC 14.51 (Visual Studio 18): the generator's parse of the OCCT headers failed in every package with `use of undeclared identifier '__builtin_verbose_trap'`, because that STL's assertion macros use a clang 19 builtin under clang and the pip libclang is 18.1.1. The parse now defines `_MSVC_STL_USE_ABORT_AS_DOOM_FUNCTION`, the STL's own switch to `abort()` for those macros; the generated bindings are unchanged
 
 ## v8.0.1.4 (2026-10-21)
