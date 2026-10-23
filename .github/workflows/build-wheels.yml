@@ -5,7 +5,7 @@
 # `make sources`, `make generate compile stubs wheel delocate test` -- each step once: the wheel is packed from what
 # `compile` built (until 2026-09-28 `make wheel` compiled everything a second time), and the tests run against the
 # repaired wheel in a fresh venv. The workflow adds only what the Makefile cannot know --
-# the runner's missing tools and the two caches.
+# the runner's missing tools, the two caches and the third-party suites of nanocct-tests, run by its own Makefile.
 #
 #   deps cache    deps/ install trees after `make deps` (OCCT, FreeType, FreeImage, RapidJSON), keyed on the scripts
 #                 that build them, so the long OCCT build runs only when one of those scripts changes. GitHub drops
@@ -102,9 +102,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 #v7.0.1
 
       # ---- tools the runner does not have --------------------------------------------------------------------------
-      # uv drives the venv on macOS and Windows (`make env`); on Linux it lives in the container image.
-      - name: (macOS, Windows) Install uv
-        if: runner.os != 'Linux'
+      # uv drives the venv on macOS and Windows (`make env`); on Linux the build's uv lives in the container image, and
+      # the host's runs the third-party suites (nanocct-tests), which run on the runner itself on every platform.
+      - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 #v9.0.0
         with:
           enable-cache: false
@@ -124,7 +124,9 @@ jobs:
       - name: Tool versions
         run: |
           make --version | head -1
-          if [ "$RUNNER_OS" = "Linux" ]; then docker --version; else uv --version; fi
+          if [ "$RUNNER_OS" = "Linux" ]; then docker --version; fi
+          uv --version
+          command -v git curl patch                                 # what nanocct-tests needs besides uv and make
           cmake --version | head -1
           if [ "$RUNNER_OS" != "Linux" ]; then ninja --version; fi
           if [ "$RUNNER_OS" = "Windows" ]; then command -v shasum; fi
@@ -181,6 +183,22 @@ jobs:
       # the same cp312-abi3 wheel again on the oldest Python it supports
       - name: make test (Python 3.12)
         run: make test PY_VERSION=3.12
+
+      # The third-party suites of nanocct-tests (OCCT's GTests in Python, build123d at a pinned commit) against the wheel
+      # just built: it goes into their wheels/ (else PyPI's release would be tested). The dual-binding packages they
+      # install from local checkouts (ocp-tessellate, ocp-viewer-core; not released yet) are cloned as DUAL_DIR.
+      # All at the head of main; the log names the commits. Before the wheel cache, like the tests above.
+      - name: make tests (nanocct-tests)
+        run: |
+          third="$(cd .. && pwd)/third-party"
+          git clone --depth 1 https://github.com/bernhard-42/nanocct-tests.git "$third/nanocct-tests"
+          for repo in ocp-tessellate ocp-viewer-core; do
+            git clone --depth 1 "https://github.com/bernhard-42/$repo.git" "$third/dual/$repo"
+          done
+          for dir in "$third/nanocct-tests" "$third"/dual/*; do echo "$(basename "$dir") $(git -C "$dir" rev-parse HEAD)"; done
+          mkdir -p "$third/nanocct-tests/wheels"
+          cp dist/nanocct-*.whl "$third/nanocct-tests/wheels/"
+          make -C "$third/nanocct-tests" tests DUAL_DIR="$third/dual"
 
       # No compact unwind entry of the x86_64 wheel may read a function's frame size from the wrong bytes: a C++ exception
       # unwinding through it would crash the process (deps/build-occt-macos.sh, tools/check_compact_unwind.py). Before
