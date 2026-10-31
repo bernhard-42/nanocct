@@ -16,6 +16,7 @@
 #include <BRepGProp_Face.hxx>
 #include <BRep_Tool.hxx>
 #include <GeomAbs_CurveType.hxx>
+#include <Geom_Curve.hxx>
 #include <NCollection_IndexedDataMap.hxx>
 #include <NCollection_IndexedMap.hxx>
 #include <NCollection_List.hxx>
@@ -80,26 +81,45 @@ nb::ndarray<nb::numpy, double, nb::ndim<2>> NormalsFromSurface(
     return nb::ndarray<nb::numpy, double, nb::ndim<2>>(anOut, { aNbNodes, 3 }, anOwner);
 }
 
+//! The GeomAbs_CurveType of an edge: BRepAdaptor_Curve::GetType, the value ocp-tessellate records as edge_types.
+int32_t CurveType(const TopoDS_Edge &theEdge)
+{
+    return static_cast<int32_t>(BRepAdaptor_Curve(theEdge).GetType());
+}
+
+//! The GeomAbs_CurveType of an edge without a face: GeomAbs_OtherCurve when it is degenerated or has no 3D curve,
+//! where BRepAdaptor_Curve has nothing to adapt (with a face it falls back to the pcurve; without one it throws
+//! "No geometry"). ocp-tessellate records the same for such an edge (tessellator._faceless_edge_type).
+int32_t FacelessCurveType(const TopoDS_Edge &theEdge)
+{
+    TopLoc_Location aLoc;
+    double aFirst = 0.0, aLast = 0.0;
+    if (BRep_Tool::Degenerated(theEdge) || BRep_Tool::Curve(theEdge, aLoc, aFirst, aLast).IsNull())
+        return static_cast<int32_t>(GeomAbs_OtherCurve);
+    return CurveType(theEdge);
+}
+
 //! Every edge's polyline, for a whole shape, as consecutive point pairs -- the loop that would otherwise run
 //! once per edge from Python.
 //!
-//! Mirrors ocp_tessellate.Tessellator.compute_edges exactly: iterate the *edge* map in index order, take each
-//! edge's first ancestor face, and skip an edge with no face, no triangulation or no polygon on it -- so the
-//! per-edge counts stay aligned with whatever the caller records alongside them.
+//! Mirrors ocp_tessellate.Tessellator.compute_edges exactly: iterate the *edge* map in index order and take each
+//! edge's first ancestor face. **One entry per edge-map entry**: an edge with no face, no triangulation or no
+//! polygon on it gets a placeholder -- a segment count of 0 and its curve type -- instead of being left out, so
+//! entry i is always edge-map index i, the numbering a caller gets from TopExp::MapShapes. A viewer that numbers
+//! its edges from these arrays then agrees with every other consumer of the edge map, also when a face cannot be
+//! meshed; left out, every edge after the first gap would carry the index of a different edge.
 //!
 //! Why this is C++ and the face path need not be: an edge carries ~26 points against a face's ~128, so the
 //! per-item Python overhead never amortises. Vectorising *inside* one edge saved almost nothing -- 33 370
 //! edges took 221 ms from Python against pure Python's 274 ms, while the same shape's faces went 4.9 s -> 0.49 s.
 //!
-//! The curve type comes along because the caller cannot compute it afterwards: which edges were skipped is
-//! decided here, so a Python loop over the edge map could not be aligned with the counts without redoing the
-//! triangulation and polygon lookups this function exists to avoid. It is BRepAdaptor_Curve::GetType, the
-//! same value ocp-tessellate records as edge_types. A Python loop computing it takes ~24 ms over the 33 388 edges
-//! of a real assembly -- more than this whole function, curve types included (~18 ms).
+//! The curve type comes along because computing it from Python costs more than this whole function: a Python
+//! loop over BRepAdaptor_Curve::GetType takes ~24 ms over the 33 388 edges of a real assembly, against ~18 ms
+//! here, curve types included.
 //!
 //! @return (segments, segments_per_edge, edge_types): (2 * S, 3) float64 of segment endpoints, flattened as
 //!         the tessellator expects, and two (E,) int32 arrays -- segments per edge, and GeomAbs_CurveType
-//!         per edge -- for the edges that were not skipped, in edge-map order.
+//!         per edge -- for every edge, in edge-map order.
 nb::object EdgeSegments(const TopoDS_Shape &theShape)
 {
     using ShapeMap  = NCollection_IndexedMap<TopoDS_Shape, TopTools_ShapeMapHasher>;
@@ -117,28 +137,35 @@ nb::object EdgeSegments(const TopoDS_Shape &theShape)
     for (int i = 1; i <= anEdges.Extent(); ++i)
     {
         const TopoDS_Edge &anEdge = TopoDS::Edge(anEdges.FindKey(i));
-        if (!anAncestors.Contains(anEdge))
+        if (!anAncestors.Contains(anEdge) || anAncestors.FindFromKey(anEdge).IsEmpty())
+        {
+            aTypes.push_back(FacelessCurveType(anEdge));       // placeholder: no face
+            aPerEdge.push_back(0);
             continue;
+        }
         const ShapeList &aFaces = anAncestors.FindFromKey(anEdge);
-        if (aFaces.IsEmpty())
-            continue;
+
+        // From here on the edge has a face. A degenerated edge has no 3D curve, but it has a pcurve on that face,
+        // so BRepAdaptor_Curve falls back to Adaptor3d_CurveOnSurface rather than throwing.
+        aTypes.push_back(CurveType(anEdge));
 
         TopLoc_Location aLoc;
         const occ::handle<Poly_Triangulation> aTri =
             BRep_Tool::Triangulation(TopoDS::Face(aFaces.First()), aLoc);
         if (aTri.IsNull())
+        {
+            aPerEdge.push_back(0);                             // placeholder: the face has no triangulation
             continue;
+        }
         const occ::handle<Poly_PolygonOnTriangulation> aPoly =
             BRep_Tool::PolygonOnTriangulation(anEdge, aTri, aLoc);
         if (aPoly.IsNull())
+        {
+            aPerEdge.push_back(0);                             // placeholder: no polygon on the triangulation
             continue;
+        }
 
-        // A polygon of fewer than two nodes yields no segment but is still an edge that was kept:
-        // ocp-tessellate records its type and a count of zero, and the three arrays have to stay aligned.
-        // A degenerated edge reaches this point -- it has no 3D curve, but it has a pcurve, so
-        // BRepAdaptor_Curve falls back to Adaptor3d_CurveOnSurface rather than throwing.
-        aTypes.push_back(static_cast<int32_t>(BRepAdaptor_Curve(anEdge).GetType()));
-
+        // A polygon of fewer than two nodes yields no segment either: a count of zero, as for a placeholder.
         const gp_Trsf &aTrsf = aLoc.Transformation();
         const int aNb = aPoly->NbNodes();
         if (aNb >= 2)
@@ -187,8 +214,9 @@ void nanocct_def_Tessellator(nb::module_ &m)
     m.def("EdgeSegments", &EdgeSegments, nb::arg("theShape"),
           "Every edge's polyline for a whole shape, as consecutive point pairs.\n\n"
           "Returns (segments, segments_per_edge, edge_types): an (2*S, 3) float64 array of endpoints "
-          "and two (E,) int32 arrays, the segment count and the GeomAbs_CurveType of each edge that "
-          "was kept. Edges with no ancestor face, no triangulation or no polygon on it are skipped, so "
-          "all three align. The type is returned here because which edges were skipped is decided "
-          "here. Mesh the shape first.");
+          "and two (E,) int32 arrays, the segment count and the GeomAbs_CurveType of each edge, one "
+          "entry per entry of the shape's edge map (TopExp.MapShapes), in its order. An edge with no "
+          "ancestor face, no triangulation or no polygon on it keeps its entry with 0 segments and its "
+          "curve type (GeomAbs_OtherCurve for an edge without face and without 3D curve), so entry i is "
+          "always edge-map index i. Mesh the shape first.");
 }

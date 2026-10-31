@@ -1170,7 +1170,7 @@ For comparison, the same two computations written in Python with OCCT's own call
 <summary>normals_py and edge_segments_py</summary>
 
 ```python
-from nanocct import BRepAdaptor, BRepGProp
+from nanocct import BRepAdaptor, BRepGProp, GeomAbs
 from nanocct.NCollection import NCollection_IndexedDataMap, NCollection_IndexedMap, NCollection_List
 from nanocct.TopTools import TopTools_ShapeMapHasher
 from nanocct.TopoDS import TopoDS_Shape
@@ -1199,15 +1199,18 @@ def edge_segments_py(shape):
     for i in range(1, edges.Extent() + 1):
         edge = TopoDS.Edge(edges.FindKey(i))
         if not ancestors.Contains(edge) or ancestors.FindFromKey(edge).IsEmpty():
-            continue
-        loc = TopLoc.TopLoc_Location()
-        tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ancestors.FindFromKey(edge).First()), loc)
-        if tri is None:
-            continue
-        poly = BRep.BRep_Tool.PolygonOnTriangulation_s(edge, tri, loc)
-        if poly is None:
+            no_curve = BRep.BRep_Tool.Degenerated_s(edge) or BRep.BRep_Tool.Curve_s(edge)[0] is None
+            types.append(GeomAbs.GeomAbs_CurveType.GeomAbs_OtherCurve.value if no_curve
+                         else int(BRepAdaptor.BRepAdaptor_Curve(edge).GetType()))
+            per_edge.append(0)                      # a placeholder keeps entry i at edge-map index i
             continue
         types.append(int(BRepAdaptor.BRepAdaptor_Curve(edge).GetType()))
+        loc = TopLoc.TopLoc_Location()
+        tri = BRep.BRep_Tool.Triangulation_s(TopoDS.Face(ancestors.FindFromKey(edge).First()), loc)
+        poly = None if tri is None else BRep.BRep_Tool.PolygonOnTriangulation_s(edge, tri, loc)
+        if poly is None:
+            per_edge.append(0)
+            continue
         nodes = np.asarray(tri.InternalNodes())[np.asarray(poly.ChangeNodeArray()) - 1]
         t = loc.Transformation()
         if t.Form() != gp.gp_TrsfForm.gp_Identity:

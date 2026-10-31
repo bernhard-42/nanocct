@@ -9,8 +9,8 @@ these *compute*, one OCCT call per node or per edge, and that loop has to stay o
 import numpy as np
 import pytest
 
-from nanocct import (AddOns, BRep, BRepMesh, BRepPrimAPI, BRepTools, NCollection, TopAbs, TopExp,
-                     TopLoc, TopoDS, gp)
+from nanocct import (AddOns, BRep, BRepBuilderAPI, BRepMesh, BRepPrimAPI, BRepTools, GeomAbs, NCollection, TopAbs,
+                     TopExp, TopLoc, TopoDS, gp)
 
 
 @pytest.fixture(scope="module")
@@ -84,21 +84,20 @@ def test_edge_segments_are_consecutive_point_pairs(meshed):
     assert np.allclose(seg[2 * start + 1], seg[2 * start + 2])
 
 
-def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
-    """One type per kept edge, and it is BRepAdaptor_Curve's -- the value ocp-tessellate records.
+def _edge_map(shape):
+    m = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
+    TopExp.TopExp.MapShapes_s(shape, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
+    return m
 
-    The type has to come out of the helper because the helper is what decides which edges are kept: it
-    skips an edge with no ancestor face, no triangulation or no polygon on it, and a Python loop over the
-    edge map cannot tell which those were without redoing those lookups.
-    """
+
+def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
+    """One type per edge-map entry, and it is BRepAdaptor_Curve's -- the value ocp-tessellate records."""
     from nanocct import BRepAdaptor
 
     _seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(meshed)
     assert len(edge_types) == len(per_edge) > 0
 
-    # a sphere's edges all survive, so the two orders can be compared directly
-    m = NCollection.NCollection_IndexedMap__TopoDS_Shape__TopTools_ShapeMapHasher()
-    TopExp.TopExp.MapShapes_s(meshed, TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, m)
+    m = _edge_map(meshed)
     assert m.Extent() == len(edge_types)
     expected = [BRepAdaptor.BRepAdaptor_Curve(TopoDS.Edge(m.FindKey(i))).GetType().value
                 for i in range(1, m.Extent() + 1)]
@@ -106,10 +105,80 @@ def test_edge_types_align_with_the_counts_and_match_BRepAdaptor(meshed):
 
 
 def test_edge_segments_needs_a_mesh():
-    """An unmeshed shape has no triangulation, so every edge is skipped rather than raising."""
-    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(
-        BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape())
-    assert len(per_edge) == 0 and len(seg) == 0 and len(edge_types) == 0
+    """An unmeshed shape has no triangulation: every edge keeps its entry, with no segments, rather than raising."""
+    box = BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape()
+    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(box)
+    assert len(seg) == 0
+    assert list(per_edge) == [0] * 12 and len(edge_types) == 12
+    assert set(edge_types) == {GeomAbs.GeomAbs_CurveType.GeomAbs_Line.value}
+
+
+def _polygon_face(*points):
+    poly = BRepBuilderAPI.BRepBuilderAPI_MakePolygon()
+    for p in points:
+        poly.Add(gp.gp_Pnt(*p))
+    poly.Close()
+    return BRepBuilderAPI.BRepBuilderAPI_MakeFace(poly.Wire(), True).Face()
+
+
+@pytest.mark.parametrize("bowtie_first", [False, True], ids=["bowtie-second", "bowtie-first"])
+def test_edge_segments_keep_one_entry_per_edge_when_a_face_cannot_be_meshed(bowtie_first):
+    """Entry i is edge-map index i, also when a face has no triangulation.
+
+    The shell is a valid square and a bow-tie (a self-intersecting quadrilateral), which BRepMesh cannot mesh. Its
+    four edges get placeholders (no segments). Left out instead, every edge after them would carry the index of
+    another edge: with the bow-tie first, a viewer numbering from these arrays and anything numbering the edge map
+    -- a measurement, a selection -- would name different edges by the same index.
+    """
+    square = _polygon_face((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))
+    bowtie = _polygon_face((30, 0, 0), (40, 10, 0), (40, 0, 0), (30, 10, 0))
+    builder, shell = BRep.BRep_Builder(), TopoDS.TopoDS_Shell()
+    builder.MakeShell(shell)
+    for face in (bowtie, square) if bowtie_first else (square, bowtie):
+        builder.Add(shell, face)
+    BRepMesh.BRepMesh_IncrementalMesh(shell, 0.1, False, 0.5, True)
+    assert BRep.BRep_Tool.Triangulation_s(bowtie, TopLoc.TopLoc_Location()) is None, "the bow-tie must stay unmeshed"
+
+    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(shell)
+    m = _edge_map(shell)
+    assert m.Extent() == len(per_edge) == len(edge_types) == 8
+    assert sorted(per_edge) == [0, 0, 0, 0, 1, 1, 1, 1]          # the square's four edges, one segment each
+    assert set(edge_types) == {GeomAbs.GeomAbs_CurveType.GeomAbs_Line.value}
+
+    # every edge with segments lies on the map entry of the same index: its one segment joins that edge's vertices
+    start = 0
+    for i, count in enumerate(per_edge):
+        if count == 0:
+            continue
+        edge = TopoDS.Edge(m.FindKey(i + 1))
+        ends = [BRep.BRep_Tool.Pnt_s(v) for v in (TopExp.TopExp.FirstVertex_s(edge), TopExp.TopExp.LastVertex_s(edge))]
+        assert sorted(map(tuple, seg[2 * start: 2 * start + 2].tolist())) == sorted((p.X(), p.Y(), p.Z()) for p in ends)
+        start += int(count)
+
+
+def test_edge_segments_keep_edges_without_a_face():
+    """A free edge keeps its entry; an edge without a 3D curve as well, typed GeomAbs_OtherCurve.
+
+    BRepAdaptor_Curve throws "No geometry" for an edge without curve and without face, so the type is
+    GeomAbs_OtherCurve there -- what ocp-tessellate records for such an edge.
+    """
+    builder = BRep.BRep_Builder()
+    line = BRepBuilderAPI.BRepBuilderAPI_MakeEdge(gp.gp_Pnt(0, 0, 50), gp.gp_Pnt(5, 0, 50)).Edge()
+    empty = TopoDS.TopoDS_Edge()
+    builder.MakeEdge(empty)
+    compound = TopoDS.TopoDS_Compound()
+    builder.MakeCompound(compound)
+    for part in (BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 1.0, 1.0).Shape(), line, empty):
+        builder.Add(compound, part)
+    BRepMesh.BRepMesh_IncrementalMesh(compound, 0.1, False, 0.5, True)
+
+    seg, per_edge, edge_types = AddOns.Tessellator.EdgeSegments(compound)
+    m = _edge_map(compound)
+    assert m.Extent() == len(per_edge) == len(edge_types) == 14
+    assert len(seg) == 2 * int(per_edge.sum()) == 2 * 12        # the box's twelve edges have one segment each
+    i_line, i_empty = m.FindIndex(line) - 1, m.FindIndex(empty) - 1
+    assert per_edge[i_line] == 0 and edge_types[i_line] == GeomAbs.GeomAbs_CurveType.GeomAbs_Line.value
+    assert per_edge[i_empty] == 0 and edge_types[i_empty] == GeomAbs.GeomAbs_CurveType.GeomAbs_OtherCurve.value
 
 
 # ---- AddOns.ShapeClean: a workaround for OCCT issue #1541, removed once OCCT is fixed (Binding-Rules.md R-ADDON) ------------
@@ -119,7 +188,7 @@ def test_edge_segments_needs_a_mesh():
 # spherical faces makes those arcs a closed chain, whose pcurves ShapeUpgrade_UnifySameDomain concatenates starting at
 # the wrong junction.
 
-from nanocct import (BRepAdaptor, BRepAlgoAPI, BRepCheck, BRepGProp, GeomAbs, GProp, ShapeUpgrade,  # noqa: E402
+from nanocct import (BRepAdaptor, BRepAlgoAPI, BRepCheck, BRepGProp, GProp, ShapeUpgrade,  # noqa: E402
                      TopTools)
 
 _EDGE, _FACE, _VERTEX = (TopAbs.TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs.TopAbs_ShapeEnum.TopAbs_FACE,

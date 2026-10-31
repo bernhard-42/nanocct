@@ -1,5 +1,9 @@
 # Changelog
 
+## v8.0.1.6 (unreleased)
+
+- `AddOns.Tessellator.EdgeSegments` returns one entry per edge of the shape's edge map (`TopExp.MapShapes`), in its order: an edge without a face, without a triangulation on its face or without a polygon on that triangulation keeps its entry, with 0 segments and its curve type (`GeomAbs_OtherCurve` for an edge without face and without 3D curve), where it was left out before. Entry i is now always edge index i, also when a face cannot be meshed; before, every edge after the first one left out carried the index of another edge. Shapes whose faces all mesh get the same arrays as before
+
 ## v8.0.1.5 (2026-10-23)
 
 - Window handles (`Aspect_Drawable`, `Aspect_Handle`) are Python ints on every platform, as they already were on macOS and Linux; on Windows the 8 parameters and 15 results spelled with them were left out before. `Aspect_NeutralWindow.SetNativeHandle` among them puts an OCCT view into another toolkit's window, `SetNativeHandle(widget.winId())` with Qt. New binding rule R-NATIVE-HANDLE
