@@ -125,4 +125,14 @@ Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja;
 
 ## License
 
-nanocct's own code is Apache-2.0 ([LICENSE](https://github.com/bernhard-42/nanocct/blob/main/LICENSE)). The wheels bundle OCCT (LGPL-2.1 with the OCCT exception), FreeType and FreeImage; [licenses/](https://github.com/bernhard-42/nanocct/blob/main/licenses/README.md) and [NOTICE](https://github.com/bernhard-42/nanocct/blob/main/NOTICE) say which terms apply and why.
+nanocct makes use of and is based on facilities provided by the Open CASCADE Technology software.
+
+- **nanocct's own code** is Apache-2.0 ([LICENSE](https://github.com/bernhard-42/nanocct/blob/main/LICENSE)). Third-party material retains its own licensing, as described below.
+- **The wheels as a whole** carry, besides nanocct's own code:
+    - the OCCT libraries, under LGPL-2.1 with the Open CASCADE exception 1.0. They are separate shared libraries, so you can replace them with an interface-compatible modified build, preserving the file names and ABI the wheel expects; building from the same OCCT version is the recommended starting point;
+    - the type stubs (`.pyi`), whose docstrings reproduce and adapt OCCT's header documentation: each stub file as a whole is under LGPL-2.1 with the Open CASCADE exception 1.0, and says so at its top;
+    - FreeImage and FreeType;
+    - on Linux, fontconfig and the system libraries it needs;
+    - on Windows, the Microsoft Visual C++ runtime.
+
+[licenses/README.md](https://github.com/bernhard-42/nanocct/blob/main/licenses/README.md) lists every component with its licence, its SPDX identifier and how it reaches the wheel, and how each wheel's licence expression is made up; [NOTICE](https://github.com/bernhard-42/nanocct/blob/main/NOTICE) gives the attributions and where the sources are.

@@ -6,7 +6,8 @@ The build steps each run once: generate -> compile -> stubs -> wheel -> delocate
 came from `uv build`, i.e. scikit-build-core, which cannot pack without compiling -- so every binding was compiled a
 second time in its own build directory, the most expensive step on the slower CI runners. This packs what is already
 built instead: the staged `nanocct/` (the .py and .pyi files, py.typed and the extension modules; `__pycache__` left
-out), the metadata from pyproject.toml, the licence files it names (PEP 639), and a RECORD. The result has the files and metadata
+out), the metadata from pyproject.toml, the licence files it names (PEP 639) with the License-Expression of this
+platform's wheel from licenses/components.toml, and a RECORD. The result has the files and metadata
 of the wheel scikit-build-core made (compared 2026-09-28; only `Requires-Dist` keeps pyproject.toml's spelling,
 `numpy>=2,<3` for scikit-build-core's `numpy<3,>=2`); the repair step (delocate, auditwheel, delvewheel) then
 bundles the OCCT libraries as before. scikit-build-core stays the build backend for building from source.
@@ -24,6 +25,30 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+COMPONENTS = ROOT / "licenses" / "components.toml"
+
+
+def wheel_platform(platform_tag: str) -> str:
+    """The platform of a wheel tag, as licenses/components.toml names it."""
+    if platform_tag.startswith("macosx_"):
+        return "macos"
+    if platform_tag.startswith(("linux_", "manylinux")):
+        return "linux"
+    if platform_tag.startswith("win_"):
+        return "windows"
+    raise ValueError(f"wheel: no platform for the tag {platform_tag!r}")
+
+
+def license_expression(platform: str) -> str:
+    """The License-Expression of the wheel for `platform`: the distinct licence terms of the components that wheel
+    contains (licenses/components.toml), in the table's order. Per wheel, because the Core Metadata field "only applies
+    to the Distribution Archive containing the metadata with this field" -- the Linux wheel's system libraries and the
+    Windows wheel's Visual C++ runtime are not in the other wheels."""
+    terms: list[str] = []
+    for component in tomllib.loads(COMPONENTS.read_text())["component"]:
+        if platform in component["platforms"]:
+            terms += [t for t in component["spdx"] if t not in terms]
+    return " AND ".join(terms)
 
 
 def _digest(data: bytes) -> str:
@@ -78,7 +103,10 @@ def main() -> int:
     metadata = ["Metadata-Version: 2.4", f"Name: {name}", f"Version: {version}", f"Summary: {project['description']}"]
     metadata += [f"Keywords: {','.join(project['keywords'])}"]
     metadata += _authors(project["authors"])
-    metadata += [f"License-Expression: {project['license']}"]
+    if "license" in project or "license" not in project.get("dynamic", []):
+        print("wheel: pyproject.toml must declare license as dynamic -- the expression is per wheel", file=sys.stderr)
+        return 1
+    metadata += [f"License-Expression: {license_expression(wheel_platform(platform_tag))}"]
     metadata += [f"License-File: {rel}" for rel in licenses]
     metadata += [f"Classifier: {c}" for c in project["classifiers"]]
     metadata += [f"Requires-Python: {project['requires-python']}"]

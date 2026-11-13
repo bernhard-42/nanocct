@@ -1,0 +1,142 @@
+# What nanocct's binary wheels contain, licence by licence. The one source for each wheel's License-Expression
+# (generator/wheel.py: the Core Metadata field "only applies to the Distribution Archive containing the metadata with
+# this field") and for the licence checks (tests/test_licensing.py). licenses/README.md says how the SPDX identifiers
+# were assigned; ../NOTICE gives the attributions and where the sources are.
+#
+#   name       the component
+#   spdx       its licence term(s) in the expression, each an SPDX identifier or a LicenseRef- defined by its file
+#   files      its licence texts, relative to the repository root (all of them ship in every wheel)
+#   platforms  the wheels that contain it: "macos", "linux", "windows"
+#   library    a shared library the repair tool bundles for it (`libfreetype-2f3b32b6.so.6.16.1` -> "freetype"), checked
+#              against the libraries a repaired wheel really carries
+#   notice     the phrase in ../NOTICE that names it
+#
+# A wheel's expression is the distinct terms of the components of its platform, in this order.
+
+[[component]]
+name = "nanocct"
+spdx = ["Apache-2.0"]
+files = ["LICENSE"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "Open CASCADE Technology 8.0.1: the libTK* libraries, and the .pyi type stubs as a whole"
+spdx = ["LGPL-2.1-only WITH OCCT-exception-1.0"]
+files = ["licenses/OCCT-LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "FreeType 2.14.3, statically linked into libTKService"
+spdx = ["FTL"]
+files = ["licenses/FreeType-FTL.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "FreeImage 3.19.15"
+spdx = ["FreeImage"]
+files = ["licenses/FreeImage-FIPL.txt"]
+platforms = ["macos", "linux", "windows"]
+library = "FreeImage"
+notice = "FreeImage Public License"
+
+[[component]]
+name = "zlib, compiled into libFreeImage"
+spdx = ["Zlib"]
+files = ["licenses/zlib.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "libpng, compiled into libFreeImage"
+spdx = ["libpng-2.0", "libpng-1.6.35"]
+files = ["licenses/libpng.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "libjpeg 10 (IJG), compiled into libFreeImage"
+spdx = ["LicenseRef-IJG-libjpeg-10"]
+files = ["licenses/libjpeg-IJG.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "libtiff, compiled into libFreeImage"
+spdx = ["libtiff"]
+files = ["licenses/libtiff.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "OpenJPEG, compiled into libFreeImage"
+spdx = ["BSD-2-Clause"]
+files = ["licenses/OpenJPEG-BSD-2-Clause.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "the OpenEXR-derived half-float implementation (Imath), compiled into libFreeImage"
+spdx = ["BSD-3-Clause"]
+files = ["licenses/Imath-Half-BSD-3-Clause.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "RapidJSON 1.1.0, compiled into OCCT's glTF reader"
+spdx = ["MIT"]
+files = ["licenses/RapidJSON.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "nanobind 3.1.0, compiled into every extension module"
+spdx = ["BSD-3-Clause"]
+files = ["licenses/nanobind-BSD-3-Clause.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "tsl::robin_map, vendored inside nanobind"
+spdx = ["MIT"]
+files = ["licenses/robin_map-MIT.txt"]
+platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "fontconfig 2.13.1 (AlmaLinux 8)"
+spdx = ["HPND-sell-variant"]
+files = ["licenses/fontconfig.txt"]
+platforms = ["linux"]
+library = "fontconfig"
+notice = "fontconfig 2.13.1"
+
+[[component]]
+name = "FreeType 2.9.1 (AlmaLinux 8), a shared library fontconfig needs"
+spdx = ["FTL"]
+files = ["licenses/FreeType-FTL.txt"]
+platforms = ["linux"]
+library = "freetype"
+notice = "FreeType 2.9.1"
+
+[[component]]
+name = "libpng 1.6.34 (AlmaLinux 8)"
+spdx = ["LicenseRef-libpng-1.6.34"]
+files = ["licenses/libpng-1.6.34.txt"]
+platforms = ["linux"]
+library = "png16"
+notice = "libpng 1.6.34"
+
+[[component]]
+name = "bzip2 1.0.6 (AlmaLinux 8)"
+spdx = ["bzip2-1.0.6"]
+files = ["licenses/bzip2.txt"]
+platforms = ["linux"]
+library = "bz2"
+notice = "bzip2 (libbz2) 1.0.6"
+
+[[component]]
+name = "libuuid (util-linux, AlmaLinux 8)"
+spdx = ["LicenseRef-libuuid"]
+files = ["licenses/libuuid.txt"]
+platforms = ["linux"]
+library = "uuid"
+notice = "libuuid (util-linux)"
+
+[[component]]
+name = "msvcp140.dll, the Microsoft Visual C++ runtime"
+spdx = ["LicenseRef-Microsoft-VC-Runtime"]
+files = ["licenses/Microsoft-VC-Runtime.txt"]
+platforms = ["windows"]
+library = "msvcp140"
+notice = "msvcp140.dll"

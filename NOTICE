@@ -1,9 +1,10 @@
 nanocct
-Copyright 2026 The nanocct authors
+Copyright 2026 Bernhard Walter
 
-This product includes software developed by third parties. The full text of each
-licence is in the `licenses/` directory of this distribution, which is shipped
-inside the wheel as well as the source tree.
+This product includes software developed by third parties. The third-party
+licence texts are in `licenses/` in the source tree. In a wheel, this NOTICE and
+the licence texts are installed beneath nanocct's `.dist-info/licenses/`
+directory; the relative paths below are resolved from this NOTICE file.
 
 
 Open CASCADE Technology
@@ -21,9 +22,19 @@ the Open CASCADE exception version 1.0:
     licenses/OCCT-LGPL-exception.txt
 
 The exception permits distributing object code that incorporates material from
-OCCT header files under terms of our choice, provided this notice is given.
-The bundled OCCT libraries remain under the LGPL: they are dynamic libraries,
-so a recipient may replace them with a modified version.
+OCCT header files under terms of our choice, provided this notice is given. The
+bundled OCCT libraries remain under the LGPL: they are dynamic libraries, so a
+recipient may replace them with a modified version.
+
+The type stubs (the `.pyi` files) are source text, which the exception does not
+cover. Their docstrings reproduce the documentation comments of the OCCT header
+files, adapted to Python docstrings; that documentation text is Copyright (c)
+OPEN CASCADE SAS and the other copyright holders identified in those files, and
+the exception does not exempt it from the LGPL. nanocct distributes each
+generated stub file as a whole, including nanocct's contributions to it, under
+the LGPL version 2.1 with the Open CASCADE exception version 1.0 (SPDX:
+LGPL-2.1-only WITH OCCT-exception-1.0). Each stub says so in a comment at its
+top, with the OCCT and nanocct versions it was made from.
 
 The OCCT version used is pinned in `deps/fetch-occt-src.sh` (tag V8_0_1) and its
 complete corresponding source is available from
@@ -33,24 +44,28 @@ https://github.com/Open-Cascade-SAS/OCCT at that tag.
 FreeImage
 ---------
 
-Copyright the FreeImage project contributors (https://freeimage.sourceforge.net).
+Copyright the FreeImage project contributors
+(https://freeimage.sourceforge.net).
 
-FreeImage is bundled as a shared library (`libFreeImage.dylib` / `.so` / `.dll`) and gives OCCT its image
-codecs: without it, reading an image file fails on every platform but Windows and writing produces a PPM under
-whatever extension is asked for. It is used under the **FreeImage Public License version 1.0**, the permissive
-branch of the three it offers (the others are GPL-2.0-or-later and GPL-3.0-or-later, neither of which is
-compatible with distributing this wheel under Apache-2.0):
+FreeImage is bundled as a shared library (`libFreeImage.dylib` / `.so` / `.dll`)
+and gives OCCT its image codecs: without it, reading an image file fails on
+every platform but Windows and writing produces a PPM under whatever extension
+is asked for. FreeImage is used under the FreeImage Public License version 1.0
+(FIPL), rather than its alternative GPL licensing options:
 
     licenses/FreeImage-FIPL.txt
 
-The FIPL is an MPL-1.1 derivative. Its sections 3.6 and 3.7 permit distributing the executable form inside a
-larger work under a licence of our choice, provided the licence text travels with it and this notice says where
-the source is. **nanocct does not modify FreeImage.** Its complete corresponding source is the tag pinned in
-`deps/fetch-freeimage-src.sh` (3.19.15) at https://github.com/danoli3/FreeImage.
+The FIPL is an MPL-1.1 derivative. Its sections 3.6 and 3.7 permit distributing
+the executable form inside a larger work under a licence of our choice, provided
+the licence text travels with it and this notice says where the source is.
+**nanocct does not modify FreeImage.** Its complete corresponding source is the
+tag pinned in `deps/fetch-freeimage-src.sh` (3.19.15) at
+https://github.com/danoli3/FreeImage.
 
-FreeImage vendors the codecs it uses, so the following are compiled into that one library. It is built with
-BUILD_WEBP, BUILD_OPENEXR, BUILD_LIBRAWLITE and BUILD_JXR off, so libwebp, the OpenEXR codec, LibRaw (the only
-CDDL component) and jxrlib are **not** included; JBIG-KIT is not vendored by FreeImage at all.
+FreeImage vendors the codecs it uses, so the following are compiled into that
+one library. It is built with BUILD_WEBP, BUILD_OPENEXR, BUILD_LIBRAWLITE and
+BUILD_JXR off, so libwebp, the OpenEXR codec, LibRaw (the only CDDL component)
+and jxrlib are **not** included; JBIG-KIT is not vendored by FreeImage at all.
 
     zlib                    licenses/zlib.txt
     libpng                  licenses/libpng.txt
@@ -59,12 +74,13 @@ CDDL component) and jxrlib are **not** included; JBIG-KIT is not vendored by Fre
     OpenJPEG (BSD-2)        licenses/OpenJPEG-BSD-2-Clause.txt
     Imath "Half" (BSD-3)    licenses/Imath-Half-BSD-3-Clause.txt
 
-Of OpenEXR only its half-float type is compiled in (Source/OpenEXR/Half/half.cpp, which FreeImage builds
-unconditionally for its 16-bit float pixel type); OpenEXR itself is not bundled.
+The OpenEXR image codec is disabled and no separate OpenEXR library is bundled.
+The OpenEXR-derived half-float implementation (Source/OpenEXR/Half/half.cpp,
+which FreeImage builds unconditionally for its 16-bit float pixel type) is
+compiled into FreeImage.
 
-None of those symbols are exported: the library is built with -fvisibility=hidden and exports only its own
-FreeImage_* API, so a libpng or zlib elsewhere in the process cannot be bound to FreeImage's copy, or the
-reverse.
+The build is configured to keep the bundled codec implementations private and
+expose FreeImage's public API.
 
 
 FreeType
@@ -73,10 +89,14 @@ FreeType
 Portions of this software are copyright (C) 1996-2026 The FreeType Project
 (https://freetype.org). All rights reserved.
 
-FreeType 2.14.3 is **used unmodified** and statically linked into the bundled OCCT
-visualization library (libTKService); it is not a separate file in this distribution. Its symbols are kept from
-being re-exported at link time (deps/occt-unexported-symbols.txt), not by patching FreeType. It is used under
-the FreeType License (FTL), the permissive of the two licences FreeType offers:
+FreeType 2.14.3 is **used unmodified** and statically linked into the bundled
+OCCT visualization library (libTKService); this copy is not a separate file in
+this distribution. The build is configured not to re-export its symbols
+(deps/occt-unexported-symbols.txt), without patching FreeType. The Linux wheels
+carry a second FreeType as well, the system's FreeType 2.9.1 as a shared library
+that fontconfig needs (see "System libraries in the Linux wheels" below). Both
+are used under the FreeType License (FTL), the permissive of the two licences
+FreeType offers:
 
     licenses/FreeType-FTL.txt
 
@@ -99,17 +119,59 @@ Only the headers are used. The `bin/jsonchecker/` directory, which RapidJSON
 distributes under the problematic JSON licence, is not used and not shipped.
 
 
+System libraries in the Linux wheels
+------------------------------------
+
+On Linux, OCCT's font manager uses fontconfig, and `auditwheel repair` bundles
+it, together with the system libraries it needs, from the manylinux_2_28 build
+image (AlmaLinux 8). They are **used unmodified**, as the distribution builds
+them:
+
+    fontconfig 2.13.1       licenses/fontconfig.txt
+    FreeType 2.9.1          licenses/FreeType-FTL.txt
+    libpng 1.6.34           licenses/libpng-1.6.34.txt
+    bzip2 (libbz2) 1.0.6    licenses/bzip2.txt
+    libuuid (util-linux)    licenses/libuuid.txt
+
+FreeType's own licence file adds that its contributed BDF and PCF drivers come
+with a licence similar to that of the X Window System (src/bdf/README and
+src/pcf/README in its source).
+
+They are the AlmaLinux 8 packages of the build image, whose `dnf install` takes
+the current el8 release of each; these notices do not record the exact release a
+particular wheel carries. Their licences are permissive and do not require
+distributing their source; it is available as the AlmaLinux 8 source RPM of each
+package (freetype, fontconfig, libpng, bzip2, util-linux), at
+https://vault.almalinux.org/8.10/BaseOS/Source/Packages/ for 8.10.
+
+
+Microsoft Visual C++ runtime in the Windows wheel
+-------------------------------------------------
+
+The Windows wheel bundles msvcp140.dll, the Microsoft Visual C++ runtime the
+extension modules need, unmodified, from the Visual C++ runtime folder of the
+Visual Studio 2026 that builds the wheel. It is Microsoft's and not open source:
+it is redistributed as Visual C++ Runtime "Distributable Code" under the
+Microsoft Software License Terms for Visual Studio, not under nanocct's licence.
+
+The following file records the runtime's provenance, identifies the applicable
+Microsoft terms and links to them; it does not replace or grant rights beyond
+those terms:
+
+    licenses/Microsoft-VC-Runtime.txt
+
+
 nanobind
 --------
 
 Copyright (c) 2022 Wenzel Jakob. All rights reserved.
 
-nanobind's runtime is compiled into every extension module in this
-distribution. It is used under a 3-clause BSD licence:
+nanobind's runtime is compiled into every extension module in this distribution.
+It is used under a 3-clause BSD licence:
 
     licenses/nanobind-BSD-3-Clause.txt
 
-nanobind vendors tsl::robin_map, copyright (c) 2017 Thibaut Goetghebuer-Planchon,
-used under the MIT License:
+nanobind vendors tsl::robin_map, copyright (c) 2017 Thibaut
+Goetghebuer-Planchon, used under the MIT License:
 
     licenses/robin_map-MIT.txt

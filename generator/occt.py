@@ -48,6 +48,16 @@ class OcctTree:
                 return candidate
         return candidates[-1]
 
+    @property
+    def version(self) -> str:
+        """OCCT's version as Standard_Version.hxx defines it (OCC_VERSION_COMPLETE, e.g. "8.0.1"). OCCT has it only as
+        a macro, no function a binding could call, so the generator records it in the manifest for the stubs' notice."""
+        header = (self.include_dir / "Standard_Version.hxx").read_text(errors="replace")
+        m = re.search(r'^\s*#\s*define\s+OCC_VERSION_COMPLETE\s+"([^"]+)"', header, flags=re.M)
+        if m is None:
+            raise RuntimeError(f"{self.include_dir / 'Standard_Version.hxx'}: no OCC_VERSION_COMPLETE")
+        return m.group(1)
+
     def link_closure(self, toolkit: str) -> set[str]:
         """The toolkit and everything it links transitively (EXTERNLIB.cmake); what the linker already sees."""
         seen: set[str] = set()

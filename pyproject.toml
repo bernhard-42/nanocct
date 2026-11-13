@@ -14,8 +14,11 @@ classifiers = [
 requires-python = ">=3.12"
 # numpy: the zero-copy array views return numpy arrays. 
 dependencies = ["numpy>=2,<3"]
-# the wheel bundles OCCT, FreeType, RapidJSON and nanobind: licenses/README.md and NOTICE
-license = "Apache-2.0"
+# The licence differs per wheel (the Linux and Windows wheels bundle libraries the others do not), and the Core
+# Metadata License-Expression describes only its own archive: generator/wheel.py writes each wheel's expression from
+# licenses/components.toml. No scikit-build-core provider is configured, as nothing builds through the backend
+# (make env: uv sync --no-install-project). licenses/README.md and NOTICE say what each component is.
+dynamic = ["license"]
 license-files = ["LICENSE", "NOTICE", "licenses/*.txt", "licenses/README.md"]
 
 [project.urls]
