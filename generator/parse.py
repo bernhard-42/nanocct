@@ -780,7 +780,7 @@ def _stream_kind(t: cindex.Type) -> str:
     if decl.spelling == "basic_stringstream" and pointee.is_const_qualified():
         return StreamKind.IN       # InitFromJson(const Standard_SStream&): read only
     # a non-const std::stringstream& the callee may write into: not an input -- reported as an iostream type rather than
-    # bound as one and its output lost (review C8; OCCT 8.0.1 has none)
+    # bound as one and its output lost (review C8; OCCT 8.0.2 has none)
     return ""
 
 

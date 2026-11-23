@@ -178,9 +178,9 @@ endif
 # `make deps` builds them in the order OCCT needs: FreeType and RapidJSON first, then OCCT against both.
 
 clean_occt:
-	rm -rf $(DEPS)/occt-build $(DEPS)/occt-8.0.1 $(DEPS)/occt-build.log
+	rm -rf $(DEPS)/occt-build $(DEPS)/occt $(DEPS)/occt-build.log
 ifeq ($(PLATFORM),linux)
-	rm -rf $(DEPS)/occt-build-ml $(DEPS)/occt-8.0.1-manylinux
+	rm -rf $(DEPS)/occt-build-ml $(DEPS)/occt-manylinux
 endif
 
 clean_freetype:
@@ -284,7 +284,7 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && "$(WIN_PY)" -m generator $(TK_FLAGS)
 else
-	$(CONTAINER) "$(ML_PY) -m generator --occt /work/deps/occt-8.0.1-manylinux --occt-src /work/deps/occt-src $(TK_FLAGS)"
+	$(CONTAINER) "$(ML_PY) -m generator --occt /work/deps/occt-manylinux --occt-src /work/deps/occt-src $(TK_FLAGS)"
 endif
 
 # The parallel generation reproduces a serial one byte for byte, over three toolkits (tools/check_parallel.py). Run it
@@ -296,7 +296,7 @@ ifeq ($(PLATFORM),macos)
 else ifeq ($(PLATFORM),windows)
 	cd $(ROOT) && "$(WIN_PY)" tools/check_parallel.py
 else
-	$(CONTAINER) "cd /work && $(ML_PY) tools/check_parallel.py --occt /work/deps/occt-8.0.1-manylinux --occt-src /work/deps/occt-src"
+	$(CONTAINER) "cd /work && $(ML_PY) tools/check_parallel.py --occt /work/deps/occt-manylinux --occt-src /work/deps/occt-src"
 endif
 
 
@@ -325,7 +325,7 @@ else ifeq ($(PLATFORM),windows)
 	$(RUN_SH) $(DEPS)/stage.sh $(BUILD_DIR) $(STAGE_DIR)
 else
 	$(CONTAINER) "cmake -S /work -B /work/build-ml -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	    -DPython_EXECUTABLE=$(ML_PY) -DNANOCCT_OCCT_DIR=/work/deps/occt-8.0.1-manylinux \
+	    -DPython_EXECUTABLE=$(ML_PY) -DNANOCCT_OCCT_DIR=/work/deps/occt-manylinux \
 	    -DNANOCCT_RAPIDJSON_DIR=/work/deps/rapidjson/include"
 	$(CONTAINER) "ninja -k 0 $(if $(NINJA_JOBS),-j $(NINJA_JOBS)) -C /work/build-ml"
 	$(CONTAINER) "/work/deps/stage.sh build-ml stage-ml"
@@ -399,7 +399,7 @@ RAW_DIR  := $(DIST_DIR)/unrepaired
 # The tag has to match what OCCT was built against (deps/build-occt-macos.sh sets 11.1). Without this the wheel is
 # tagged macosx_11_0 and delocate warns that it will not in fact run on 11.0.
 MACOS_TARGET := 11.1
-OCCT_BIN_WIN := $(DEPS)/occt-8.0.1/win64/vc14/bin
+OCCT_BIN_WIN := $(DEPS)/occt/win64/vc14/bin
 FREEIMAGE_BIN_WIN := $(DEPS)/freeimage/bin
 
 # The unrepaired wheel, packed from the staged tree: correct Python surface, but linked against deps/. The platform tag
@@ -433,7 +433,7 @@ else ifeq ($(PLATFORM),windows)
 	    && "$(WIN_PY)" tools/check_vc_runtime.py "$$crt" $(DIST_DIR)/nanocct-*.whl
 else
 	@# LD_LIBRARY_PATH for the same reason: the OCCT .so files name each other by SONAME and carry no RUNPATH.
-	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-8.0.1-manylinux/lib auditwheel repair \
+	$(CONTAINER) "LD_LIBRARY_PATH=/work/deps/occt-manylinux/lib auditwheel repair \
 	    --plat $(ML_PLAT) -w /work/dist /work/dist/unrepaired/*.whl"
 endif
 	@echo "repaired wheel:" && ls -lh $(DIST_DIR)/*.whl

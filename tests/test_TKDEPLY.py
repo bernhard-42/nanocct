@@ -1,5 +1,5 @@
 """Generated bindings for TKDEPLY (DataExchange: RWPly, DEPLY): Stanford PLY, built on TKRWMesh like OBJ and glTF --
-but write-only. OCCT 8.0.1 has no PLY reader (DEPLY_Provider overrides only Write), and its writer emits
+but write-only. OCCT 8.0.2 has no PLY reader (DEPLY_Provider overrides only Write), and its writer emits
 `format ascii 1.0` (RWPly_PlyWriterContext.cxx:154-155), so the ASCII/binary stream question the mesh formats keep
 asking has no second flavour to answer for here."""
 import importlib

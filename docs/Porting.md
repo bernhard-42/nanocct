@@ -3,7 +3,7 @@
 Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.md); their section numbers and the `R-…` rule identifiers are shared across them.
 
 
-For build123d and CadQuery-style code. OCP is pybind11-based and binds OCCT 7.x/8.x with its own conventions; nanocct is 1:1 with OCCT 8.0.1 and documents every deviation in section 6. What changes (evidence: an inventory of build123d's OCP use, 285 OCP names in 84 packages):
+For build123d and CadQuery-style code. OCP is pybind11-based and binds OCCT 7.x/8.x with its own conventions; nanocct is 1:1 with the OCCT release it binds (its version starts with that release's) and documents every deviation in section 6. What changes (evidence: an inventory of build123d's OCP use, 285 OCP names in 84 packages):
 
 | OCP | nanocct | Note |
 |---|---|---|

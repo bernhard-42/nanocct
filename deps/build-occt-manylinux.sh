@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build OCCT 8.0.1 for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the result runs
+# Build OCCT for Linux inside the manylinux_2_28 container (deps/manylinux.Dockerfile), so the result runs
 # against glibc 2.28 while being compiled by gcc 14. This is the Linux counterpart of deps/build-occt-macos.sh and
 # deps/build-occt-windows.sh, and it is the only Linux build: the container is the Linux platform (Build.md),
 # so there is one Linux environment and it is the one CI will use. FreeType comes from
@@ -20,13 +20,13 @@
 #
 # AlmaLinux's default CMAKE_INSTALL_LIBDIR is lib64; it is forced to lib so the paths match the other platforms.
 #
-# Usage: deps/build-occt-manylinux.sh [install-prefix]     (default: deps/occt-8.0.1-manylinux)
+# Usage: deps/build-occt-manylinux.sh [install-prefix]     (default: deps/occt-manylinux)
 #
 # The container runs as the invoking user so nothing on the mounted tree comes out root-owned; everything root has to
 # do is baked into the image instead.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PREFIX_REL="${1:-deps/occt-8.0.1-manylinux}"
+PREFIX_REL="${1:-deps/occt-manylinux}"
 
 # One place pins the tags, so the container and the host cannot drift apart (both scripts are idempotent).
 "$HERE/fetch-occt-src.sh"

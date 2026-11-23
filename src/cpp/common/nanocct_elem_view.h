@@ -7,7 +7,7 @@
 //
 // The table is asserted, not assumed. Every entry static_asserts that the type really is N packed scalars
 // with no padding and no vtable, so a layout change in OCCT is a compile error rather than a wrong array.
-// Measured on OCCT 8.0.1 / clang 22 (arm64): gp_Pnt, gp_XYZ, gp_Vec and gp_Dir are 24 bytes, gp_Pnt2d,
+// Measured on OCCT 8.0.1 / clang 22 (arm64), asserted again on OCCT 8.0.2 / Apple clang 21 (arm64): gp_Pnt, gp_XYZ, gp_Vec and gp_Dir are 24 bytes, gp_Pnt2d,
 // gp_XY, gp_Vec2d and gp_Dir2d 16, Poly_Triangle 12, all standard-layout, trivially copyable and
 // non-polymorphic, with the first coordinate at offset 0. NCollection_Vec2/3/4 are a plain `Element_t v[N]`
 // (NCollection_Vec3.hxx:420).

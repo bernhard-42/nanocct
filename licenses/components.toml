@@ -20,7 +20,7 @@ files = ["LICENSE"]
 platforms = ["macos", "linux", "windows"]
 
 [[component]]
-name = "Open CASCADE Technology 8.0.1: the libTK* libraries, and the .pyi type stubs as a whole"
+name = "Open CASCADE Technology 8.0.2: the libTK* libraries, and the .pyi type stubs as a whole"
 spdx = ["LGPL-2.1-only WITH OCCT-exception-1.0"]
 files = ["licenses/OCCT-LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt"]
 platforms = ["macos", "linux", "windows"]

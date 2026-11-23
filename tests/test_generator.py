@@ -28,21 +28,21 @@ OCCT_SRC = ROOT / "deps" / "occt-src"
 # Both halves of finding the install were platform-specific, and both made these tests skip silently rather than
 # fail (measured 2026-09-24, the first run of the suite outside macOS: 38 of them skipped on Linux *and* on
 # Windows, each reporting "local OCCT build not present" while the build sat next to them):
-#   - the prefix is deps/occt-8.0.1 on macOS and Windows, deps/occt-8.0.1-manylinux in the container;
+#   - the prefix is deps/occt on macOS and Windows, deps/occt-manylinux in the container;
 #   - the headers are <install>/inc on Windows and <install>/include/opencascade elsewhere, which is why the
 #     probe goes through OcctTree.include_dir instead of spelling one of them out.
 def _occt_install() -> Path:
-    for prefix in (ROOT / "deps" / "occt-8.0.1", ROOT / "deps" / "occt-8.0.1-manylinux"):
+    for prefix in (ROOT / "deps" / "occt", ROOT / "deps" / "occt-manylinux"):
         if (OcctTree(src=OCCT_SRC, install=prefix).include_dir / "Standard_Transient.hxx").exists():
             return prefix
-    return ROOT / "deps" / "occt-8.0.1"
+    return ROOT / "deps" / "occt"
 
 
 OCCT = _occt_install()
 OCCT_INC = OcctTree(src=OCCT_SRC, install=OCCT).include_dir    # <install>/inc on Windows, else include/opencascade
 
 # Every generator subprocess below must be told which OCCT to parse, for the same reason OCCT is resolved above:
-# the default is deps/occt-8.0.1, which does not exist in the container, and the run then dies with
+# the default is deps/occt, which does not exist in the container, and the run then dies with
 # "fatal error: 'Adaptor2d_Curve2d.hxx' file not found" instead of producing anything to compare.
 GEN = [sys.executable, "-m", "generator", "--occt", str(OCCT)]
 

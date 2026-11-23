@@ -36,7 +36,7 @@ the LGPL version 2.1 with the Open CASCADE exception version 1.0 (SPDX:
 LGPL-2.1-only WITH OCCT-exception-1.0). Each stub says so in a comment at its
 top, with the OCCT and nanocct versions it was made from.
 
-The OCCT version used is pinned in `deps/fetch-occt-src.sh` (tag V8_0_1) and its
+The OCCT version used is pinned in `deps/fetch-occt-src.sh` (tag V8_0_2) and its
 complete corresponding source is available from
 https://github.com/Open-Cascade-SAS/OCCT at that tag.
 

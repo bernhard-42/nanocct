@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build OCCT 8.0.1 on Windows with MSVC into deps/occt-8.0.1, mirroring deps/build-occt-macos.sh flag for flag.
+# Build OCCT on Windows with MSVC into deps/occt, mirroring deps/build-occt-macos.sh flag for flag.
 #
 # The split follows the rule for this project (2026-09-23): **preparation in Git Bash, compilation with MSVC in
 # cmd.exe**. Bash locates the toolchain and writes a .bat; cmd.exe runs `vcvars64.bat` and then cmake/ninja. Importing
@@ -7,7 +7,7 @@
 # (it is printed before it runs). Git Bash is what GitHub Actions' windows-latest offers, so this is also the CI path.
 #
 # Prerequisites, all of which windows-latest already has: Visual Studio (or Build Tools) with the C++ workload, CMake,
-# Ninja, Git. Sources: deps/occt-src (git clone --depth 1 --branch V8_0_1), deps/freetype-src, and deps/rapidjson from
+# Ninja, Git. Sources: deps/occt-src (deps/fetch-occt-src.sh), deps/freetype-src, and deps/rapidjson from
 # deps/fetch-rapidjson.sh. Build FreeType first with deps/build-freetype-windows.sh.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -18,7 +18,7 @@ done
 
 W_SRC="$(cygpath -w "$HERE/occt-src")"
 W_BUILD="$(cygpath -w "$HERE/occt-build")"
-W_PREFIX="$(cygpath -w "$HERE/occt-8.0.1")"
+W_PREFIX="$(cygpath -w "$HERE/occt")"
 W_FT="$(cygpath -w "$HERE/freetype")"
 W_FI="$(cygpath -w "$HERE/freeimage")"
 W_RJ="$(cygpath -w "$HERE/rapidjson")"
@@ -63,4 +63,4 @@ echo "--- generated $BAT ---"
 cat "$BAT"
 echo "----------------------"
 cmd //c "$(cygpath -w "$BAT")"
-echo "OCCT installed to $HERE/occt-8.0.1"
+echo "OCCT installed to $HERE/occt"

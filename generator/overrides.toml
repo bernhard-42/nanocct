@@ -145,7 +145,7 @@ namespaces = [
 headers = [
     "OSD_WNT.hxx",          # Windows only (includes <windows.h>)
     "WNT_Dword.hxx",        # Windows only (includes <windows.h>); WNT_Window/WNT_WClass guard themselves with _WIN32
-    # R-SKIP-HEADER, an OCCT 8.0.1 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private
+    # R-SKIP-HEADER, an OCCT 8.0.1 and 8.0.2 packaging bug: these public headers include GeomBndLib_InfiniteHelpers.pxx, a private
     # file that is not installed (GeomBndLib_Curve/Curve2d include GeomBndLib_Line/Line2d). BndLib_Add3dCurve etc. cover
     # the use.
     "GeomBndLib_Line.hxx",
@@ -229,7 +229,7 @@ methods = [
     "IntPolyh_Array<IntPolyh_PointNormal>::Dump",
     # BVH_PairTraverse<T, N> with the default BVHSetType = void: Select() dereferences the (void) set; the overload taking two
     # BVH trees stays. The derived selectors (BRepExtrema_OverlapTool, IntPatch_BVHTraversal) call that one (2026-09-21).
-    # OCCT 8.0.1 instantiates only the 3D one; a 2D one would not compile (void* -> BVH(), BVH_Traverse.hxx:317), so it
+    # OCCT 8.0.2 instantiates only the 3D one; a 2D one would not compile (void* -> BVH(), BVH_Traverse.hxx:317), so it
     # cannot come back unnoticed.
     "BVH_PairTraverse<double, 3, void, double>::Select()",
     # NCollection_Vec3<unsigned long> (Image_PixMapData dimensions): cwiseAbs() calls std::abs(unsigned long), which is

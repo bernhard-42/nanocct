@@ -62,8 +62,8 @@ jobs:
         run: |
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json, os
-          native = "deps/occt-8.0.1\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
-          ml = "deps/occt-8.0.1-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
+          native = "deps/occt\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
+          ml = "deps/occt-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
           # what each platform's deps are built from: the deps-cache key hashes these and nothing else, so a change for
           # one platform no longer rebuilds OCCT on the others
           fetch = "deps/fetch-*.sh"

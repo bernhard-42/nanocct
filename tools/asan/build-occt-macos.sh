@@ -1,5 +1,5 @@
 #!/bin/bash
-# OCCT 8.0.1 with AddressSanitizer, for `make asan` (macOS). Same options as deps/build-occt-macos.sh except:
+# OCCT with AddressSanitizer, for `make asan` (macOS). Same options as deps/build-occt-macos.sh except:
 #   - build tree build/asan/occt-build, install build/asan/occt
 #   - Release config (keeps the install layout lib/ and OCCT's Release-only defines in the exported config),
 #     but BUILD_OPT_PROFILE=Default (no -O3 -fomit-frame-pointer -flto) and -O1 -g, so a report has file:line

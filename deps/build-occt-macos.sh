@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build OCCT 8.0.1 (V8_0_1 tag, sources in deps/occt-src) with Apple clang into deps/occt-8.0.1.
+# Build OCCT (the tag pinned in deps/fetch-occt-src.sh, sources in deps/occt-src) with Apple clang into deps/occt.
 # Mirrors ~/Development/CAD/ocp-build-system/local-build/02-build-occt-sdk.sh, minus conda:
 # FreeType is the static build from deps/build-freetype-macos.sh, FreeImage the one from
 # deps/build-freeimage-macos.sh and RapidJSON the vendored copy from deps/fetch-rapidjson.sh (run all three
@@ -12,7 +12,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$HERE/occt-src"
 BUILD="$HERE/occt-build"
-PREFIX="$HERE/occt-8.0.1"
+PREFIX="$HERE/occt"
 CPUS="$(sysctl -n hw.ncpu)"
 # OCCT's Production profile adds -fomit-frame-pointer (and -flto). On x86_64 that leaves every function with a stack probe
 # (a frame of more than 4 KB) with a compact unwind entry that reads its frame size from the wrong bytes, so a C++

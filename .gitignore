@@ -14,10 +14,10 @@ __pycache__/
 # fetch and build everything from a pinned version, so the downloads themselves stay out of the repository
 deps/occt-src/
 deps/occt-build/
-deps/occt-8.0.1/
+deps/occt/
 deps/occt-build.log
 deps/occt-build-ml/
-deps/occt-8.0.1-manylinux/
+deps/occt-manylinux/
 deps/freetype-src/
 deps/freetype-build/
 deps/freetype/

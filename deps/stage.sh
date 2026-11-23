@@ -35,7 +35,7 @@ echo "stage: $n extension modules from $BUILD into $STAGE"
 # so without that second directory every toolkit above TKernel fails to load (measured on gauss 2026-09-25, the first
 # Windows build since FreeImage: "DLL load failed while importing _TKBinXCAF").
 if ls "$STAGE/nanocct"/*.pyd >/dev/null 2>&1; then
-    OCCT_BIN="$ROOT/deps/occt-8.0.1/win64/vc14/bin"
+    OCCT_BIN="$ROOT/deps/occt/win64/vc14/bin"
     FREEIMAGE_BIN="$ROOT/deps/freeimage/bin"
     [ -d "$OCCT_BIN" ] || { echo "stage: no $OCCT_BIN -- run 'make occt' first" >&2; exit 1; }
     [ -f "$FREEIMAGE_BIN/FreeImage.dll" ] || { echo "stage: no $FREEIMAGE_BIN/FreeImage.dll -- run 'make freeimage' first" >&2; exit 1; }

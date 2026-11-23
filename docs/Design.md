@@ -17,7 +17,7 @@ How to read them:
 - 8, [Build.md](Build.md): build and packaging; 9, [Coverage.md](Coverage.md): the coverage audit of FoundationClasses and ModelingData; 10, [Porting.md](Porting.md): porting from OCP.
 ## 1. Goals
 
-- Python bindings for Open CASCADE Technology (OCCT) 8.0.1, generated from the OCCT headers.
+- Python bindings for Open CASCADE Technology (OCCT), generated from the headers of the OCCT release pinned in `deps/fetch-occt-src.sh`.
 - **1:1 with the OCCT API**: same class, method, parameter and enum names, same package structure, OCCT's own `//!` comments as docstrings, so the OCCT reference documentation serves as the nanocct documentation. Deviations exist only where Python cannot express a C++ idiom; each one is a documented rule (section 7).
 - **nanobind** as the binding library, in **stable-ABI mode** (`abi3`), so one wheel per platform covers all supported CPython versions.
 - The generator must be **simple and efficient**: one Python program, libclang for parsing, plain string emission. The generated C++ is **not** checked in — it is ephemeral build input that every platform produces for itself in a few minutes (6.3).
@@ -109,7 +109,7 @@ What the DataExchange headers name from Visualization is small — `Graphic3d_Al
 
 ### Sizes
 
-`.hxx` headers listed in the packages' `FILES.cmake`, as `generator/occt.py` reads them, OCCT `V8_0_1`. Files outside `FILES.cmake` are not compiled by OCCT and not bound.
+`.hxx` headers listed in the packages' `FILES.cmake`, as `generator/occt.py` reads them, of the OCCT tag pinned in `deps/fetch-occt-src.sh`. Files outside `FILES.cmake` are not compiled by OCCT and not bound.
 
 | Module | Headers | Toolkits |
 |---|---|---|

@@ -76,7 +76,7 @@ brep = BRepTools.Write_s(shape)                 # a BREP in memory, as str
 
 ## Status
 
-- OCCT 8.0.1, 45 toolkits: FoundationClasses, ModelingData, ModelingAlgorithms, Visualization (without VTK), ApplicationFramework and DataExchange. [Design 2](https://github.com/bernhard-42/nanocct/blob/main/docs/Design.md#2-scope)
+- OCCT 8.0.2, 45 toolkits: FoundationClasses, ModelingData, ModelingAlgorithms, Visualization (without VTK), ApplicationFramework and DataExchange. [Design 2](https://github.com/bernhard-42/nanocct/blob/main/docs/Design.md#2-scope)
 - Built and tested on five platforms: macOS arm64 and x86_64, Linux x86_64 and aarch64 (`manylinux_2_28`) and Windows x64. The wheels bundle OCCT, FreeType and FreeImage; the only Python dependency is numpy.
 - Install it from PyPI with `pip install nanocct`, download the wheels from the [release page](https://github.com/bernhard-42/nanocct/releases), or build them from source with the `Makefile`. [Design 8](https://github.com/bernhard-42/nanocct/blob/main/docs/Build.md)
 - Porting from OCP: [Design 10](https://github.com/bernhard-42/nanocct/blob/main/docs/Porting.md)
@@ -111,7 +111,7 @@ Prerequisites: `git`, `curl`, [uv](https://docs.astral.sh/uv/), CMake and Ninja;
     make env
     ```
 
-- Build the dependencies OCCT 8.0.1, FreeType, FreeImage and RapidJSON
+- Build the dependencies OCCT 8.0.2, FreeType, FreeImage and RapidJSON
 
     ```bash
     make deps

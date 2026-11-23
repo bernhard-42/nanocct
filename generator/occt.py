@@ -29,7 +29,7 @@ class Toolkit:
 @dataclass
 class OcctTree:
     src: Path          # deps/occt-src
-    install: Path      # deps/occt-8.0.1
+    install: Path      # deps/occt
     toolkits: dict[str, Toolkit] = field(default_factory=dict)
     packages: dict[str, Package] = field(default_factory=dict)
     toolkit_of_header: dict[str, str] = field(default_factory=dict)   # "TDocStd_Document.hxx" -> "TKLCAF"
@@ -57,6 +57,19 @@ class OcctTree:
         if m is None:
             raise RuntimeError(f"{self.include_dir / 'Standard_Version.hxx'}: no OCC_VERSION_COMPLETE")
         return m.group(1)
+
+    @property
+    def source_version(self) -> str:
+        """The version of the source tree, from OCCT's adm/cmake/version.cmake (the file its build configures
+        Standard_Version.hxx from): "8.0.2"."""
+        text = (self.src / "adm" / "cmake" / "version.cmake").read_text()
+        parts: list[str] = []
+        for key in ("MAJOR", "MINOR", "MAINTENANCE"):
+            m = re.search(rf"^\s*set\s*\(\s*OCC_VERSION_{key}\s+(\d+)\s*\)", text, flags=re.M)
+            if m is None:
+                raise RuntimeError(f"{self.src / 'adm' / 'cmake' / 'version.cmake'}: no OCC_VERSION_{key}")
+            parts.append(m.group(1))
+        return ".".join(parts)
 
     def link_closure(self, toolkit: str) -> set[str]:
         """The toolkit and everything it links transitively (EXTERNLIB.cmake); what the linker already sees."""
@@ -97,6 +110,11 @@ def _cmake_list(path: Path) -> list[str]:
 
 def load_tree(src: Path, install: Path) -> OcctTree:
     tree = OcctTree(src=src, install=install)
+    # The toolkit lists come from the sources and the headers from the install, so the two must be one OCCT. The prefix
+    # carries no version (deps/occt): an install left from an older OCCT would otherwise be parsed against newer lists.
+    if tree.version != tree.source_version:
+        raise RuntimeError(f"OCCT install {install} is {tree.version}, the sources {src} are {tree.source_version}"
+                           " -- rebuild the install (make occt) or pass the matching --occt / --occt-src")
     for module in MODULES:
         tk_list = src / "src" / module / "TOOLKITS.cmake"
         if not tk_list.exists():

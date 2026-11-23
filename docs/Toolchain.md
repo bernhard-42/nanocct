@@ -5,8 +5,8 @@ Part of the nanocct design documents in `docs/`, indexed in [Design.md](Design.m
 
 ## 4.1 OCCT
 
-- Built locally from the `V8_0_1` tag: sources extracted with `git archive` from a checkout into `deps/occt-src` (the exact tag, not a working tree).
-- Script `deps/build-occt-macos.sh`; install prefix `deps/occt-8.0.1`.
+- Built locally from the tag pinned in `deps/fetch-occt-src.sh` (`TAG`): sources extracted with `git archive` from a checkout into `deps/occt-src` (the exact tag, not a working tree).
+- Script `deps/build-occt-macos.sh`; install prefix `deps/occt`.
 - **No conda/micromamba anywhere.**
 
 Configuration:
@@ -42,7 +42,7 @@ Configuration:
     - Cost: a FreeType header change makes ninja relink every dependent toolkit, and the manylinux build is `-flto`, so that takes ~18 minutes on a 32-core 2015 box against 26 s on the laptop, whose OCCT tree is not built with LTO.
     - **RapidJSON needs nothing**, measured: **0** symbols of its own on macOS and **1** on Linux (`rapidjson::internal::GetDigitsLut()::cDigitsLut`, a read-only digit table that is identical in every version). Header-only, and everything else inlined into OCCT's own functions — the symbols that mention `rapidjson` in their mangled names are OCCT's, not RapidJSON's.
     - Our own extension modules export exactly one symbol each, `PyInit__<TK>`.
-- vcpkg would replace the two library builds with a bootstrap and a triplet per platform, and builds FreeType with the optional dependencies enabled by default. Revisit if the list grows (Draco, TBB); OCCT 8.0.1 has native `BUILD_USE_VCPKG` support.
+- vcpkg would replace the two library builds with a bootstrap and a triplet per platform, and builds FreeType with the optional dependencies enabled by default. Revisit if the list grows (Draco, TBB); OCCT 8.0.2 has native `BUILD_USE_VCPKG` support.
 - Linux additionally needs **fontconfig** (used unconditionally under `HAVE_FREETYPE` in `Font_FontMgr.cxx:86,708`): system package in the manylinux image, bundled by auditwheel.
 - Windows enumerates fonts via the registry (*unverified*).
 

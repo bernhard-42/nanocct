@@ -18,7 +18,7 @@ call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" >nul || exit /b 1
 cmake -S "$W_ROOT" -B "$W_ROOT\build-win" -G Ninja ^
   -D CMAKE_BUILD_TYPE=Release ^
   -D Python_EXECUTABLE="$W_ROOT\.venv\Scripts\python.exe" ^
-  -D NANOCCT_OCCT_DIR="$W_ROOT\deps\occt-8.0.1" ^
+  -D NANOCCT_OCCT_DIR="$W_ROOT\deps\occt" ^
   -D NANOCCT_RAPIDJSON_DIR="$W_ROOT\deps\rapidjson\include" || exit /b 1
 ninja -k 0 ${NINJA_JOBS:+-j $NINJA_JOBS} -C "$W_ROOT\build-win" || exit /b 1
 echo BUILD_OK

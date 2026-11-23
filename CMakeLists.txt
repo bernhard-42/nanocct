@@ -9,13 +9,23 @@ execute_process(COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
 find_package(nanobind CONFIG REQUIRED)
 
 # OCCT: the local build in deps/ by default (see deps/build-occt-macos.sh)
-set(NANOCCT_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt-8.0.1" CACHE PATH "OCCT installation prefix")
+set(NANOCCT_OCCT_DIR "${CMAKE_SOURCE_DIR}/deps/occt" CACHE PATH "OCCT installation prefix")
 set(NANOCCT_RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/deps/rapidjson/include" CACHE PATH "RapidJSON headers (vendored)")
 # OCCT's install layout differs by platform: lib/cmake/opencascade on Unix, cmake/ on Windows (2026-09-23)
 find_package(OpenCASCADE REQUIRED NO_DEFAULT_PATH PATHS
              "${NANOCCT_OCCT_DIR}/lib/cmake/opencascade"
              "${NANOCCT_OCCT_DIR}/cmake")
 message(STATUS "nanocct: OCCT ${OpenCASCADE_VERSION} from ${NANOCCT_OCCT_DIR}")
+# The sources were generated from one OCCT (the manifest records its version); compiling them against another must
+# fail here. NANOCCT_OCCT_DIR is a cache variable, so a build directory configured before the OCCT version changed
+# keeps the old prefix whatever the default above says.
+file(READ "${CMAKE_SOURCE_DIR}/src/cpp/manifest.json" NANOCCT_MANIFEST)
+string(JSON NANOCCT_GENERATED_OCCT GET "${NANOCCT_MANIFEST}" occt_version)
+if(NOT OpenCASCADE_VERSION VERSION_EQUAL NANOCCT_GENERATED_OCCT)
+  message(FATAL_ERROR "nanocct: the sources were generated from OCCT ${NANOCCT_GENERATED_OCCT}, but ${NANOCCT_OCCT_DIR} "
+                      "is OCCT ${OpenCASCADE_VERSION} -- regenerate (make generate), or reconfigure with "
+                      "-DNANOCCT_OCCT_DIR=<the matching install> (a build directory keeps the prefix it was configured with)")
+endif()
 
 # macOS: types keep default visibility, functions and variables stay hidden (-fvisibility-ms-compat = -fvisibility=hidden
 # -ftype-visibility=default; it must come after nanobind's -fvisibility=hidden, the last of the two wins). Every library

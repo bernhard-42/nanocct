@@ -40,8 +40,8 @@ jobs:
               -q '.actions_caches[] | [.key, .created_at] | @tsv' > caches.tsv
           python3 - <<'EOF' >> "$GITHUB_OUTPUT"
           import json
-          native = "deps/occt-8.0.1\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
-          ml = "deps/occt-8.0.1-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
+          native = "deps/occt\ndeps/freetype\ndeps/freeimage\ndeps/rapidjson\n"
+          ml = "deps/occt-manylinux\ndeps/freetype-ml\ndeps/freeimage-ml\ndeps/rapidjson\n"
           # the same five as build-wheels.yml's select job: platform, runner, what the deps cache holds
           table = [("macos-arm64", "macos-15", native), ("macos-x86_64", "macos-15-intel", native),
                    ("linux-x86_64", "ubuntu-24.04", ml), ("linux-aarch64", "ubuntu-24.04-arm", ml),

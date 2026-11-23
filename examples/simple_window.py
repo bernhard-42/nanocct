@@ -35,7 +35,7 @@ from nanocct.V3d import V3d_Viewer, V3d_XposYnegZpos
 
 WIDTH, HEIGHT = 900, 700
 FRAME_MS = 16                      # ~60 Hz
-TITLE = "OCCT 8.0.1 - unit box"
+TITLE = "OCCT - unit box"
 
 
 def native_window(display: Aspect_DisplayConnection, title: str, x: int, y: int, width: int, height: int) -> Aspect_Window:
