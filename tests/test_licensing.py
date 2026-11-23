@@ -8,6 +8,7 @@ software". Until 2026-09-25 the project declared no licence at all and the wheel
 so these tests exist to keep a new bundled dependency from arriving without one.
 """
 import importlib.metadata
+import json
 import re
 import sys
 import tomllib
@@ -17,6 +18,7 @@ import pytest
 from packaging.licenses import canonicalize_license_expression
 
 import nanocct
+from generator.occt import _cmake_list, load_tree
 from generator.wheel import COMPONENTS, license_expression
 
 ROOT = Path(__file__).parents[1]
@@ -29,7 +31,8 @@ PLATFORM = {"darwin": "macos", "linux": "linux", "win32": "windows"}[sys.platfor
 LICENCE_TEXTS = ("OCCT-LGPL-2.1", "OCCT-LGPL-exception", "FreeType-FTL", "RapidJSON", "nanobind-BSD-3-Clause",
                  "robin_map-MIT", "FreeImage-FIPL", "zlib", "libpng", "libjpeg-IJG", "libtiff", "OpenJPEG-BSD-2-Clause",
                  "Imath-Half-BSD-3-Clause", "fontconfig", "libpng-1.6.34", "bzip2", "libuuid",
-                 "Microsoft-VC-Runtime")
+                 "Microsoft-VC-Runtime", "OCCT-Unicode-3.0", "OCCT-dtoa", "OCCT-FlexLexer", "OCCT-delabella-MIT",
+                 "OCCT-Halton-MIT", "OCCT-Khronos-khrplatform", "OCCT-Khronos-glext-MIT", "OCCT-DejaVu-Bitstream-Vera")
 
 
 def test_the_licence_is_declared_per_wheel():
@@ -63,8 +66,10 @@ def test_the_component_table_is_consistent():
 def test_each_wheel_names_exactly_its_own_components():
     """The macOS wheel bundles no system library and no Microsoft runtime; Linux adds the five system libraries the
     manylinux image provides, Windows the Visual C++ runtime -- and nothing of the other platforms."""
-    common = ("Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0 AND FTL AND FreeImage AND Zlib AND libpng-2.0"
-              " AND libpng-1.6.35 AND LicenseRef-IJG-libjpeg-10 AND libtiff AND BSD-2-Clause AND BSD-3-Clause AND MIT")
+    common = ("Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0 AND Unicode-3.0 AND dtoa AND LicenseRef-FlexLexer"
+              " AND MIT AND LicenseRef-Khronos-khrplatform AND Bitstream-Vera AND FTL AND FreeImage AND Zlib"
+              " AND libpng-2.0 AND libpng-1.6.35 AND LicenseRef-IJG-libjpeg-10 AND libtiff AND BSD-2-Clause"
+              " AND BSD-3-Clause")
     assert license_expression("macos") == common
     assert license_expression("linux") == (common + " AND HPND-sell-variant AND LicenseRef-libpng-1.6.34"
                                            " AND bzip2-1.0.6 AND LicenseRef-libuuid")
@@ -174,3 +179,72 @@ def test_every_bundled_library_is_a_component_of_this_wheel():
     expected = {c["library"] for c in TABLE if "library" in c and PLATFORM in c["platforms"]}
     assert sorted(bundled - expected) == [], "bundled libraries without a component entry"
     assert sorted(expected - bundled) == [], "component entries without a bundled library"
+
+
+# ---- third-party code inside OCCT ------------------------------------------------------------------------------------
+# OCCT's sources include code of other authors under permissive licences whose conditions bind every redistribution of
+# the binaries, so the wheel carries their notices like those of the libraries it bundles. Which files carry one is
+# found by scanning, not listed by hand: every file the shipped toolkits compile (their packages' FILES.cmake) that
+# grants a licence of its own -- a permission sentence, a redistribution clause or an SPDX tag -- must be one of the
+# `occt_sources` of licenses/components.toml, and every `occt_sources` entry must be found. A new OCCT release that adds
+# or drops such code fails here. OCCT's own LGPL header grants nothing in these words ("you can redistribute it").
+OCCT_SRC = ROOT / "deps" / "occt-src"
+_GRANT = re.compile(r"Permission is hereby granted|Permission to use, copy, modify|Permission is granted to anyone"
+                    r"|Redistribution and use in source and binary forms|SPDX-License-Identifier|UNICODE LICENSE"
+                    r"|Licensed under the Apache License|Boost Software License|GNU General Public License"
+                    r"|placed in the public domain", re.I)
+# Bison's output carries the GPL with Bison's own exception, which lets a larger work that is not itself a parser
+# generator be distributed "under terms of your choice": OCCT's Bison-generated STEP parser is covered by OCCT's licence
+# and needs no entry (licenses/README.md). Recognised by the exception's text, not by a file name.
+_BISON_EXCEPTION = ("As a special exception, you may create a larger work that contains part or all of the Bison parser"
+                    " skeleton and distribute that work under terms of your choice, so long as that work isn't itself a"
+                    " parser generator")
+
+
+def _occt_install() -> Path:
+    """The local OCCT install: deps/occt, or deps/occt-manylinux in the Linux container (tests/test_generator.py)."""
+    for prefix in (ROOT / "deps" / "occt", ROOT / "deps" / "occt-manylinux"):
+        if prefix.is_dir():
+            return prefix
+    return ROOT / "deps" / "occt"
+
+
+def _shipped_occt_files_with_a_licence_grant() -> set[str]:
+    tree = load_tree(OCCT_SRC, _occt_install())
+    toolkits: set[str] = set()
+    for tk in json.loads((ROOT / "src" / "cpp" / "manifest.json").read_text())["order"]:
+        toolkits |= tree.link_closure(tk)          # the bound toolkits and what they link: the libTK* the wheel bundles
+    found: set[str] = set()
+    for tk in toolkits:
+        toolkit = tree.toolkits[tk]
+        for pkg in toolkit.packages:
+            pkg_dir = OCCT_SRC / "src" / toolkit.module / tk / pkg.name
+            files_cmake = pkg_dir / "FILES.cmake"
+            if not files_cmake.exists():
+                continue
+            for name in _cmake_list(files_cmake):
+                path = (pkg_dir / name).resolve()
+                if not path.is_file():
+                    continue
+                text = path.read_text(errors="replace")
+                if _GRANT.search(text) is None:
+                    continue
+                if _BISON_EXCEPTION in " ".join(re.sub(r"(?m)^\s*//", "", text).split()):
+                    continue
+                found.add(path.relative_to(OCCT_SRC.resolve()).as_posix())
+    return found
+
+
+def test_every_licence_inside_occt_is_a_component():
+    declared = {s for c in TABLE for s in c.get("occt_sources", [])}
+    found = _shipped_occt_files_with_a_licence_grant()
+    assert sorted(found - declared) == [], "OCCT files with a licence of their own that licenses/components.toml lacks"
+    assert sorted(declared - found) == [], "occt_sources entries the scan no longer finds"
+
+
+def test_notice_names_the_licence_files_of_the_code_inside_occt():
+    notice = (ROOT / "NOTICE").read_text()
+    for c in TABLE:
+        if "occt_sources" in c:
+            for f in c["files"]:
+                assert f in notice, f"{c['name']}: NOTICE does not name {f}"

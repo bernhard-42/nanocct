@@ -10,6 +10,9 @@
 #   library    a shared library the repair tool bundles for it (`libfreetype-2f3b32b6.so.6.16.1` -> "freetype"), checked
 #              against the libraries a repaired wheel really carries
 #   notice     the phrase in ../NOTICE that names it
+#   occt_sources  for code inside OCCT: the OCCT source files (relative to deps/occt-src) that carry its notice;
+#              tests/test_licensing.py scans the sources of the shipped toolkits for third-party licence
+#              grants and requires exactly these files
 #
 # A wheel's expression is the distinct terms of the components of its platform, in this order.
 
@@ -24,6 +27,55 @@ name = "Open CASCADE Technology 8.0.2: the libTK* libraries, and the .pyi type s
 spdx = ["LGPL-2.1-only WITH OCCT-exception-1.0"]
 files = ["licenses/OCCT-LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt"]
 platforms = ["macos", "linux", "windows"]
+
+[[component]]
+name = "Unicode ConvertUTF code inside OCCT (NCollection_UtfIterator), in libTKernel"
+spdx = ["Unicode-3.0"]
+files = ["licenses/OCCT-Unicode-3.0.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/FoundationClasses/TKernel/NCollection/NCollection_UtfIterator.lxx"]
+
+[[component]]
+name = "David M. Gay's strtod inside OCCT (Standard_Strtod), in libTKernel"
+spdx = ["dtoa"]
+files = ["licenses/OCCT-dtoa.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/FoundationClasses/TKernel/Standard/Standard_Strtod.cxx"]
+
+[[component]]
+name = "flex's FlexLexer.h inside OCCT, used by the STEP lexer in libTKDESTEP"
+spdx = ["LicenseRef-FlexLexer"]
+files = ["licenses/OCCT-FlexLexer.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/FoundationClasses/TKernel/FlexLexer/FlexLexer.h"]
+
+[[component]]
+name = "DELABELLA Delaunay triangulation inside OCCT, in libTKMesh"
+spdx = ["MIT"]
+files = ["licenses/OCCT-delabella-MIT.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/ModelingAlgorithms/TKMesh/BRepMesh/delabella.pxx", "src/ModelingAlgorithms/TKMesh/BRepMesh/delabella.cpp"]
+
+[[component]]
+name = "the Halton sampler inside OCCT (OpenGl_HaltonSampler), in libTKOpenGl"
+spdx = ["MIT"]
+files = ["licenses/OCCT-Halton-MIT.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/Visualization/TKOpenGl/OpenGl/OpenGl_HaltonSampler.hxx"]
+
+[[component]]
+name = "the Khronos OpenGL headers inside OCCT, in libTKOpenGl"
+spdx = ["LicenseRef-Khronos-khrplatform", "MIT"]
+files = ["licenses/OCCT-Khronos-khrplatform.txt", "licenses/OCCT-Khronos-glext-MIT.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/Visualization/TKOpenGl/OpenGl/OpenGl_khrplatform.h", "src/Visualization/TKOpenGl/OpenGl/OpenGl_glext.h"]
+
+[[component]]
+name = "the DejaVu Sans font subset inside OCCT, embedded in libTKService"
+spdx = ["Bitstream-Vera"]
+files = ["licenses/OCCT-DejaVu-Bitstream-Vera.txt"]
+platforms = ["macos", "linux", "windows"]
+occt_sources = ["src/Visualization/TKService/Font/Font_DejavuSans_Latin_woff.pxx"]
 
 [[component]]
 name = "FreeType 2.14.3, statically linked into libTKService"

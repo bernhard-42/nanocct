@@ -41,6 +41,40 @@ complete corresponding source is available from
 https://github.com/Open-Cascade-SAS/OCCT at that tag.
 
 
+Third-party code inside OCCT
+----------------------------
+
+OCCT's own sources include code from other authors under their own licences.
+It is compiled into the OCCT libraries the distribution bundles, as OCCT ships
+it (nanocct does not modify OCCT). Each notice is reproduced, verbatim from the
+OCCT source file named, in the file listed:
+
+    Unicode, Inc.: UTF conversion code (ConvertUTF, modified for OCCT) in
+    NCollection_UtfIterator.lxx, in libTKernel
+                            licenses/OCCT-Unicode-3.0.txt
+    David M. Gay, Lucent Technologies: strtod, adapted by OCCT as
+    Standard_Strtod.cxx, in libTKernel
+                            licenses/OCCT-dtoa.txt
+    The Regents of the University of California: FlexLexer.h (flex), used by
+    the STEP reader's lexer in libTKDESTEP
+                            licenses/OCCT-FlexLexer.txt
+    GUMIX - Marcin Sokalski: DELABELLA Delaunay triangulation
+    (delabella.pxx, delabella.cpp), in libTKMesh
+                            licenses/OCCT-delabella-MIT.txt
+    Leonhard Gruenschloss: Halton sequence sampler (OpenGl_HaltonSampler.hxx),
+    in libTKOpenGl
+                            licenses/OCCT-Halton-MIT.txt
+    The Khronos Group Inc.: OpenGL platform and extension headers
+    (OpenGl_khrplatform.h, OpenGl_glext.h), in libTKOpenGl
+                            licenses/OCCT-Khronos-khrplatform.txt
+                            licenses/OCCT-Khronos-glext-MIT.txt
+    Bitstream, Inc. and the DejaVu project: the Basic Latin subset of the
+    DejaVu Sans font, embedded in libTKService (Font_DejavuSans_Latin_woff.pxx)
+                            licenses/OCCT-DejaVu-Bitstream-Vera.txt
+
+Bitstream Vera is a trademark of Bitstream, Inc.
+
+
 FreeImage
 ---------
 

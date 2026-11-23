@@ -9,13 +9,14 @@ nanocct's own code is Apache-2.0 (`../LICENSE`). Everything in this directory is
 The expression below is the union of the licences applicable across nanocct's binary wheels. It is an inventory for this documentation, not the licence expression of every individual wheel:
 
 ```
-Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0 AND FTL AND FreeImage AND Zlib AND libpng-2.0
-AND libpng-1.6.35 AND LicenseRef-IJG-libjpeg-10 AND libtiff AND BSD-2-Clause AND BSD-3-Clause AND MIT
-AND HPND-sell-variant AND LicenseRef-libpng-1.6.34 AND bzip2-1.0.6 AND LicenseRef-libuuid
-AND LicenseRef-Microsoft-VC-Runtime
+Apache-2.0 AND LGPL-2.1-only WITH OCCT-exception-1.0 AND Unicode-3.0 AND dtoa AND LicenseRef-FlexLexer
+AND MIT AND LicenseRef-Khronos-khrplatform AND Bitstream-Vera AND FTL AND FreeImage AND Zlib
+AND libpng-2.0 AND libpng-1.6.35 AND LicenseRef-IJG-libjpeg-10 AND libtiff AND BSD-2-Clause
+AND BSD-3-Clause AND HPND-sell-variant AND LicenseRef-libpng-1.6.34 AND bzip2-1.0.6
+AND LicenseRef-libuuid AND LicenseRef-Microsoft-VC-Runtime
 ```
 
-Each wheel's `License-Expression` metadata describes the components actually included in that wheel: `../generator/wheel.py` writes it from `components.toml` for the wheel's platform, as the Core Metadata specification asks of a field that "only applies to the Distribution Archive containing the metadata with this field". The macOS wheels carry the first twelve terms (up to `MIT`), the Linux wheels add the four terms of the Linux system libraries (`HPND-sell-variant` to `LicenseRef-libuuid`), the Windows wheel adds `LicenseRef-Microsoft-VC-Runtime`. `../tests/test_licensing.py` checks every repaired wheel's expression and libraries against the table. nanocct publishes no sdist.
+Each wheel's `License-Expression` metadata describes the components actually included in that wheel: `../generator/wheel.py` writes it from `components.toml` for the wheel's platform, as the Core Metadata specification asks of a field that "only applies to the Distribution Archive containing the metadata with this field". The macOS wheels carry the first seventeen terms (up to `BSD-3-Clause`), the Linux wheels add the four terms of the Linux system libraries (`HPND-sell-variant` to `LicenseRef-libuuid`), the Windows wheel adds `LicenseRef-Microsoft-VC-Runtime`. `../tests/test_licensing.py` checks every repaired wheel's expression and libraries against the table. nanocct publishes no sdist.
 
 The licences apply together, each to the component or material identified in the table; they do not all apply to every file.
 
@@ -26,7 +27,15 @@ The licences apply together, each to the component or material identified in the
 - `LicenseRef-libpng-1.6.34` (the system libpng 1.6.34): its text names other versions and dates than SPDX's `libpng-1.6.35`, whose template has no alternatives for them, and it adds trademark and export notes.
 - `LicenseRef-IJG-libjpeg-10` (libjpeg 10, vendored by FreeImage): the legal section of its README differs in substance from both `IJG` and `IJG-short`.
 - `LicenseRef-libuuid`: its first condition ("the entire permission notice in its entirety, including the disclaimer of warranties") is not the wording `BSD-3-Clause`'s template allows.
+- `Unicode-3.0` (Unicode code inside OCCT): differs from SPDX's text only in the copyright line (years, `©`).
+- `MIT` for DELABELLA (inside OCCT): the line naming the library ("DELABELLA - Delaunay triangulation library") stands with the copyright line, above the licence text; the text itself differs only in title and copyright, which the template leaves free.
+- `Bitstream-Vera` (the DejaVu Sans subset inside OCCT): the licence matches from the copyright line on; the sentence before it, "DejaVu changes are in public domain.", is the DejaVu project's statement about its own changes, not part of the licence.
+- `MIT` for OCCT's `OpenGl_glext.h`: the header gives its licence only as `SPDX-License-Identifier: MIT`, so its file carries that line with the copyright and SPDX's MIT text.
+- `LicenseRef-FlexLexer` (`FlexLexer.h` inside OCCT): `BSD-3-Clause-flex`'s template requires flex's attribution to Vern Paxson and the Department of Energy contract sentence, which this older header has not (it names Kent Williams and Tom Epperly), and `BSD-3-Clause` has another disclaimer.
+- `LicenseRef-Khronos-khrplatform` (OCCT's `OpenGl_khrplatform.h`): `MIT-Khronos-old`'s template requires the paragraph "MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS KHRONOS STANDARDS …", which this version of the header has not, and `MIT`'s template does not allow "this software and/or associated documentation files".
 - `LicenseRef-Microsoft-VC-Runtime` is a custom license reference, not an identifier from the SPDX License List. It identifies the applicable proprietary Microsoft runtime terms.
+
+OCCT's Bison-generated STEP parser (`StepFile/step.tab.cxx`, `step.tab.hxx`, in `libTKDESTEP`) has no entry: Bison's skeleton is under the GPL with the Bison exception (added in Bison 2.2), which lets a larger work that is not itself a parser generator be distributed under terms of the distributor's choice, so it is covered by OCCT's licence. `../tests/test_licensing.py` recognises that exception by its text.
 
 FreeType and FreeImage offer alternative licences; the FTL and the FreeImage Public License are the ones chosen (`../NOTICE`).
 
@@ -36,6 +45,7 @@ FreeType and FreeImage offer alternative licences; the FTL and the FreeImage Pub
 | --- | --- | --- | --- | --- |
 | `../LICENSE` | `Apache-2.0` | nanocct | all | nanocct-authored bindings, generator code and generated binding code, and the AddOns; excluding the type stubs (next row) and third-party material |
 | `OCCT-LGPL-2.1.txt`, `OCCT-LGPL-exception.txt` | `LGPL-2.1-only WITH OCCT-exception-1.0` | Open CASCADE Technology 8.0.2 | all | the `libTK*` shared libraries are bundled, the generated bindings incorporate material from OCCT headers, and the `.pyi` type stubs reproduce and adapt OCCT's header documentation: source text, which the exception does not cover, so each stub file as a whole is under this licence, nanocct's contributions to it included, and says so at its top |
+| `OCCT-Unicode-3.0.txt`, `OCCT-dtoa.txt`, `OCCT-FlexLexer.txt`, `OCCT-delabella-MIT.txt`, `OCCT-Halton-MIT.txt`, `OCCT-Khronos-khrplatform.txt`, `OCCT-Khronos-glext-MIT.txt`, `OCCT-DejaVu-Bitstream-Vera.txt` | `Unicode-3.0`, `dtoa`, `LicenseRef-FlexLexer`, `MIT`, `MIT`, `LicenseRef-Khronos-khrplatform` and `MIT`, `Bitstream-Vera` | third-party code inside OCCT: Unicode's ConvertUTF code, David M. Gay's strtod, flex's `FlexLexer.h`, DELABELLA, a Halton sampler, the Khronos OpenGL headers, the DejaVu Sans font | all | part of OCCT's own sources and compiled into `libTKernel`, `libTKDESTEP`, `libTKMesh`, `libTKOpenGl` and `libTKService` as OCCT ships them; each file is the notice verbatim from the OCCT source file `components.toml` names (`occt_sources`), and `../tests/test_licensing.py` scans the sources of the shipped toolkits for third-party licence grants and requires exactly those files |
 | `FreeType-FTL.txt` | `FTL` | FreeType 2.14.3 | all | statically linked into `libTKService`, so it is not a separate file in the wheel; `deps/occt-unexported-symbols.txt` keeps its symbols from being re-exported, which does not change the licence obligation |
 | `FreeImage-FIPL.txt` | `FreeImage` | FreeImage&nbsp;3.19.15 | all | bundled as its own shared library (`libFreeImage.dylib`/`.so`/`.dll`); it gives OCCT its image codecs |
 | `zlib.txt`, `libpng.txt`, `libjpeg-IJG.txt`, `libtiff.txt`, `OpenJPEG-BSD-2-Clause.txt` | `Zlib`, `libpng-2.0` and `libpng-1.6.35`, `LicenseRef-IJG-libjpeg-10`, `libtiff`, `BSD-2-Clause` | the codecs FreeImage vendors | all | compiled into `libFreeImage`; built with WebP, the OpenEXR codec, LibRaw and JPEG-XR switched off, and FreeImage vendors no JBIG-KIT |
