@@ -158,6 +158,9 @@ BINDERS: dict[str, dict] = {
         "requires": [],
         "nargs": 1,                # the second parameter is an enable_if guard
         "wraps": True,             # NCollection_Shared<T> derives from T: T must be bound (class or instantiation)
+        # NCollection_Shared<T> : Standard_Transient, T -- the bound base T is not at offset 0, so the Python object stores
+        # the T subobject (Runtime.md 5.2, mi_traits): R-MI-REF, and R-VIEW-GUARD does not guard it
+        "base_at_offset0": False,
     },
     "NCollection_HArray1": {
         "binder": "nanocct::bind_NCollection_HArray1",

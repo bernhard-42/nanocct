@@ -19,15 +19,51 @@ inline nb::bytes nanocct_stream_bytes(const std::ostringstream &stream) {
 // of a Python file-like object (anything with read(): io.StringIO, an open text file). A str is deliberately not accepted
 // -- it would collide with the file-path overloads -- so a non-file-like argument falls through to the next overload.
 // Typed typing.TextIO.
+// The object is read completely and put back where it was (a peek: an overload that is then not taken leaves it as it
+// was); after the call it moves on by what OCCT read from the stream, as a C++ caller's stream does (advance, below).
+// An object that cannot seek (a pipe) stays read to its end.
 namespace nanocct {
+struct StreamSource {
+    nb::object source;   // the file-like object; not valid when it cannot seek
+    nb::object start;    // its tell() before the read
+};
 struct TextInput {
     std::string text;
+    StreamSource from;
 };
 // The binary counterpart (BinTools::Read): a binary file-like object (io.BytesIO, a file opened "rb"), whose read()
 // returns bytes. Typed typing.BinaryIO. A text file-like object falls through (read() returns str).
 struct BinaryInput {
     std::string data;
+    StreamSource from;
 };
+// What the call consumed from the binding's stream: its get position. The stream buffer reports it whatever state flags
+// OCCT left (tellg() is -1 once failbit is set: GeomTools::GetReal on an oversized token).
+inline std::streamoff consumed(std::stringstream &stream, size_t size) {
+    const std::streamoff at = stream.rdbuf()->pubseekoff(0, std::ios::cur, std::ios::in);
+    return at < 0 ? static_cast<std::streamoff>(size) : at;
+}
+// Moves the file-like object on by what the call consumed: a text object by the characters of the consumed UTF-8 bytes
+// (seek accepts only tell()'s cookies, read(n) counts characters), a binary one by the bytes.
+inline void advance(const TextInput &in, std::stringstream &stream) {
+    if (!in.from.source.is_valid())
+        return;
+    const std::streamoff n = consumed(stream, in.text.size());
+    in.from.source.attr("seek")(in.from.start);
+    PyObject *prefix = PyUnicode_DecodeUTF8(in.text.data(), static_cast<Py_ssize_t>(n), "surrogateescape");
+    if (prefix == nullptr)
+        throw nb::python_error();
+    const Py_ssize_t characters = PyUnicode_GetLength(prefix);
+    Py_DECREF(prefix);
+    if (characters > 0)
+        in.from.source.attr("read")(characters);
+}
+inline void advance(const BinaryInput &in, std::stringstream &stream) {
+    if (!in.from.source.is_valid())
+        return;
+    const std::streamoff n = consumed(stream, in.data.size());
+    in.from.source.attr("seek")(nb::cast<long long>(in.from.start) + static_cast<long long>(n));
+}
 // R-CSTR-NULL: a const char* parameter with a null default (LDOM_XmlWriter(const char* theEncoding = nullptr),
 // STEPCAFControl_Writer::Transfer(..., const char* const theIsMulti = nullptr)). nanobind's const char* caster rejects
 // None, which would make the default unreachable; this one takes a str or None (-> nullptr). The UTF-8 buffer belongs to

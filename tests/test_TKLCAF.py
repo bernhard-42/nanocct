@@ -108,7 +108,7 @@ def test_save_without_a_storage_driver_and_stream_kinds(doc):
     assert status == PCDM.PCDM_SS_Failure and data == b""
     assert "-> tuple[nanocct.PCDM.PCDM_StoreStatus, bytes]" in TDocStd.TDocStd_Application.SaveAs.__doc__
     assert "theIStream: typing.BinaryIO" in TDocStd.TDocStd_Application.Open.__doc__
-    assert "DumpJson(self, theDepth: int = -1) -> str" in TDocStd.TDocStd_Document.DumpJson.__doc__
+    assert "DumpJson(self, theDepth: int = -1, *, precision_hint: int = 6) -> str" in TDocStd.TDocStd_Document.DumpJson.__doc__
     # SaveAs(doc, ostream&, ExtendedString& theStatusMessage, range) collides with SaveAs(doc, path, range) after the
     # stream is removed: the typed suffix names the returned stream (R-COLLISION)
     assert "SaveAs__bytes(self, theDoc" in TDocStd.TDocStd_Application.SaveAs__bytes.__doc__

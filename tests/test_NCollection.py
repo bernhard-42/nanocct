@@ -642,3 +642,28 @@ def test_assign_returns_self():
     text = NCollection.NCollection_String("a")
     assert text.Assign(NCollection.NCollection_String("bc")) is text
     assert text.ToCString() == "bc"
+
+
+def test_a_handle_element_takes_none_the_null_handle():
+    """R-HANDLE in the hand-written binders (nanocct::elem_arg): an element, key or value of handle type takes None, as
+    C++ stores a null handle there (StepToTopoDS_TranslateFace's GTest puts nullptr into an HArray1 of primitives); an
+    element of any other type still refuses it."""
+    T = Standard.Standard_Transient
+    array = NCollection.NCollection_HArray1[T](1, 2)
+    array.SetValue(1, None)
+    array.SetValue(2, T())
+    assert array.Value(1) is None and array.Value(2) is not None
+    seq = NCollection.NCollection_Sequence[T]()
+    seq.Append(None)
+    assert seq.Length() == 1 and seq.Value(1) is None
+    lst = NCollection.NCollection_List[T]()
+    lst.Append(None)
+    assert lst.Size() == 1 and lst.First() is None
+    data = NCollection.NCollection_DataMap[int, T]()
+    data.Bind(1, None)
+    assert data.IsBound(1) is True and data.Find(1) is None
+    keys = NCollection.NCollection_IndexedMap[T]()
+    assert keys.Add(None) == 1 and keys.Contains(None) is True and keys.FindKey(1) is None
+    ints = NCollection.NCollection_Array1[int](1, 1)
+    with pytest.raises(TypeError):
+        ints.SetValue(1, None)

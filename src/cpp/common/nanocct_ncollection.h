@@ -32,6 +32,19 @@
 
 namespace nanocct {
 
+// R-HANDLE in the hand-written binders: an element, key or value parameter of handle type takes None, the null handle,
+// as every generated handle parameter does (nb::arg(...).none(), emit.py _args); without .none() nanobind refuses None
+// before the handle caster runs, so NCollection_HArray1<handle<T>>::SetValue(i, None) failed where C++ stores a null
+// handle (StepToTopoDS_TranslateFace's GTest, 2026-11-23). Any other element type keeps the plain argument.
+// nb::arg::none() returns a new argument of another type rather than changing this one (nb_attr.h), hence `auto` and two
+// returns.
+template <typename X> auto elem_arg(const char *name) {
+    if constexpr (nanocct_is_handle<std::remove_cv_t<X>>::value)
+        return nb::arg(name).none();
+    else
+        return nb::arg(name);
+}
+
 // T has operator== (needed by NCollection_List::Contains / Remove(item); gp_Pnt has none, TopoDS_Shape has)
 template <typename T, typename = void> struct has_equal : std::false_type {};
 template <typename T>
@@ -126,7 +139,7 @@ template <typename T> constexpr bool owners_not_supported = !owners<T>::active;
 template <typename T, typename Cls, typename... Extra> void def_array1_members(nb::class_<Cls, Extra...> &c) {
     using A = NCollection_Array1<T>;
     namespace D = nanocct_doc::NCollection_Array1;
-    c.def("Init", [](Cls &self, const T &v) { own(self, v); self.Init(v); }, nb::arg("theValue"), D::Init)
+    c.def("Init", [](Cls &self, const T &v) { own(self, v); self.Init(v); }, nanocct::elem_arg<T>("theValue"), D::Init)
      .def("Size", [](const Cls &self) { return self.Size(); }, D::Size)
      .def("Length", [](const Cls &self) { return self.Length(); }, D::Length)
      .def("IsEmpty", [](const Cls &self) { return self.IsEmpty(); }, D::IsEmpty)
@@ -142,7 +155,7 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      .def("Last", [](const Cls &self) -> decltype(auto) { return owned(self.Last()); }, D::Last)
      .def("Value", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), D::Value)
      .def("At", [](const Cls &self, const size_t i) -> decltype(auto) { return owned(self.At(i)); }, nb::arg("theIndex"), D::At)
-     .def("SetValue", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), D::SetValue)
+     .def("SetValue", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), D::SetValue)
      .def("UpdateLowerBound", [](Cls &self, const int l) { self.UpdateLowerBound(l); }, nb::arg("theLower"), D::UpdateLowerBound)
      .def("UpdateUpperBound", [](Cls &self, const int u) { self.UpdateUpperBound(u); }, nb::arg("theUpper"), D::UpdateUpperBound)
      // R-VIEW-GUARD: "No re-allocation will be done if length of array does not change" (NCollection_Array1.hxx, Resize)
@@ -156,7 +169,7 @@ template <typename T, typename Cls, typename... Extra> void def_array1_members(n
      .def("__call__", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), D::op_call)
      .def("__getitem__", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), D::op_index)
      // Python additions
-     .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (OCCT index).")
+     .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), "Python addition: alias to SetValue (OCCT index).")
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const Cls &self) { return iterate(nb::type<Cls>(), "iterator", self, self.begin(), self.end()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values from Lower() to Upper().");
@@ -223,7 +236,7 @@ template <typename T> void bind_NCollection_HArray1(nb::module_ &m, const char *
     nb::class_<H, A> c(m, name, D::class_doc);
     c.def(nb::new_([]() { return opencascade::handle<H>(new H()); }), D::ctor)
      .def(nb::new_([](const int l, const int u) { return opencascade::handle<H>(new H(l, u)); }), nb::arg("theLower"), nb::arg("theUpper"), D::ctor)
-     .def(nb::new_([](const int l, const int u, const T &v) { return opencascade::handle<H>(new H(l, u, v)); }), nb::arg("theLower"), nb::arg("theUpper"), nb::arg("theValue"), keep_if_owned<T, 0, 4>(), D::ctor)
+     .def(nb::new_([](const int l, const int u, const T &v) { return opencascade::handle<H>(new H(l, u, v)); }), nb::arg("theLower"), nb::arg("theUpper"), nanocct::elem_arg<T>("theValue"), keep_if_owned<T, 0, 4>(), D::ctor)
      .def(nb::new_([](const A &a) { return opencascade::handle<H>(new H(a)); }), nb::arg("theOther"), keep_if_owned<T, 0, 2>(), D::ctor)
      .def("Array1", [](const A &b) { return owned(A(static_cast<const H &>(b).Array1())); }, D::Array1)      // sliced copy (Array1 is polymorphic)
      .def("ChangeArray1", [](A &b) -> A & { return static_cast<H &>(b).ChangeArray1(); }, nb::rv_policy::reference_internal, D::ChangeArray1);
@@ -261,7 +274,7 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
           nb::arg("theAllocator").none() = static_cast<opencascade::handle<NCollection_BaseAllocator>>(nullptr), D::Clear)
      .def("First", [](const L &self) -> decltype(auto) { return owned(self.First()); }, D::First)
      .def("Last", [](const L &self) -> decltype(auto) { return owned(self.Last()); }, D::Last)
-     .def("Append", [](L &self, const T &v, It &it) { own(self, v); self.Append(v, it); }, nb::arg("theItem"), nb::arg("theIter"), D::Append)
+     .def("Append", [](L &self, const T &v, It &it) { own(self, v); self.Append(v, it); }, nanocct::elem_arg<T>("theItem"), nb::arg("theIter"), D::Append)
      .def("Append", [](L &self, L &other) { refuse_if_viewed(&other, "Append"); own_all(self, other); self.Append(other); }, nb::arg("theOther"), D::Append)
      .def("Prepend", [](L &self, L &other) { refuse_if_viewed(&other, "Prepend"); own_all(self, other); self.Prepend(other); }, nb::arg("theOther"), D::Prepend)
      .def("RemoveFirst", [](L &self) { refuse_if_viewed(&self, "RemoveFirst"); self.RemoveFirst(); }, D::RemoveFirst)
@@ -277,14 +290,14 @@ template <typename T> void bind_NCollection_List(nb::module_ &m, const char *nam
      .def("__iter__", [](const L &self) { return iterate(nb::type<L>(), "value_iterator", self, self.begin(), self.end()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
     // members returning the (inserted) element reference: view for class types, value otherwise
-    def_elem<T>(c, "Append", [](L &self, const T &v) -> T & { own(self, v); return self.Append(v); }, nb::arg("theItem"), D::Append);
-    def_elem<T>(c, "Prepend", [](L &self, const T &v) -> T & { own(self, v); return self.Prepend(v); }, nb::arg("theItem"), D::Prepend);
-    def_elem<T>(c, "InsertBefore", [](L &self, const T &v, It &it) -> T & { own(self, v); return self.InsertBefore(v, it); }, nb::arg("theItem"), nb::arg("theIter"), D::InsertBefore);
-    def_elem<T>(c, "InsertAfter", [](L &self, const T &v, It &it) -> T & { own(self, v); return self.InsertAfter(v, it); }, nb::arg("theItem"), nb::arg("theIter"), D::InsertAfter);
+    def_elem<T>(c, "Append", [](L &self, const T &v) -> T & { own(self, v); return self.Append(v); }, nanocct::elem_arg<T>("theItem"), D::Append);
+    def_elem<T>(c, "Prepend", [](L &self, const T &v) -> T & { own(self, v); return self.Prepend(v); }, nanocct::elem_arg<T>("theItem"), D::Prepend);
+    def_elem<T>(c, "InsertBefore", [](L &self, const T &v, It &it) -> T & { own(self, v); return self.InsertBefore(v, it); }, nanocct::elem_arg<T>("theItem"), nb::arg("theIter"), D::InsertBefore);
+    def_elem<T>(c, "InsertAfter", [](L &self, const T &v, It &it) -> T & { own(self, v); return self.InsertAfter(v, it); }, nanocct::elem_arg<T>("theItem"), nb::arg("theIter"), D::InsertAfter);
     if constexpr (has_equal<T>::value) {
-        c.def("Contains", [](const L &self, const T &v) { return self.Contains(v); }, nb::arg("theObject"), D::Contains)
-         .def("Remove", [](L &self, const T &v) { refuse_if_viewed(&self, "Remove"); return self.Remove(v); }, nb::arg("theObject"), D::Remove)
-         .def("__contains__", [](const L &self, const T &v) { return self.Contains(v); }, nb::arg("theObject"), "Python addition: alias to Contains.");
+        c.def("Contains", [](const L &self, const T &v) { return self.Contains(v); }, nanocct::elem_arg<T>("theObject"), D::Contains)
+         .def("Remove", [](L &self, const T &v) { refuse_if_viewed(&self, "Remove"); return self.Remove(v); }, nanocct::elem_arg<T>("theObject"), D::Remove)
+         .def("__contains__", [](const L &self, const T &v) { return self.Contains(v); }, nanocct::elem_arg<T>("theObject"), "Python addition: alias to Contains.");
     }
 }
 
@@ -312,15 +325,15 @@ template <typename T, typename Cls, typename... Extra> void def_sequence_members
      .def("Remove", [](Cls &self, It &it) { refuse_if_viewed(&self, "Remove", iterator_object(it).ptr()); self.Remove(it); }, nb::arg("thePosition"), D::Remove)
      .def("Remove", [](Cls &self, const int i) { refuse_if_viewed(&self, "Remove"); self.Remove(i); }, nb::arg("theIndex"), D::Remove)
      .def("Remove", [](Cls &self, const int from, const int to) { refuse_if_viewed(&self, "Remove"); self.Remove(from, to); }, nb::arg("theFromIndex"), nb::arg("theToIndex"), D::Remove)
-     .def("Append", [](Cls &self, const T &v) { own(self, v); self.Append(v); }, nb::arg("theItem"), D::Append)
+     .def("Append", [](Cls &self, const T &v) { own(self, v); self.Append(v); }, nanocct::elem_arg<T>("theItem"), D::Append)
      .def("Append", [](Cls &self, S &other) { refuse_if_viewed(&other, "Append"); own_all(self, other); self.Append(other); }, nb::arg("theSeq"), D::Append)
-     .def("Prepend", [](Cls &self, const T &v) { own(self, v); self.Prepend(v); }, nb::arg("theItem"), D::Prepend)
+     .def("Prepend", [](Cls &self, const T &v) { own(self, v); self.Prepend(v); }, nanocct::elem_arg<T>("theItem"), D::Prepend)
      .def("Prepend", [](Cls &self, S &other) { refuse_if_viewed(&other, "Prepend"); own_all(self, other); self.Prepend(other); }, nb::arg("theSeq"), D::Prepend)
-     .def("InsertBefore", [](Cls &self, const int i, const T &v) { own(self, v); self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), D::InsertBefore)
+     .def("InsertBefore", [](Cls &self, const int i, const T &v) { own(self, v); self.InsertBefore(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), D::InsertBefore)
      .def("InsertBefore", [](Cls &self, const int i, S &other) { refuse_if_viewed(&other, "InsertBefore"); own_all(self, other); self.InsertBefore(i, other); }, nb::arg("theIndex"), nb::arg("theSeq"), D::InsertBefore)
-     .def("InsertAfter", [](Cls &self, It &it, const T &v) { own(self, v); self.InsertAfter(it, v); }, nb::arg("thePosition"), nb::arg("theItem"), D::InsertAfter)
+     .def("InsertAfter", [](Cls &self, It &it, const T &v) { own(self, v); self.InsertAfter(it, v); }, nb::arg("thePosition"), nanocct::elem_arg<T>("theItem"), D::InsertAfter)
      .def("InsertAfter", [](Cls &self, const int i, S &other) { refuse_if_viewed(&other, "InsertAfter"); own_all(self, other); self.InsertAfter(i, other); }, nb::arg("theIndex"), nb::arg("theSeq"), D::InsertAfter)
-     .def("InsertAfter", [](Cls &self, const int i, const T &v) { own(self, v); self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), D::InsertAfter)
+     .def("InsertAfter", [](Cls &self, const int i, const T &v) { own(self, v); self.InsertAfter(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), D::InsertAfter)
      .def("Split", [](Cls &self, const int i, S &sub) {
               refuse_if_viewed(&self, "Split"); refuse_if_viewed(&sub, "Split");
               own_all(sub, self); self.Split(i, sub); }, nb::arg("theIndex"), nb::arg("theSeq"), D::Split)
@@ -328,11 +341,11 @@ template <typename T, typename Cls, typename... Extra> void def_sequence_members
      .def("Last", [](const Cls &self) -> decltype(auto) { return owned(self.Last()); }, D::Last)
      .def("Value", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), D::Value)
      .def("At", [](const Cls &self, const size_t i) -> decltype(auto) { return owned(self.At(i)); }, nb::arg("theIndex"), D::At)
-     .def("SetValue", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), D::SetValue)
+     .def("SetValue", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), D::SetValue)
      .def("__call__", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), D::op_call)
      // Python additions
      .def("__getitem__", [](const Cls &self, const int i) -> decltype(auto) { return owned(self.Value(i)); }, nb::arg("theIndex"), "Python addition: alias to Value (OCCT index, 1-based).")
-     .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (OCCT index).")
+     .def("__setitem__", [](Cls &self, const int i, const T &v) { own(self, v); self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), "Python addition: alias to SetValue (OCCT index).")
      .def("__len__", [](const Cls &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const Cls &self) { return iterate(nb::type<Cls>(), "value_iterator", self, self.cbegin(), self.cend()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
@@ -444,11 +457,11 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: Add can grow the table (iterators); removal frees nodes. The set operations per NCollection_MapAlgo.hxx:
     // Union clears this map unless it is an operand, Unite only adds, the others remove or exchange into a local.
-    c.def("Add", [](M &self, const K &k) { invalidate_iterators(&self); own(self, k); return self.Add(k); }, nb::arg("theKey"), D::Add)
-     .def("Added", [](M &self, const K &k) -> decltype(auto) { invalidate_iterators(&self); own(self, k); return owned(self.Added(k)); }, nb::arg("theKey"), D::Added)
-     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
+    c.def("Add", [](M &self, const K &k) { invalidate_iterators(&self); own(self, k); return self.Add(k); }, nanocct::elem_arg<K>("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> decltype(auto) { invalidate_iterators(&self); own(self, k); return owned(self.Added(k)); }, nanocct::elem_arg<K>("theKey"), D::Added)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
      .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains_deprecated)
-     .def("Remove", [](M &self, const K &k) { refuse_if_viewed(&self, "Remove"); return self.Remove(k); }, nb::arg("theKey"), D::Remove)
+     .def("Remove", [](M &self, const K &k) { refuse_if_viewed(&self, "Remove"); return self.Remove(k); }, nanocct::elem_arg<K>("theKey"), D::Remove)
      .def("IsEqual", [](const M &self, const M &other) { return self.IsEqual(other); }, nb::arg("theOther"), D::IsEqual)
      .def("Union", [](M &self, const M &a, const M &b) {
               if (&self != &a && &self != &b) refuse_if_viewed(&self, "Union"); else invalidate_iterators(&self);
@@ -462,7 +475,7 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
      .def("Difference", [](M &self, const M &a, const M &b) { refuse_if_viewed(&self, "Difference"); own_all(self, a); own_all(self, b); self.Difference(a, b); }, nb::arg("theLeft"), nb::arg("theRight"), D::Difference)
      .def("Differ", [](M &self, const M &other) { refuse_if_viewed(&self, "Differ"); own_all(self, other); return self.Differ(other); }, nb::arg("theOther"), D::Differ)
      // Python additions
-     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to Contains.")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.");
 }
@@ -486,17 +499,17 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: binding can grow the table (iterators; a bound key's value is assigned in place), UnBind frees a node
-    c.def("Bind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
-     .def("TryBind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
-     .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), D::IsBound)
-     .def("UnBind", [](M &self, const K &k) { refuse_if_viewed(&self, "UnBind"); return self.UnBind(k); }, nb::arg("theKey"), D::UnBind)
-     .def("Find", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nb::arg("theKey"), D::Find)
-     .def("__call__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nb::arg("theKey"), D::op_call)
+    c.def("Bind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bind)
+     .def("TryBind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBind)
+     .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nanocct::elem_arg<K>("theKey"), D::IsBound)
+     .def("UnBind", [](M &self, const K &k) { refuse_if_viewed(&self, "UnBind"); return self.UnBind(k); }, nanocct::elem_arg<K>("theKey"), D::UnBind)
+     .def("Find", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"), D::Find)
+     .def("__call__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"), D::op_call)
      // Python additions
-     .def("__contains__", [](const M &self, const K &k) { return self.IsBound(k); }, nb::arg("theKey"), "Python addition: alias to IsBound.")
-     .def("__getitem__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nb::arg("theKey"), "Python addition: alias to Find.")
-     .def("__setitem__", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), "Python addition: alias to Bind.")
-     .def("__delitem__", [](M &self, const K &k) { refuse_if_viewed(&self, "__delitem__"); if (!self.UnBind(k)) throw nb::key_error(); }, nb::arg("theKey"), "Python addition: UnBind, KeyError if the key is not bound.")
+     .def("__contains__", [](const M &self, const K &k) { return self.IsBound(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to IsBound.")
+     .def("__getitem__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to Find.")
+     .def("__setitem__", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), "Python addition: alias to Bind.")
+     .def("__delitem__", [](M &self, const K &k) { refuse_if_viewed(&self, "__delitem__"); if (!self.UnBind(k)) throw nb::key_error(); }, nanocct::elem_arg<K>("theKey"), "Python addition: UnBind, KeyError if the key is not bound.")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.")
      .def("items", [](const M &self) {
@@ -504,19 +517,19 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key()), owned(it.Value())));
               return out; }, "Python addition: list of (key, value) tuples.");
     // element references: view for class V, value for scalars/handles
-    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
-    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
-    def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nb::arg("theKey"), D::ChangeFind);
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return *self.Bound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bound);
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBound);
+    def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nanocct::elem_arg<K>("theKey"), D::ChangeFind);
     // Seek: nullptr when absent -> None. The const Seek is a copy, as Find() is (a const pointer is no view: nanobind has no
     // const, so reference_internal handed out a writable alias -- on DoubleMap's Seek1/Seek2 a *key*, whose change left it
     // unfindable by either spelling; final review 2026-09-30); ChangeSeek is the view
     if constexpr (std::is_class_v<V>) {
-        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nb::arg("theKey"), D::Seek)
-         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nb::arg("theKey"), D::ChangeSeek)
-         .def("Find", [](const M &self, const K &k, V &v) { const bool found = self.Find(k, v); own_out(v); return found; }, nb::arg("theKey"), nb::arg("theValue"), D::Find);
+        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nanocct::elem_arg<K>("theKey"), D::ChangeSeek)
+         .def("Find", [](const M &self, const K &k, V &v) { const bool found = self.Find(k, v); own_out(v); return found; }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theValue"), D::Find);
     } else {
-        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::Seek)
-         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::ChangeSeek);
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
     }
 }
 
@@ -537,19 +550,19 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_basemap_members<true>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: adding, Substitute and Swap keep every node (NCollection_IndexedMap.hxx); removal frees one
-    c.def("Add", [](M &self, const K &k) { own(self, k); return self.Add(k); }, nb::arg("theKey"), D::Add)
-     .def("Added", [](M &self, const K &k) -> decltype(auto) { own(self, k); return owned(self.Added(k)); }, nb::arg("theKey"), D::Added)
-     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
-     .def("Substitute", [](M &self, const int i, const K &k) { own(self, k); self.Substitute(i, k); }, nb::arg("theIndex"), nb::arg("theKey"), D::Substitute)
+    c.def("Add", [](M &self, const K &k) { own(self, k); return self.Add(k); }, nanocct::elem_arg<K>("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> decltype(auto) { own(self, k); return owned(self.Added(k)); }, nanocct::elem_arg<K>("theKey"), D::Added)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
+     .def("Substitute", [](M &self, const int i, const K &k) { own(self, k); self.Substitute(i, k); }, nb::arg("theIndex"), nanocct::elem_arg<K>("theKey"), D::Substitute)
      .def("Swap", [](M &self, const int i, const int j) { self.Swap(i, j); }, nb::arg("theIndex1"), nb::arg("theIndex2"), D::Swap)
      .def("RemoveLast", [](M &self) { refuse_if_viewed(&self, "RemoveLast"); self.RemoveLast(); }, D::RemoveLast)
      .def("RemoveFromIndex", [](M &self, const int i) { refuse_if_viewed(&self, "RemoveFromIndex"); self.RemoveFromIndex(i); }, nb::arg("theIndex"), D::RemoveFromIndex)
-     .def("RemoveKey", [](M &self, const K &k) { refuse_if_viewed(&self, "RemoveKey"); return self.RemoveKey(k); }, nb::arg("theKey"), D::RemoveKey)
+     .def("RemoveKey", [](M &self, const K &k) { refuse_if_viewed(&self, "RemoveKey"); return self.RemoveKey(k); }, nanocct::elem_arg<K>("theKey"), D::RemoveKey)
      .def("FindKey", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindKey(i)); }, nb::arg("theIndex"), D::FindKey)
      .def("__call__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindKey(i)); }, nb::arg("theIndex"), D::op_call)
-     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nb::arg("theKey"), D::FindIndex)
+     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nanocct::elem_arg<K>("theKey"), D::FindIndex)
      // Python additions
-     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to Contains.")
      .def("__getitem__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindKey(i)); }, nb::arg("theIndex"), "Python addition: alias to FindKey (1-based index).")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Value(); }); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.");
@@ -574,22 +587,22 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
     def_basemap_members<true>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: as IndexedMap -- adding, binding (in place for a bound key), Substitute and Swap keep every node
-    c.def("Add", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.Add(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Add)
-     .def("TryBind", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.TryBind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBind)
-     .def("Bind", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.Bind(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bind)
-     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), D::Contains)
-     .def("Substitute", [](M &self, const int i, const K &k, const V &v) { own(self, k); own(self, v); self.Substitute(i, k, v); }, nb::arg("theIndex"), nb::arg("theKey"), nb::arg("theItem"), D::Substitute)
+    c.def("Add", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.Add(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Add)
+     .def("TryBind", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.TryBind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBind)
+     .def("Bind", [](M &self, const K &k, const V &v) { own(self, k); own(self, v); return self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bind)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
+     .def("Substitute", [](M &self, const int i, const K &k, const V &v) { own(self, k); own(self, v); self.Substitute(i, k, v); }, nb::arg("theIndex"), nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Substitute)
      .def("Swap", [](M &self, const int i, const int j) { self.Swap(i, j); }, nb::arg("theIndex1"), nb::arg("theIndex2"), D::Swap)
      .def("RemoveLast", [](M &self) { refuse_if_viewed(&self, "RemoveLast"); self.RemoveLast(); }, D::RemoveLast)
      .def("RemoveFromIndex", [](M &self, const int i) { refuse_if_viewed(&self, "RemoveFromIndex"); self.RemoveFromIndex(i); }, nb::arg("theIndex"), D::RemoveFromIndex)
-     .def("RemoveKey", [](M &self, const K &k) { refuse_if_viewed(&self, "RemoveKey"); self.RemoveKey(k); }, nb::arg("theKey"), D::RemoveKey)
+     .def("RemoveKey", [](M &self, const K &k) { refuse_if_viewed(&self, "RemoveKey"); self.RemoveKey(k); }, nanocct::elem_arg<K>("theKey"), D::RemoveKey)
      .def("FindKey", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindKey(i)); }, nb::arg("theIndex"), D::FindKey)
      .def("FindFromIndex", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindFromIndex(i)); }, nb::arg("theIndex"), D::FindFromIndex)
      .def("__call__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindFromIndex(i)); }, nb::arg("theIndex"), D::op_call)
-     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nb::arg("theKey"), D::FindIndex)
-     .def("FindFromKey", [](const M &self, const K &k) -> decltype(auto) { return owned(self.FindFromKey(k)); }, nb::arg("theKey"), D::FindFromKey)
+     .def("FindIndex", [](const M &self, const K &k) { return self.FindIndex(k); }, nanocct::elem_arg<K>("theKey"), D::FindIndex)
+     .def("FindFromKey", [](const M &self, const K &k) -> decltype(auto) { return owned(self.FindFromKey(k)); }, nanocct::elem_arg<K>("theKey"), D::FindFromKey)
      // Python additions
-     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nb::arg("theKey"), "Python addition: alias to Contains.")
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to Contains.")
      .def("__getitem__", [](const M &self, const int i) -> decltype(auto) { return owned(self.FindFromIndex(i)); }, nb::arg("theIndex"), "Python addition: alias to FindFromIndex (1-based index).")
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the keys in index order.")
@@ -597,17 +610,17 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
               nb::list out;
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key()), owned(it.Value())));
               return out; }, "Python addition: list of (key, value) tuples in index order.");
-    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { own(self, k); own(self, v); return self.TryBound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::TryBound);
-    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { own(self, k); own(self, v); return *self.Bound(k, v); }, nb::arg("theKey"), nb::arg("theItem"), D::Bound);
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { own(self, k); own(self, v); return self.TryBound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBound);
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { own(self, k); own(self, v); return *self.Bound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bound);
     def_elem<V>(c, "ChangeFromIndex", [](M &self, const int i) -> V & { return self.ChangeFromIndex(i); }, nb::arg("theIndex"), D::ChangeFromIndex);
-    def_elem<V>(c, "ChangeFromKey", [](M &self, const K &k) -> V & { return self.ChangeFromKey(k); }, nb::arg("theKey"), D::ChangeFromKey);
+    def_elem<V>(c, "ChangeFromKey", [](M &self, const K &k) -> V & { return self.ChangeFromKey(k); }, nanocct::elem_arg<K>("theKey"), D::ChangeFromKey);
     if constexpr (std::is_class_v<V>) {
-        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nb::arg("theKey"), D::Seek)   // a copy, as above
-         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nb::arg("theKey"), D::ChangeSeek)
-         .def("FindFromKey", [](const M &self, const K &k, V &v) { const bool found = self.FindFromKey(k, v); own_out(v); return found; }, nb::arg("theKey"), nb::arg("theValue"), D::FindFromKey);
+        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nanocct::elem_arg<K>("theKey"), D::Seek)   // a copy, as above
+         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nanocct::elem_arg<K>("theKey"), D::ChangeSeek)
+         .def("FindFromKey", [](const M &self, const K &k, V &v) { const bool found = self.FindFromKey(k, v); own_out(v); return found; }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theValue"), D::FindFromKey);
     } else {
-        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::Seek)
-         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nb::arg("theKey"), D::ChangeSeek);
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
     }
 }
 
@@ -654,7 +667,7 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
      .def("CopyValues", [](Cls &self, const A2 &o) -> Cls & { self.CopyValues(o); return self; }, nb::rv_policy::reference, nb::arg("theOther"), D::CopyValues)
      .def("Value", [](const Cls &self, const int r, const int c) -> const T & { return self.Value(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::Value)
      .def("__call__", [](const Cls &self, const int r, const int c) -> const T & { return self.Value(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::op_call)
-     .def("SetValue", [](Cls &self, const int r, const int c, const T &v) { self.SetValue(r, c, v); }, nb::arg("theRow"), nb::arg("theCol"), nb::arg("theItem"), D::SetValue)
+     .def("SetValue", [](Cls &self, const int r, const int c, const T &v) { self.SetValue(r, c, v); }, nb::arg("theRow"), nb::arg("theCol"), nanocct::elem_arg<T>("theItem"), D::SetValue)
      .def("At", [](const Cls &self, const size_t r, const size_t c) -> const T & { return self.At(r, c); }, nb::arg("theRow"), nb::arg("theCol"), D::At)
      .def("Resize", [](Cls &self, int r1, int r2, int c1, int c2, bool copy) {
               refuse_if_reshaped(self, (long long) r2 - r1 + 1, (long long) c2 - c1 + 1, copy, "Resize"); self.Resize(r1, r2, c1, c2, copy); },
@@ -668,7 +681,7 @@ template <typename T, typename Cls, typename... Extra> void def_array2_members(n
               refuse_if_reshaped(self, (long long) rows, (long long) cols, copy, "ResizeWithTrim"); self.ResizeWithTrim(rows, cols, copy); }, nb::arg("theNbRows"), nb::arg("theNbCols"), nb::arg("theToCopyData"), D::ResizeWithTrim)
      // Python additions: a[(row, col)]
      .def("__getitem__", [](const Cls &self, std::pair<int, int> rc) -> const T & { return self.Value(rc.first, rc.second); }, nb::arg("theRowCol"), "Python addition: a[(row, col)] -> Value(row, col).")
-     .def("__setitem__", [](Cls &self, std::pair<int, int> rc, const T &v) { self.SetValue(rc.first, rc.second, v); }, nb::arg("theRowCol"), nb::arg("theItem"), "Python addition: a[(row, col)] = item -> SetValue.");
+     .def("__setitem__", [](Cls &self, std::pair<int, int> rc, const T &v) { self.SetValue(rc.first, rc.second, v); }, nb::arg("theRowCol"), nanocct::elem_arg<T>("theItem"), "Python addition: a[(row, col)] = item -> SetValue.");
     // R-VIEW: the 2-D shape, which shadows the flat one inherited from the Array1 binding. Measured, not
     // assumed: NCollection_Array2 allocates one contiguous buffer and addresses it row-major --
     // `(theRow - myLowerRow) * mySizeCol + (theCol - myLowerCol)` (NCollection_Array2.hxx:306).
@@ -709,7 +722,7 @@ template <typename T> void bind_NCollection_HArray2(nb::module_ &m, const char *
     c.def(nb::new_([](int r1, int r2, int c1, int c2) { return opencascade::handle<H>(new H(r1, r2, c1, c2)); }),
           nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), D::ctor)
      .def(nb::new_([](int r1, int r2, int c1, int c2, const T &v) { return opencascade::handle<H>(new H(r1, r2, c1, c2, v)); }),
-          nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), nb::arg("theValue"), D::ctor)
+          nb::arg("theRowLow"), nb::arg("theRowUpp"), nb::arg("theColLow"), nb::arg("theColUpp"), nanocct::elem_arg<T>("theValue"), D::ctor)
      .def(nb::new_([](const A2 &a) { return opencascade::handle<H>(new H(a)); }), nb::arg("theOther"), D::ctor)
      .def("Array2", [](const A2 &b) { return A2(static_cast<const H &>(b).Array2()); }, D::Array2)
      .def("ChangeArray2", [](A2 &b) -> A2 & { return static_cast<H &>(b).ChangeArray2(); }, nb::rv_policy::reference_internal, D::ChangeArray2);
@@ -743,15 +756,15 @@ template <typename T> void bind_NCollection_DynamicArray(nb::module_ &m, const c
      .def("Clear", [](V &self, const bool release) { refuse_if_viewed(&self, "Clear"); self.Clear(release); }, nb::arg("theReleaseMemory") = false, D::Clear)
      .def("SetIncrement", [](V &self, const int inc) { self.SetIncrement(inc); }, nb::arg("theIncrement"), D::SetIncrement)
      // Python additions
-     .def("__setitem__", [](V &self, const int i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
+     .def("__setitem__", [](V &self, const int i, const T &v) { self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), "Python addition: alias to SetValue (0-based).")
      .def("__len__", [](const V &self) { return self.Length(); }, "Python addition: alias to Length.")
      .def("__iter__", [](const V &self) { return iterate(nb::type<V>(), "value_iterator", self, self.cbegin(), self.cend()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
-    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { return self.Append(v); }, nb::arg("theValue"), D::Append);
-    def_elem<T>(c, "InsertAfter", [](V &self, const int i, const T &v) -> T & { return self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertAfter);
-    def_elem<T>(c, "InsertBefore", [](V &self, const int i, const T &v) -> T & { return self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertBefore);
+    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { return self.Append(v); }, nanocct::elem_arg<T>("theValue"), D::Append);
+    def_elem<T>(c, "InsertAfter", [](V &self, const int i, const T &v) -> T & { return self.InsertAfter(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::InsertAfter);
+    def_elem<T>(c, "InsertBefore", [](V &self, const int i, const T &v) -> T & { return self.InsertBefore(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::InsertBefore);
     def_elem<T>(c, "Appended", [](V &self) -> T & { return self.Appended(); }, D::Appended);
-    def_elem<T>(c, "SetValue", [](V &self, const int i, const T &v) -> T & { return self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::SetValue);
+    def_elem<T>(c, "SetValue", [](V &self, const int i, const T &v) -> T & { return self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::SetValue);
     if constexpr (std::is_class_v<T>) {
         c.def("ChangeFirst", [](V &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeFirst)
          .def("ChangeLast", [](V &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeLast)
@@ -791,14 +804,14 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
      // erasing destroy elements; appending or inserting below the capacity keeps the buffer (an insert shifts values)
      .def("Reserve", [](V &self, const size_t n) { if (n > self.Capacity()) refuse_if_viewed(&self, "Reserve"); self.Reserve(n); }, nb::arg("theCapacity"), D::Reserve)
      .def("Resize", [](V &self, const size_t n) { if (n > self.Capacity() || n < self.Size()) refuse_if_viewed(&self, "Resize"); self.Resize(n); }, nb::arg("theSize"), D::Resize)
-     .def("Resize", [](V &self, const size_t n, const T &v) { if (n > self.Capacity() || n < self.Size()) refuse_if_viewed(&self, "Resize"); self.Resize(n, v); }, nb::arg("theSize"), nb::arg("theValue"), D::Resize)
+     .def("Resize", [](V &self, const size_t n, const T &v) { if (n > self.Capacity() || n < self.Size()) refuse_if_viewed(&self, "Resize"); self.Resize(n, v); }, nb::arg("theSize"), nanocct::elem_arg<T>("theValue"), D::Resize)
      .def("Value", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::Value)
      .def("__call__", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_call)
      .def("__getitem__", [](const V &self, const size_t i) -> const T & { return self.Value(i); }, nb::arg("theIndex"), D::op_index)
      .def("First", [](const V &self) -> const T & { return self.First(); }, D::First)
      .def("Last", [](const V &self) -> const T & { return self.Last(); }, D::Last)
-     .def("InsertBefore", [](V &self, const size_t i, const T &v) { refuse_if_full(self, "InsertBefore"); self.InsertBefore(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertBefore)
-     .def("InsertAfter", [](V &self, const size_t i, const T &v) { refuse_if_full(self, "InsertAfter"); self.InsertAfter(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::InsertAfter)
+     .def("InsertBefore", [](V &self, const size_t i, const T &v) { refuse_if_full(self, "InsertBefore"); self.InsertBefore(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::InsertBefore)
+     .def("InsertAfter", [](V &self, const size_t i, const T &v) { refuse_if_full(self, "InsertAfter"); self.InsertAfter(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::InsertAfter)
      .def("EraseLast", [](V &self) { refuse_if_viewed(&self, "EraseLast"); self.EraseLast(); }, D::EraseLast)
      .def("Erase", [](V &self, const size_t i) { refuse_if_viewed(&self, "Erase"); self.Erase(i); }, nb::arg("theIndex"), D::Erase)
      .def("Erase", [](V &self, const size_t from, const size_t to) { refuse_if_viewed(&self, "Erase"); self.Erase(from, to); }, nb::arg("theFrom"), nb::arg("theTo"), D::Erase)
@@ -808,13 +821,13 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
      // vector's storage too (R-VIEW-GUARD): the vector refuses to reallocate while the array lives
      .def("ToArray1", [](const V &self) { return self.ToArray1(); }, nb::keep_alive<0, 1>(), elem_view_of_self(), D::ToArray1)
      // Python additions
-     .def("__setitem__", [](V &self, const size_t i, const T &v) { refuse_if_grown(self, i, "__setitem__"); self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theItem"), "Python addition: alias to SetValue (0-based).")
+     .def("__setitem__", [](V &self, const size_t i, const T &v) { refuse_if_grown(self, i, "__setitem__"); self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theItem"), "Python addition: alias to SetValue (0-based).")
      .def("__len__", [](const V &self) { return self.Size(); }, "Python addition: alias to Size.")
      .def("__iter__", [](const V &self) { return iterate(nb::type<V>(), "value_iterator", self, self.cbegin(), self.cend()); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over the values.");
-    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { refuse_if_full(self, "Append"); return self.Append(v); }, nb::arg("theValue"), D::Append);
+    def_elem<T>(c, "Append", [](V &self, const T &v) -> T & { refuse_if_full(self, "Append"); return self.Append(v); }, nanocct::elem_arg<T>("theValue"), D::Append);
     def_elem<T>(c, "Appended", [](V &self) -> T & { refuse_if_full(self, "Appended"); return self.Appended(); }, D::Appended);
-    def_elem<T>(c, "SetValue", [](V &self, const size_t i, const T &v) -> T & { refuse_if_grown(self, i, "SetValue"); return self.SetValue(i, v); }, nb::arg("theIndex"), nb::arg("theValue"), D::SetValue);
+    def_elem<T>(c, "SetValue", [](V &self, const size_t i, const T &v) -> T & { refuse_if_grown(self, i, "SetValue"); return self.SetValue(i, v); }, nb::arg("theIndex"), nanocct::elem_arg<T>("theValue"), D::SetValue);
     if constexpr (std::is_class_v<T>) {
         c.def("ChangeFirst", [](V &self) -> T & { return self.ChangeFirst(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeFirst)
          .def("ChangeLast", [](V &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeLast)
@@ -843,15 +856,15 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
     nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
     def_basemap_members<false>(c, NANOCCT_BASEMAP_DOCS(D));
     // R-VIEW-GUARD: binding can grow both tables (iterators), UnBind1/UnBind2 free a node
-    c.def("Bind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); self.Bind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::Bind)
-     .def("TryBind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); return self.TryBind(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::TryBind)
-     .def("AreBound", [](const M &self, const K1 &a, const K2 &b) { return self.AreBound(a, b); }, nb::arg("theKey1"), nb::arg("theKey2"), D::AreBound)
-     .def("IsBound1", [](const M &self, const K1 &a) { return self.IsBound1(a); }, nb::arg("theKey1"), D::IsBound1)
-     .def("IsBound2", [](const M &self, const K2 &b) { return self.IsBound2(b); }, nb::arg("theKey2"), D::IsBound2)
-     .def("UnBind1", [](M &self, const K1 &a) { refuse_if_viewed(&self, "UnBind1"); return self.UnBind1(a); }, nb::arg("theKey1"), D::UnBind1)
-     .def("UnBind2", [](M &self, const K2 &b) { refuse_if_viewed(&self, "UnBind2"); return self.UnBind2(b); }, nb::arg("theKey2"), D::UnBind2)
-     .def("Find1", [](const M &self, const K1 &a) -> decltype(auto) { return owned(self.Find1(a)); }, nb::arg("theKey1"), D::Find1)
-     .def("Find2", [](const M &self, const K2 &b) -> decltype(auto) { return owned(self.Find2(b)); }, nb::arg("theKey2"), D::Find2)
+    c.def("Bind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); self.Bind(a, b); }, nanocct::elem_arg<K1>("theKey1"), nanocct::elem_arg<K2>("theKey2"), D::Bind)
+     .def("TryBind", [](M &self, const K1 &a, const K2 &b) { invalidate_iterators(&self); own(self, a); own(self, b); return self.TryBind(a, b); }, nanocct::elem_arg<K1>("theKey1"), nanocct::elem_arg<K2>("theKey2"), D::TryBind)
+     .def("AreBound", [](const M &self, const K1 &a, const K2 &b) { return self.AreBound(a, b); }, nanocct::elem_arg<K1>("theKey1"), nanocct::elem_arg<K2>("theKey2"), D::AreBound)
+     .def("IsBound1", [](const M &self, const K1 &a) { return self.IsBound1(a); }, nanocct::elem_arg<K1>("theKey1"), D::IsBound1)
+     .def("IsBound2", [](const M &self, const K2 &b) { return self.IsBound2(b); }, nanocct::elem_arg<K2>("theKey2"), D::IsBound2)
+     .def("UnBind1", [](M &self, const K1 &a) { refuse_if_viewed(&self, "UnBind1"); return self.UnBind1(a); }, nanocct::elem_arg<K1>("theKey1"), D::UnBind1)
+     .def("UnBind2", [](M &self, const K2 &b) { refuse_if_viewed(&self, "UnBind2"); return self.UnBind2(b); }, nanocct::elem_arg<K2>("theKey2"), D::UnBind2)
+     .def("Find1", [](const M &self, const K1 &a) -> decltype(auto) { return owned(self.Find1(a)); }, nanocct::elem_arg<K1>("theKey1"), D::Find1)
+     .def("Find2", [](const M &self, const K2 &b) -> decltype(auto) { return owned(self.Find2(b)); }, nanocct::elem_arg<K2>("theKey2"), D::Find2)
      // Python additions
      .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) { return nb::make_tuple(owned(it.Key1()), owned(it.Key2())); }); },
           nb::keep_alive<0, 1>(), "Python addition: iterates over (key1, key2) pairs.")
@@ -860,16 +873,16 @@ void bind_NCollection_DoubleMap(nb::module_ &m, const char *name) {
               for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key1()), owned(it.Key2())));
               return out; }, "Python addition: list of (key1, key2) tuples.");
     if constexpr (std::is_class_v<K2>) {
-        c.def("Seek1", [](const M &self, const K1 &a) -> decltype(auto) { return owned_ptr(self.Seek1(a)); }, nb::rv_policy::copy, nb::arg("theKey1"), D::Seek1)   // a key: a copy, never a view
-         .def("Find1", [](const M &self, const K1 &a, K2 &b) { const bool found = self.Find1(a, b); own_out(b); return found; }, nb::arg("theKey1"), nb::arg("theKey2"), D::Find1);
+        c.def("Seek1", [](const M &self, const K1 &a) -> decltype(auto) { return owned_ptr(self.Seek1(a)); }, nb::rv_policy::copy, nanocct::elem_arg<K1>("theKey1"), D::Seek1)   // a key: a copy, never a view
+         .def("Find1", [](const M &self, const K1 &a, K2 &b) { const bool found = self.Find1(a, b); own_out(b); return found; }, nanocct::elem_arg<K1>("theKey1"), nanocct::elem_arg<K2>("theKey2"), D::Find1);
     } else {
-        c.def("Seek1", [](const M &self, const K1 &a) -> std::optional<K2> { const K2 *p = self.Seek1(a); return p ? std::optional<K2>(*p) : std::nullopt; }, nb::arg("theKey1"), D::Seek1);
+        c.def("Seek1", [](const M &self, const K1 &a) -> std::optional<K2> { const K2 *p = self.Seek1(a); return p ? std::optional<K2>(*p) : std::nullopt; }, nanocct::elem_arg<K1>("theKey1"), D::Seek1);
     }
     if constexpr (std::is_class_v<K1>) {
-        c.def("Seek2", [](const M &self, const K2 &b) -> decltype(auto) { return owned_ptr(self.Seek2(b)); }, nb::rv_policy::copy, nb::arg("theKey2"), D::Seek2)   // a key: a copy, never a view
-         .def("Find2", [](const M &self, const K2 &b, K1 &a) { const bool found = self.Find2(b, a); own_out(a); return found; }, nb::arg("theKey2"), nb::arg("theKey1"), D::Find2);
+        c.def("Seek2", [](const M &self, const K2 &b) -> decltype(auto) { return owned_ptr(self.Seek2(b)); }, nb::rv_policy::copy, nanocct::elem_arg<K2>("theKey2"), D::Seek2)   // a key: a copy, never a view
+         .def("Find2", [](const M &self, const K2 &b, K1 &a) { const bool found = self.Find2(b, a); own_out(a); return found; }, nanocct::elem_arg<K2>("theKey2"), nanocct::elem_arg<K1>("theKey1"), D::Find2);
     } else {
-        c.def("Seek2", [](const M &self, const K2 &b) -> std::optional<K1> { const K1 *p = self.Seek2(b); return p ? std::optional<K1>(*p) : std::nullopt; }, nb::arg("theKey2"), D::Seek2);
+        c.def("Seek2", [](const M &self, const K2 &b) -> std::optional<K1> { const K1 *p = self.Seek2(b); return p ? std::optional<K1>(*p) : std::nullopt; }, nanocct::elem_arg<K2>("theKey2"), D::Seek2);
     }
 }
 

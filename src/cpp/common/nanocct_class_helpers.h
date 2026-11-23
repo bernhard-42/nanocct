@@ -137,6 +137,14 @@ template <typename From, typename To> void nanocct_conversion_handle(nb::handle 
 template <typename> struct nanocct_is_handle : std::false_type {};
 template <typename T> struct nanocct_is_handle<opencascade::handle<T>> : std::true_type {};
 
+// R-NONCOPYABLE for a class whose copy constructor does not compile although declared and that cannot take the non-copyable
+// wrapper -- a Transient: the wrapper would be the registered type while OCCT hands out handles to the OCCT class
+// (BRepMesh_VertexTool). nanobind's copy is switched off through nb::detail::is_copy_constructible: the ONE nanobind internal
+// approved for nanocct beyond the documented API (Toolchain.md 4.3; tests/test_nanobind_api.py), to be re-evaluated with
+// every nanobind upgrade. Only nb::class_ (and make_iterator) asks the trait, and a Transient crosses only as a handle, so the
+// specialisation in the one file that binds the class is the only one any file sees. The generator emits the uses.
+#define NANOCCT_NO_NANOBIND_COPY(...) template <> struct nb::detail::is_copy_constructible<__VA_ARGS__> : std::false_type {}
+
 // Public data member: read/write when its type can be assigned to (a member with a deleted copy assignment, e.g. of
 // type BRepGraphInc_Storage, or a const member is read-only). Decided at compile time, the header does not say.
 template <typename C, typename T, typename D, typename... Extra>

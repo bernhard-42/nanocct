@@ -2073,10 +2073,12 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     - `str` decoded with `surrogateescape` so a stray non-UTF-8 byte is lossless.
     - **Binary formats are `bytes`**: the packages listed in `overrides.toml [stream] binary_packages` (`BinTools`; `PCDM` and `CDF` — `PCDM_Writer::Write`, `PCDM_Reader::Read`, `CDF_Application::Read`, `PCDM::FileDriverType` carry binary *and* XML OCAF documents, and `bytes` is the superset; `BinLDrivers` & co.) return `bytes` from their `ostream&` parameters (`BinTools.Write_s(shape)` is byte-identical to the file form, tested).
     - Not a file-like target: OCCT's stream APIs are of modest size, and the file-path overloads exist for bulk I/O.
+    - **The precision a caller sets on the stream** is a keyword-only `precision_hint`: `std::ios_base::precision` on the binding's stream before the call, default 6 as on a new stream, so the text is what C++ writes into a new stream. It is a hint because a writer may set its own and override it, exactly as it overrides a C++ caller's: `GeomTools::Write(curve, stream)` (`PrintCurve`), `DumpJson`, `Dump` and `Print` write with it, while `GeomTools_CurveSet::Write` sets 17 and `TopTools_ShapeSet::Write` 15 (and restore the caller's afterwards); which bound members reach such a writer is not known statically (it takes a call graph through OCCT's `.cxx` files, virtual members included). The name follows `operator.length_hint` (PEP 424), Python's own advisory value; a plain `precision` would promise what the binding cannot hold. Every docstring with the keyword says so in a generated line. Every text stream parameter gets it (874 sites in OCCT 8.0.2), a binary one does not (raw doubles), nor does `__str__` (R-STR), which takes no argument. The generator refuses a member whose own parameter is called `precision_hint`. Other stream state (`std::fixed`, a width) is not taken: no OCCT test sets it on a stream it hands to OCCT.
 
 - **Python**
 
     - Dropped from the signature, the written text is **returned as `str`** (a tuple after a non-void result, like out-params).
+    - `precision_hint=n` after the OCCT arguments, by keyword only: `GeomTools.Write_s(curve, precision_hint=17)` for `stream.precision(17); GeomTools::Write(curve, stream);`; the docstring ends with what the hint does.
     - A returned `Standard_OStream&` (chaining, `TopAbs::Print`) is dropped.
 
 - **Python examples**
@@ -2100,6 +2102,11 @@ How arguments go in and results come out (the user-facing summary is 3.2).
     assert ok and isinstance(iges, str)
 
     assert TopAbs.Print_s(TopAbs_ShapeEnum.TopAbs_FACE) == "FACE"   # the chained stream is dropped
+
+    point = gp_Pnt(0.1, 0.0, 0.0)
+    assert point.DumpJson() == '"gp_Pnt": [0.1, 0, 0]'                         # a new stream's precision, 6
+    assert point.DumpJson(precision_hint=17) == '"gp_Pnt": [0.10000000000000001, 0, 0]'
+    assert BRepTools.Write_s(box, precision_hint=3) == BRepTools.Write_s(box)   # the BREP writer sets its own: the hint is overridden
     ```
 ### R-STREAM-IN
 
@@ -2128,6 +2135,8 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - A **text file-like object** (`typing.TextIO`: `io.StringIO`, an open file; anything with `read()`), read completely into a `std::stringstream` for the call.
+    - **It moves on by what OCCT read**, as the C++ stream does: two `GeomTools.GetReal_s(stream)` read two tokens, `BRepTools.Read_s` leaves it after the shape, a const stream (`InitFromJson`) leaves it where it was. The caster only peeks -- it puts a seekable object back after reading it, so an overload that is then not taken leaves it as it was -- and after the call the object moves on by the bytes the C++ stream consumed (its buffer's get position, which is there whatever state flags OCCT set): a binary object by `seek`, a text object by `seek(start)` and `read(n)` with the characters of the consumed UTF-8 bytes, because a text file's `seek` takes only `tell()`'s cookies. An exception leaves the object where it was; an object that cannot seek (a pipe) stays read to its end.
+    - The C++ stream state stays in the call: a Python file-like object has no `fail()` or `width()`, and the binding's stream ends with the call.
 
 - **Python examples**
 
@@ -2177,6 +2186,86 @@ How arguments go in and results come out (the user-facing summary is 3.2).
         pass
     else:
         raise AssertionError("a text file-like must not reach a binary stream")
+    ```
+### R-STREAM-WRAPPER
+
+- **C++ Idiom**
+
+    `T&` parameter of a class that only wraps a stream: its one public constructor (copies and moves aside) takes the stream and keeps it, and its state is not public
+
+- **OCCT examples**
+
+    `BinTools_OStream(Standard_OStream&)`, `BinTools_IStream(Standard_IStream&)`:
+
+    - `static void BinTools_CurveSet::WriteCurve(const occ::handle<Geom_Curve>& C, BinTools_OStream& OS)` (also `BinTools_Curve2dSet::WriteCurve2d`, `BinTools_SurfaceSet::WriteSurface`)
+    - `const TopLoc_Location* BinTools_ShapeReader::ReadLocation(BinTools_IStream& theStream)`
+
+- **Rule**
+
+    - Python can make none of these classes: the constructor takes a stream, which is unsupported (R-STREAM-IN: the object keeps the reference). A member taking one would be bound and never callable.
+    - So the parameter is the stream the class wraps, R-STREAM-OUT or R-STREAM-IN by that stream's kind, and the lambda makes the wrapper on the binding's stream for the call (`BinTools_OStream OS_wrap(OS_stream);`). The format follows the package as for any stream (binary in `BinTools`); a text output would take `precision_hint`.
+    - Detected by the parser (`parse._stream_wrapper_kind`), no list: a non-const reference, one public constructor besides copy and move, with one parameter of a stream kind, and no public data member. `Message_AttributeStream` (a second, defaulted parameter) is no wrapper; `BinObjMgt_Position` is one, but no member of another class takes it.
+    - **A class with public fields is state its callers manage, not a wrapper**: `VrmlData_InBuffer(Standard_IStream&)` sets `Input`, `LinePtr`, `IsProcessed` and `LineCount` but leaves `char Line[8096]` uninitialised, and only `VrmlData_Scene::operator<<` prepares it (`readHeader`) before a node reads from it; `VrmlData_Scene::ReadLine` reads `*LinePtr` first. As a wrapper made per call, every one of the 29 VrmlData members taking it (the `Read` of each node, `ReadNode`, the readers of `VrmlData_Node` and `VrmlData_Scene`) would read uninitialised memory -- in C++ too, with a buffer the scene has not prepared. They keep the struct parameter.
+    - The wrapper's state lives for one call, as a stream's does (R-STREAM-IN): a reference to an earlier position in a `BinTools_IStream` (`BinTools_ObjectType_Reference*`) has nothing to point to. The wrapper classes stay bound without a constructor.
+
+- **Python**
+
+    - Out: the bytes or the text come back, as for R-STREAM-OUT.
+    - In: a binary file-like object, as for R-STREAM-IN.
+
+- **Python examples**
+
+    ```python
+    import io
+    import struct
+    from nanocct.BinTools import BinTools_CurveSet, BinTools_ShapeReader
+    from nanocct.Geom import Geom_Circle, Geom_TrimmedCurve
+    from nanocct.gp import gp_Ax2
+
+    curve = Geom_TrimmedCurve(Geom_Circle(gp_Ax2(), 2.0), 1.0, 2.5)
+    data = BinTools_CurveSet.WriteCurve_s(curve)                      # WriteCurve(curve, BinTools_OStream&)
+    assert isinstance(data, bytes)
+    assert BinTools_CurveSet.ReadCurve_s(io.BytesIO(data)).LastParameter() == 2.5
+
+    record = bytes([6]) + struct.pack("<12d", 1, 0, 0, 4.0, 0, 1, 0, 5.0, 0, 0, 1, 6.0)   # a simple location
+    assert BinTools_ShapeReader().ReadLocation(io.BytesIO(record)).Transformation().TranslationPart().Z() == 6.0
+    ```
+
+### R-MI-REF
+
+- **C++ Idiom**
+
+    A reference or pointer -- not a handle -- to a class that its binder stores by a base at a non-zero offset: `NCollection_Shared<T>` derives from `Standard_Transient` and then `T`, and is bound with `T` as its nanobind base, so the Python object holds the address of its `T` part (Runtime.md 5.2, `mi_traits` in `nanocct_registry.h`).
+
+- **OCCT examples**
+
+    - `const IMeshData::MapOfInteger& BRepMesh_DataStructureOfDelaun::ElementsOfDomain() const` (`IMeshData::MapOfInteger` = `NCollection_Shared<TColStd_PackedMapOfInteger>`, a member held by value)
+    - `IMeshData::ListOfInteger& BRepMesh_CircleInspector::GetShotCircles()`
+    - `void BRepMesh_Delaun::AddVertices(IMeshData::VectorOfInteger& theVerticesIndices, const Message_ProgressRange& theRange = Message_ProgressRange())`
+    - `void BRepMesh_MeshTool::DumpTriangles(const char* const theFileName, IMeshData::MapOfInteger* theTriangles)`
+
+- **Rule**
+
+    - Such a reference crosses through the handle caster, which alone converts between the stored base and the object; nanobind's class caster takes the object's address as the stored base's and reads the wrong memory (a nonsense `Extent()`, a wrong `IsEmpty()`, a crash on `Add()` -- in every nanocct release up to 8.0.1.6).
+    - A result is a Transient result (R-RESULT: `REF_TRANSIENT`/`PTR_TRANSIENT`): a member held by value gets its one permanent reference and the owner is kept alive, as for any Transient reference. `parse.py` recognises `NCollection_Shared<T>` as a Transient for that: an instantiation asked about itself has no base specifiers in libclang, so `_derives_from` follows it to its template.
+    - An argument is taken as `const handle<S>&` in a lambda and dereferenced for the call (`get()` for a pointer, where `None` is the null pointer, R-PTR-NULL); a reference refuses `None`, and an object of the wrapped class `T` that is not an `S` is refused too (the handle caster checks the type).
+    - Which binder kinds qualify is the binder table's `base_at_offset0` (`generator/binders.py`), the same fact that excludes them from R-VIEW-GUARD.
+    - Every site is reported, category `mi-ref`; a crossing the rule does not convert (a free function's reference result, an in-place operator's argument) stops the generation instead of being bound at the wrong address.
+
+- **Python**
+
+    - The objects are the bound `NCollection_Shared` classes, as everywhere else; nothing changes in the signatures.
+
+- **Python examples**
+
+    ```python
+    from nanocct.BRepMesh import BRepMesh_DataStructureOfDelaun
+    from nanocct.NCollection import NCollection_IncAllocator
+
+    structure = BRepMesh_DataStructureOfDelaun(NCollection_IncAllocator())
+    domain = structure.ElementsOfDomain()          # const IMeshData::MapOfInteger&, a member of the structure
+    assert domain.IsEmpty() is True and domain.Size() == 0
+    assert structure.ElementsOfDomain() is domain  # the same Python object each time
     ```
 
 ## 7.4 Overloads that Python cannot tell apart
@@ -2379,7 +2468,7 @@ See 3.1 (3) and 3.2.
 
 - **OCCT examples**
 
-    Bound nowhere: `FILE*` from `OSD_OpenFile`, `rapidjson::ParseErrorCode`, internal classes such as `Storage_BucketOfPersistent`, `TDF_LabelNode`, `BRepMesh_VertexTool`, the nested `BRepGraph_CacheMesh::*Entry`; bound only through its R-NONCOPYABLE wrapper: `IntTools_FClass2d&`, whose typeid is not the wrapper's; a `Standard_Failure` descendant: `MoniTool_CaseData::AddRaised(const Standard_Failure&, …)`:
+    Bound nowhere: `FILE*` from `OSD_OpenFile`, `rapidjson::ParseErrorCode`, internal classes such as `Storage_BucketOfPersistent`, `TDF_LabelNode`, the nested `BRepGraph_CacheMesh::*Entry`; bound only through its R-NONCOPYABLE wrapper: `IntTools_FClass2d&`, whose typeid is not the wrapper's; a `Standard_Failure` descendant: `MoniTool_CaseData::AddRaised(const Standard_Failure&, …)`:
 
     - `FILE* OSD_OpenFile(const TCollection_ExtendedString& theName, const char* theMode)`
     - `static const char* RWGltf_GltfJsonParser::FormatParseError(rapidjson::ParseErrorCode theCode)`
@@ -4421,7 +4510,7 @@ The Python additions of Design.md, section 2.
     - `NCollection_CellFilter<NCollection_CellFilter_Inspector> math_GlobOptMin::myFilter`
     - `NCollection_Sequence<CSLib_Class2d> BRepTopAdaptor_FClass2d::TabClass` (with `CSLib_Class2d::CSLib_Class2d(const CSLib_Class2d&) = delete`)
     - `BRepMesh_CircleTool BRepMesh_Delaun::myCircles` (such a class held by value)
-    - `IMeshData::VertexCellFilter BRepMesh_VertexTool::myCellFilter` (in `class BRepMesh_VertexTool : public Standard_Transient`: skipped)
+    - `IMeshData::VertexCellFilter BRepMesh_VertexTool::myCellFilter` (in `class BRepMesh_VertexTool : public Standard_Transient`: no wrapper, nanobind's copy switched off)
 
 - **Rule**
 
@@ -4430,7 +4519,7 @@ The Python additions of Design.md, section 2.
 
 - **Python**
 
-    - **Detected by the parser** (field types; `overrides.toml [skip] noncopyable` remains for cases it cannot see, currently empty) and bound through a generated wrapper struct — except a **Transient** class (`BRepMesh_VertexTool`), which is skipped: the wrapper would be the registered type while OCCT hands out the OCCT class, and nanobind's copy wrapper would not compile — with deleted copy and move constructors and inherited constructors, under the original name.
+    - **Detected by the parser** (field types; `overrides.toml [skip] noncopyable` remains for cases it cannot see, currently empty) and bound through a generated wrapper struct with deleted copy and move -- except a **Transient** class (`BRepMesh_VertexTool`): the wrapper would be the registered type while OCCT hands out handles to the OCCT class, so the class is bound as itself, without a copy constructor, and nanobind's copy is switched off (`NANOCCT_NO_NANOBIND_COPY`, the one nanobind internal nanocct uses beyond the documented API, Toolchain.md 4.3). A Transient is never copied by value anyway (R-HANDLE, R-RESULT). The wrapper stays the rule elsewhere: nanobind has no hook for move, and for some of these classes the move does not compile either (`math_GlobOptMin`, `BRepTopAdaptor_FClass2d`, measured 2026-11-23).
     - Member pointers still name the OCCT class, lambdas take the wrapper.
     - Reported (category `noncopyable`).
 
@@ -4441,6 +4530,7 @@ The Python additions of Design.md, section 2.
     from nanocct.BRepBuilderAPI import BRepBuilderAPI_MakeFace
     from nanocct.BRepTopAdaptor import BRepTopAdaptor_FClass2d
     from nanocct.gp import gp_Pln, gp_Pnt2d
+    from nanocct.NCollection import NCollection_IncAllocator
     from nanocct.TopAbs import TopAbs_State
 
     face = BRepBuilderAPI_MakeFace(gp_Pln(), 0.0, 1.0, 0.0, 1.0).Face()
@@ -4452,7 +4542,12 @@ The Python additions of Design.md, section 2.
         raise AssertionError("the wrapper must not be copyable")
     except TypeError:
         pass
-    assert not hasattr(BRepMesh, "BRepMesh_VertexTool")   # a Transient: skipped
+    tool = BRepMesh.BRepMesh_VertexTool(NCollection_IncAllocator())   # a Transient: bound as itself
+    try:
+        BRepMesh.BRepMesh_VertexTool(tool)              # no copy constructor either
+        raise AssertionError("the Transient must not be copyable")
+    except TypeError:
+        pass
     ```
 ### R-INCOMPLETE
 

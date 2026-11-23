@@ -292,7 +292,8 @@ class Emitter:
             self._ancestor_cache[key] = found | set(p.class_ancestors)
         return self._ancestor_cache[key]
 
-    def _args(self, params: list[Param], skip_out: bool) -> str:
+    def _args(self, params: list[Param], skip_out: bool, precision: bool = False) -> str:
+        """precision: append the keyword-only `precision_hint` of a dropped text stream (R-STREAM-OUT, _stream_precision)."""
         parts: list[str] = []
         for p in params:
             if p.omitted or p.bytes_of != "" or p.seq_of != "" or skip_out and (p.is_out and not p.is_inout or p.stream == StreamKind.OUT):
@@ -323,10 +324,19 @@ class Emitter:
                 else:
                     parts.append(f'{arg} = static_cast<std::decay_t<{p.type}>>({p.default})')
                 self._note_types(p.default)
+        if precision:
+            shown = [p.name for p in params if not (p.omitted or p.bytes_of != "" or p.seq_of != "" or p.is_out and not p.is_inout
+                                                    or p.stream == StreamKind.OUT)]
+            if _PRECISION_KEYWORD in shown:
+                raise ValueError(f"R-STREAM-OUT: a parameter of {shown} is called {_PRECISION_KEYWORD}, like the keyword of the dropped stream")
+            parts += ["nb::kw_only()", f'nb::arg("{_PRECISION_KEYWORD}") = {_STREAM_PRECISION}']
         return "".join(", " + s for s in parts)
 
     def _extras(self, doc: str, params: list[Param], skip_out: bool, operator: bool) -> str:
-        s = self._args(params, skip_out)
+        precision = skip_out and _stream_precision(params, operator)
+        s = self._args(params, skip_out, precision)
+        if precision:                            # R-STREAM-OUT: the keyword is nanocct's, so is its line
+            doc = _PRECISION_DOC if doc == "" else f"{doc}\n{_PRECISION_DOC}"
         d = _cpp_doc(doc)
         if d is not None:
             s += ", " + d
@@ -408,6 +418,19 @@ class Emitter:
         return out
 
     # Binding-Rules.md R-VIEW-GUARD
+    # Binding-Rules.md R-MI-REF
+    def _report_mi_ref(self, what: str, params: list[Param], result: str, result_mi_ref: bool, result_kind: ResultKind) -> None:
+        """Every crossing of a class stored by a base at a non-zero offset (NCollection_Shared<T>) as a reference or pointer:
+        reported, so a new one shows in every generation. A result has to be a Transient result -- the handle caster takes it
+        out -- and anything else stops the generation rather than bind it at the wrong address."""
+        for p in params:
+            if p.mi_ref:
+                self.report.append(f"{what}: argument {p.name} ({p.type}) taken through its handle (R-MI-REF)")
+        if result_mi_ref:
+            if result_kind not in (ResultKind.REF_TRANSIENT, ResultKind.PTR_TRANSIENT):
+                raise ValueError(f"R-MI-REF: {what} returns {result} as {result_kind}, not through the handle caster")
+            self.report.append(f"{what}: result {result} returned through its handle (R-MI-REF)")
+
     def _report_owned_container(self, cls: Class, m: Method) -> None:
         """The residual: a container the object owns, handed out by reference. Its views are checked against the
         container's own members and every bound call taking it, not against what its owner does to it in C++."""
@@ -532,7 +555,10 @@ class Emitter:
                        else f"const nanocct::{'BinaryInput' if p.binary else 'TextInput'} &{p.name}" if p.stream == StreamKind.IN
                        else f"nanocct::OptionalCString {p.name}" if p.cstr_none                              # R-CSTR-NULL: str or None
                        else f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0     # R-FIXED-ARRAY in: a sequence of N
+                       else f"{_mi_handle(p.type)}{p.name}" if p.mi_ref                                  # R-MI-REF
                        else f"{_strip_ref(p.type) if p.is_inout else p.type} {p.name}" for p in ins]
+        if _stream_precision(m.params, m.is_operator):
+            lam_params.append("int nanocct_precision")                                               # R-STREAM-OUT
         body: list[str] = self._guard_checks(m.params)          # R-VIEW-GUARD
         if cls is not None and self._stale_check(m) != "":
             body.insert(0, self._stale_check(m).strip())
@@ -544,7 +570,12 @@ class Emitter:
         # object (nanocct::TextInput caster in nanocct_casters.h: typing.TextIO, never a str -- that would collide with the
         # file-path overloads such as BRepTools::Read(shape, path, builder))
         body += [f"std::ostringstream {p.name}_stream;" for p in m.params if p.stream == StreamKind.OUT]
+        # R-STREAM-OUT: the precision the caller would set on the stream (std::ios_base::precision); a binary stream has none
+        if _stream_precision(m.params, m.is_operator):
+            body += [f"{p.name}_stream.precision(nanocct_precision);" for p in m.params if p.stream == StreamKind.OUT and not p.binary]
         body += [f"std::stringstream {p.name}_stream({p.name}.{'data' if p.binary else 'text'});" for p in m.params if p.stream == StreamKind.IN]
+        # R-STREAM-WRAPPER: a class that only wraps a stream (BinTools_OStream) is made on the binding's stream, for the call
+        body += [f"{_strip_ref(p.type)} {p.name}_wrap({p.name}_stream);" for p in m.params if p.stream_wrapper]
         call_args = ", ".join(f"(const uint8_t *) {p.name}.c_str()" if p.is_bytes        # R-BYTES: the buffer ...
                               else f"{p.bytes_of}.size()" if p.bytes_of != ""             # ... and its length, from the same object
                               else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
@@ -552,7 +583,9 @@ class Emitter:
                               else "nullptr" if p.omitted                                   # R-OPTIONAL-PTR
                               else f"reinterpret_cast<{p.native_handle}>({p.name})" if p.native_handle != ""   # R-NATIVE-HANDLE
                               else f"{p.name}.ptr" if p.cstr_none                        # R-CSTR-NULL
+                              else f"{p.name}_wrap" if p.stream_wrapper                  # R-STREAM-WRAPPER
                               else f"{p.name}_stream" if p.stream != StreamKind.NONE
+                              else _mi_call(p) if p.mi_ref                                 # R-MI-REF
                               else f"{p.name}_arr" if p.array_len > 0 and not p.is_out else p.name for p in m.params)
         # R-NULL: the call goes to OCCT as is, here and through a member pointer (_method) -- no null-input guard; OCCT's
         # behaviour on a null argument stays OCCT's
@@ -585,8 +618,13 @@ class Emitter:
             body.append(f"opencascade::handle<{m.result_class}> nanocct_result(new {self._new_type(m.result_class)}({callee}));")
             results.append("nanocct_result")
         elif m.result_by_reference and len(outs) == 0 and not any(p.stream == StreamKind.OUT for p in m.params):
-            # R-COPY: `auto` would copy the result; the reference goes out as it is (reference_internal, _method)
-            body.append(f"return {callee};")
+            # R-COPY: `auto` would copy the result; the reference goes out as it is (reference_internal, _method) -- bound
+            # first when an input stream must move on after the call (R-STREAM-IN)
+            ins_streams = [f"nanocct::advance({p.name}, {p.name}_stream);" for p in m.params if p.stream == StreamKind.IN]
+            if len(ins_streams) == 0:
+                body.append(f"return {callee};")
+            else:
+                body += [f"auto &&nanocct_ref = {callee};", *ins_streams, "return nanocct_ref;"]
             return f"[]({', '.join(lam_params)}) -> {m.result} {{ {' '.join(body)} }}"
         elif m.result_native_handle:
             # R-NATIVE-HANDLE: the void* handle typedef goes out as the integer it holds
@@ -607,6 +645,8 @@ class Emitter:
             if p.array_len > 0:                # R-FIXED-ARRAY out: N values back as a list
                 body.append(f"std::array<{p.type}, {p.array_len}> {p.name}_out; std::copy(std::begin({p.name}), std::end({p.name}), {p.name}_out.begin());")
         results += [f"{p.name}_out" if p.array_len > 0 else p.name for p in outs]
+        # R-STREAM-IN: the file-like object moves on by what the call read (an exception leaves it where it was)
+        body += [f"nanocct::advance({p.name}, {p.name}_stream);" for p in m.params if p.stream == StreamKind.IN]
         results += [f"nanocct_stream_{'bytes' if p.binary else 'text'}({p.name}_stream)" for p in m.params if p.stream == StreamKind.OUT]
         if len(results) == 1:
             body.append(f"return {results[0]};")
@@ -638,6 +678,9 @@ class Emitter:
         B = cls.bound_type                 # ... lambdas take the bound type (a wrapper for non-copyable classes)
         if m.result_kind == ResultKind.REF_PRIMITIVE:
             return self._ref_primitive(cls, m, py)
+        self._report_mi_ref(f"{cls.name}::{m.name}({self._sig(m.params)})", m.params, m.result, m.result_mi_ref, m.result_kind)
+        if m.name in _INPLACE_OPS and any(p.mi_ref for p in m.params):
+            raise ValueError(f"R-MI-REF: in-place operator {cls.name}::{m.name} takes {self._sig(m.params)}, which its lambda cannot convert")
         has_out = any(p.is_out or p.stream != StreamKind.NONE for p in m.params)
         wrap = m.result_kind in (ResultKind.PTR_TRANSIENT, ResultKind.REF_TRANSIENT, ResultKind.VALUE_TRANSIENT)   # never let nanobind own a Transient
         # R-RESULT: a T* or T& to another class keeps its owner alive (reference_internal: keep_alive<0, 1> on a new wrapper
@@ -667,7 +710,7 @@ class Emitter:
             self.report.append(f"{cls.name}::{m.name}({self._sig(m.params)}): returns {m.result} with out-parameters, and its "
                                f"copy would share the pointers its destructor frees (R-COPY) -> method skipped")
             return None
-        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.native_handle != "" for p in m.params):
+        if has_out or wrap or m.via_using != "" or m.force_lambda or m.result_on_heap or any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.native_handle != "" or p.mi_ref for p in m.params):
             # R-USING: a member re-exported by `using Base::name;` is called on the derived object (the base may be non-public);
             # R-PTR-REF, R-OPTIONAL-PTR, R-FIXED-ARRAY, R-CSTR-NULL need a lambda too
             defn = "def_static" if m.is_static else "def"
@@ -743,12 +786,13 @@ class Emitter:
         # R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL / R-BYTES: nb::init cannot drop or convert
         # R-VIEW-GUARD: a container argument the constructor may change is checked in the body, after nanobind's conversion
         special = any(p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != "" or p.guarded
-                      or p.native_handle != "" for p in params)                       # R-NATIVE-HANDLE: converted in the body
+                      or p.native_handle != "" or p.mi_ref for p in params)           # R-NATIVE-HANDLE, R-MI-REF: converted in the body
         ins = [p for p in params if not p.omitted and p.bytes_of == "" and p.seq_of == ""]
         lam_params = ", ".join(f"const std::array<{p.type}, {p.array_len}> &{p.name}" if p.array_len > 0
                                else f"nanocct::OptionalCString {p.name}" if p.cstr_none
                                else f"const nb::bytes &{p.name}" if p.is_bytes
                                else f"const std::vector<{_seq_element(p.type)}> &{p.name}" if p.seq_owner != ""   # R-ARRAY-PTR
+                               else f"{_mi_handle(p.type)}{p.name}" if p.mi_ref                 # R-MI-REF
                                else f"{p.type} {p.name}" for p in ins)
         pre = "".join(c + " " for c in self._guard_checks(params))
         pre += " ".join(f"{p.type} {p.name}_arr[{p.array_len}]; std::copy({p.name}.begin(), {p.name}.end(), {p.name}_arr);" for p in ins if p.array_len > 0)
@@ -758,6 +802,7 @@ class Emitter:
                          else f"{p.bytes_of}.size()" if p.bytes_of != ""                 # ... and its length, from the same object
                          else f"nanocct::allocator_copy({p.seq_owner}, {p.name})" if p.seq_owner != ""   # R-ARRAY-PTR: the copy ...
                          else f"{p.seq_of}.size()" if p.seq_of != ""                     # ... and its count
+                         else _mi_call(p) if p.mi_ref                                     # R-MI-REF
                          else p.name for p in params)
         # R-BYTES in a constructor: the object may keep the pointer (WNT_HIDSpaceMouse stores myData(theData) and reads it
         # later, WNT_HIDSpaceMouse.cxx:154), so the bytes object lives as long as the new object: keep_alive<1, k>, where 1 is
@@ -792,6 +837,7 @@ class Emitter:
             fn = f'"__init__", []({self_param}{lam_params}) {{ {pre}new (self) {T}({call}); }}'
         else:
             fn = f"nb::init<{self._sig(params)}>()"
+        self._report_mi_ref(f"{cls.name}::{cls.name}({self._sig(params)})", params, "void", False, ResultKind.VALUE)
         return f".def({fn}{keep}{self._extras(doc, params, False, False)})"
 
     # Binding-Rules.md R-STR
@@ -1162,9 +1208,14 @@ class Emitter:
                 self.report.append(f"{qualified}({self._sig(fn.params)}): returns {fn.result} with out-parameters, and its "
                                    f"copy would share the pointers its destructor frees (R-COPY) -> function skipped")
                 continue
+            if fn.result_mi_ref:
+                # R-MI-REF: a free function's T& / T* Transient result is not wrapped in a handle (no REF_/PTR_TRANSIENT
+                # lambda on this path), so nanobind's class caster would hand it across at the wrong address
+                raise ValueError(f"R-MI-REF: free function {qualified} returns {fn.result}, which this path cannot convert")
+            self._report_mi_ref(f"{qualified}({self._sig(fn.params)})", fn.params, fn.result, False, fn.result_kind)
             if fn.result_kind == ResultKind.VALUE_TRANSIENT or fn.result_on_heap or any(
                     p.is_out or p.stream != StreamKind.NONE or p.omitted or p.array_len > 0 or p.cstr_none or p.is_bytes or p.seq_owner != ""
-                    or p.native_handle != "" for p in fn.params):
+                    or p.native_handle != "" or p.mi_ref for p in fn.params):
                 # R-OUT: out-params/streams -> returned tuple, as for methods; R-OPTIONAL-PTR / R-FIXED-ARRAY / R-CSTR-NULL
                 # need the lambda too, and so does a Transient returned by value (R-RESULT: into a handle, never a
                 # nanobind-owned copy)
@@ -1211,6 +1262,11 @@ class Emitter:
                             f"// bound through a wrapper with deleted copy and move, under the original name\n"
                             f"struct {c.bound_type} : {c.name} {{\n    using {c.name}::{ctor_name};\n"
                             f"    {c.bound_type}(const {c.bound_type} &) = delete;\n    {c.bound_type}({c.bound_type} &&) = delete;\n}};")
+        if c.copy_hidden:
+            # R-NONCOPYABLE, Transient: the one approved use of a nanobind internal (Toolchain.md 4.3, re-evaluated at every release)
+            wrappers.append(f"// {c.name}: its copy does not compile although declared, and a Transient gets no wrapper (R-NONCOPYABLE):\n"
+                            f"// nanobind's copy is switched off (nanocct_class_helpers.h, the one approved nanobind internal)\n"
+                            f"NANOCCT_NO_NANOBIND_COPY({c.name});")
         declare.append(f'    {{ nb::class_<{c.bound_type}{bases}> cls({self._attr(c.scope)}, "{c.py_name}"{doc_arg});')
         for e in c.enums:
             declare += ["      " + l for l in self._enum(e, "cls")]
@@ -1413,7 +1469,9 @@ class Emitter:
         # R-IMPLICIT-COPY: the implicit copy constructor (no user-declared one, TopoDS_Shape(const TopoDS_Vertex&)): bound when it exists,
         # after the declared constructors (nanobind wants a zero-argument nb::new_ before any other overload)
         if not c.is_abstract and c.constructible and not any(k.is_copy for k in c.ctors):
-            if c.copy_owner != "":
+            if c.copy_hidden:
+                pass                       # R-NONCOPYABLE, Transient: its copy does not compile (reported by parse)
+            elif c.copy_owner != "":
                 # R-COPY: the copy would share the pointers a destructor frees -- the second destructor frees them again
                 self.report.append(f"{c.name}: no copy constructor -- an implicit copy would share the pointers the destructor of "
                                    f"{c.copy_owner} may free (R-COPY)")
@@ -1786,6 +1844,35 @@ def order_by_width(overloads: list) -> tuple[list, list[tuple[object, object]]]:
 
 
 # Binding-Rules.md R-ARRAY-PTR
+# Binding-Rules.md R-MI-REF
+def _mi_handle(cpp_type: str) -> str:
+    """The lambda parameter of an R-MI-REF argument: the class behind the reference or pointer, taken as a handle -- the
+    handle caster converts between the Python object's stored base and the object (Runtime.md 5.2)."""
+    return f"const opencascade::handle<std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<{cpp_type}>>>> &"
+
+
+# Binding-Rules.md R-STREAM-OUT: the keyword that stands for std::ostream::precision of the dropped stream -- a hint, because
+# a writer may set its own (operator.length_hint, PEP 424, is the precedent for the name); its default is the precision of a
+# new stream (std::basic_ios::init), and every docstring that has it says what it does
+_PRECISION_KEYWORD = "precision_hint"
+_STREAM_PRECISION = 6
+_PRECISION_DOC = (f"{_PRECISION_KEYWORD}: the precision the stream this binding writes into starts with (std::ostream::precision). "
+                  "A writer that sets its own, such as the BREP and geometry-set writers (15 or 17 digits), overrides it, as it "
+                  "does a C++ caller's stream (nanocct R-STREAM-OUT).")
+
+
+def _stream_precision(params: list[Param], operator: bool) -> bool:
+    """Whether the binding's stream stands for a text ostream& and so takes the precision a C++ caller sets on its own stream
+    (GeomTools::Write(curve, stream) writes with it): a keyword-only `precision_hint`, 6 by default as on a new stream. A binary
+    stream writes raw doubles, and an operator has no argument to take it (operator<< as __str__, R-STR)."""
+    return not operator and any(p.stream == StreamKind.OUT and not p.binary for p in params)
+
+
+def _mi_call(p: Param) -> str:
+    """The call argument of an R-MI-REF parameter: the object for a reference, its address (null for None) for a pointer."""
+    return f"{p.name}.get()" if p.type.rstrip().endswith("*") else f"*{p.name}"
+
+
 def _seq_element(t: str) -> str:
     """The element type of a `const T *` array parameter: `const gp_XYZ *` -> `gp_XYZ`."""
     return t.removeprefix("const ").rstrip("* ").strip()

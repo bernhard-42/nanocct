@@ -784,6 +784,31 @@ def _stream_kind(t: cindex.Type) -> str:
     return ""
 
 
+# Binding-Rules.md R-STREAM-WRAPPER
+def _stream_wrapper_kind(t: cindex.Type) -> str:
+    """The stream kind of a class that only wraps a stream, for a non-const `T&` of it, else "". Such a class has one public
+    constructor (copies and moves aside), which takes the stream it holds, and no public data member: BinTools_OStream
+    (Standard_OStream&), BinTools_IStream(Standard_IStream&). Python can make none of them -- a stream constructor is
+    unsupported, the object keeps the reference -- so a member taking one is bound as taking the stream itself, and the
+    lambda makes the wrapper on its stream (R-STREAM-OUT / R-STREAM-IN). A class with public fields is state its callers
+    manage, not a wrapper: VrmlData_InBuffer(Standard_IStream&) leaves its `char Line[8096]` uninitialised, and only
+    VrmlData_Scene::operator<< prepares it (readHeader) before a node reads from it."""
+    canon = t.get_canonical()
+    if canon.kind != TK.LVALUEREFERENCE or canon.get_pointee().is_const_qualified():
+        return ""
+    decl = canon.get_pointee().get_canonical().get_declaration()
+    if decl.kind not in (K.CLASS_DECL, K.STRUCT_DECL) or decl.get_definition() is None:
+        return ""
+    kinds = []
+    for c in decl.get_definition().get_children():
+        if c.kind == K.FIELD_DECL and c.access_specifier == Access.PUBLIC:
+            return ""
+        if c.kind == K.CONSTRUCTOR and c.access_specifier == Access.PUBLIC and not (c.is_copy_constructor() or c.is_move_constructor()):
+            args = list(c.get_arguments())
+            kinds.append(_stream_kind(args[0].type) if len(args) == 1 else "")
+    return kinds[0] if len(kinds) == 1 else ""
+
+
 # Binding-Rules.md R-STR
 def _is_print_operator(name: str, params: list[Param], result_type: cindex.Type) -> bool:
     """`Standard_OStream& operator<<(Standard_OStream&, const T&)`, free or hidden friend: OCCT's "print me" idiom. The
@@ -885,9 +910,28 @@ def _binder_key(t: cindex.Type) -> str:
     return ""
 
 
-# R-VIEW-GUARD (Binding-Rules.md): containers the binder guards -- every binder kind except NCollection_Shared, whose bound
-# object is the wrapped container at a non-zero offset (a guard on the Shared's own address would never see its views)
-_GUARDED_KINDS = frozenset(k for k in BINDERS if k != "NCollection_Shared")
+# Binder kinds whose bound object is stored by a base at a non-zero offset (BINDERS "base_at_offset0": NCollection_Shared):
+# nanobind's own class caster would hand the address of the whole object across as the stored base's (R-MI-REF)
+_OFFSET_BASE_KINDS = frozenset(k for k, b in BINDERS.items() if b.get("base_at_offset0", True) is False)
+
+# R-VIEW-GUARD (Binding-Rules.md): containers the binder guards -- every binder kind except those, whose bound object is the
+# wrapped container at a non-zero offset (a guard on the Shared's own address would never see its views)
+_GUARDED_KINDS = frozenset(k for k in BINDERS if k not in _OFFSET_BASE_KINDS)
+
+
+# Binding-Rules.md R-MI-REF
+def _mi_ref(t: cindex.Type) -> bool:
+    """A reference or pointer -- not a handle -- to an instantiation of a binder kind stored by a base at a non-zero offset
+    (NCollection_Shared<T>, stored as its T): it has to cross through the handle caster, which converts between the stored
+    base and the object; nanobind's class caster takes the object's address as the stored pointer and reads the wrong memory
+    (BRepMesh_DataStructureOfDelaun::ElementsOfDomain, 2026-11-23)."""
+    canon = t.get_canonical()
+    if canon.kind not in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER):
+        return False
+    pointee = canon.get_pointee().get_canonical()
+    if pointee.kind != TK.RECORD:
+        return False
+    return pointee.get_declaration().spelling in _OFFSET_BASE_KINDS
 
 
 def _container_kind(t: cindex.Type) -> str:
@@ -954,6 +998,9 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         members = set()
     for i, p in enumerate(args):
         stream = _stream_kind(p.type) if allow_streams else StreamKind.NONE
+        wrapper = allow_streams and stream == StreamKind.NONE and _stream_wrapper_kind(p.type) != ""   # R-STREAM-WRAPPER
+        if wrapper:
+            stream = StreamKind(_stream_wrapper_kind(p.type))
         reason = _unsupported(p.type, allow_out=True) if stream == StreamKind.NONE else None
         if reason is None and "type-parameter-" in _type_spelling(p.type):
             reason = "dependent type (unresolved template parameter)"
@@ -1029,9 +1076,9 @@ def _params(cursor: cindex.Cursor, qualified: str = "", scope: str = "", members
         ptr_none = not cstr_none and canon.kind == TK.POINTER and (
             default in ("NULL", "nullptr", "0") or (default is None and canon.get_pointee().get_canonical().kind == TK.RECORD))
         params.append(Param(name=name, type=_type_spelling(p.type), default="nullptr" if cstr_none else default, is_out=is_out, is_inout=is_out and inout,
-                            class_name=_class_behind(p.type), stream=stream, is_handle=_is_handle(p.type),
+                            class_name=_class_behind(p.type), stream=stream, stream_wrapper=wrapper, is_handle=_is_handle(p.type),
                             out_py=_out_py_type(p.type) if is_out else "", cstr_none=cstr_none, ptr_none=ptr_none,
-                            instance_key=_binder_key(p.type),
+                            instance_key=_binder_key(p.type), mi_ref=_mi_ref(p.type),
                             binary=binary and stream != StreamKind.NONE, class_ancestors=_class_ancestors(p.type),
                             is_enum=_is_enum(p.type), guarded=_mutable_container(p.type),
                             container=canon.kind in (TK.LVALUEREFERENCE, TK.RVALUEREFERENCE, TK.POINTER) and _container_kind(p.type) != ""))
@@ -1199,7 +1246,21 @@ def _derives_from(cls: cindex.Cursor, root: str) -> bool:
         return False
     _derives_stack.add(key)
     result = False
+    # An instantiation asked about itself (the result type const IMeshData::MapOfInteger& = NCollection_Shared<
+    # NCollection_PackedMap<int>>&) has no children either, so no base specifier: its bases are its template's, followed as
+    # for a base below. Without this NCollection_Shared<T> was not a Transient, its const& results were copied by nanobind
+    # and its T& results were plain class references -- neither through the handle caster, which alone moves between the
+    # Python object's stored T subobject and the Shared (Runtime.md 5.2): the results read the wrong address (2026-11-23).
+    if cls.get_num_template_arguments() > 0 and not any(b.kind == K.CXX_BASE_SPECIFIER for b in cls.get_children()):
+        tmpl = cindex.conf.lib.clang_getSpecializedCursorTemplate(cls)
+        if tmpl is not None and tmpl.kind != K.NO_DECL_FOUND:
+            defn = tmpl.get_definition()
+            target = defn if defn is not None else tmpl
+            if (target.get_usr() or target.spelling) != key[0]:
+                result = _derives_from(target, root)
     for b in cls.get_children():
+        if result is True:
+            break
         if b.kind == K.CXX_BASE_SPECIFIER:
             targets = []
             d = b.type.get_declaration()
@@ -1262,7 +1323,7 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
                is_const=cursor.is_const_method(), is_noexcept=_is_noexcept(cursor), doc=_doc_with_deprecation(cursor),
                is_deprecated=cursor.availability == cindex.AvailabilityKind.DEPRECATED,
                is_operator=name.startswith("operator"), skip_reason=reason, result_class_name=_class_behind(cursor.result_type), result_is_handle=_is_handle(cursor.result_type),
-               result_instance_key=_binder_key(cursor.result_type), result_container=_mutable_container(cursor.result_type))
+               result_instance_key=_binder_key(cursor.result_type), result_mi_ref=_mi_ref(cursor.result_type), result_container=_mutable_container(cursor.result_type))
     result_stream = _stream_kind(cursor.result_type)
     returns_stream = result_stream != StreamKind.NONE and any(p.stream == result_stream for p in params)
     if m.skip_reason is None and returns_stream:
@@ -2459,10 +2520,12 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
             if "NCollection_CellFilter<" in fcanon or _strip_cv(fcanon) in _DETECTED_NONCOPYABLE or _holds_uncopyable_element(ch.type):
                 if c.is_transient:
                     # no wrapper for a Transient class (the wrapper would be the registered type while OCCT hands out the OCCT
-                    # class) and nanobind's copy wrapper would not compile: BRepMesh_VertexTool stays out
+                    # class): nanobind's copy is switched off instead (nb::detail::is_copy_constructible -- the one nanobind
+                    # internal nanocct uses, approved for this case only, Toolchain.md 4.3), and no copy constructor is bound.
+                    # A Transient is never copied by value anyway: every one crosses as a handle (R-HANDLE, R-RESULT).
                     c.skipped.append(f"{c.name}: member {ch.spelling} of type {_strip_cv(fcanon)} is not copyable and the class is Transient "
-                                     f"(no non-copyable wrapper possible) -> class skipped")
-                    c.unbindable = True
+                                     f"-> bound without a copy, nanobind's copy disabled (R-NONCOPYABLE)")
+                    c.copy_hidden = True
                     break
                 if not c.noncopyable:
                     c.skipped.append(f"{c.name}: member {ch.spelling} of type {_strip_cv(fcanon)} is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)")
@@ -2646,7 +2709,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                               is_noexcept=_is_noexcept(fr), doc=_doc_with_deprecation(fr), header=c.header, is_operator=True,
                               skip_reason=reason, qualified=fr.spelling,
                               defined_in_header=fr.is_definition() or fr.get_definition() is not None or _SUBST.active, mangled=fr.mangled_name,
-                              result_class_name=_class_behind(fr.result_type), result_is_handle=_is_handle(fr.result_type), result_instance_key=_binder_key(fr.result_type))
+                              result_class_name=_class_behind(fr.result_type), result_is_handle=_is_handle(fr.result_type), result_instance_key=_binder_key(fr.result_type), result_mi_ref=_mi_ref(fr.result_type))
                 if fn.skip_reason is None and _is_print_operator(fn.name, params, fr.result_type):
                     fn.result, fn.result_kind, fn.result_class = "void", ResultKind.VALUE, ""     # R-STR
                 elif fn.skip_reason is None:
@@ -3264,7 +3327,7 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                               is_operator=cur.spelling.startswith("operator"), skip_reason=reason,
                               qualified=f"{ns}{cur.spelling}", scope=scope,
                               defined_in_header=cur.is_definition() or cur.get_definition() is not None, mangled=cur.mangled_name,
-                              result_class_name=_class_behind(cur.result_type), result_is_handle=_is_handle(cur.result_type), result_instance_key=_binder_key(cur.result_type))
+                              result_class_name=_class_behind(cur.result_type), result_is_handle=_is_handle(cur.result_type), result_instance_key=_binder_key(cur.result_type), result_mi_ref=_mi_ref(cur.result_type))
                 skip_sig = f"{ns}{cur.spelling}({', '.join(p.type for p in params)})"
                 if fn.skip_reason is None and skip_sig in _SKIP_METHODS:
                     # [skip] methods reaches a free function by its exact signature only: a name alone would take every

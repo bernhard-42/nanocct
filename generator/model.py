@@ -43,6 +43,7 @@ class Param:
     class_name: str = ""    # canonical name of the class/enum type behind the parameter ("" for scalars, strings, std types)
     is_handle: bool = False # opencascade::handle<T> (by value or reference): nb::arg(...).none(), a null handle is None
     stream: StreamKind = StreamKind.NONE
+    stream_wrapper: bool = False  # R-STREAM-WRAPPER: a T& whose class only wraps a stream (BinTools_OStream(Standard_OStream&)): the stream's form, T made on it
     binary: bool = False    # the stream carries a binary format (overrides.toml [stream] binary_packages): bytes / typing.BinaryIO instead of str / typing.TextIO
     out_py: str = ""        # Python type name of a removed out-parameter (float, int, bool, str, an enum or class name): the R-COLLISION suffix
     omitted: bool = False   # R-OPTIONAL-PTR: a pointer parameter with a null default, dropped from the signature; the callee gets nullptr
@@ -69,6 +70,8 @@ class Param:
                             # constructed or initialised from it is an iterator view of it
     kept_cpp: bool = False  # R-KEPT: a kept argument of a Transient that cannot own the object (parse._cycle_path): the C++ object
                             # of a nanocct::Kept<T> keeps it; one that can stays kept by the Python object (a cycle no GC sees)
+    mi_ref: bool = False    # R-MI-REF: a reference or pointer to a class stored by a base at a non-zero offset (NCollection_Shared<T>):
+                            # taken through the handle caster (`const handle<S>&`) and dereferenced for the call
     native_handle: str = "" # R-NATIVE-HANDLE: a window-system handle typedef that is a pointer here (Aspect_Drawable, Aspect_Handle
                             # on Windows): `type` is std::uintptr_t, and the call converts it back to this typedef
 
@@ -102,6 +105,8 @@ class Method:
     result_owned: bool = False        # R-OWNER: the result's type has known OCAF owners (TDF_Label, TDF_Attribute, ...): kept instead
     result_by_reference: bool = False # R-COPY: a `const T&` of an owner class (its copy would free what the original points to): by reference
     result_on_heap: bool = False      # R-COPY: a `T` by value of an owner class without its own move/copy constructor: new T(call)
+    result_mi_ref: bool = False       # R-MI-REF: the result is a reference or pointer to such a class: it must be a Transient result
+                                      # (REF_/PTR_TRANSIENT), which goes out through the handle caster
     result_container: bool = False    # R-VIEW-GUARD: a non-const reference/pointer to an NCollection container the object owns:
                                       # its own changes to it are not checked against the container's views (reported)
 
@@ -176,6 +181,9 @@ class Class:
     not_constructible_reason: str = ""   # what to report; "" means the operator new case
     unbindable: bool = False          # nb::class_ cannot be instantiated (member of incomplete type); reported, not bound
     noncopyable: bool = False         # bound through a wrapper struct with deleted copy/move (overrides.toml [skip] noncopyable)
+    copy_hidden: bool = False         # R-NONCOPYABLE for a Transient: its copy does not compile although declared, and no wrapper is
+                                      # possible -- nanobind's copy is switched off (nb::detail::is_copy_constructible, the ONE
+                                      # approved nanobind internal, Toolchain.md 4.3) and no copy constructor is bound
     view: bool = False                # R-COPY, R-CTOR-KEEP: its layout holds pointers, so a copy (sharing them) keeps the original alive
     copy_owner: str = ""              # R-COPY: where a destructor may free a pointer an implicit copy duplicates: no implicit copy
     dtor_mangled: str = ""            # a user-declared, not-inline destructor's linker symbol; "" when there is none to link
@@ -223,6 +231,7 @@ class Function:
     result_class_name: str = ""       # canonical class/enum behind the result, as for methods (R-UNBOUND-TYPE)
     result_is_handle: bool = False    # as for methods
     result_instance_key: str = ""     # as for methods
+    result_mi_ref: bool = False       # R-MI-REF: as for methods
     result_view: bool = False         # R-RESULT-KEEP, R-OWNER: as for methods
     result_keeps: tuple[int, ...] = ()
     result_owned: bool = False

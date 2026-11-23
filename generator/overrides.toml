@@ -28,6 +28,8 @@ inout = [
     "GeomConvert::C0BSplineToC1BSplineCurve",   # BS: split and re-concatenated, assigned back
     "Geom2dConvert::C0BSplineToC1BSplineCurve", # BS: same
     "*::ReadCompleteInfo",                 # handle<Storage_Data>& theData: used when non-null, created otherwise (Storage_BaseDriver, FSD_File, FSD_BinaryFile)
+    "ChFi3d_PerformElSpine",               # handle<ChFiDS_ElSpine>& HES, handle<ChFiDS_Spine>& Spine: the guide to fill and the spine to
+                                           # read (`*HES`, Spine->NbEdges(), ->Index, ->D1; neither assigned, ChFi3d_Builder_0.cxx:4813ff)
     # handle<XSControl_WorkSession>& theWS of the DataExchange providers: documented @param[in], read by the call
     # (personizeWS: theWS->NormAdaptor(), DESTEP_Provider.cxx:692-707) and replaced only when it is null (2026-09-22)
     "DE_Provider::Read",

@@ -1683,7 +1683,7 @@ def test_ir_and_emitter_using_declarations(rules_ir):
     assert '.def("SetFuzzy", [](Rules_Algo &self, const double theV) { self.SetFuzzy(theV); }' in block
     assert '.def("Fuzzy", [](const Rules_Algo &self) { auto nanocct_result = self.Fuzzy(); return nanocct_result; }' in block
     assert block.count('.def("Flag"') == 2 and "&Rules_Options::" not in block
-    assert '.def("Dump", [](const Rules_Algo &self) { std::ostringstream theS_stream; self.Dump(theS_stream); return nanocct_stream_text(theS_stream); }' in block
+    assert '.def("Dump", [](const Rules_Algo &self, int nanocct_precision) { std::ostringstream theS_stream; theS_stream.precision(nanocct_precision); self.Dump(theS_stream); return nanocct_stream_text(theS_stream); }, nb::kw_only(), nb::arg("precision_hint") = 6' in block
     # inherited constructors: Rules_Value(const gp_Pnt&) becomes Rules_Inherit's; the default and copy constructors are not inherited
     # in C++ (the derived class gets its own implicit ones, R-IMPLICIT-DEFAULT, R-IMPLICIT-COPY)
     inherit = next(c for c in rules_ir.classes if c.name == "Rules_Inherit")
@@ -2605,18 +2605,22 @@ def test_reset_package_state_empties_it_and_refuses_left_over_scoped_state():
 def test_every_member_override_names_an_occt_member():
     """[inout], [stream] binary_members, [array] and [not_value_copy] change how a member or a class is bound and leave no report
     line, so an entry OCCT no longer matches would go unnoticed. Every entry ([inout]: a glob on the qualified name) must
-    name a member declared in the header of its class, or a class OCCT declares. Platform-independent: read from the
+    name a member declared in the header of its class, or a class OCCT declares -- or, for an [inout] entry without `::`
+    (a free function, ChFi3d_PerformElSpine), a function some header declares. Platform-independent: read from the
     OCCT sources, like the R-BYTES scan above."""
     declared = set()
+    free = set()
     for module in ("FoundationClasses", "ModelingData", "ModelingAlgorithms", "Visualization", "ApplicationFramework",
                    "DataExchange"):
         for header in (OCCT_SRC / "src" / module).rglob("*.hxx"):
             for name in set(re.findall(r"(~?\w+)\s*\(", header.read_text(errors="replace"))):
                 declared.add(f"{header.stem}::{name}")
+                free.add(name)
     assert len(declared) > 10000
     o = parse._OVERRIDES
     unmatched = (
-        [f"inout: {e}" for e in o["inout"] if not any(fnmatch(d, e) for d in declared)]
+        [f"inout: {e}" for e in o["inout"]
+         if not any(fnmatch(d, e) for d in (declared if "::" in e else free))]
         + [f"binary_members: {e}" for e in o["stream"]["binary_members"] if e not in declared]
         + [f"array: {e}" for e in o["array"]["members"] if e not in declared]
         + [f"not_value_copy: {e}" for e in o["not_value_copy"]["classes"] if not (OCCT_INC / f"{e}.hxx").exists()])

@@ -27,6 +27,10 @@ ALLOWED: dict[tuple[str, str], tuple[int, str]] = {
         1, "MSVC: NB_INLINE is redefined from __forceinline to inline (math.cpp 1677 s -> 16 s, nanobind discussion 791)"),
     ("src/cpp/common/nanocct_common.h", "NB_INLINE"): (2, "the MSVC redefinition (#undef, #define)"),
     ("src/cpp/common/nanocct_casters.h", "NB_INLINE"): (1, "the OptionalCString caster's can_cast, as nanobind's own casters"),
+    # the one internal approved beyond the documented API (2026-11-23): re-evaluate it with every nanobind upgrade
+    ("src/cpp/common/nanocct_class_helpers.h", "nb::detail::is_copy_constructible"): (
+        1, "R-NONCOPYABLE: a Transient whose copy does not compile cannot take the wrapper; NANOCCT_NO_NANOBIND_COPY switches "
+           "nanobind's copy off (nanobind has no documented way to)"),
 }
 
 
@@ -70,3 +74,21 @@ def test_the_scan_sees_through_comments_but_not_code():
     assert hits == ["NB_CALL(nb_type_put)"]
     assert [m.group(0) for m in INTERNAL.finditer(_code("nb::detail::cleanup_list *c; nb::detail::make_caster<T> m;"))] == [
         "nb::detail::make_caster"]
+
+
+def test_the_one_approved_internal_is_used_only_where_no_wrapper_is_possible():
+    """NANOCCT_NO_NANOBIND_COPY (nb::detail::is_copy_constructible, ALLOWED above) appears in the generated code exactly for
+    the classes the generator reports as bound with nanobind's copy disabled (R-NONCOPYABLE: a Transient), and each such
+    class is bound -- nb::class_<X ...> -- in that one file only, the only place the trait is asked."""
+    generated = {p: p.read_text(encoding="utf-8") for p in sorted((ROOT / "src" / "cpp").glob("TK*/*.cpp"))}
+    used = {(p.parent.name, m) for p, text in generated.items() for m in re.findall(r"^NANOCCT_NO_NANOBIND_COPY\((.+)\);$", text, flags=re.M)}
+    reported = set()
+    for report in sorted((ROOT / "src" / "cpp").glob("TK*/report.txt")):
+        for line in report.read_text().splitlines():
+            m = re.search(r"\t(\w+): member .* nanobind's copy disabled \(R-NONCOPYABLE\)$", line)
+            if m is not None:
+                reported.add((report.parent.name, m.group(1)))
+    assert used == reported and len(used) > 0
+    for toolkit, cls in used:
+        binders = [p for p, text in generated.items() if re.search(rf"nb::class_<{re.escape(cls)}[,>]", text) is not None]
+        assert len(binders) == 1 and binders[0].parent.name == toolkit, (cls, binders)

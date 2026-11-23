@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from generator.report import read_report
-from nanocct import BRep, BRepMesh, BRepMeshData, BRepPrimAPI, HLRAlgo, HLRBRep, IMeshData, IMeshTools, TopAbs, TopExp, TopLoc, TopoDS, gp
+from nanocct import BRep, BRepMesh, BRepMeshData, BRepPrimAPI, HLRAlgo, HLRBRep, IMeshData, IMeshTools, NCollection, TopAbs, TopExp, TopLoc, TopoDS, gp
 
 PACKAGES = ["IMeshData", "IMeshTools", "BRepMeshData", "BRepMesh"]
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKMesh" / "report.txt"
@@ -63,9 +63,10 @@ def test_detected_noncopyable_and_hidden_placement_new():
     assert "BRepMesh_CircleTool: member myCellFilter of type NCollection_CellFilter<BRepMesh_CircleInspector> is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)" in msgs
     assert "BRepMesh_Delaun: member myCircles of type BRepMesh_CircleTool is not copyable -> bound through the non-copyable wrapper (R-NONCOPYABLE)" in msgs
     assert type(BRepMesh.BRepMesh_CircleTool).__name__ == "nb_type" and BRepMesh.BRepMesh_CircleTool.__name__ == "BRepMesh_CircleTool"
-    # a Transient class with such a member cannot take the wrapper (the handle caster looks the OCCT class up): skipped
-    assert not hasattr(BRepMesh, "BRepMesh_VertexTool")
-    assert "BRepMesh_VertexTool: member myCellFilter of type NCollection_CellFilter<BRepMesh_VertexInspector> is not copyable and the class is Transient (no non-copyable wrapper possible) -> class skipped" in msgs
+    # a Transient class with such a member cannot take the wrapper (the handle caster looks the OCCT class up): bound as
+    # itself without a copy, nanobind's copy switched off (NANOCCT_NO_NANOBIND_COPY)
+    assert type(BRepMesh.BRepMesh_VertexTool).__name__ == "nb_type"
+    assert "BRepMesh_VertexTool: member myCellFilter of type NCollection_CellFilter<BRepMesh_VertexInspector> is not copyable and the class is Transient -> bound without a copy, nanobind's copy disabled (R-NONCOPYABLE)" in msgs
     # DEFINE_INC_ALLOC hides the placement operator new; the BRepMeshData_* implementation classes are non-trivially copyable
     # (bases, handles) so nanobind's copy wrapper cannot compile: skipped. BRepMeshData_Model (DEFINE_STANDARD_ALLOC) stays
     assert not hasattr(BRepMeshData, "BRepMeshData_Curve") and hasattr(BRepMeshData, "BRepMeshData_Model")
@@ -81,6 +82,24 @@ def test_detected_noncopyable_and_hidden_placement_new():
         return
     doc = BRepMesh.BRepMesh_ConeRangeSplitter.GetSplitSteps.__doc__
     assert "GetSplitSteps(self, theParameters: nanocct.IMeshTools.IMeshTools_Parameters) -> tuple[tuple[float, float], tuple[int, int]]" in doc
+
+
+def test_a_transient_noncopyable_is_bound_as_itself_without_a_copy():
+    """BRepMesh_VertexTool keeps its vertices unique by position; DataStructureOfDelaun::Data() hands out its own tool."""
+    tool = BRepMesh.BRepMesh_VertexTool(NCollection.NCollection_IncAllocator())
+    tool.SetCellSize(1.0)
+    tool.SetTolerance(1e-3)
+    first = tool.Add(BRepMesh.BRepMesh_Vertex(0.0, 0.0, BRepMesh.BRepMesh_Free), False)
+    assert tool.Add(BRepMesh.BRepMesh_Vertex(1e-5, 0.0, BRepMesh.BRepMesh_Free), False) == first     # coincident
+    second = tool.Add(BRepMesh.BRepMesh_Vertex(1.0, 0.0, BRepMesh.BRepMesh_Free), False)
+    assert (first, second, tool.Extent()) == (1, 2, 2)
+    assert tool.FindIndex(BRepMesh.BRepMesh_Vertex(1.0, 0.0, BRepMesh.BRepMesh_Free)) == second
+    assert tool.GetTolerance() == (1e-3, 1e-3)
+    with pytest.raises(TypeError):                                    # no copy constructor
+        BRepMesh.BRepMesh_VertexTool(tool)
+    structure = BRepMesh.BRepMesh_DataStructureOfDelaun(NCollection.NCollection_IncAllocator())
+    structure.AddNode(BRepMesh.BRepMesh_Vertex(0.5, 0.5, BRepMesh.BRepMesh_Free))
+    assert structure.Data().Extent() == 1 and structure.Data() is structure.Data()
 
 
 def test_a_static_reference_result_is_the_singleton():

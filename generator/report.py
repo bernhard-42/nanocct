@@ -25,6 +25,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("lifetime", r"R-CTOR-KEEP could not follow|\(R-RESULT-KEEP\)|\(R-METHOD-KEEP\)"),
     ("view-guard", r"\(R-VIEW-GUARD\)"),
     ("copy", r"\(R-COPY\)"),
+    ("mi-ref", r"\(R-MI-REF\)"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
     ("stream", r"iostream type|not bound as __str__"),
     ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
@@ -35,7 +36,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("unbound-type", r"unbound type|is not bound|not known"),
     ("incomplete", r"incomplete type"),
     ("not-constructible", r"operator new is not public"),     # an undefined copy constructor is "undefined" (R-UNDEFINED-COPY)
-    ("noncopyable", r"non-copyable wrapper|no non-copyable wrapper possible"),
+    ("noncopyable", r"non-copyable wrapper|no non-copyable wrapper possible|nanobind's copy disabled"),
     ("inheritance", r"additional base|non-public base|of a base, not a method"),
     ("array", r"\barray\b"),
     ("rvalue", r"rvalue reference"),

@@ -68,6 +68,22 @@ template <size_t N> struct type_caster<std::bitset<N>> {
     }
 };
 
+// R-STREAM-IN: a seekable file-like object and where it is, so that the caster can put it back after reading it (an
+// overload taken or not leaves it unmoved) and the call can move it on by what OCCT read; a non-seekable one comes back
+// without a source and stays read.
+inline nanocct::StreamSource nanocct_stream_source(handle src) {
+    nanocct::StreamSource from;
+    if (hasattr(src, "seekable") && hasattr(src, "seek") && hasattr(src, "tell") && cast<bool>(src.attr("seekable")())) {
+        from.start = src.attr("tell")();
+        from.source = borrow(src);
+    }
+    return from;
+}
+inline void nanocct_stream_rewind(const nanocct::StreamSource &from) {
+    if (from.source.is_valid())
+        from.source.attr("seek")(from.start);
+}
+
 template <> struct type_caster<nanocct::TextInput> {
     NB_TYPE_CASTER(nanocct::TextInput, const_name("typing.TextIO"))
 
@@ -75,11 +91,14 @@ template <> struct type_caster<nanocct::TextInput> {
         if (!hasattr(src, "read"))
             return false;
         try {
+            nanocct::StreamSource from = nanocct_stream_source(src);
             object text = src.attr("read")();
+            nanocct_stream_rewind(from);                // a peek: the call moves it on by what it reads (nanocct::advance)
             if (!str_check(text.ptr()))
                 return false;
             bytes data = borrow<bytes>(text.attr("encode")("utf-8", "surrogateescape"));   // the inverse of nanocct_stream_text
             value.text.assign(data.c_str(), data.size());
+            value.from = from;
         } catch (...) {
             return false;
         }
@@ -122,11 +141,14 @@ template <> struct type_caster<nanocct::BinaryInput> {
         if (!hasattr(src, "read"))
             return false;
         try {
+            nanocct::StreamSource from = nanocct_stream_source(src);
             object data = src.attr("read")();
+            nanocct_stream_rewind(from);
             if (!PyBytes_Check(data.ptr()))
                 return false;
             bytes b = borrow<bytes>(data);
             value.data.assign(b.c_str(), b.size());
+            value.from = from;
         } catch (...) {
             return false;
         }

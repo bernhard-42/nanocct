@@ -103,7 +103,7 @@ def test_cdf_directory_utl_and_metadata_print():
     directory = CDF.CDF_Directory()
     assert directory.IsEmpty() and directory.Length() == 0
     assert UTL.UTL.Extension_s(TCollection_ExtendedString("doc.xbf")).ToExtString() == "xbf"
-    assert "Print(self) -> str" in CDM.CDM_MetaData.Print.__doc__                  # Print(Standard_OStream&) -> str
+    assert "Print(self, *, precision_hint: int = 6) -> str" in CDM.CDM_MetaData.Print.__doc__                  # Print(Standard_OStream&) -> str
 
 
 def test_report_has_only_the_expected_omissions():
