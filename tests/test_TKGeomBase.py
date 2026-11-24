@@ -67,7 +67,9 @@ def test_bndlib_geomconvert_intana():
     box = Bnd.Bnd_Box()
     BndLib.BndLib_Add3dCurve.Add_s(GeomAdaptor.GeomAdaptor_Curve(_circle()), 1e-6, box)
     assert box.Get__float__float__float__float__float__float() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
-    assert not hasattr(GeomBndLib, "GeomBndLib_Curve")                 # header skipped (uninstalled .pxx), see overrides.toml
+    # R-PRIVATE-HEADER: GeomBndLib_Curve.hxx includes a .pxx OCCT 8.0.2 does not install; the generator takes it from the sources
+    curve_box = GeomBndLib.GeomBndLib_Curve(_circle()).Box(1e-6)
+    assert curve_box.Get__float__float__float__float__float__float() == pytest.approx((-1.0, -1.0, 0.0, 1.0, 1.0, 0.0), abs=1e-5)
     assert GeomBndLib.GeomBndLib_Circle.Box_s(gp.gp_Circ(gp.gp_Ax2(), 2.0), 1e-6).CornerMax().X() == pytest.approx(2.0, abs=1e-5)
     bs = GeomConvert.GeomConvert.CurveToBSplineCurve_s(_circle())
     assert type(bs) is Geom.Geom_BSplineCurve and bs.NbPoles() == 6

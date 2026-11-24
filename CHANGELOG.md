@@ -12,6 +12,7 @@
 
 **New features:**
 
+- `GeomBndLib_Curve` and `GeomBndLib_Curve2d` (the bounding boxes of any curve type), `GeomBndLib_Line` and `GeomBndLib_Line2d`. OCCT 8.0.2 does not install `GeomBndLib_InfiniteHelpers.pxx`, which their headers include; the generator now takes such private headers from the OCCT sources (R-PRIVATE-HEADER)
 - `Standard.Atof` and `OCCT_Version_String`, `OCCT_Version_Double`, `OCCT_Version_String_Complete`, `OCCT_Version_String_Extended`, `OCCT_DevelopmentVersion`: they are declared inside `extern "C"`, which the generator skipped without a report line (R-NAMESPACE)
 - Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - Now callable: `BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` return `bytes`, and `BinTools_ShapeReader.ReadLocation` takes a binary file-like (R-STREAM-WRAPPER)

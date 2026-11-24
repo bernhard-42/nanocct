@@ -268,6 +268,7 @@ deps: clean_deps rapidjson freetype freeimage occt
 clean_gen:
 	rm -rf $(ROOT)/src/cpp/TK*
 	rm -f  $(ROOT)/src/cpp/manifest.json $(ROOT)/src/cpp/toolkits.cmake $(ROOT)/src/cpp/common/ncollection_docs.h
+	rm -rf $(ROOT)/src/cpp/occt-private
 	find $(ROOT)/src/nanocct -mindepth 1 \( -name '_templates.py' -o -name 'py.typed' \) -prune -o -print0 \
 	    | xargs -0 rm -rf
 	@# The staged tree holds a copy of what was just removed, and the .pth keeps it importable -- without this,

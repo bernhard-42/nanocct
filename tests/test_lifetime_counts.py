@@ -61,7 +61,7 @@ def counts() -> dict[str, int]:
 # spell some types differently; Windows also skips what its libraries do not export)
 PINNED: dict[str, dict[str, int]] = {
     "darwin": {
-        "R-CTOR-KEEP keep_alive": 454,
+        "R-CTOR-KEEP keep_alive": 456,
         "R-COPY keep_view_arg": 80,
         "R-METHOD-KEEP slots": 811,
         "R-KEPT slots on the C++ object": 106,
@@ -75,8 +75,8 @@ PINNED: dict[str, dict[str, int]] = {
         "R-VIEW-GUARD lambda checks": 106,
         "R-VIEW-GUARD container fields": 44,
         "R-VIEW-GUARD iterator views": 23,
-        "R-COPY implicit copies": 4922,
-        "R-COPY implicit copies that keep the original": 530,
+        "R-COPY implicit copies": 4926,
+        "R-COPY implicit copies that keep the original": 532,
         "R-KEPT implicit copies": 27,
         "report copy": 307,
         "report kept": 45,

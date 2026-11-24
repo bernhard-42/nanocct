@@ -4852,7 +4852,36 @@ The Python additions of Design.md, section 2.
 
 - **C++ Idiom**
 
-    Public header including a private `.pxx` that is not installed
+    A header the parse must not read in this build: one for another platform, or for an option the OCCT build does not use
+
+- **OCCT examples**
+
+    `OSD_WNT.hxx` and `WNT_Dword.hxx` (they include `<windows.h>`), `OpenGl_GLESExtensions.hxx` (OpenGL ES typedefs; the build is `USE_GLES2=OFF`):
+
+    - `typedef DWORD WNT_Dword;` (`WNT_Dword.hxx:37`)
+
+- **Rule**
+
+    - Listed in `overrides.toml [skip] headers`, left out of the parse and reported ("skipped (overrides.toml [skip] headers)").
+    - A public header that cannot be parsed only because the install lacks a private header it includes is not skipped: R-PRIVATE-HEADER supplies that header.
+
+- **Python**
+
+    - Skipped.
+
+- **Python examples**
+
+    ```python
+    import nanocct.WNT as WNT
+
+    assert not hasattr(WNT, "WNT_Dword")                  # WNT_Dword.hxx: Windows only
+    ```
+
+### R-PRIVATE-HEADER
+
+- **C++ Idiom**
+
+    Public header including a private `.pxx` that the install lacks
 
 - **OCCT examples**
 
@@ -4864,30 +4893,26 @@ The Python additions of Design.md, section 2.
 
 - **Rule**
 
-    - `BndLib_Add3dCurve` and the per-type `GeomBndLib_Circle` … classes remain.
+    - Before the parse, the generator copies every such `.pxx` from the OCCT sources into `src/cpp/occt-private/` (`occt.copy_private_headers`): derived from the installed headers, not listed, and transitive (what a copied header includes counts too).
+    - The parse and the compile take that directory as an include path (`clang_args`; `NANOCCT_OCCT_PRIVATE_INCLUDE` in the generated `toolkits.cmake`). It holds only those files, so no installed header is shadowed; the OCCT install and its CI cache stay as they are.
+    - Until 2026-11-24 the four headers were skipped (R-SKIP-HEADER), and with them `GeomBndLib_Curve`/`Curve2d`, the bounding boxes of any curve type.
 
 - **Python**
 
-    - Skipped via `overrides.toml [skip] headers`.
+    - Bound.
 
 - **Python examples**
 
     ```python
-    import nanocct.GeomBndLib as GeomBndLib
-    from nanocct.Bnd import Bnd_Box
-    from nanocct.BndLib import BndLib_Add3dCurve
     from nanocct.GC import GC_MakeCircle
-    from nanocct.GeomAdaptor import GeomAdaptor_Curve
-    from nanocct.GeomBndLib import GeomBndLib_Circle
+    from nanocct.GeomBndLib import GeomBndLib_Curve, GeomBndLib_Curve2d, GeomBndLib_Line, GeomBndLib_Line2d
     from nanocct.gp import gp_Pnt
 
-    assert not hasattr(GeomBndLib, "GeomBndLib_Line") and not hasattr(GeomBndLib, "GeomBndLib_Curve")
     circle = GC_MakeCircle(gp_Pnt(-1, 0, 0), gp_Pnt(0, 1, 0), gp_Pnt(1, 0, 0)).Value()
-    box = Bnd_Box()
-    BndLib_Add3dCurve.Add_s(GeomAdaptor_Curve(circle), 0.0, box)   # any curve type
-    assert abs(box.CornerMax().Y() - 1.0) < 1e-9
-    assert abs(GeomBndLib_Circle(circle).Box(0.0).CornerMax().Y() - 1.0) < 1e-9   # the per-type class
+    assert abs(GeomBndLib_Curve(circle).Box(0.0).CornerMax().Y() - 1.0) < 1e-9   # any curve type
+    assert all(isinstance(c, type) for c in (GeomBndLib_Curve2d, GeomBndLib_Line, GeomBndLib_Line2d))
     ```
+
 ### R-TEMPLATE-SKIP
 
 - **C++ Idiom**

@@ -162,6 +162,8 @@ _THIRD_PARTY_INCLUDES = (("rapidjson", "include"),)
 
 def clang_args(tree: OcctTree) -> list[str]:
     args = ["-x", "c++", "-std=c++17", f"-I{tree.include_dir}", "-DHAVE_FREETYPE", "-DHAVE_RAPIDJSON"]
+    if tree.private_dir is not None:
+        args.append(f"-I{tree.private_dir}")    # R-PRIVATE-HEADER: after the install, and holding only what it lacks
     for parts in _THIRD_PARTY_INCLUDES:
         candidate = tree.install.parent.joinpath(*parts)
         if candidate.is_dir():

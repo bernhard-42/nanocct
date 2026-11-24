@@ -45,10 +45,11 @@ def jobs_from_env(n_items: int) -> tuple[int, str]:
 _TREE = None
 
 
-def init(src: Path, install: Path) -> None:
+def init(src: Path, install: Path, private_dir: Path | None = None) -> None:
     global _TREE
     configure_libclang()
     _TREE = load_tree(src, install)
+    _TREE.private_dir = private_dir          # R-PRIVATE-HEADER: copied by the driver before the pool starts
 
 
 def parse_one(job):
@@ -68,10 +69,11 @@ def parse_one(job):
 _EMIT = {}
 
 
-def init_emit(src, install, known, templates, paths, toolkit_order, bases, kept):
+def init_emit(src, install, known, templates, paths, toolkit_order, bases, kept, private_dir=None):
     global _TREE
     configure_libclang()
     _TREE = load_tree(src, install)
+    _TREE.private_dir = private_dir
     from .parse import clang_args, include_prelude
     cargs = clang_args(_TREE)
     _EMIT.update(known=known, templates=templates, paths=paths, toolkit_order=toolkit_order, bases=bases, kept=kept,

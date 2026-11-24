@@ -49,6 +49,12 @@ foreach(tk IN LISTS NANOCCT_TOOLKITS)
   if(EXISTS "${NANOCCT_RAPIDJSON_DIR}")
     target_include_directories(_${tk} PRIVATE "${NANOCCT_RAPIDJSON_DIR}")
   endif()
+  # Private OCCT headers that installed headers include and the install lacks, copied from the OCCT sources by the
+  # generator (generated toolkits.cmake; GeomBndLib_InfiniteHelpers.pxx in OCCT 8.0.2, Binding-Rules.md R-PRIVATE-HEADER).
+  # The directory holds only those, so it shadows no installed header.
+  if(DEFINED NANOCCT_OCCT_PRIVATE_INCLUDE)
+    target_include_directories(_${tk} PRIVATE "${NANOCCT_OCCT_PRIVATE_INCLUDE}")
+  endif()
   # deprecated OCCT members are bound on purpose (their deprecation message becomes the docstring, Binding-Rules.md)
   if(MSVC)
     target_compile_options(_${tk} PRIVATE /wd4996)

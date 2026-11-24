@@ -33,6 +33,7 @@ class OcctTree:
     toolkits: dict[str, Toolkit] = field(default_factory=dict)
     packages: dict[str, Package] = field(default_factory=dict)
     toolkit_of_header: dict[str, str] = field(default_factory=dict)   # "TDocStd_Document.hxx" -> "TKLCAF"
+    private_dir: Path | None = None    # R-PRIVATE-HEADER: private headers the install lacks, copied from `src`
 
     @property
     def include_dir(self) -> Path:
@@ -146,3 +147,34 @@ def load_tree(src: Path, install: Path) -> OcctTree:
         for header in pkg.headers:
             tree.toolkit_of_header[header] = pkg.toolkit
     return tree
+
+
+_PXX_INCLUDE = re.compile(r'^\s*#\s*include\s*[<"](\w+\.pxx)[>"]', re.M)
+
+
+# Binding-Rules.md R-PRIVATE-HEADER
+def copy_private_headers(tree: OcctTree, dest: Path) -> list[str]:
+    """Copy into `dest` every private header (`.pxx`) that an installed header -- or a header copied here -- includes and
+    the install lacks, from the OCCT sources; return their names. OCCT 8.0.1 and 8.0.2 install `GeomBndLib_Line.hxx`,
+    which includes `GeomBndLib_InfiniteHelpers.pxx`, but not that file: without it the public `GeomBndLib_Curve`,
+    `GeomBndLib_Curve2d` and both `Line` classes could not be parsed or compiled. Derived from the installed headers, so a
+    new packaging slip of the same kind is covered too; `dest` holds nothing else, so no installed header is shadowed."""
+    in_source: dict[str, Path] = {}
+    for p in sorted(tree.src.rglob("*.pxx")):
+        in_source.setdefault(p.name, p)
+    if dest.exists():
+        for old in dest.glob("*.pxx"):
+            old.unlink()
+    copied: list[str] = []
+    pending = [p for p in sorted(tree.include_dir.iterdir()) if p.suffix in (".hxx", ".h", ".pxx", ".lxx", ".gxx")]
+    while len(pending) > 0:
+        text = pending.pop().read_text(errors="replace")
+        for name in _PXX_INCLUDE.findall(text):
+            if (tree.include_dir / name).exists() or name in copied or name not in in_source:
+                continue
+            dest.mkdir(parents=True, exist_ok=True)
+            target = dest / name
+            target.write_bytes(in_source[name].read_bytes())
+            copied.append(name)
+            pending.append(target)                # what it includes counts too
+    return sorted(copied)

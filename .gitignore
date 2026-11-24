@@ -54,6 +54,7 @@ reviews/
 /src/cpp/**/report.txt
 /src/cpp/manifest.json
 /src/cpp/toolkits.cmake
+/src/cpp/occt-private/
 /src/cpp/common/ncollection_docs.h
 /src/nanocct/**/*.py
 /src/nanocct/**/*.pyi
