@@ -21,6 +21,8 @@
 
 - An `NCollection_Shared<T>` passed or returned by reference or pointer reached the other side at the wrong address, giving wrong results and crashes, e.g. `BRepMesh_DataStructureOfDelaun.ElementsOfDomain()` and `BRepMesh_Delaun.AddVertices` (27 members, all but one in BRepMesh; R-MI-REF)
 - A crash when an element that is itself a container -- an edge's list of faces in an `IndexedDataMap` -- was overwritten in place (`Substitute`, or `Bind` or `m[k] = v` on a bound key, of a `DataMap` or `IndexedDataMap`) while an element of that inner list, taken with its `Iterator`'s `ChangeValue()`, was still held: the overwrite is now refused with `BufferError` until that element is released (`el = None`), as removing it already was (R-VIEW-GUARD)
+- `m[k]` of an `NCollection_DataMap` raises `KeyError` for a key that is not bound, as a `dict` does and as `del m[k]` already did; it raised OCCT's `Standard_NoSuchObject`. `m(k)` and `Find(k)` keep OCCT's exception
+- The docstrings of `a[i]` and `a(i)` of the NCollection containers say that they hand out a copy, and those of the `NCollection_Array1` and `NCollection_DynamicArray` constructors describe the constructors that are bound
 - A file-like object passed to a reading member was left at its end, so a second read found nothing. It now moves on by what OCCT read, as the C++ stream does: two `GeomTools.GetReal_s(stream)` calls read two values (R-STREAM-IN)
 
 ## v8.0.1.6 (2026-11-19)

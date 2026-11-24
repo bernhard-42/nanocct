@@ -282,10 +282,14 @@ def test_datamap_scalar_values():
     assert sorted(d.items()) == [(1, 1.5), (2, 2.5)]
     assert d.TryBound(1, 9.0) == 1.5                             # existing value wins
     assert d.Bound(3, 3.5) == 3.5 and d.UnBind(3) is True
-    with pytest.raises(Standard.Standard_NoSuchObject):
+    with pytest.raises(KeyError):                                 # the Python addition, as for a dict
         d[7]
     with pytest.raises(KeyError):
         del d[7]
+    with pytest.raises(Standard.Standard_NoSuchObject):          # OCCT's operator() and Find keep OCCT's exception
+        d(7)
+    with pytest.raises(Standard.Standard_NoSuchObject):
+        d.Find(7)
 
 
 def test_datamap_class_values_are_views():

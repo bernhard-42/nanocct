@@ -368,7 +368,7 @@ Examples:
 
 *Binding rule: R-CONST-TWIN ([Binding rules](docs/Binding-Rules.md#r-const-twin))*
 
-Map values are edited the same way: with `ChangeFromIndex(i)` in an `NCollection_IndexedDataMap`, whose `m[i]` is by index, or `ChangeFind(k)` in an `NCollection_DataMap`. The values a map's `items()` hands out are copies, so `faces.Append(box)` in `for edge, faces in edge_faces.items()` changes nothing.
+Map values are edited the same way: with `ChangeFromIndex(i)` in an `NCollection_IndexedDataMap`, whose `m[i]` is by index, or `ChangeFind(k)` in an `NCollection_DataMap`. The values a map's `items()` hands out are copies, so `faces.Append(box)` in `for edge, faces in edge_faces.items()` changes nothing. For a key that is not bound, `m[k]` of an `NCollection_DataMap` raises `KeyError`, as a `dict` does; OCCT's own `m(k)` and `Find(k)` raise `Standard_NoSuchObject`.
 
 ```python
 In [5]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
@@ -430,10 +430,12 @@ Which calls refuse while a `Change…` element is held, measured:
 | --------- | -------------------------------- | ------------ |
 | `Array1` | `Resize` to another length, `Assign` of another size | `SetValue`, `a[i] = v`, `Init`, `Assign` of the same size, `Resize` to the same length |
 | `Sequence` | `Remove`, `Clear` | `Append`, `Prepend`, `InsertAfter`, `SetValue`, `Exchange`, `Reverse` |
-| `List` (an element from `Iterator.ChangeValue()`) | `RemoveFirst`, `Remove`, `Clear` | `Append`, `Prepend`, `Reverse` |
+| `List` (an element from `Iterator.ChangeValue()`) | `RemoveFirst`, `Remove`, `Clear`, `other.Append(l)` (moves the list's nodes), an OCCT function that takes the list to change it (`BRepLib.SortFaces_s(box, l)`) | `Append`, `Prepend`, `Reverse` |
 | `IndexedDataMap` | `RemoveLast`, `Clear`, an OCCT function that takes the map to fill it (`TopExp.MapShapesAndAncestors`) | `Add`, `Substitute`, `Swap` |
 
 The full list per container is in [Design 7a](docs/Binding-Rules.md#calls-that-invalidate-a-containers-views-r-view-guard). A `Remove` of another element of a `Sequence` or `List` is refused too, although C++ keeps the other elements valid: the check counts the views per container, not per element.
+
+In IPython or Jupyter, an element shown as a cell's result stays referenced by the output history (`Out`, `_`) and blocks these calls too, as a numpy view does: take elements inside an expression, or bind them to a name you release.
 
 An element that is itself a container, such as an edge's list of faces, is also protected against being overwritten: while an element of that inner list is held, `Substitute`, `Bind` or `m[k] = v` on its key, and `SetValue` or `a[i] = v` of its slot are refused, because the overwrite destroys the inner list's elements:
 
