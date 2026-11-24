@@ -28,7 +28,7 @@ CATEGORIES: list[tuple[str, str]] = [
     ("mi-ref", r"\(R-MI-REF\)"),
     ("template", r"\btemplate\b|dependent type|cannot (read|match) template arguments|non-type argument|nested class of a class template|instantiated as .* \(spelling mismatch\)|probe typedef did not compile"),
     ("stream", r"iostream type|not bound as __str__"),
-    ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result"),
+    ("raw-pointer", r"raw pointer to primitive|is a raw pointer|void pointer|reference to pointer|member pointer|function pointer|pointer to incomplete type|dependent pointer/mutable reference result|allocator interface"),
     ("operator", r"operator has no Python equivalent|free operator not mapped"),
     ("conversion", r"conversion (operator|skipped)"),
     ("overload-collision", r"same Python signature as|ambiguous with another constructor|const twin of a less const overload|takes a derived class of"),

@@ -17,6 +17,7 @@
 #include <NCollection_DoubleMap.hxx>
 #include <NCollection_DynamicArray.hxx>
 #include <NCollection_LinearVector.hxx>
+#include <NCollection_LocalArray.hxx>
 #include <NCollection_HArray2.hxx>
 #include <NCollection_Shared.hxx>
 #include <NCollection_DefaultHasher.hxx>
@@ -889,6 +890,33 @@ template <typename T> void bind_NCollection_LinearVector(nb::module_ &m, const c
          .def("ChangeLast", [](V &self) -> T & { return self.ChangeLast(); }, nb::rv_policy::reference_internal, elem_view_of_self(), D::ChangeLast)
          .def("ChangeValue", [](V &self, const size_t i) -> T & { return self.ChangeValue(i); }, nb::rv_policy::reference_internal, elem_view_of_self(), nb::arg("theIndex"), D::ChangeValue);
     }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// NCollection_LocalArray<T, MAX_ARRAY_SIZE>
+// R-VIEW-GUARD: ToArray1() returns an NCollection_Array1 over this array's own buffer (an aliasing array, as LinearVector's).
+// Reallocate moves that buffer when it grows it -- into the heap past MAX_ARRAY_SIZE, from the heap back into the
+// storage inside the object, or through Standard::Reallocate -- and destroys the trailing elements when it shrinks it
+// (NCollection_LocalArray.hxx, Reallocate; Allocate is Reallocate without copying). So while such an array lives, a
+// growing call is refused, and a shrinking one too for elements that are not trivially destructible. Before, the array
+// read freed memory after Reallocate (found by porting the GTests, 2026-11-24).
+template <typename L, typename T> void refuse_if_moved(L &self, const size_t theNewSize, const char *what) {
+    if (theNewSize > self.Size() || (theNewSize < self.Size() && !std::is_trivially_destructible_v<T>))
+        refuse_if_viewed(&self, what);
+}
+template <typename T, int N = 1024> void bind_NCollection_LocalArray(nb::module_ &m, const char *name) {
+    static_assert(owners_not_supported<T>, "R-OWNER: the LocalArray binder does not keep the owners of its elements");
+    using L = NCollection_LocalArray<T, N>;
+    namespace D = nanocct_doc::NCollection_LocalArray;
+    nb::class_<L> c(m, name, D::class_doc);
+    c.def(nb::init<>(), "An empty array; up to MAX_ARRAY_SIZE elements are held in the object itself.")
+     .def(nb::init<const size_t>(), nb::arg("theSize"), "An array of theSize elements; scalar elements are not initialised.")
+     .def("Allocate", [](L &self, const size_t n) { refuse_if_moved<L, T>(self, n, "Allocate"); self.Allocate(n); },
+          nb::arg("theSize"), D::Allocate)
+     .def("Reallocate", [](L &self, const size_t n, const bool copy) { refuse_if_moved<L, T>(self, n, "Reallocate"); self.Reallocate(n, copy); },
+          nb::arg("theNewSize"), nb::arg("theToCopy") = true, D::Reallocate)
+     .def("Size", [](const L &self) { return self.Size(); }, D::Size)
+     .def("ToArray1", [](const L &self) { return self.ToArray1(); }, nb::keep_alive<0, 1>(), elem_view_of_self(), D::ToArray1);
 }
 
 // ---------------------------------------------------------------------------------------------------

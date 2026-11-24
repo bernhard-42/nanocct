@@ -141,6 +141,16 @@ BINDERS: dict[str, dict] = {
         "requires": ["NCollection_Array1"],    # ToArray1() returns NCollection_Array1<T>
         "nargs": 1,
     },
+    "NCollection_LocalArray": {
+        "binder": "nanocct::bind_NCollection_LocalArray",
+        "members": {"Allocate", "Reallocate", "Size", "ToArray1"},
+        # operator theItem*: the raw buffer; move construction/assignment; the private Deallocate/inlinePtr/isInline
+        "skipped": {"operator type-parameter-0-0 *", "operator=", "operator new", "operator delete", "operator new[]",
+                    "operator delete[]"},
+        "requires": ["NCollection_Array1"],    # ToArray1() returns NCollection_Array1<T>
+        "nargs": 2,
+        "defaults": {1: "1024"},                # MAX_ARRAY_SIZE, the elements held in the object itself
+    },
     "NCollection_DoubleMap": {
         "binder": "nanocct::bind_NCollection_DoubleMap",
         "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Bind", "TryBind",
@@ -179,6 +189,7 @@ def instance_args(tmpl: str, canonical_args: list[str]) -> list[str]:
     info = BINDERS[tmpl]
     args = list(canonical_args[: info["nargs"]])
     defaults = info.get("defaults", {})
-    while len(args) > 0 and (len(args) - 1) in defaults and args[-1] == defaults[len(args) - 1].format(*args):
+    # an empty trailing argument is a non-type default libclang did not spell (parse._template_args)
+    while len(args) > 0 and (len(args) - 1) in defaults and args[-1] in ("", defaults[len(args) - 1].format(*args)):
         args.pop()
     return args

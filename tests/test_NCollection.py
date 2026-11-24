@@ -1,4 +1,4 @@
-"""Hand-written NCollection binders (Binding-Rules.md 7a), all 15 kinds, instantiated by the generator."""
+"""Hand-written NCollection binders (Binding-Rules.md 7a), all 16 kinds, instantiated by the generator."""
 import gc
 import re
 import sys
@@ -366,6 +366,35 @@ def test_canary_indexeddatamap_contained_still_does_not_compile():
         "OCCT's NCollection_IndexedDataMap::Contained looks fixed: bind it (see this test's docstring)")
 
 
+def test_localarray_toarray1_is_a_guarded_view():
+    """NCollection_LocalArray::ToArray1() returns an NCollection_Array1 over the local array's own buffer. Reallocate and
+    Allocate move that buffer when they grow it, so while the array lives a growing call is refused (R-VIEW-GUARD), as
+    NCollection_LinearVector refuses Reserve; shrinking keeps the buffer of a double array. Before, the array read freed
+    memory after Reallocate (2026-11-24)."""
+    L = NCollection.NCollection_LocalArray[float]
+    assert L is NCollection.NCollection_LocalArray__double
+    local = L(2000)                                              # past MAX_ARRAY_SIZE (1024): on the heap
+    view = local.ToArray1()
+    view.Init(7.0)
+    assert (local.Size(), view.Length(), view.Value(view.Lower())) == (2000, 2000, 7.0)   # one buffer
+    with pytest.raises(BufferError):
+        local.Reallocate(400000)
+    with pytest.raises(BufferError):
+        local.Allocate(400000)
+    local.Reallocate(1000)                                       # shrinking keeps the buffer
+    assert local.Size() == 1000 and view.Value(view.Lower()) == 7.0
+    local = None
+    gc.collect()
+    assert view.Value(view.Lower()) == 7.0                       # the array keeps its local array alive
+    small = L(10)                                                # inside the object
+    view = small.ToArray1()
+    with pytest.raises(BufferError):
+        small.Reallocate(5000)                                   # into the heap: the inline buffer would be left behind
+    view = None
+    small.Reallocate(5000)
+    assert small.Size() == 5000
+
+
 def test_indexed_data_map():
     IDM = NCollection.NCollection_IndexedDataMap[Str, Str]
     idm = IDM()
@@ -504,7 +533,7 @@ def test_every_table_entry_is_a_bound_class_keyed_by_its_element_types():
     is left to check is the shape: every key is a type (or a tuple of types), every value is the instantiation
     named after the rule, reachable under its concrete name, and the subscription returns exactly it."""
     generics = _generics()
-    assert len(generics) == 15, sorted(generics)
+    assert len(generics) == 16, sorted(generics)
     total = 0
     for name, G in generics.items():
         for key, cls in G._instances.items():

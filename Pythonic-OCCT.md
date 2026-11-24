@@ -104,7 +104,7 @@ A Python type stands for a C++ template argument: `float` for C++ `double`, `int
 | `ulong`     | `unsigned long`      |
 | `ulonglong` | `unsigned long long` |
 
-With them, the containers of nanocct can be spelled generically: `NCollection_Array1`, `Array2`, `HArray1`, `HArray2`, `Sequence`, `HSequence`, `List`, `Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`, `DoubleMap`, `DynamicArray`, `LinearVector` and `Shared`. The other NCollection classes, such as `NCollection_Vec3` or `NCollection_Mat3`, have no generic spelling.
+With them, the containers of nanocct can be spelled generically: `NCollection_Array1`, `Array2`, `HArray1`, `HArray2`, `Sequence`, `HSequence`, `List`, `Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`, `DoubleMap`, `DynamicArray`, `LinearVector`, `LocalArray` and `Shared`. The other NCollection classes, such as `NCollection_Vec3` or `NCollection_Mat3`, have no generic spelling.
 
 ```python
 In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1, float32, uchar

@@ -17,7 +17,7 @@ Members that nanocct cannot bind and that a user might look for, with the OCCT-l
 | `TCollection_*::Move(&&)`, `TCollection_H*String(&&)` | rvalue references | copy (`TCollection_AsciiString(other)`) |
 | `FSD_Base64::Encode(char* theEncodedStr, …)`, `FSD_Base64::Decode(uint8_t* theDecodedData, …)` | the buffer is an *output* the caller sizes and owns | the other overload of each: `Encode(theData: bytes) -> TCollection_AsciiString` (R-BYTES) and `Decode(theStr, theLen) -> NCollection_Buffer`, which `np.asarray` reads (R-VIEW) |
 | `Standard_Failure::Raise(fmt, ...)` | variadic | `raise Standard_Failure("message")` |
-| `Standard::Allocate/Free`, atomics, hash functions | raw memory | not needed from Python |
+| `Standard::Allocate/Free`, atomics, hash functions; `allocate`/`deallocate`/`construct`/`destroy`/`address` of `NCollection_OccAllocator<T>` (any class with the STL allocator typedefs, R-UNSUPPORTED) | raw memory | not needed from Python |
 | `Adaptor3d_TopolTool::Edge()`, `BRepPrimAPI_MakeOneAxis::OneAxis()` | `void*` (`Standard_Address`) results | `BRepTopAdaptor_TopolTool::Edge()` is the same pointer; `MakeOneAxis` results come from `Shape()`/`Face()`/`Shell()`/`Solid()` |
 | `BRepBuilderAPI_FastSewing::GetStatuses(ostream*)` | the stream is optional | `GetStatuses()` returns the status flags; the text dump is not available |
 | `IMeshData_Edge/Face/Wire` members of the second base `IMeshData_StatusOwner` (`GetStatus`, `SetStatus`) | nanobind single inheritance (R-MI) | mesh-algorithm internals; `BRepMesh_IncrementalMesh.GetStatusFlags()` is the user-level status |

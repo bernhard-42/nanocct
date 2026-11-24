@@ -5054,6 +5054,7 @@ The Python additions of Design.md, section 2.
 
     - Reported.
     - A raw pointer to a primitive in a 7c instantiation — `NCollection_Mat4<float>::Map(float*)`, `math_VectorBase<double>(const double* theTab, …)` — would take a pointer to a temporary.
+    - **The STL allocator interface** -- `allocate`, `deallocate`, `construct`, `destroy`, `address` of a class with its own `value_type` and `pointer` typedefs, the requirements of `std::allocator_traits` (`_is_allocator` in `parse.py`, no list of classes) -- hands out and takes back raw memory. Its `pointer` is `T*`, which a binding fills from any Python object of type T: `NCollection_OccAllocator<int>::deallocate(5, 1)` freed memory OCCT never allocated and aborted the interpreter (2026-11-24). Reported as "allocator interface (raw memory)"; the class itself (its comparison, `Allocator()`) stays bound.
 
 - **Python**
 
@@ -5074,6 +5075,12 @@ The Python additions of Design.md, section 2.
     assert hasattr(Transfer_Finder, "StringAttribute")          # OCCT's value-returning twin
     assert not hasattr(Message_PrinterOStream, "GetStream")
     assert not hasattr(BinTools_IStream, "Stream")
+
+    from nanocct.IMeshData import NCollection_OccAllocator__int
+
+    for member in ("allocate", "deallocate", "construct", "destroy", "address"):   # raw memory (std::allocator_traits)
+        assert not hasattr(NCollection_OccAllocator__int, member)
+    assert NCollection_OccAllocator__int() == NCollection_OccAllocator__int()          # the allocator itself stays bound
     ```
 
 ## 7a. NCollection containers (hand-written binders)
@@ -5155,7 +5162,7 @@ The Python additions of Design.md, section 2.
 
 - A container keeps the owners of every element Python puts in (`own`/`own_all` in each writing member: `Append`, `SetValue`, `Bind`, `Add`, `Assign`, `Exchange`, the map set operations, …); an element copied out (`Value`, `First`, `Find`, `FindKey`, `items()`, an iterator's `Value()`/`Key()`) keeps its own (`owned`, returning `nb::typed<nb::object, T>` so the stubs keep `T`); a lookup that writes into an argument (`Find(key, item)`) gives it the owners (`own_out`); a copy of the container keeps its source (`keep_if_owned`). A container a bound call fills is covered by R-OWNER's policy on that call (`GetFreeShapes(labels)`).
 - For every other element type these compile to nothing (`owners<T>::active` is false; a `keep_if_owned` that does not apply is an empty `nb::call_guard<>`) -- measured: `NCollection_Sequence[int].Value` 21 ns with and without the rule.
-- The binders that do not apply it -- Array2/HArray2, DynamicArray, LinearVector, Shared -- `static_assert` that their element type has no owners, so an OCAF instantiation of one does not compile instead of losing its owners silently (none in OCCT 8.0.2).
+- The binders that do not apply it -- Array2/HArray2, DynamicArray, LinearVector, LocalArray, Shared -- `static_assert` that their element type has no owners, so an OCAF instantiation of one does not compile instead of losing its owners silently (none in OCCT 8.0.2).
 
 ### Calls that invalidate a container's views (R-VIEW-GUARD)
 
@@ -5171,6 +5178,7 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 | `IndexedMap`, `IndexedDataMap` | `Clear`, `Assign`, `Exchange` (both), `RemoveLast`, `RemoveFromIndex`, `RemoveKey` | -- (an iterator holds the map and an index, `NCollection_IndexedMap.hxx`) |
 | `DynamicArray` | `Clear`, `Assign`, `EraseLast` (blocks never move: appends and inserts keep every element in place) | -- |
 | `LinearVector` | growing past `Capacity()` (`Append`, `Appended`, `InsertBefore`/`InsertAfter`, `SetValue`/`__setitem__` past the end, `Reserve`, `Resize`), shrinking (`Resize` below `Size()`), `Erase`, `EraseLast`, `Clear` | -- |
+| `LocalArray` (a view is `ToArray1()`'s array) | `Reallocate`/`Allocate` growing (past `MAX_ARRAY_SIZE` into the heap, from the heap back into the object, or `Standard::Reallocate`), and shrinking for elements that are not trivially destructible | -- |
 
 - Views come from the binder: `elem_view_of_self` on every member returning an element reference of a class type (`def_elem`, the `Change*` members, `ChangeSeek`), `iterator_of_self` on `__iter__`, `iterator_of_arg` on an `Iterator`'s constructor and `Initialize` (a re-initialised iterator moves to its new container), `elem_view_of_iterator` on an `Iterator`'s `ChangeValue`, `container_array` for `__array__` (`np.array(a)`, `copy=True`, is a copy and no view).
 - A scalar or handle element is returned by value and is no view.
@@ -5181,6 +5189,13 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 - `Data()`/`begin()`/`end()` (raw element pointers) are not bound.
 - A typedef of a binder instantiation (`BVH_Array3d = NCollection_LinearVector<NCollection_Vec3<double>>`) is an attribute alias of the concrete class, not a 7c class of its own.
 - Container-typed **fields** (`MathRoot::MultipleResult::Roots`) and template arguments of instantiated templates (`NCollection_Iterator<NCollection_DynamicArray<Poly_CoherentTriangle>>`) register their instantiations like parameters do.
+### LocalArray
+
+- `NCollection_LocalArray<T, MAX_ARRAY_SIZE = 1024>`, a buffer that keeps up to `MAX_ARRAY_SIZE` elements inside the object and moves to the heap beyond (ApproxInt's knot tools take one). Bound by its own binder since 2026-11-24, for its `ToArray1()`: an `NCollection_Array1` over the local array's buffer, a view of it as LinearVector's (R-VIEW-GUARD, the table above), which keeps the local array alive. As a generated class its array had read freed memory after a `Reallocate`.
+- `operator T*` (the raw buffer) and the move operations are not bound. `MAX_ARRAY_SIZE` is a non-type template argument: an instantiation with the default is keyed and named without it (`NCollection_LocalArray__double`); libclang spells such an argument nowhere in the argument types, so `parse._template_args` reads it from the canonical spelling.
+
+### FlatMap and FlatDataMap
+
 - `NCollection_FlatDataMap`/`FlatMap` (BRepGraph's open-addressing maps) are bound as 7c instantiations, with their nested `Iterator`: `for n in NCollection_FlatMap__BRepGraph_NodeId__….Iterator(m)`. Their `Items()` returns an `NCollection_ItemsView::View`, an STL-style range that stays unbound.
 
 ## 7b. Type stubs

@@ -901,7 +901,7 @@ def _binder_key(t: cindex.Type) -> str:
         return _binder_key(canon.get_template_argument_type(0))
     owner = _NESTED_OWNER.get(decl.spelling, decl.spelling if decl.spelling in BINDERS else None)
     if owner is not None and canon.get_num_template_arguments() > 0:
-        args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+        args = _template_args(canon)
         key = f"{owner}<{', '.join(instance_args(owner, args))}>"
         return key if owner == decl.spelling else key + "::Iterator"      # NCollection_TListIterator<T> is List<T>::Iterator
     m = re.match(r"^(NCollection_\w+)<(.*)>::(\w+)$", _canonical_args(canon))
@@ -1309,6 +1309,20 @@ def _enum(cursor: cindex.Cursor, header: str, scope: str | None) -> Enum:
                 is_anonymous=cursor.is_anonymous() or cursor.spelling == "" or cursor.spelling.startswith("("), aliases=aliases)
 
 
+# Binding-Rules.md R-UNSUPPORTED: the STL allocator interface hands out and takes back raw memory. Its pointer parameters are
+# `T*`, which a binding fills from any Python object of type T -- `NCollection_OccAllocator<int>::deallocate(5, 1)` freed
+# memory OCCT never allocated and aborted the interpreter (2026-11-24). An allocator is recognised by its own `value_type`
+# and `pointer` typedefs (std::allocator_traits' requirements), not by a list of class names.
+_ALLOCATOR_MEMBERS = ("allocate", "deallocate", "construct", "destroy", "address")
+
+
+def _is_allocator(cls: cindex.Cursor | None) -> bool:
+    if cls is None:
+        return False
+    aliases = {ch.spelling for ch in cls.get_children() if ch.kind in (K.TYPEDEF_DECL, K.TYPE_ALIAS_DECL)}
+    return "value_type" in aliases and "pointer" in aliases
+
+
 # Binding-Rules.md R-UNDEFINED (skip_reason from the nm check in __main__), R-REF-PRIMITIVE (result_kind)
 def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method | None:
     name = cursor.spelling
@@ -1316,6 +1330,8 @@ def _method(cursor: cindex.Cursor, cls_name: str, members: set[str]) -> Method |
     if name.startswith("operator") and name in ("operator=", "operator new", "operator delete", "operator new[]", "operator delete[]"):
         return None
     params, reason = _params(cursor, f"{cls_name}::{name}", cls_name, members)
+    if reason is None and name in _ALLOCATOR_MEMBERS and _is_allocator(cursor.semantic_parent):
+        reason = "allocator interface (raw memory)"
     _note_instance(cursor.result_type)
     rk, rc = _result_kind(cursor.result_type)
     m = Method(name=name, params=params, result=_type_spelling(cursor.result_type), result_kind=rk, result_class=rc,
@@ -2582,7 +2598,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 owner_t = base_decl.semantic_parent.type
                 _note_instance(owner_t)
                 canon = owner_t.get_canonical()
-                all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+                all_args = _template_args(canon)
                 key = f"{base_decl.semantic_parent.spelling}<{', '.join(instance_args(base_decl.semantic_parent.spelling, all_args))}>"
                 c.bases.append(f"{key}::Iterator")
                 c.after_templates = True
@@ -2593,7 +2609,7 @@ def _class(cursor: cindex.Cursor, header: str, package: str, outer: str = "") ->
                 # same treatment, the manifest key is the C++ spelling nanobind needs (defaults such as the hasher left out)
                 _note_instance(ch.type)
                 canon = ch.type.get_canonical()
-                all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+                all_args = _template_args(canon)
                 c.bases.append(f"{base_decl.spelling}<{', '.join(instance_args(base_decl.spelling, all_args))}>")
                 c.after_templates = True
                 continue
@@ -2786,6 +2802,24 @@ def _canonical_args(t: cindex.Type) -> str:
     return re.sub(r"std::__\w+::", "std::", t.get_canonical().spelling)
 
 
+def _template_args(canon: cindex.Type) -> list[str]:
+    """The canonical spellings of a record type's template arguments. libclang's type API gives a non-type argument no
+    type -- `NCollection_LocalArray<double, 1024>` reads as ["double", ""] -- so such an argument is taken from the
+    canonical spelling instead: the binder key and the binder call need the `1024` (an empty one wrote
+    `bind_NCollection_LocalArray<double, >`, 2026-11-24)."""
+    args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+    if "" in args:
+        # the spelling starts with the qualifiers of the type ("const LA<double>") and leaves out a trailing argument equal to
+        # its default ("LA<double>" for LA<double, 1024>, "LA<double, 64>" otherwise): such an argument stays "", which
+        # binders.instance_args reads as the default
+        m = re.match(r"^(?:(?:const|volatile)\s+)*[\w:]+<(.*)>$", _canonical_args(canon))
+        spelled = [w.strip() for w in _split_top(m.group(1))] if m is not None else []
+        if len(spelled) <= len(args):
+            spelled += [""] * (len(args) - len(spelled))
+            args = [a if a != "" else w for a, w in zip(args, spelled)]
+    return args
+
+
 _NESTED_OWNER = {src: kind for kind, info in BINDERS.items() for src in info.get("nested_from", {}).values()}   # TListIterator -> List
 
 
@@ -2840,7 +2874,7 @@ def _note_instance(t: cindex.Type) -> None:
     if owner is not None:
         # NCollection_TListIterator<T> is NCollection_List<T>::Iterator, bound by the List binder (7a) as
         # NCollection_List__T.Iterator: record the owner instantiation instead of a 7c class of its own (TopOpeBRepDS)
-        args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+        args = _template_args(canon)
         for i in range(len(args)):
             _note_instance(canon.get_template_argument_type(i))
         key = f"{owner}<{', '.join(instance_args(owner, args))}>"
@@ -2859,7 +2893,7 @@ def _note_instance(t: cindex.Type) -> None:
             if arg.kind != TK.INVALID:
                 _note_instance(arg)
         return
-    all_args = [_canonical_args(canon.get_template_argument_type(i)) for i in range(canon.get_num_template_arguments())]
+    all_args = _template_args(canon)
     args = instance_args(decl.spelling, all_args)     # default hashers are not part of the key/name
     for i in range(len(args)):
         _note_instance(canon.get_template_argument_type(i))
