@@ -144,6 +144,23 @@ template <typename T> decltype(auto) owned_ptr(const T *value) {
         return value;                    // rv_policy::copy at the def
     }
 }
+// a copy of a key or value as a Python object, through owned() (R-OWNER), for results built in the binder (Contained)
+template <typename T> nb::object owned_copy(const T &value) { return nb::cast(owned(value), nb::rv_policy::copy); }
+// Contained (R-REFWRAP): OCCT's const overload -- the data maps also have a non-const one with the value mutable; Python
+// cannot choose, and the binders hand out copies wherever a twin exists (R-CONST-TWIN, 7a): the key (and the value) as
+// copies through owned(), None if the key is not in the map. The value itself comes from ChangeSeek / ChangeFind.
+template <typename M, typename K> nb::typed<nb::object, std::optional<K>> contained_key(const M &self, const K &k) {
+    const auto found = self.Contained(k);
+    if (!found) return nb::typed<nb::object, std::optional<K>>(nb::none());
+    return nb::typed<nb::object, std::optional<K>>(owned_copy(found->get()));
+}
+template <typename M, typename K, typename V>
+nb::typed<nb::object, std::optional<std::pair<K, V>>> contained_item(const M &self, const K &k) {
+    using R = nb::typed<nb::object, std::optional<std::pair<K, V>>>;
+    const auto found = self.Contained(k);
+    if (!found) return R(nb::none());
+    return R(nb::make_tuple(owned_copy(found->first.get()), owned_copy(found->second.get())));
+}
 // a copy of a container keeps its source when the elements have owners; otherwise no annotation (an empty call guard)
 template <typename T, size_t Nurse, size_t Patient>
 using keep_if_owned = std::conditional_t<owners<T>::active, nb::keep_alive<Nurse, Patient>, nb::call_guard<>>;
@@ -481,6 +498,8 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
      .def("Added", [](M &self, const K &k) -> decltype(auto) { invalidate_iterators(&self); own(self, k); return owned(self.Added(k)); }, nanocct::elem_arg<K>("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
      .def("Contains", [](const M &self, const M &other) { return self.Contains(other); }, nb::arg("theOther"), D::Contains_deprecated)
+     .def("Contained", [](const M &self, const K &k) { return contained_key(self, k); }, nanocct::elem_arg<K>("theKey"),
+          "A copy of the key in the map, or None if it is not in the map.")
      .def("Remove", [](M &self, const K &k) { refuse_if_viewed(&self, "Remove"); return self.Remove(k); }, nanocct::elem_arg<K>("theKey"), D::Remove)
      .def("IsEqual", [](const M &self, const M &other) { return self.IsEqual(other); }, nb::arg("theOther"), D::IsEqual)
      .def("Union", [](M &self, const M &a, const M &b) {
@@ -522,6 +541,8 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
     c.def("Bind", [](M &self, const K &k, const V &v) { if (const V *old = self.Seek(k)) refuse_if_inner_viewed(*old, "Bind"); invalidate_iterators(&self); own(self, k); own(self, v); return self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bind)
      .def("TryBind", [](M &self, const K &k, const V &v) { invalidate_iterators(&self); own(self, k); own(self, v); return self.TryBind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBind)
      .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nanocct::elem_arg<K>("theKey"), D::IsBound)
+     .def("Contained", [](const M &self, const K &k) { return contained_item<M, K, V>(self, k); }, nanocct::elem_arg<K>("theKey"),
+          "A (key, value) tuple of copies, or None if the key is not bound; the value itself comes from ChangeSeek or ChangeFind.")
      .def("UnBind", [](M &self, const K &k) { refuse_if_viewed(&self, "UnBind"); return self.UnBind(k); }, nanocct::elem_arg<K>("theKey"), D::UnBind)
      .def("Find", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"), D::Find)
      .def("__call__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"),
@@ -578,6 +599,8 @@ template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NColl
     c.def("Add", [](M &self, const K &k) { own(self, k); return self.Add(k); }, nanocct::elem_arg<K>("theKey"), D::Add)
      .def("Added", [](M &self, const K &k) -> decltype(auto) { own(self, k); return owned(self.Added(k)); }, nanocct::elem_arg<K>("theKey"), D::Added)
      .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
+     .def("Contained", [](const M &self, const K &k) { return contained_key(self, k); }, nanocct::elem_arg<K>("theKey"),
+          "A copy of the key in the map, or None if it is not in the map.")
      .def("Substitute", [](M &self, const int i, const K &k) { own(self, k); self.Substitute(i, k); }, nb::arg("theIndex"), nanocct::elem_arg<K>("theKey"), D::Substitute)
      .def("Swap", [](M &self, const int i, const int j) { self.Swap(i, j); }, nb::arg("theIndex1"), nb::arg("theIndex2"), D::Swap)
      .def("RemoveLast", [](M &self) { refuse_if_viewed(&self, "RemoveLast"); self.RemoveLast(); }, D::RemoveLast)

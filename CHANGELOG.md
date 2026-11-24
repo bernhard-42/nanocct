@@ -13,6 +13,7 @@
 
 - Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - Now callable: `BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` return `bytes`, and `BinTools_ShapeReader.ReadLocation` takes a binary file-like (R-STREAM-WRAPPER)
+- `Contained(key)` of `NCollection_Map`, `NCollection_DataMap` and `NCollection_IndexedMap`: a copy of the key, or a `(key, value)` tuple of copies, or `None` if the key is not in the map. `NCollection_IndexedDataMap.Contained` stays out: it does not compile in OCCT 8.0.2
 - `BRepMesh_VertexTool`, the Delaunay mesher's vertex table, and `BRepMesh_DataStructureOfDelaun.Data()`, which returns it. 8.0.1.6 left both out because the class cannot be copied (R-NONCOPYABLE)
 - NCollection containers of handles take `None`, the null handle, for elements, keys and values, e.g. `NCollection_HArray1[Standard_Transient].SetValue(i, None)`
 - `ChFi3d_PerformElSpine` takes its guide and spine as inputs and returns both, as in C++ (R-INOUT)

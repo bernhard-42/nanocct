@@ -1173,6 +1173,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
     - A `const T` is returned as a **copy**.
     - A mutable `T` is returned as a reference into its owner that keeps the owner alive (`reference_internal`): edits reach the map as in C++ (caster in `nanocct_casters.h`).
+    - The hand-written binders (7a) bind `Contained` of `NCollection_Map`, `DataMap` and `IndexedMap` through the same copy path as `Find` (`owned()`, R-OWNER): OCCT's `const` overload, so the key and the value are copies, as for every twin there (R-CONST-TWIN); the value itself comes from `ChangeSeek`/`ChangeFind`. `NCollection_IndexedDataMap::Contained` does not compile in OCCT 8.0.2 and is not bound ([Excluded.md](Excluded.md)).
 
 - **Python examples**
 
@@ -5138,7 +5139,7 @@ The Python additions of Design.md, section 2.
 - The hasher template argument is dropped from key and name only when it equals its default `NCollection_DefaultHasher<Key>` (`defaults` per kind in `BINDERS`, applied by `instance_args`); a custom hasher stays part of both, so it cannot be merged with the default instantiation (a different C++ type).
 - Shared base members (`NCollection_BaseMap`: `NbBuckets`, `Extent`, …) in one helper.
 - `Seek`/`ChangeSeek` return `None` for absent keys; `ChangeSeek` is a view for class items, `Seek` (and `DoubleMap`'s `Seek1`/`Seek2`, which return a key) a copy as `Find` is -- a `const` pointer bound as a view would be writable from Python and could corrupt a `DoubleMap`'s keys; scalars are values; `Find(key, item&)`/`FindFromKey(key, item&)` only for class items (in-place).
-- Skipped: `Contained` (`std::optional<std::reference_wrapper<…>>`), `Emplace*`, `Items()`/`IndexedItems()` views, `GetHasher`.
+- Skipped: `Emplace*`, `Items()`/`IndexedItems()` views, `GetHasher`, and `NCollection_IndexedDataMap::Contained`, which does not compile in OCCT 8.0.2 ([Excluded.md](Excluded.md)); `Contained` of Map, DataMap and IndexedMap is bound as copies (R-REFWRAP).
 - Python additions: `__len__`, `__contains__`, `__iter__` over keys (index order for the indexed kinds), `__getitem__`/`__setitem__`/`__delitem__` on DataMap (`Find`/`Bind`/`UnBind`, `KeyError` when unbound), `__getitem__(index)` on the indexed kinds, `items()` → list of `(key, value)`.
 - The indexed maps' iterators do not derive from `NCollection_BaseMap::Iterator` (no `Initialize`/`Reset`), the others do.
 - Enums count as element types (`NCollection_IndexedMap[Message_MetricType]`).

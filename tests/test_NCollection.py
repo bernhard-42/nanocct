@@ -1,6 +1,8 @@
 """Hand-written NCollection binders (Binding-Rules.md 7a), all 15 kinds, instantiated by the generator."""
 import gc
+import re
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -311,6 +313,57 @@ def test_indexed_map():
     assert [k.ToCString() for k in im] == ["a", "b"]
     it = IM.Iterator(im)
     assert (it.Index(), it.Value().ToCString()) == (1, "a")
+
+
+def test_contained_returns_copies_or_none():
+    """Contained (R-REFWRAP): the binders bind OCCT's const overload, as for every twin (R-CONST-TWIN): a copy of the key,
+    or a (key, value) tuple of copies; None if the key is not in the map. NCollection_IndexedDataMap::Contained does not
+    compile in OCCT 8.0.2 (aNode->Key() on a node that only has Key1()) and is not bound (docs/Excluded.md)."""
+    m = NCollection.NCollection_Map[int]()
+    m.Add(10)
+    m.Add(20)
+    assert (m.Contained(10), m.Contained(20), m.Contained(99)) == (10, 20, None)
+    assert NCollection.NCollection_Map[int]().Contained(10) is None
+    im = NCollection.NCollection_IndexedMap[Str]()
+    im.Add("a")
+    key = im.Contained("a")
+    assert key.ToCString() == "a" and im.Contained("b") is None
+    key.AssignCat("!")                                           # a copy: the map's key is unchanged
+    assert im.FindKey(1).ToCString() == "a"
+    d = NCollection.NCollection_DataMap[Str, Str]()
+    d.Bind("k", "v")
+    key, value = d.Contained("k")
+    assert (key.ToCString(), value.ToCString()) == ("k", "v") and d.Contained("x") is None
+    value.AssignCat("!")                                         # a copy: the value itself comes from ChangeFind
+    assert d.Find("k").ToCString() == "v"
+    assert not hasattr(NCollection.NCollection_IndexedDataMap[Str, Str], "Contained")
+
+
+# The OCCT headers the build compiles against (deps/occt, Build.md); not part of the wheel
+OCCT_HEADERS = Path(__file__).parents[1] / "deps" / "occt" / "include" / "opencascade"
+
+
+def _indexeddatamap_contained_is_broken(header: str) -> bool:
+    """True while NCollection_IndexedDataMap::Contained cannot compile: its const overload calls aNode->Key(), and the
+    node class IndexedDataMapNode defines no Key() (it has Key1())."""
+    contained = header[header.index("Contained(const TheKeyType& theKey1) const"):]
+    contained = contained[:contained.index("\n  }\n")]
+    node = header[header.index("class IndexedDataMapNode"):]
+    node = node[:node.index("\n  };\n")]
+    return "aNode->Key()" in contained and re.search(r"\bKey\(\)\s*(const\s*)?(noexcept\s*)?\{", node) is None
+
+
+def test_canary_indexeddatamap_contained_still_does_not_compile():
+    """The canary for NCollection_IndexedDataMap::Contained, left out because it does not compile in OCCT 8.0.2
+    (docs/Excluded.md). When this fails, OCCT has fixed it: bind Contained in bind_NCollection_IndexedDataMap
+    (contained_item, as the DataMap binder does), move it from "skipped" to "members" in generator/binders.py, and
+    remove the Excluded.md row and the notes in Binding-Rules.md (7a, R-REFWRAP) and in
+    test_contained_returns_copies_or_none."""
+    header = OCCT_HEADERS / "NCollection_IndexedDataMap.hxx"
+    if not header.is_file():
+        pytest.skip("the OCCT headers of the build are not here (deps/occt)")
+    assert _indexeddatamap_contained_is_broken(header.read_text(encoding="utf-8")), (
+        "OCCT's NCollection_IndexedDataMap::Contained looks fixed: bind it (see this test's docstring)")
 
 
 def test_indexed_data_map():
