@@ -182,9 +182,11 @@ https://vault.almalinux.org/8.10/BaseOS/Source/Packages/ for 8.10.
 Microsoft Visual C++ runtime in the Windows wheel
 -------------------------------------------------
 
-The Windows wheel bundles msvcp140.dll, the Microsoft Visual C++ runtime the
-extension modules need, unmodified, from the Visual C++ runtime folder of the
-Visual Studio 2026 that builds the wheel. It is Microsoft's and not open source:
+The Windows wheel bundles msvcp140.dll and msvcp140_2.dll, the Microsoft Visual
+C++ runtime the extension modules and OCCT need, from the Visual C++ runtime
+folder of the Visual Studio 2026 that builds the wheel. msvcp140.dll is
+unmodified; in msvcp140_2.dll the wheel-repair tool delvewheel renames its
+dependency on msvcp140.dll to the bundled copy's name, and its code is unchanged. It is Microsoft's and not open source:
 it is redistributed as Visual C++ Runtime "Distributable Code" under the
 Microsoft Software License Terms for Visual Studio, not under nanocct's licence.
 

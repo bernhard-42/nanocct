@@ -2,20 +2,22 @@
 
 ## v8.0.2.0 (unreleased)
 
+Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, with fixes in fillets, lofts and pipes, Booleans, trimmed periodic geometry, meshing, hidden-line removal, BREP reading and STEP exchange ([release notes](https://github.com/Open-Cascade-SAS/OCCT/releases/tag/V8_0_2))
+
 **Changed:**
 
-- `NCollection_LocalArray__double` moved from `nanocct.ApproxInt` to `nanocct.NCollection`, where every NCollection instantiation lives, and can be spelled `NCollection_LocalArray[float]`
-- `NCollection_FlatMap` and `NCollection_FlatDataMap`, BRepGraph's maps, moved from `nanocct.BRepGraph` and `nanocct.BRepGraphInc` to `nanocct.NCollection`, named without the default hasher: `NCollection_FlatMap__BRepGraph_NodeId`, or `NCollection_FlatMap[BRepGraph_NodeId]`. As on the other maps, `Contained` returns copies, and `begin()`, `end()` and `GetHasher()` are not bound
-- Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, with fixes in fillets, lofts and pipes, Booleans, trimmed periodic geometry, meshing, hidden-line removal, BREP reading and STEP exchange ([release notes](https://github.com/Open-Cascade-SAS/OCCT/releases/tag/V8_0_2))
 - The OCCT version is set in one place, `TAG` in `deps/fetch-occt-src.sh`, and the install prefixes carry no version (`deps/occt`, `deps/occt-manylinux`)
 - Licensing: NOTICE and the wheels' `License-Expression` now also cover the third-party code inside OCCT's own sources (`Unicode-3.0`, `dtoa`, flex's `FlexLexer.h`, two `MIT` components, the Khronos OpenGL headers, `Bitstream-Vera`). It was in OCCT 8.0.1 too, and missing from the 8.0.1.x wheels
+- The Windows wheel also bundles `msvcp140_2.dll` from the Visual C++ runtime: OCCT 8.0.2's TKG3d needs it (the three-argument `std::hypot`). delvewheel renames its dependency on `msvcp140.dll` to the bundled copy's name, which changes the file, so `tools/check_vc_runtime.py` now accepts a runtime DLL whose code, exports and imported functions are the original's
+- Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
+- `NCollection_LocalArray__double` moved from `nanocct.ApproxInt` to `nanocct.NCollection`, where every NCollection instantiation lives, and can be spelled `NCollection_LocalArray[float]`
+- `NCollection_FlatMap` and `NCollection_FlatDataMap`, BRepGraph's maps, moved from `nanocct.BRepGraph` and `nanocct.BRepGraphInc` to `nanocct.NCollection`, named without the default hasher: `NCollection_FlatMap__BRepGraph_NodeId`, or `NCollection_FlatMap[BRepGraph_NodeId]`. As on the other maps, `Contained` returns copies, and `begin()`, `end()` and `GetHasher()` are not bound
 
 
 **New features:**
 
 - `GeomBndLib_Curve` and `GeomBndLib_Curve2d` (the bounding boxes of any curve type), `GeomBndLib_Line` and `GeomBndLib_Line2d`. OCCT 8.0.2 does not install `GeomBndLib_InfiniteHelpers.pxx`, which their headers include; the generator now takes such private headers from the OCCT sources (R-PRIVATE-HEADER)
 - `Standard.Atof` and `OCCT_Version_String`, `OCCT_Version_Double`, `OCCT_Version_String_Complete`, `OCCT_Version_String_Extended`, `OCCT_DevelopmentVersion`: they are declared inside `extern "C"`, which the generator skipped without a report line (R-NAMESPACE)
-- Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - Now callable: `BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` return `bytes`, and `BinTools_ShapeReader.ReadLocation` takes a binary file-like (R-STREAM-WRAPPER)
 - `Contained(key)` of `NCollection_Map`, `NCollection_DataMap` and `NCollection_IndexedMap`: a copy of the key, or a `(key, value)` tuple of copies, or `None` if the key is not in the map. `NCollection_IndexedDataMap.Contained` stays out: it does not compile in OCCT 8.0.2
 - `BRepMesh_VertexTool`, the Delaunay mesher's vertex table, and `BRepMesh_DataStructureOfDelaun.Data()`, which returns it. 8.0.1.6 left both out because the class cannot be copied (R-NONCOPYABLE)

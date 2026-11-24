@@ -428,7 +428,8 @@ else ifeq ($(PLATFORM),windows)
 	@# The Visual C++ runtime folder of the building Visual Studio comes first: delvewheel prepends --add-path to PATH
 	@# (delvewheel 1.13.1 __main__.py:114) and takes a DLL from the first PATH entry that has it, so msvcp140.dll is the
 	@# copy Visual Studio's licence lets us redistribute, not System32's (deps/vc-redist-crt.sh says why), and
-	@# tools/check_vc_runtime.py checks that the wheel carries exactly that file.
+	@# tools/check_vc_runtime.py checks that the wheel carries exactly those files, but for the dependency names delvewheel
+	@# renames (msvcp140_2.dll's on msvcp140.dll).
 	crt="$$($(RUN_SH) $(DEPS)/vc-redist-crt.sh)" && cd $(ROOT) \
 	    && "$(WIN_PY)" -m delvewheel repair --add-path "$$crt;$(OCCT_BIN_WIN);$(FREEIMAGE_BIN_WIN)" -w $(DIST_DIR) $(RAW_DIR)/*.whl \
 	    && "$(WIN_PY)" tools/check_vc_runtime.py "$$crt" $(DIST_DIR)/nanocct-*.whl

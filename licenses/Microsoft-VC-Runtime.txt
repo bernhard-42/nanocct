@@ -1,10 +1,11 @@
 Microsoft Visual C++ Runtime Files
 ==================================
 
-Applies to: the Windows wheels only, for the file nanocct.libs/msvcp140-<hash>.dll.
+Applies to: the Windows wheels only, for the files nanocct.libs/msvcp140-<hash>.dll and
+nanocct.libs/msvcp140_2-<hash>.dll.
 
 Licence identifier: this file defines LicenseRef-Microsoft-VC-Runtime, the term for
-msvcp140.dll in nanocct's licence expression (License-Expression in the wheel's
+msvcp140.dll and msvcp140_2.dll in nanocct's licence expression (License-Expression in the wheel's
 metadata). It is a custom license reference, not an identifier from the SPDX
 License List. This file records provenance, identifies the applicable Microsoft
 terms, and links to them; it does not replace or grant rights beyond those terms.
@@ -18,7 +19,9 @@ Microsoft's terms.
 What it is
 ----------
 msvcp140.dll is the Microsoft Visual C++ 14.x standard C++ library runtime, which
-nanocct's extension modules and the bundled OCCT libraries need. It is included so
+nanocct's extension modules and the bundled OCCT libraries need; msvcp140_2.dll
+holds its mathematical special functions, which OCCT's TKG3d needs (std::hypot
+with three arguments). It is included so
 that nanocct works on Windows installations that lack the Microsoft Visual C++
 Redistributable; Windows itself does not ship it.
 
@@ -28,11 +31,18 @@ Provenance
   builds the wheel, VC\Redist\MSVC\<version>\x64\Microsoft.VC145.CRT, where <version>
   is the one VC\Auxiliary\Build\Microsoft.VCRedistVersion.default.txt names
   (deps/vc-redist-crt.sh in nanocct's source).
-- Modification: none. The file in the wheel is byte-for-byte identical to that
-  Microsoft original and keeps its Microsoft Authenticode signature: the build checks
-  its SHA-256 against the original (tools/check_vc_runtime.py). The wheel-repair tool
-  delvewheel only adds a content-hash suffix to the file name and updates the
-  references to it in the files that load it.
+- Modification of msvcp140.dll: none. The file in the wheel is byte-for-byte
+  identical to that Microsoft original and keeps its Microsoft Authenticode
+  signature: the build checks its SHA-256 against the original
+  (tools/check_vc_runtime.py). The wheel-repair tool delvewheel only adds a
+  content-hash suffix to the file name and updates the references to it in the
+  files that load it.
+- Modification of msvcp140_2.dll: msvcp140_2.dll loads msvcp140.dll, so delvewheel
+  changes the name of that dependency to the bundled copy's (msvcp140-<hash>.dll)
+  and with it the PE headers and checksum, and removes the Authenticode signature
+  the change invalidates. Its code is unchanged: the build checks that its
+  executable sections are byte-for-byte the original's and that it exports and
+  imports the same functions (tools/check_vc_runtime.py).
 
 Governing terms
 ---------------
@@ -47,12 +57,12 @@ Governing terms
 
 Terms for recipients
 --------------------
-As the Visual Studio terms require, a recipient of nanocct receives msvcp140.dll on
-terms that protect it at least as much as Microsoft's terms do:
-- you may use it only as part of nanocct, unmodified;
-- you may not distribute it separately from nanocct;
-- you may not reverse engineer, decompile or disassemble it, or remove or modify any
-  notice of Microsoft or its suppliers in it;
-- Microsoft provides it "as is" and disclaims all warranties.
+As the Visual Studio terms require, a recipient of nanocct receives these files on
+terms that protect them at least as much as Microsoft's terms do:
+- you may use them only as part of nanocct, unmodified;
+- you may not distribute them separately from nanocct;
+- you may not reverse engineer, decompile or disassemble them, or remove or modify any
+  notice of Microsoft or its suppliers in them;
+- Microsoft provides them "as is" and disclaims all warranties.
 
 See the documents above for the authoritative text.
