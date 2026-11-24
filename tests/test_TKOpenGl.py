@@ -5,8 +5,12 @@ real native window provides -- shown or not, and marked virtual for offscreen wo
 does; a virtual Aspect_NeutralWindow without a handle has none (Excluded.md)."""
 import contextlib
 import importlib
+import json
 import os
 import platform
+import subprocess
+import sys
+import textwrap
 from pathlib import Path
 
 import pytest
@@ -26,15 +30,21 @@ from nanocct.Xw import Xw_Window                                  # generated ev
 REPORT = Path(__file__).parents[1] / "src" / "cpp" / "TKOpenGl" / "report.txt"
 
 
-@pytest.fixture
-def quiet_messenger():
-    """A context without a drawable prints GL errors; the test asserts the return values instead."""
+def _quiet_messages() -> list:
+    """Only failures from OCCT's messenger: a context without a drawable prints GL errors, and the tests assert the
+    return values instead. Returns the printers with their former trace levels."""
     printers = list(Message.Message.DefaultMessenger_s().Printers())
-    levels = [p.GetTraceLevel() for p in printers]
+    levels = [(p, p.GetTraceLevel()) for p in printers]
     for p in printers:
         p.SetTraceLevel(Message.Message_Fail)
+    return levels
+
+
+@pytest.fixture
+def quiet_messenger():
+    levels = _quiet_messages()
     yield
-    for p, level in zip(printers, levels):
+    for p, level in levels:
         p.SetTraceLevel(level)
 
 
@@ -210,16 +220,50 @@ def _box_colours(window, width, height):
             for c in (pixmap.PixelColor(x, y).GetRGB() for x in range(0, width, 13) for y in range(0, height, 13))}
 
 
-def test_a_real_window_renders_the_box(quiet_messenger):
+def _render_in_real_window(width, height, dump_width, dump_height, virtual):
+    """The box rendered in a real_window of width x height and dumped at dump_width x dump_height; with `virtual` the
+    window is marked virtual first. What the tests check, as plain values: the sampled colours, and for a virtual
+    window IsVirtual() and IsMapped()."""
+    _quiet_messages()
+    result = {}
+    with real_window(width, height) as window:
+        if virtual:
+            window.SetVirtual(True)
+            result["virtual"], result["mapped"] = window.IsVirtual(), window.IsMapped()
+        result["colours"] = sorted(_box_colours(window, dump_width, dump_height))
+    return result
+
+
+def _render_in_a_subprocess(width, height, dump_width, dump_height, virtual=False):
+    """_render_in_real_window in a fresh interpreter. On macOS real_window needs tkinter's Tk(), which loads Tcl and
+    starts its notifier thread; in the pytest process that thread outlived the test, and Tcl's fork handler starts it
+    again in every child a later test forks. One such child, forked from a thread pool by test_import.py, hung before
+    its exec: stuck in close() (kernel state U) next to the notifier thread in select() (2026-11-24, an 18-minute
+    hang). In a subprocess of its own, Tcl never enters the pytest process. The same on every platform, so the two
+    tests run alike everywhere."""
+    script = textwrap.dedent(f"""
+        import json, sys
+        sys.path.insert(0, {str(Path(__file__).parent)!r})
+        import test_TKOpenGl
+        print(json.dumps(test_TKOpenGl._render_in_real_window({width}, {height}, {dump_width}, {dump_height}, {virtual})))
+    """)
+    r = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=300)
+    assert r.returncode == 0, f"rc={r.returncode}\nstdout:\n{r.stdout[-2000:]}\nstderr:\n{r.stderr[-4000:]}"
+    assert "nanobind: leaked" not in r.stderr, r.stderr[-4000:]
+    result = json.loads(r.stdout.strip().splitlines()[-1])
+    result["colours"] = {tuple(c) for c in result["colours"]}
+    return result
+
+
+def test_a_real_window_renders_the_box():
     """The whole point of the driver: a rendered image, in a native window (real_window). The window is never mapped,
     so nothing appears on screen; ToPixMap still renders."""
-    with real_window(400, 300) as window:
-        colours = _box_colours(window, 400, 300)
-        assert (1.0, 1.0, 0.0) in colours                         # AIS_Shape's default yellow: the box is there
-        assert len(colours) >= 2                                  # ... and a background
+    colours = _render_in_a_subprocess(400, 300, 400, 300)["colours"]
+    assert (1.0, 1.0, 0.0) in colours                             # AIS_Shape's default yellow: the box is there
+    assert len(colours) >= 2                                      # ... and a background
 
 
-def test_a_real_window_marked_virtual_renders_offscreen(quiet_messenger):
+def test_a_real_window_marked_virtual_renders_offscreen():
     """OCCT's own offscreen route -- the Draw harness's `vinit -virtual` (ViewerTest_ViewerCommands.cxx), described in
     "Offscreen OCCT viewer" (unlimited3d.wordpress.com, 2022-01-30): a real native window that is never mapped, marked
     virtual before the view takes it, and the image dumped from a framebuffer object. The real window provides the
@@ -227,10 +271,8 @@ def test_a_real_window_marked_virtual_renders_offscreen(quiet_messenger):
     which has no drawable on macOS, lands on the screen's device context on Windows and aborts in Xlib on Linux
     (Excluded.md). The dump is larger than the 64 x 64 window: ToPixMap renders into its own framebuffer, not into the
     window's surface."""
-    with real_window(64, 64) as window:
-        window.SetVirtual(True)
-        assert window.IsVirtual() is True
-        assert window.IsMapped() is True                          # a virtual window counts as mapped; Map() does nothing
-        colours = _box_colours(window, 320, 240)
-        assert (1.0, 1.0, 0.0) in colours                         # AIS_Shape's default yellow: the box is there
-        assert len(colours) >= 2                                  # ... and a background
+    result = _render_in_a_subprocess(64, 64, 320, 240, virtual=True)
+    assert result["virtual"] is True
+    assert result["mapped"] is True                               # a virtual window counts as mapped; Map() does nothing
+    assert (1.0, 1.0, 0.0) in result["colours"]                   # AIS_Shape's default yellow: the box is there
+    assert len(result["colours"]) >= 2                            # ... and a background
