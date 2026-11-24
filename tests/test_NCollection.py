@@ -101,7 +101,7 @@ def test_docstrings_come_from_the_template_header():
     assert "Python addition" in A.__len__.__doc__
 
 
-# R-DEPRECATED (Binding-Rules.md) in the hand-written binders: NCollection_Map is the only one of the 15 templates whose
+# R-DEPRECATED (Binding-Rules.md) in the hand-written binders: NCollection_Map is the only one of the 18 templates whose
 # header carries Standard_DEPRECATED, on all 11 set operations. The note came only from the generated path until
 # 2026-09-25, so these two assertions are what keeps ncollection.py reading the availability attribute.
 DEPRECATED_MAP_MEMBERS = ("Union", "Unite", "HasIntersection", "Intersection", "Intersect",
@@ -533,7 +533,7 @@ def test_every_table_entry_is_a_bound_class_keyed_by_its_element_types():
     is left to check is the shape: every key is a type (or a tuple of types), every value is the instantiation
     named after the rule, reachable under its concrete name, and the subscription returns exactly it."""
     generics = _generics()
-    assert len(generics) == 16, sorted(generics)
+    assert len(generics) == 18, sorted(generics)
     total = 0
     for name, G in generics.items():
         for key, cls in G._instances.items():

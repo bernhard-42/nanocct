@@ -5,6 +5,7 @@
 **Changed:**
 
 - `NCollection_LocalArray__double` moved from `nanocct.ApproxInt` to `nanocct.NCollection`, where every NCollection instantiation lives, and can be spelled `NCollection_LocalArray[float]`
+- `NCollection_FlatMap` and `NCollection_FlatDataMap`, BRepGraph's maps, moved from `nanocct.BRepGraph` and `nanocct.BRepGraphInc` to `nanocct.NCollection`, named without the default hasher: `NCollection_FlatMap__BRepGraph_NodeId`, or `NCollection_FlatMap[BRepGraph_NodeId]`. As on the other maps, `Contained` returns copies, and `begin()`, `end()` and `GetHasher()` are not bound
 - Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, with fixes in fillets, lofts and pipes, Booleans, trimmed periodic geometry, meshing, hidden-line removal, BREP reading and STEP exchange ([release notes](https://github.com/Open-Cascade-SAS/OCCT/releases/tag/V8_0_2))
 - The OCCT version is set in one place, `TAG` in `deps/fetch-occt-src.sh`, and the install prefixes carry no version (`deps/occt`, `deps/occt-manylinux`)
 - Licensing: NOTICE and the wheels' `License-Expression` now also cover the third-party code inside OCCT's own sources (`Unicode-3.0`, `dtoa`, flex's `FlexLexer.h`, two `MIT` components, the Khronos OpenGL headers, `Bitstream-Vera`). It was in OCCT 8.0.1 too, and missing from the 8.0.1.x wheels
@@ -20,12 +21,14 @@
 - `BRepMesh_VertexTool`, the Delaunay mesher's vertex table, and `BRepMesh_DataStructureOfDelaun.Data()`, which returns it. 8.0.1.6 left both out because the class cannot be copied (R-NONCOPYABLE)
 - NCollection containers of handles take `None`, the null handle, for elements, keys and values, e.g. `NCollection_HArray1[Standard_Transient].SetValue(i, None)`
 - `ChFi3d_PerformElSpine` takes its guide and spine as inputs and returns both, as in C++ (R-INOUT)
+- `NCollection_FlatMap` and `NCollection_FlatDataMap`: `len()`, `in`, iteration over the keys, `Seek` and `ChangeSeek`, and on the data map `m[k]`, `m[k] = v`, `del m[k]`, `m(k)` and `items()`, as on `NCollection_DataMap`
 
 **Fixes:**
 
 - `BRepExtrema_ProximityDistTool.PrjState`'s four-argument constructor and `GetPrjState()` are no longer bound: their type `BVH_Tools<double, 3>::BVH_PrjStateInTriangle` has no Python type, and they raised `TypeError` on every call (R-UNBOUND-TYPE)
 - `NCollection_OccAllocator`'s `allocate`, `deallocate`, `construct`, `destroy` and `address` are no longer bound: they take raw pointers, and `NCollection_OccAllocator__int().deallocate(5, 1)` aborted the interpreter (R-UNSUPPORTED)
 - `NCollection_LocalArray.ToArray1()` is a view the array guards: while it lives, a `Reallocate` or `Allocate` that would move the buffer raises `BufferError`. Before, the view read freed memory after such a call (R-VIEW-GUARD)
+- `NCollection_FlatMap` and `NCollection_FlatDataMap` raise `BufferError` on an insertion or removal while an element reference lives, since both can move the entries; before, such a reference read freed memory (R-VIEW-GUARD)
 - An `NCollection_Shared<T>` passed or returned by reference or pointer reached the other side at the wrong address, giving wrong results and crashes, e.g. `BRepMesh_DataStructureOfDelaun.ElementsOfDomain()` and `BRepMesh_Delaun.AddVertices` (27 members, all but one in BRepMesh; R-MI-REF)
 - A crash when an element that is itself a container -- an edge's list of faces in an `IndexedDataMap` -- was overwritten in place (`Substitute`, or `Bind` or `m[k] = v` on a bound key, of a `DataMap` or `IndexedDataMap`) while an element of that inner list, taken with its `Iterator`'s `ChangeValue()`, was still held: the overwrite is now refused with `BufferError` until that element is released (`el = None`), as removing it already was (R-VIEW-GUARD)
 - `m[k]` of an `NCollection_DataMap` raises `KeyError` for a key that is not bound, as a `dict` does and as `del m[k]` already did; it raised OCCT's `Standard_NoSuchObject`. `m(k)` and `Find(k)` keep OCCT's exception

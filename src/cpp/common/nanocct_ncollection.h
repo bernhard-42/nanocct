@@ -16,6 +16,8 @@
 #include <NCollection_DataMap.hxx>
 #include <NCollection_DoubleMap.hxx>
 #include <NCollection_DynamicArray.hxx>
+#include <NCollection_FlatDataMap.hxx>
+#include <NCollection_FlatMap.hxx>
 #include <NCollection_LinearVector.hxx>
 #include <NCollection_LocalArray.hxx>
 #include <NCollection_HArray2.hxx>
@@ -574,6 +576,123 @@ template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> voi
         c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nanocct::elem_arg<K>("theKey"), D::Seek)
          .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nanocct::elem_arg<K>("theKey"), D::ChangeSeek)
          .def("Find", [](const M &self, const K &k, V &v) { const bool found = self.Find(k, v); own_out(v); return found; }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theValue"), D::Find);
+    } else {
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
+    }
+}
+
+// ---- NCollection_FlatMap<K, Hasher>, NCollection_FlatDataMap<K, V, Hasher> (BRepGraph's open-addressing maps)
+// R-VIEW-GUARD: the slots are one array (NCollection_FlatMap.hxx, NCollection_FlatDataMap.hxx). Every insertion first grows
+// it when the load would pass 81.25 % (ensureCapacity: a new array, the entries moved, the old one freed) -- also when
+// the key is already there -- and then places the key by Robin Hood probing, which swaps entries already in the map into
+// other slots (insertRehashedImpl); a removal shifts the entries after it back by one (backwardShiftDelete); Reserve
+// rehashes, Clear destroys, Exchange swaps the arrays. So none of these keeps an element reference, and each is refused
+// while the map has one; its iterators (which hold the slot array and an index) go stale. As a generated class an element
+// reference read freed memory after the map grew, and an iterator read the slots Clear(True) had freed (2026-11-24).
+template <typename M> void def_flatmap_members(nb::class_<M> &c, const char *ctor_doc, const char *size_doc, const char *is_empty_doc,
+                                               const char *capacity_doc, const char *clear_doc, const char *exchange_doc,
+                                               const char *reserve_doc) {
+    c.def(nb::init<>(), ctor_doc)
+     .def(nb::init<const size_t>(), nb::arg("theNbBuckets"), ctor_doc)
+     .def(nb::init<const M &>(), nb::arg("theOther"), keep_if_owned<M, 1, 2>(), ctor_doc)
+     .def("Size", [](const M &self) { return self.Size(); }, size_doc)
+     .def("IsEmpty", [](const M &self) { return self.IsEmpty(); }, is_empty_doc)
+     .def("Capacity", [](const M &self) { return self.Capacity(); }, capacity_doc)
+     .def("Clear", [](M &self, const bool release) { refuse_if_viewed(&self, "Clear"); self.Clear(release); }, nb::arg("doReleaseMemory") = false, clear_doc)
+     .def("Exchange", [](M &self, M &other) {
+              refuse_if_viewed(&self, "Exchange"); refuse_if_viewed(&other, "Exchange");
+              own_all(self, other); own_all(other, self); self.Exchange(other); }, nb::arg("theOther"), exchange_doc)
+     .def("Reserve", [](M &self, const size_t n) { refuse_if_viewed(&self, "Reserve"); self.Reserve(n); }, nb::arg("theN"), reserve_doc)
+     .def("reserve", [](M &self, const size_t n) { refuse_if_viewed(&self, "reserve"); self.reserve(n); }, nb::arg("theN"), reserve_doc)
+     .def("__len__", [](const M &self) { return self.Size(); }, "Python addition: alias to Size.");
+}
+
+template <typename K, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_FlatMap(nb::module_ &m, const char *name) {
+    using M = NCollection_FlatMap<K, H>;
+    using It = typename M::Iterator;
+    namespace D = nanocct_doc::NCollection_FlatMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It>(c, "Iterator", D::Iterator::class_doc)
+        .def(nb::init<>(), D::Iterator::ctor)
+        .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
+        .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+        .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+        .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+        .def("Key", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key").Key()); }, D::Iterator::Key)
+        .def("IsEqual", [](const It &self, const It &other) { return fresh(self, "Iterator.IsEqual").IsEqual(other); }, nb::arg("theOther"), D::Iterator::IsEqual);
+    nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    def_flatmap_members(c, D::ctor, D::Size, D::IsEmpty, D::Capacity, D::Clear, D::Exchange, D::Reserve);
+    c.def("Add", [](M &self, const K &k) { refuse_if_viewed(&self, "Add"); own(self, k); return self.Add(k); }, nanocct::elem_arg<K>("theKey"), D::Add)
+     .def("Added", [](M &self, const K &k) -> decltype(auto) { refuse_if_viewed(&self, "Added"); own(self, k); return owned(self.Added(k)); }, nanocct::elem_arg<K>("theKey"), D::Added)
+     .def("Contains", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), D::Contains)
+     .def("Contained", [](const M &self, const K &k) { return contained_key(self, k); }, nanocct::elem_arg<K>("theKey"),
+          "A copy of the key in the map, or None if it is not in the map.")
+     .def("Remove", [](M &self, const K &k) { refuse_if_viewed(&self, "Remove"); return self.Remove(k); }, nanocct::elem_arg<K>("theKey"), D::Remove)
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.Contains(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to Contains.")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.");
+    // Seek: a copy of the key, None if absent (a const pointer is no view, as DataMap's Seek); ChangeSeek: the key itself
+    if constexpr (std::is_class_v<K>) {
+        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> K * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
+    } else {
+        c.def("Seek", [](const M &self, const K &k) -> std::optional<K> { const K *p = self.Seek(k); return p ? std::optional<K>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> std::optional<K> { K *p = self.ChangeSeek(k); return p ? std::optional<K>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
+    }
+}
+
+template <typename K, typename V, typename H = NCollection_DefaultHasher<K>> void bind_NCollection_FlatDataMap(nb::module_ &m, const char *name) {
+    using M = NCollection_FlatDataMap<K, V, H>;
+    using It = typename M::Iterator;
+    namespace D = nanocct_doc::NCollection_FlatDataMap;
+    nb::class_<M> c(m, name, D::class_doc);
+    nb::class_<It> it(c, "Iterator", D::Iterator::class_doc);
+    it.def(nb::init<>(), D::Iterator::ctor)
+      .def(nb::init<const M &>(), nb::arg("theMap"), nb::keep_alive<1, 2>(), iterator_of_arg(), D::Iterator::ctor)
+      .def("More", [](const It &self) { return fresh(self, "Iterator.More").More(); }, D::Iterator::More)
+      .def("Next", [](It &self) { fresh(self, "Iterator.Next").Next(); }, D::Iterator::Next)
+      .def("Value", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Value").Value()); }, D::Iterator::Value)
+      .def("Key", [](const It &self) -> decltype(auto) { return owned(fresh(self, "Iterator.Key").Key()); }, D::Iterator::Key)
+      .def("IsEqual", [](const It &self, const It &other) { return fresh(self, "Iterator.IsEqual").IsEqual(other); }, nb::arg("theOther"), D::Iterator::IsEqual);
+    nanocct_def_iter<It>(nb::borrow<nb::class_<It>>(c.attr("Iterator")), [](It &self) { return self.Value(); });   // R-ITER: its own Python iterator, like every More/Next/Value class
+    def_elem<V, elem_view_of_iterator>(it, "ChangeValue", [](It &self) -> V & { return fresh(self, "Iterator.ChangeValue").ChangeValue(); }, D::Iterator::ChangeValue);
+    def_flatmap_members(c, D::ctor, D::Size, D::IsEmpty, D::Capacity, D::Clear, D::Exchange, D::Reserve);
+    c.def("Extent", [](const M &self) { return self.Extent(); }, D::Extent);
+    // a bound key's value is assigned in place: also refused while a view into that value lives (refuse_if_inner_viewed)
+    c.def("Bind", [](M &self, const K &k, const V &v) { if (const V *old = self.Seek(k)) refuse_if_inner_viewed(*old, "Bind"); refuse_if_viewed(&self, "Bind"); own(self, k); own(self, v); return self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bind)
+     .def("TryBind", [](M &self, const K &k, const V &v) { refuse_if_viewed(&self, "TryBind"); own(self, k); own(self, v); return self.TryBind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBind)
+     .def("IsBound", [](const M &self, const K &k) { return self.IsBound(k); }, nanocct::elem_arg<K>("theKey"), D::IsBound)
+     .def("Contained", [](const M &self, const K &k) { return contained_item<M, K, V>(self, k); }, nanocct::elem_arg<K>("theKey"),
+          "A (key, value) tuple of copies, or None if the key is not bound; the value itself comes from ChangeSeek or ChangeFind.")
+     .def("UnBind", [](M &self, const K &k) { refuse_if_viewed(&self, "UnBind"); return self.UnBind(k); }, nanocct::elem_arg<K>("theKey"), D::UnBind)
+     .def("Find", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"), D::Find)
+     .def("__call__", [](const M &self, const K &k) -> decltype(auto) { return owned(self.Find(k)); }, nanocct::elem_arg<K>("theKey"),
+          "operator(): a copy of the value, as Find(theKey); Standard_NoSuchObject if the key is not bound.")
+     // Python additions
+     .def("__contains__", [](const M &self, const K &k) { return self.IsBound(k); }, nanocct::elem_arg<K>("theKey"), "Python addition: alias to IsBound.")
+     .def("__getitem__", [](const M &self, const K &k) -> decltype(auto) {
+              const V *value = self.Seek(k);
+              if (value == nullptr) throw nb::key_error();
+              return owned(*value);
+          }, nanocct::elem_arg<K>("theKey"), "Python addition: a copy of the value, as Find(theKey); KeyError if the key is not bound, as for a dict.")
+     .def("__setitem__", [](M &self, const K &k, const V &v) { if (const V *old = self.Seek(k)) refuse_if_inner_viewed(*old, "__setitem__"); refuse_if_viewed(&self, "__setitem__"); own(self, k); own(self, v); self.Bind(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), "Python addition: alias to Bind.")
+     .def("__delitem__", [](M &self, const K &k) { refuse_if_viewed(&self, "__delitem__"); if (!self.UnBind(k)) throw nb::key_error(); }, nanocct::elem_arg<K>("theKey"), "Python addition: UnBind, KeyError if the key is not bound.")
+     .def("__iter__", [](const M &self) { return key_iterator<M, It>(nb::type<M>(), self, [](const It &it) -> const K & { return it.Key(); }); },
+          nb::keep_alive<0, 1>(), "Python addition: iterates over the keys.")
+     .def("items", [](const M &self) {
+              nb::list out;
+              for (It it(self); it.More(); it.Next()) out.append(nb::make_tuple(owned(it.Key()), owned(it.Value())));
+              return out; }, "Python addition: list of (key, value) tuples.");
+    // element references: view for class V, value for scalars/handles
+    def_elem<V>(c, "Bound", [](M &self, const K &k, const V &v) -> V & { if (const V *old = self.Seek(k)) refuse_if_inner_viewed(*old, "Bound"); refuse_if_viewed(&self, "Bound"); own(self, k); own(self, v); return self.Bound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::Bound);
+    def_elem<V>(c, "TryBound", [](M &self, const K &k, const V &v) -> V & { refuse_if_viewed(&self, "TryBound"); own(self, k); own(self, v); return self.TryBound(k, v); }, nanocct::elem_arg<K>("theKey"), nanocct::elem_arg<V>("theItem"), D::TryBound);
+    def_elem<V>(c, "ChangeFind", [](M &self, const K &k) -> V & { return self.ChangeFind(k); }, nanocct::elem_arg<K>("theKey"), D::ChangeFind);
+    // Seek: nullptr when absent -> None; the const Seek is a copy (as DataMap's), ChangeSeek the view
+    if constexpr (std::is_class_v<V>) {
+        c.def("Seek", [](const M &self, const K &k) -> decltype(auto) { return owned_ptr(self.Seek(k)); }, nb::rv_policy::copy, nanocct::elem_arg<K>("theKey"), D::Seek)
+         .def("ChangeSeek", [](M &self, const K &k) -> V * { return self.ChangeSeek(k); }, nb::rv_policy::reference_internal, elem_view_of_self(), nanocct::elem_arg<K>("theKey"), D::ChangeSeek);
     } else {
         c.def("Seek", [](const M &self, const K &k) -> std::optional<V> { const V *p = self.Seek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::Seek)
          .def("ChangeSeek", [](M &self, const K &k) -> std::optional<V> { V *p = self.ChangeSeek(k); return p ? std::optional<V>(*p) : std::nullopt; }, nanocct::elem_arg<K>("theKey"), D::ChangeSeek);

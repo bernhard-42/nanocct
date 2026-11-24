@@ -4,7 +4,7 @@ import gc
 
 import pytest
 
-from nanocct import BRep, BRepGraph, BRepGraphInc, BRepPrimAPI, Geom, TopAbs, TopoDS, gp
+from nanocct import BRep, BRepGraph, BRepGraphInc, BRepPrimAPI, Geom, NCollection, TopAbs, TopoDS, gp
 
 
 def _edge_graph() -> tuple[BRepGraph.BRepGraph, TopoDS.TopoDS_Edge]:
@@ -72,55 +72,125 @@ def test_tool_and_ref_iterators():
     assert len(sigs) == 3 and "theStartIndex: int" in sigs[1]
 
 
+def _face_id(i: int) -> BRepGraph.BRepGraph_NodeId:
+    return BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, i)
+
+
 def test_graph_iterators_and_flat_maps_are_python_iterables():
     """the Current() of BRepGraph_Iterator<...Def> and the Value() of NCollection_FlatMap<K, H>::Iterator are
     a dependent `const T&` inside the 7c walk, which R-ITER did not accept, and the flat maps' nested Iterator was not bound
-    at all -- neither could be used in a `for` loop."""
+    at all -- neither could be used in a `for` loop. The flat maps iterate over their keys too, as the other maps (7a)."""
     g = BRepGraph.BRepGraph()
     g.Clear()
     assert g.Shapes().Add(BRepPrimAPI.BRepPrimAPI_MakeBox(1.0, 2.0, 3.0).Shape()).IsOk()
     edges, faces = list(BRepGraph.BRepGraph_EdgeIterator(g)), list(BRepGraph.BRepGraph_FaceIterator(g))
     assert (len(edges), len(faces)) == (12, 6) and type(edges[0]).__name__ == "EdgeDef"
-    flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId
+    flat = NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_NodeId]
     ids = flat()
     for i in (3, 1, 7):
-        ids.Add(BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, i))
+        ids.Add(_face_id(i))
     assert sorted(n.Index for n in flat.Iterator(ids)) == [1, 3, 7]
+    assert sorted(n.Index for n in ids) == [1, 3, 7]
 
 
-def test_flat_map_contained_returns_the_stored_entries():
-    """R-REFWRAP: std::reference_wrapper results (nanobind has no caster for them; without nanocct's, Contained() would
-    raise TypeError). A const reference comes back as a copy (the key), a mutable one as a reference into the map that
-    keeps it alive (the data map's value)."""
-    flat = BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId()
-    key = BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 3)
+def test_flat_map_contained_returns_copies():
+    """R-REFWRAP, R-CONST-TWIN: Contained() hands out copies -- the key, and the (key, value) pair of the data map, whose
+    non-const overload has the value mutable; Python cannot choose between the two, so the binder takes the const one, as
+    for the other maps (7a). The value itself comes from ChangeFind or ChangeSeek, a view that keeps the map alive."""
+    flat = NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_NodeId]()
+    key = _face_id(3)
     flat.Add(key)
-    assert flat.Contained(key) == key and flat.Contained(BRepGraph.BRepGraph_NodeId(BRepGraph.BRepGraph_NodeId.Kind.Face, 99)) is None
-    data_map = next(getattr(BRepGraphInc, n) for n in dir(BRepGraphInc) if n.startswith("NCollection_FlatDataMap"))()
+    assert flat.Contained(key) == key and flat.Contained(_face_id(99)) is None
+    data_map = NCollection.NCollection_FlatDataMap[BRepGraph.BRepGraph_NodeId, BRepGraphInc.BRepGraphInc_Storage.CachedShape]()
     data_map.Bind(key, BRepGraphInc.BRepGraphInc_Storage.CachedShape())
-    stored_key, value = data_map.Contained(key)
-    assert stored_key == key and value.StoredSubtreeGen == 0
-    value.StoredSubtreeGen = 7                                         # a mutable reference: the edit reaches the map
+    stored_key, copy = data_map.Contained(key)
+    assert stored_key == key and copy.StoredSubtreeGen == 0
+    copy.StoredSubtreeGen = 7                                          # a copy: the map keeps its value
+    assert data_map.Find(key).StoredSubtreeGen == 0
+    value = data_map.ChangeFind(key)
+    value.StoredSubtreeGen = 7                                         # the view: the edit reaches the map
     assert data_map.Find(key).StoredSubtreeGen == 7
-    del data_map
+    data_map = None
     gc.collect()
-    assert value.StoredSubtreeGen == 7                                 # and the value keeps the map alive
+    assert value.StoredSubtreeGen == 7                                 # and the view keeps the map alive
 
+
+def test_flat_maps_refuse_moves_while_a_value_is_viewed():
+    """R-VIEW-GUARD: the flat maps keep their entries in one slot array. Every insertion can grow it (a new array, the old
+    one freed -- also for a key already there) and moves entries already in it by Robin Hood probing; a removal shifts the
+    entries after it. So while a value view lives, every insertion and removal raises BufferError, and an iterator goes
+    stale on them. As generated classes, a ChangeFind view read freed memory after the map grew, and an iterator read the
+    slots Clear(True) had freed (2026-11-24)."""
+    item = BRepGraph.BRepGraph_ItemId
+    data_map = NCollection.NCollection_FlatDataMap[item, item]()
+    data_map.Bind(item(_face_id(0)), item(_face_id(100)))
+    view = data_map.ChangeFind(item(_face_id(0)))
+    for call in (lambda: data_map.Bind(item(_face_id(1)), item(_face_id(101))),
+                 lambda: data_map.Bind(item(_face_id(0)), item(_face_id(102))),     # a bound key: still a possible rehash
+                 lambda: data_map.TryBind(item(_face_id(1)), item(_face_id(101))),
+                 lambda: data_map.Bound(item(_face_id(1)), item(_face_id(101))),
+                 lambda: data_map.TryBound(item(_face_id(1)), item(_face_id(101))),
+                 lambda: data_map.__setitem__(item(_face_id(1)), item(_face_id(101))),
+                 lambda: data_map.UnBind(item(_face_id(0))),
+                 lambda: data_map.Reserve(100),
+                 lambda: data_map.Clear(True)):
+        with pytest.raises(BufferError):
+            call()
+    assert view.NodeId().Index == 100
+    view = None
+    for i in range(1, 2000):                                           # grows the slot array from 8 slots
+        data_map.Bind(item(_face_id(i)), item(_face_id(1000 + i)))
+    assert data_map.Find(item(_face_id(0))).NodeId().Index == 100 and len(data_map) == 2000
+    it = data_map.Iterator(data_map)
+    data_map.Clear(True)
+    with pytest.raises(RuntimeError):
+        it.More()
+    keys = NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_NodeId]()
+    keys.Add(_face_id(5))
+    key_view = keys.ChangeSeek(_face_id(5))
+    with pytest.raises(BufferError):
+        keys.Add(_face_id(6))
+    with pytest.raises(BufferError):
+        keys.Remove(_face_id(5))
+    key_view = None
+    assert keys.Add(_face_id(6)) is True and keys.Remove(_face_id(5)) is True and len(keys) == 1
+
+
+def test_flat_data_map_python_additions():
+    """7a: len(), in, iteration over the keys, items(), m[k] (KeyError for a key that is not bound, as for a dict), m[k] = v
+    and del m[k], as on NCollection_DataMap."""
+    item = BRepGraph.BRepGraph_ItemId
+    m = NCollection.NCollection_FlatDataMap[item, item]()
+    m[item(_face_id(1))] = item(_face_id(11))
+    m[item(_face_id(2))] = item(_face_id(12))
+    assert len(m) == 2 and m.Extent() == 2 and item(_face_id(1)) in m and item(_face_id(3)) not in m
+    assert sorted(k.NodeId().Index for k in m) == [1, 2]
+    assert sorted((k.NodeId().Index, v.NodeId().Index) for k, v in m.items()) == [(1, 11), (2, 12)]
+    assert m[item(_face_id(2))].NodeId().Index == 12 and m.Seek(item(_face_id(3))) is None
+    with pytest.raises(KeyError):
+        m[item(_face_id(3))]
+    del m[item(_face_id(1))]
+    with pytest.raises(KeyError):
+        del m[item(_face_id(1))]
+    assert len(m) == 1
 
 
 def test_6c_instantiation_names_spell_every_template_argument():
-    """Design 7c: a 7c instantiation's name spells every template argument, the default hasher included, where the 7a binder
-    kinds drop it (NCollection_Map<int> is NCollection_Map__int). The OCCT 8 flat maps are not binder kinds, so their names
-    carry NCollection_DefaultHasher; kept as released in 8.0.1.0 (the final review's F5, 2026-09-30). Pinned here, so a change
-    of a default argument in OCCT, which would rename them, fails a test instead of passing silently."""
+    """Design 7c: a 7c instantiation's name spells every template argument (`NCollection_AliasedArray<>`, every argument
+    defaulted, is `Poly.NCollection_AliasedArray__`), where the 7a binder kinds drop a default hasher. The OCCT 8 flat maps
+    are binder kinds since 2026-11-24, so they live in nanocct.NCollection, without NCollection_DefaultHasher in their
+    names; in 8.0.1.x they were 7c instantiations in BRepGraph and BRepGraphInc. Pinned here, so a change of a default
+    argument in OCCT, which would rename them, fails a test instead of passing silently."""
     import nanocct.Poly as Poly
-    for name in ("NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID",
-                 "NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId",
-                 "NCollection_FlatMap__BRepGraph_ItemUID__NCollection_DefaultHasher__BRepGraph_ItemUID",
-                 "NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId__NCollection_DefaultHasher__BRepGraph_ItemId"):
-        assert hasattr(BRepGraph, name), name
-    assert hasattr(BRepGraphInc, "NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape"
-                                 "__NCollection_DefaultHasher__BRepGraph_NodeId")
+    for name, generic in (("NCollection_FlatMap__BRepGraph_UID", NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_UID]),
+                          ("NCollection_FlatMap__BRepGraph_NodeId", NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_NodeId]),
+                          ("NCollection_FlatMap__BRepGraph_ItemUID", NCollection.NCollection_FlatMap[BRepGraph.BRepGraph_ItemUID]),
+                          ("NCollection_FlatDataMap__BRepGraph_ItemId__BRepGraph_ItemId",
+                           NCollection.NCollection_FlatDataMap[BRepGraph.BRepGraph_ItemId, BRepGraph.BRepGraph_ItemId]),
+                          ("NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape",
+                           NCollection.NCollection_FlatDataMap[BRepGraph.BRepGraph_NodeId, BRepGraphInc.BRepGraphInc_Storage.CachedShape])):
+        assert getattr(NCollection, name) is generic, name
+    assert [n for n in dir(BRepGraph) + dir(BRepGraphInc) if n.startswith("NCollection_Flat")] == []
     assert hasattr(Poly, "NCollection_AliasedArray__")
 
 

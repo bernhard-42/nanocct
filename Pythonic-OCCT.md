@@ -104,7 +104,7 @@ A Python type stands for a C++ template argument: `float` for C++ `double`, `int
 | `ulong`     | `unsigned long`      |
 | `ulonglong` | `unsigned long long` |
 
-With them, the containers of nanocct can be spelled generically: `NCollection_Array1`, `Array2`, `HArray1`, `HArray2`, `Sequence`, `HSequence`, `List`, `Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`, `DoubleMap`, `DynamicArray`, `LinearVector`, `LocalArray` and `Shared`. The other NCollection classes, such as `NCollection_Vec3` or `NCollection_Mat3`, have no generic spelling.
+With them, the containers of nanocct can be spelled generically: `NCollection_Array1`, `Array2`, `HArray1`, `HArray2`, `Sequence`, `HSequence`, `List`, `Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`, `DoubleMap`, `FlatMap`, `FlatDataMap`, `DynamicArray`, `LinearVector`, `LocalArray` and `Shared`. The other NCollection classes, such as `NCollection_Vec3` or `NCollection_Mat3`, have no generic spelling.
 
 ```python
 In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1, float32, uchar
@@ -213,6 +213,7 @@ In [7]: %timeit a[3]
 - `First()`, `Last()`, `ChangeFirst()` and `ChangeLast()` of an empty `NCollection_Array1` or `HArray1`: OCCT reads an element of no storage, which, depending on the element type and the member, crashes, returns `None` or returns an object over no memory;
 - `Value()` of a default-constructed or exhausted OCCT `Iterator` (`NCollection_List[int].Iterator().Value()`);
 - `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]` past the end: within the first block they return whatever the memory holds (`d[3]` of a 3-element array is `0`), beyond it (`d[256]`) the process crashes; `GetValue(row, col)` of `BVH_Mat4f`/`BVH_Mat4d` (OCCT's `NCollection_Mat4`) past its 4 × 4 elements returns whatever the memory holds;
+- `r[i]` of an `ExtremaPC.Result` past `r.NbExt()`: it reads OCCT's `Extrema`, an `NCollection_DynamicArray` with blocks of 8, so of a result with 2 extrema `r[5]` is an `ExtremumResult` of whatever the memory holds, `r[8]` is `None`, and `r[300]` or `r[-1]` crash;
 - a constructor whose upper bound lies below the lower one: `NCollection_Array1[float](5, 1)` constructs an array whose `Size()` is 18446744073709551613 (`len()` then raises `ValueError`, and `Init()` crashes), and `NCollection_Array2[float](3, 1, 1, 2).NbRows()` is `-1`.
 
 ### Iterating over NCollections

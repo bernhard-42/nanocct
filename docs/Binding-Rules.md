@@ -1166,7 +1166,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
 - **OCCT examples**
 
-    `NCollection_FlatMap::Contained()` → `std::optional<std::reference_wrapper<const K>>`, `NCollection_FlatDataMap::Contained()` → an optional pair of them; all of them BRepGraph maps (counted per platform in `tests/test_counts.py`, `refwrap`):
+    `NCollection_FlatMap::Contained()` → `std::optional<std::reference_wrapper<const K>>`, `NCollection_FlatDataMap::Contained()` → an optional pair of them, the only ones in OCCT 8.0.2. Both are hand-written binder kinds since 2026-11-24 (7a), so no generated member returns one (counted per platform in `tests/test_counts.py`, `refwrap`: 0; before, the five BRepGraph flat-map instantiations):
 
     - `std::optional<std::reference_wrapper<const TheKeyType>> NCollection_FlatMap::Contained(const TheKeyType& theKey) const`
     - `std::optional<std::pair<std::reference_wrapper<const TheKeyType>, std::reference_wrapper<TheItemType>>> NCollection_FlatDataMap::Contained(const TheKeyType& theKey)` (a mutable value)
@@ -1179,33 +1179,29 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - A `const T` is returned as a **copy**.
-    - A mutable `T` is returned as a reference into its owner that keeps the owner alive (`reference_internal`): edits reach the map as in C++ (caster in `nanocct_casters.h`).
-    - The hand-written binders (7a) bind `Contained` of `NCollection_Map`, `DataMap` and `IndexedMap` through the same copy path as `Find` (`owned()`, R-OWNER): OCCT's `const` overload, so the key and the value are copies, as for every twin there (R-CONST-TWIN); the value itself comes from `ChangeSeek`/`ChangeFind`. `NCollection_IndexedDataMap::Contained` does not compile in OCCT 8.0.2 and is not bound ([Excluded.md](Excluded.md)).
+    - A mutable `T` is returned as a reference into its owner that keeps the owner alive (`reference_internal`): edits reach the owner as in C++ (caster in `nanocct_casters.h`).
+    - The hand-written binders (7a) bind `Contained` of `NCollection_Map`, `DataMap`, `IndexedMap`, `FlatMap` and `FlatDataMap` through the same copy path as `Find` (`owned()`, R-OWNER): OCCT's `const` overload, so the key and the value are copies, as for every twin there (R-CONST-TWIN); the value itself comes from `ChangeSeek`/`ChangeFind`. `NCollection_IndexedDataMap::Contained` does not compile in OCCT 8.0.2 and is not bound ([Excluded.md](Excluded.md)).
 
 - **Python examples**
 
     ```python
-    import gc
     from nanocct.BRepGraph import BRepGraph_NodeId
-    from nanocct.BRepGraph import NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId as NodeSet
     from nanocct.BRepGraphInc import BRepGraphInc_Storage
-    from nanocct.BRepGraphInc import (
-        NCollection_FlatDataMap__BRepGraph_NodeId__BRepGraphInc_Storage_CachedShape__NCollection_DefaultHasher__BRepGraph_NodeId as CacheMap)
+    from nanocct.NCollection import NCollection_FlatDataMap, NCollection_FlatMap
 
     key = BRepGraph_NodeId(BRepGraph_NodeId.Kind.Face, 3)
-    nodes = NodeSet()
+    nodes = NCollection_FlatMap[BRepGraph_NodeId]()
     nodes.Add(key)
     assert nodes.Contained(key) == key                # const K: a copy
     assert nodes.Contained(BRepGraph_NodeId(BRepGraph_NodeId.Kind.Face, 99)) is None
 
-    cache = CacheMap()
+    cache = NCollection_FlatDataMap[BRepGraph_NodeId, BRepGraphInc_Storage.CachedShape]()
     cache.Bind(key, BRepGraphInc_Storage.CachedShape())
-    stored_key, value = cache.Contained(key)
-    value.StoredSubtreeGen = 7                        # a mutable reference: the edit reaches the map
+    stored_key, value = cache.Contained(key)          # the binder: copies (R-CONST-TWIN)
+    value.StoredSubtreeGen = 7
+    assert cache.Find(key).StoredSubtreeGen == 0
+    cache.ChangeFind(key).StoredSubtreeGen = 7        # the value itself
     assert cache.Find(key).StoredSubtreeGen == 7
-    del cache
-    gc.collect()
-    assert value.StoredSubtreeGen == 7                # and the value keeps the map alive
     ```
 ### R-NULL
 
@@ -4698,7 +4694,7 @@ The Python additions of Design.md, section 2.
     - The message is read through `clang_getCursorPlatformAvailability` (cindex exposes only the availability kind).
     - The extension is compiled with `-Wno-deprecated-declarations`.
     - The hand-written NCollection binders read the same attribute (`generator/ncollection.py`).
-    - Overloads share one docstring constant there, so when they disagree about deprecation the shared one follows the **undeprecated** overload and the deprecated one gets `<name>_deprecated` (`NCollection_Map::Contains`, the only such case in the 15 templates; nanobind renders a docstring per overload as soon as they differ).
+    - Overloads share one docstring constant there, so when they disagree about deprecation the shared one follows the **undeprecated** overload and the deprecated one gets `<name>_deprecated` (`NCollection_Map::Contains`, the only such case in the 18 templates; nanobind renders a docstring per overload as soon as they differ).
 
 - **Python**
 
@@ -5141,7 +5137,7 @@ The Python additions of Design.md, section 2.
 - **Which:** every `NCollection_X<…>` (also inside `handle<…>`, also nested) that appears in a bound signature, collected while parsing; nested arguments and `requires` (`Array1<T>` before `HArray1<T>`) are bound first. Over-approximation (unused instantiations) only costs compile time. A template that *is* a binder kind's nested class (`NCollection_TListIterator<T>` = `NCollection_List<T>::Iterator`, `BINDERS[...]["nested_from"]`) registers the owner instantiation instead of a 7c class of its own (`TopOpeBRepDS_HDataStructure::SameDomain` returns `NCollection_List__TopoDS_Shape.Iterator`; binding it twice aborted the import).
 - **Primary spelling `NCollection_Array1[T]`**: `nanocct.NCollection.NCollection_Array1[gp.gp_Pnt](1, 4)` mirrors the docs' `NCollection_Array1<gp_Pnt>`.
     - `NCollection_Array1` is a small generated class (a subclass of `Generic` in `nanocct/_templates.py`) whose `_instances` table, written into the `NCollection` shim from `manifest.json`, maps the Python element types to the bound classes: `float → double`, `int → int`, `bool → bool`, `str → std::string`, the markers `float32`, `uchar`, `uint`, `ulong`, `ulonglong` for the C++ scalars without a Python type, an OCCT class for itself **and** for `handle<class>`, a bound instantiation for a nested container. **Every bound container instantiation is reachable this way** (`tests/test_NCollection.py` asserts it). The markers are keys only: they live in `nanocct/_templates.py`, subclass `float`/`int` (the values are plain Python floats and ints, converted and range-checked by the bound class), and are aliases of `float`/`int` in the stubs, because precision is not a Python type — every C++ scalar parameter of the bindings is typed by its Python type the same way. So a type checker does not tell `NCollection_HArray1[float32]` from `NCollection_HArray1[float]`; handing the wrong one to OCCT fails at runtime (`TypeError`). A C++ name in the brackets (`NCollection_Array1['double']`) raises a `TypeError` naming the Python spelling. The keys are the types themselves, as Python passes them to `__class_getitem__` (the type for one argument, a tuple for several), so `NCollection_Array1[gp_Pnt]` is one dict lookup and returns `NCollection_Array1__gp_Pnt` itself; a key the generator spelled wrong fails at import instead of degrading into "not bound".
-    - **`isinstance(x, NCollection_Array1)`** holds for every instantiation and for everything C++ derives from one: `HArray1<T>` and `Array2<T>` are `Array1<T>`, `HArray2<T>` is `Array2<T>` and `Array1<T>`, `HSequence<T>` is `Sequence<T>`, `NCollection_Shared<T>` is `T` -- one rule for all 15 kinds, decided on the class's MRO by an `abc` `__subclasshook__`, and pinned by `tests/test_NCollection.py` (every instantiation against its own generic, and exactly the C++ bases, nothing else). The relation is virtual: `__mro__` does not list the generic class. A real base is impossible because nanobind allows one base and the four derived kinds already use it for their C++ base (`HArray1<T> : Array1<T>`), which is what lets an `HArray1` be passed where OCCT takes an `Array1&`; tag base classes for the other 11 kinds are not used, for exactly that inconsistency (measured).
+    - **`isinstance(x, NCollection_Array1)`** holds for every instantiation and for everything C++ derives from one: `HArray1<T>` and `Array2<T>` are `Array1<T>`, `HArray2<T>` is `Array2<T>` and `Array1<T>`, `HSequence<T>` is `Sequence<T>`, `NCollection_Shared<T>` is `T` -- one rule for all 18 kinds, decided on the class's MRO by an `abc` `__subclasshook__`, and pinned by `tests/test_NCollection.py` (every instantiation against its own generic, and exactly the C++ bases, nothing else). The relation is virtual: `__mro__` does not list the generic class. A real base is impossible because nanobind allows one base and the four derived kinds already use it for their C++ base (`HArray1<T> : Array1<T>`), which is what lets an `HArray1` be passed where OCCT takes an `Array1&`; tag base classes for the other 14 kinds are not used, for exactly that inconsistency (measured).
     - Cost (M5): the subscription itself ~60 ns; `A = NCollection_Array1[gp_Pnt]` once and `A(1, 100)` in a loop costs the same as `NCollection_Array1__gp_Pnt(1, 100)` (both are the same class). Across build123d, cadquery, ocp_tessellate, ocpsvg and ocp_gordon, few container constructions sit inside a loop, each next to µs of OCCT work.
     - Other C++ scalars (`float`, `size_t`, `char`…) are reachable only by the concrete name.
     - An unbound combination raises `TypeError` naming it (`NCollection_Array1[gp_Pnt, gp_Pnt] is not bound by nanocct`) and `NCollection_Array1.bound()` lists what is; calling the template itself raises `TypeError` with a hint.
@@ -5218,6 +5214,7 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 | `DynamicArray` | `Clear`, `Assign`, `EraseLast` (blocks never move: appends and inserts keep every element in place) | -- |
 | `LinearVector` | growing past `Capacity()` (`Append`, `Appended`, `InsertBefore`/`InsertAfter`, `SetValue`/`__setitem__` past the end, `Reserve`, `Resize`), shrinking (`Resize` below `Size()`), `Erase`, `EraseLast`, `Clear` | -- |
 | `LocalArray` (a view is `ToArray1()`'s array) | `Reallocate`/`Allocate` growing (past `MAX_ARRAY_SIZE` into the heap, from the heap back into the object, or `Standard::Reallocate`), and shrinking for elements that are not trivially destructible | -- |
+| `FlatMap`, `FlatDataMap` | every insert -- `Add`, `Added`, `Bind` (also of a bound key), `TryBind`, `Bound`, `TryBound`, `__setitem__` -- every removal -- `Remove`, `UnBind`, `__delitem__` -- and `Reserve`, `Clear`, `Exchange` (both): one slot array, which an insert may grow (a new array, the old freed) and in which Robin Hood probing moves entries already there; a removal shifts the entries after it (`NCollection_FlatDataMap.hxx`, `ensureCapacity`, `insertRehashedImpl`, `backwardShiftDelete`) | -- |
 
 - Views come from the binder: `elem_view_of_self` on every member returning an element reference of a class type (`def_elem`, the `Change*` members, `ChangeSeek`), `iterator_of_self` on `__iter__`, `iterator_of_arg` on an `Iterator`'s constructor and `Initialize` (a re-initialised iterator moves to its new container), `elem_view_of_iterator` on an `Iterator`'s `ChangeValue`, `container_array` for `__array__` (`np.array(a)`, `copy=True`, is a copy and no view).
 - A scalar or handle element is returned by value and is no view.
@@ -5235,7 +5232,11 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 
 ### FlatMap and FlatDataMap
 
-- `NCollection_FlatDataMap`/`FlatMap` (BRepGraph's open-addressing maps) are bound as 7c instantiations, with their nested `Iterator`: `for n in NCollection_FlatMap__BRepGraph_NodeId__….Iterator(m)`. Their `Items()` returns an `NCollection_ItemsView::View`, an STL-style range that stays unbound.
+- `NCollection_FlatMap<K>`/`NCollection_FlatDataMap<K, V>`, OCCT 8's hashed maps with open addressing (BRepGraph's: `NCollection_FlatMap[BRepGraph_NodeId]`, `NCollection_FlatDataMap[BRepGraph_ItemId, BRepGraph_ItemId]`, …). Bound by their own binders since 2026-11-24, in `nanocct.NCollection` and named without the default hasher like the other maps; in 8.0.1.x they were 7c instantiations in BRepGraph and BRepGraphInc (`BRepGraph.NCollection_FlatMap__BRepGraph_NodeId__NCollection_DefaultHasher__BRepGraph_NodeId`), whose element references and iterators were not guarded: a `ChangeFind` view read freed memory once the map grew, an iterator the slots `Clear(True)` had freed.
+- Their entries live in one slot array, so an element reference survives no insertion or removal (the table above): unlike `DataMap`, whose nodes never move, these refuse every insert and removal while a value view lives (`BufferError`), and their iterators go stale on them.
+- No `NCollection_BaseMap` base: no allocator, `NbBuckets` or `ReSize`; `Capacity()`, `Reserve`/`reserve`, `Clear(doReleaseMemory = False)` (OCCT's default, unlike `BaseMap`'s `True`). `FlatMap` has `Size()` only, `FlatDataMap` `Extent()` too.
+- `Contained` is bound as copies (R-REFWRAP, R-CONST-TWIN); `Seek`/`ChangeSeek`, `Find`/`ChangeFind` as for `DataMap` -- `FlatMap`'s `ChangeSeek` hands out the key itself. Skipped: `Emplace*`, the `Items()` view, `GetHasher`, the hasher constructors.
+- Python additions as for `Map` and `DataMap`: `__len__`, `__contains__`, `__iter__` over the keys, and on `FlatDataMap` `__getitem__`/`__setitem__`/`__delitem__` (`KeyError` when unbound) and `items()`.
 
 ## 7b. Type stubs
 
@@ -5280,7 +5281,7 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 - The same instantiation aliased in several packages is bound once (manifest key = canonical spelling) and aliased elsewhere; the same alias repeated in several headers of one package is bound once.
 - Docstrings come from the template. Stubs: stubgen emits a full concrete class for the alias (no generic class, unlike 7a).
 - Verified: `math_Vector` constructors (incl. from `gp_XYZ`), operators, `math_Matrix.Row()` returning `math_Vector`, `BVH_Vec3d`, `Bnd_B3d`, `TColStd_PackedMapOfInteger`.
-- **Names spell every template argument**, unlike 7a, which drops a default hasher: `NCollection_Map<int>` is `NCollection.NCollection_Map__int`, but the OCCT 8 flat maps -- not among the 15 binder kinds, so instantiated here -- are `BRepGraph.NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID` (five such classes, all in BRepGraph/BRepGraphInc, homed in the package that uses them, no `NCollection_FlatMap[...]` accessor), and `NCollection_AliasedArray<>` (every argument defaulted) is `Poly.NCollection_AliasedArray__`. The names are public (released with 8.0.1.0), so they stay; `tests/test_BRepGraph.py` pins them, so an OCCT change to a default argument cannot rename them unnoticed.
+- **Names spell every template argument**, unlike 7a, which drops a default hasher: `NCollection_Map<int>` is `NCollection.NCollection_Map__int`, and `NCollection_AliasedArray<>` (every argument defaulted) is `Poly.NCollection_AliasedArray__`. The OCCT 8 flat maps were such classes until they became binder kinds (2026-11-24, 7a: `BRepGraph.NCollection_FlatMap__BRepGraph_UID__NCollection_DefaultHasher__BRepGraph_UID` is now `NCollection.NCollection_FlatMap__BRepGraph_UID`); `tests/test_BRepGraph.py` pins their names, so an OCCT change to a default argument cannot rename them unnoticed.
 
 ### On-demand instantiation
 
@@ -5291,7 +5292,7 @@ What invalidates what, read in OCCT 8.0.2's container code. Every call listed ma
 - **Instantiations named by the members of an instantiation:** inside a walk a member's type is dependent (`NCollection_Vec4<Element_t>::xyz()` returns `NCollection_Vec3<Element_t>`), libclang gives it no declaration, and without a record the member would be bound with an unregistered type (`Vec4__unsigned_char().xyz()` would raise `TypeError`). `parse._note_dependent_use` records the substituted spelling (`NCollection_Vec3<unsigned char>`) and the R-TEMPLATE-BASE probe instantiates it. Not recorded: binder kinds (7a), `handle`, `std::`, the walked instantiation itself spelled with its arguments (`NCollection_AliasedArray<MyAlignSize>` inside `NCollection_AliasedArray<>` would be bound twice under the keys `<>` and `<16>`, and the module would fail to initialise: nanobind's "already registered"), and the uses of a member that ends up skipped (the `begin()`/`end()` range iterators would add classes of their own).
 
 - **Partial specialisations:** an instantiation that comes from a partial specialisation is walked from that specialisation, not from the primary template -- `BVH_Tree<T, N, Arity>` is empty and `BVH_Tree<T, N, BVH_BinaryTree> : public BVH_TreeBase<T, N>` (`BVH_BinaryTree.hxx`) is the real class, so the four `BVH_Tree` instantiations would otherwise be bound without a member or a base. libclang reports the primary template even for such an instantiation (`clang_getSpecializedCursorTemplate`), so `parse._matching_specialisation` matches the specialisations declared in the translation unit against the arguments: a pattern argument must be a bare parameter of the specialisation (it is bound to the argument, the substitution uses the specialisation's own parameter names) or equal the argument literally; a pattern like `T*` or `X<T>`, or more than one match, is not walked (reported). An explicit (full) specialisation is a class of its own, bound from its declaration like any class, and is not instantiated from the template. Measured once over all 297 7c instantiations (OCCT 8.0.1; the generated code of 8.0.2 is the same): exactly the four `BVH_Tree` ones match (`NCollection_DefaultHasher` has specialisations, no 7c use of it matches); the base `BVH_TreeBase<T, N>` comes in through R-TEMPLATE-BASE (`<double, 2>`, `<double, 3>`, `<float, 3>`) with `Length`, `Depth`, `MinPoint`/`MaxPoint`, the node buffers.
-- **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_FlatMap<K, H>::Iterator` → `<outer>.Iterator`, `NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). An STL-style iterator is not instantiated at all (R-ITERATOR), so neither is its helper `NCollection_ForwardRangeIterator::PostfixProxy`.
+- **Nested classes of an instantiation:** walked with the instantiation's substitution still active and bound into it like any nested class (`NCollection_UBTree<int, Bnd_Box>::TreeNode`/`Selector`, `NCollection_UBTreeFiller<…>::ObjBnd`, `TColStd_PackedMapOfInteger.Iterator`, `BOPTools_BoxPairSelector.PairIDs`); skipped, they would also drop `UBTree<int, Bnd_Box>::Selector` as the base of `BRepClass3d_BndBoxTreeSelectorPoint`/`Line` and `BRepBuilderAPI_BndBoxTreeSelector`. The outer class gets its final name and Python path only after the walk (the alias, for `TColStd_PackedMapOfInteger`), so `parse._reparent_nested` points the nested classes at it; an alias instantiation is added with its nested classes (`add_class`). An STL-style iterator is not instantiated at all (R-ITERATOR), so neither is its helper `NCollection_ForwardRangeIterator::PostfixProxy`.
 
 ### Nested templates and dependent names (BRepGraph)
 

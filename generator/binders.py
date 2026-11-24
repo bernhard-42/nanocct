@@ -76,6 +76,30 @@ BINDERS: dict[str, dict] = {
         "nargs": 3,
         "defaults": {2: "NCollection_DefaultHasher<{0}>"},
     },
+    # BRepGraph's open-addressing maps: no NCollection_BaseMap base (no allocator, NbBuckets or ReSize)
+    "NCollection_FlatMap": {
+        "binder": "nanocct::bind_NCollection_FlatMap",
+        "members": {"Size", "IsEmpty", "Capacity", "Contains", "Contained", "Seek", "ChangeSeek", "Add", "Added", "Remove",
+                    "Clear", "Exchange", "reserve", "Reserve"},
+        "skipped": {"GetHasher", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced", "begin", "end", "cbegin", "cend",
+                    "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Key", "Value", "IsEqual"}},
+        "requires": [],
+        "nargs": 2,
+        "defaults": {1: "NCollection_DefaultHasher<{0}>"},
+    },
+    "NCollection_FlatDataMap": {
+        "binder": "nanocct::bind_NCollection_FlatDataMap",
+        "members": {"Size", "Extent", "IsEmpty", "Capacity", "IsBound", "Contained", "Seek", "ChangeSeek", "Find", "ChangeFind",
+                    "operator()", "Bind", "TryBind", "Bound", "TryBound", "UnBind", "Clear", "Exchange", "reserve", "Reserve"},
+        # Items(): an NCollection_ItemsView::View, an STL-style range (items() is the Python addition)
+        "skipped": {"GetHasher", "Items", "operator=", "Emplace", "Emplaced", "TryEmplace", "TryEmplaced", "begin", "end", "cbegin",
+                    "cend", "operator new", "operator delete", "operator new[]", "operator delete[]"},
+        "nested": {"Iterator": {"ctor", "More", "Next", "Key", "Value", "ChangeValue", "IsEqual"}},
+        "requires": [],
+        "nargs": 3,
+        "defaults": {2: "NCollection_DefaultHasher<{0}>"},
+    },
     "NCollection_IndexedMap": {
         "binder": "nanocct::bind_NCollection_IndexedMap",
         "members": {"NbBuckets", "Extent", "Length", "Size", "IsEmpty", "Allocator", "Exchange", "Assign", "ReSize", "Add", "Added",

@@ -287,7 +287,8 @@ def _with_numpy_imports(text: str) -> str:
 
 
 # the hashed containers whose generic stub carries OCCT's hasher as an optional last type parameter (_H)
-_HASHED = ("NCollection_Map", "NCollection_IndexedMap", "NCollection_DataMap", "NCollection_IndexedDataMap")
+_HASHED = ("NCollection_Map", "NCollection_IndexedMap", "NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_FlatMap",
+           "NCollection_FlatDataMap")
 
 
 def _view_accessor(text: str, name: str) -> str | None:
@@ -537,7 +538,7 @@ def main() -> int:
         if "class Iterator(Generic[" in (GENERIC / f"{kind}.pyi").read_text():
             # the generic nested Iterator does not bind the outer arguments (Python nested classes share no type parameters):
             # the concrete class gets a concrete Iterator, so NCollection_List__int.Iterator(...).Value() is int (7b)
-            n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap") else 1
+            n_it = 2 if kind in ("NCollection_DataMap", "NCollection_IndexedDataMap", "NCollection_DoubleMap", "NCollection_FlatDataMap") else 1
             if kind in _HASHED and len(spelled) > n_it:
                 n_it += 1                               # the custom hasher, else Iterator(theMap) rejects its own map
             body.append(f"    class Iterator({kind}.Iterator[{', '.join(spelled[:n_it])}]): ...")
