@@ -4618,7 +4618,7 @@ The Python additions of Design.md, section 2.
     - `generator/symbols.py`: `nm` on the toolkit library vs. libclang's `Cursor.mangled_name` of every method/constructor without an inline definition (bodies are parsed so `get_definition()` sees out-of-class inline definitions; pure virtuals excluded).
     - Mangled names make the check exact and overload-aware; the platform mangling matches `nm` on macOS (leading underscore included, verified) and Linux.
     - **Windows uses `dumpbin /EXPORTS` on `<install>/win64/<vcNN>/lib/<TK>.lib`**: `Standard_EXPORT` is `__declspec(dllexport)`, so the import library's export list answers the same question, and `dumpbin` is located through `vswhere -products *` so no vcvars environment is needed.
-    - It is *stricter* than the macOS check in one way and cleaner in another: the trailing `Summary` block of a `.lib` dump is indented like the exports and has to be stopped at explicitly, and MSVC has no C1/C2 constructor split, so Windows does not produce the abstract-class constructor false positives macOS does (among its `undefined` lines, counted per platform in `tests/test_counts.py` as `undefined-lines`).
+    - It is *stricter* than the macOS check in one way and cleaner in another: the trailing `Summary` block of a `.lib` dump is indented like the exports and has to be stopped at explicitly, and MSVC has no C1/C2 constructor split. An abstract class's constructors are not checked at all: they are never bound, and macOS's clang emits only the base-object constructor (C2) for such a class, so the check reported 34 false "no definition" lines on macOS only until 2026-11-24 (`undefined-lines`, counted per platform in `tests/test_counts.py`).
 
 - **Python**
 

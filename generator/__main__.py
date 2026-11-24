@@ -503,7 +503,10 @@ def main(argv: list[str]) -> int:
                         if m.skip_reason is None and not m.defined_in_header and m.mangled not in symbols:
                             m.skip_reason = "declared but not defined in the library"
                             ir.report.append(f"{c.name}::{m.name}({', '.join(p.type for p in m.params)}): declared in the header, no definition in lib{tk_name}")
-                    for k in c.ctors:
+                    # an abstract class's constructors are never bound (emit: not c.is_abstract), and macOS's clang emits only the
+                    # base-object constructor (C2) for one while libclang names the complete-object one (C1): checking them
+                    # reported 34 false "no definition" lines on macOS only (Aspect_CircularGrid, Graphic3d_CView, ...)
+                    for k in ([] if c.is_abstract else c.ctors):
                         if k.skip_reason is None and not k.is_copy and not k.defined_in_header and k.mangled not in symbols:
                             k.skip_reason = "declared but not defined in the library"
                             ir.report.append(f"{c.name}::{c.name}({', '.join(p.type for p in k.params)}): declared in the header, no definition in lib{tk_name}")

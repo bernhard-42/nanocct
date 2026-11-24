@@ -66,7 +66,7 @@ PINNED: dict[str, dict[str, int]] = {
         "str-ops": 40,
         "stub-enum-defaults": 217,
         "unbound-type": 40,
-        "undefined-lines": 133,
+        "undefined-lines": 99,
         "unhashable": 57,
         "unreachable": 72,
         "view-guard-iterators": 23,
