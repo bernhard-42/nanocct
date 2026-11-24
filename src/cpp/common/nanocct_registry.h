@@ -16,7 +16,7 @@ struct mi_entry {
     Standard_Transient *(*to_transient)(void *stored);   // stored (base subobject) -> Transient subobject
     void *(*from_transient)(Standard_Transient *);       // Transient subobject of an S -> stored pointer
     const std::type_info *bound = nullptr;               // R-KEPT: the entry of a nanocct::Kept<T> -- the type Python sees, T
-    PyObject *(*find)(void *stored) = nullptr;           // the existing Python object of `stored` (nb::find), new reference or null
+    PyObject *(*find)(void *stored) = nullptr;           // the existing Python object of `stored` (nanocct::find_existing), new reference or null
 };
 
 // ONE object of type T for all extension modules. Every toolkit is its own shared library, and an inline function's
@@ -55,7 +55,7 @@ template <typename S> void nanocct_register_mi(nb::handle py_type) {
                [](Standard_Transient *t) -> void * { return static_cast<B *>(static_cast<S *>(dynamic_cast<void *>(t))); }};
     // looked up as B at the stored address, where nanobind registered the object (B need not be at offset 0 of S:
     // NCollection_Shared<T>); its dynamic type S matches the existing wrapper
-    e.find = [](void *stored) -> PyObject * { return nb::find(*static_cast<B *>(stored)).release().ptr(); };
+    e.find = [](void *stored) -> PyObject * { return nanocct::find_existing(*static_cast<B *>(stored)).release().ptr(); };
     nanocct_mi_by_name()[typeid(S).name()] = e;
     nanocct_mi_list().push_back(e);
 }

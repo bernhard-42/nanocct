@@ -277,8 +277,8 @@ template <typename T> void register_kept(nb::handle py_type) {
                [](void *stored) -> Standard_Transient * { return static_cast<T *>(stored); },
                [](Standard_Transient *t) -> void * { return static_cast<T *>(static_cast<Kept<T> *>(dynamic_cast<void *>(t))); },
                &typeid(T)};
-    // nb::find(T&): nanobind does not know Kept<T>'s own typeid and looks the object up as T, the type Python sees
-    e.find = [](void *stored) -> PyObject * { return nb::find(*static_cast<T *>(stored)).release().ptr(); };
+    // find_existing(T&): nanobind does not know Kept<T>'s own typeid and looks the object up as T, the type Python sees
+    e.find = [](void *stored) -> PyObject * { return nanocct::find_existing(*static_cast<T *>(stored)).release().ptr(); };
     nanocct_mi_by_name()[typeid(Kept<T>).name()] = e;
 }
 

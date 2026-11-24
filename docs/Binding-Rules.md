@@ -1272,6 +1272,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 
     - Wrapped in `handle<T>` (same Python object as before).
     - A `T&` whose reference count is **0** at return is not handle-owned — a member held by value (`BRepAdaptor_Curve::Curve()` → its `GeomAdaptor_Curve`) or static storage — so it gets one permanent reference and, for methods, the owner is kept alive as long as the result — `keep_alive<0, 1>` except when the result is `self` (`nanocct::KeepOwnerUnlessSelf`, `nanocct_call_policies.h`).
+    - The same Python object for every return: the caster looks the object up with `nanocct::find_existing` (`nanocct_common.h`), nanobind's `nb::find` without the object nanobind 3.1.0 *creates* when an unrelated object is registered at the address. That is a member at offset 0 of an object nanobind holds by value: `HLRBRep_Surface::Surface()` returns its first member `mySurf`, at the address of the `HLRBRep_Surface` itself. The created object had its *destruct* flag set and no holder, so releasing the result destroyed the member of the living owner, and the owner destroyed it again (a heap corruption on Linux; `tests/test_lifetime.py`, `test_transient_reference_result_member_at_offset_0`). Every `nb::find` in the bindings goes through the helper.
 
 - **Python examples**
 

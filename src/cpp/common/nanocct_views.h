@@ -57,7 +57,7 @@ template <class A, size_t K> void def_aliased_nodes_view(nb::class_<A> cls, cons
             return array_protocol(
                 nb::ndarray<nb::numpy>(n == 0 ? nullptr : (void *) self.changeValue(0), 2, shape, nb::handle(),
                                        nullptr, self.IsDoublePrecision() ? nb::dtype<double>() : nb::dtype<float>()),
-                nb::find(&self), copy);
+                nanocct::find_existing(&self), copy);
         }, nb::arg("dtype") = nb::none(), nb::arg("copy") = nb::none(), theDoc);
 }
 
@@ -134,7 +134,7 @@ template <> inline void nanocct_def_views<Image_PixMap>(nb::class_<Image_PixMap>
             if (self.IsEmpty()) {
                 const size_t shape[3] = { 0, 0, channels };
                 return nanocct::array_protocol(nb::ndarray<nb::numpy>(nullptr, 3, shape, nb::handle(), nullptr, dt),
-                                               nb::find(&self), copy);
+                                               nanocct::find_existing(&self), copy);
             }
 
             // Both checks turn a layout assumption into an error the caller can read, rather than an array
@@ -150,7 +150,7 @@ template <> inline void nanocct_def_views<Image_PixMap>(nb::class_<Image_PixMap>
                 (int64_t) (self.SizeRowBytes() / itemsize) * (int64_t) (ptrdiff_t) self.TopDownInc(),
                 (int64_t) channels, 1 };
             return nanocct::array_protocol(nb::ndarray<nb::numpy>(self.ChangeRow(0), 3, shape, nb::handle(), strides, dt),
-                                           nb::find(&self), copy);
+                                           nanocct::find_existing(&self), copy);
         }, nb::arg("dtype") = nb::none(), nb::arg("copy") = nb::none(),
         "Python addition: numpy's array protocol -- `numpy.asarray(pixmap)` is a zero-copy (SizeY, SizeX, "
         "channels) view of the pixels (R-VIEW), `numpy.array(pixmap)` a copy. An empty pixmap gives a "
@@ -178,7 +178,7 @@ template <> inline void nanocct_def_views<NCollection_Buffer>(nb::class_<NCollec
             const size_t n = self.IsEmpty() ? 0 : self.Size();
             return nanocct::array_protocol(
                 nb::ndarray<nb::numpy, uint8_t, nb::ndim<1>>(n == 0 ? nullptr : self.ChangeData(), { n }, nb::handle()),
-                nb::find(&self), copy);
+                nanocct::find_existing(&self), copy);
         }, nb::arg("dtype") = nb::none(), nb::arg("copy") = nb::none(),
         "Python addition: numpy's array protocol -- `numpy.asarray(buffer)` is a zero-copy (Size(),) uint8 view "
         "of the buffer (R-VIEW), `numpy.array(buffer)` a copy. An unallocated buffer (IsEmpty(), e.g. after "

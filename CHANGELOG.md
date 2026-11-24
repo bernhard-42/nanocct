@@ -26,6 +26,7 @@ Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, w
 
 **Fixes:**
 
+- A member destroyed twice, which crashed on Linux, when a Transient that is the first member of its owner was returned by reference and released, e.g. `HLRBRep_Surface.Surface()`. In 8.0.1.6 too (R-RESULT)
 - `BRepExtrema_ProximityDistTool.PrjState`'s four-argument constructor and `GetPrjState()` are no longer bound: their type `BVH_Tools<double, 3>::BVH_PrjStateInTriangle` has no Python type, and they raised `TypeError` on every call (R-UNBOUND-TYPE)
 - `NCollection_OccAllocator`'s `allocate`, `deallocate`, `construct`, `destroy` and `address` are no longer bound: they take raw pointers, and `NCollection_OccAllocator__int().deallocate(5, 1)` aborted the interpreter (R-UNSUPPORTED)
 - `NCollection_LocalArray.ToArray1()` is a view the array guards: while it lives, a `Reallocate` or `Allocate` that would move the buffer raises `BufferError`. Before, the view read freed memory after such a call (R-VIEW-GUARD)

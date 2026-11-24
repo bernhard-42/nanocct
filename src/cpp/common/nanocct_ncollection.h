@@ -62,7 +62,7 @@ using iterator_of_arg = nb::call_policy<view_of<view_kind::iterator, 1, 2>>;
 using elem_view_of_iterator = nb::call_policy<view_through_iterator>;
 // the Python object of an iterator argument, for a call that goes through it (List::Remove(it) moves it on and keeps it
 // valid): that iterator does not count against the call
-template <typename It> nb::object iterator_object(const It &it) { return nb::find(it); }
+template <typename It> nb::object iterator_object(const It &it) { return nanocct::find_existing(it); }
 // R-VIEW-GUARD: an Iterator whose container changed since it was constructed or initialised raises RuntimeError on every
 // use but Initialize, as Python's dict iterators do; what: the member, for the message
 template <typename It> It &fresh(It &it, const char *what) { refuse_if_stale_self(it, what); return it; }
@@ -99,7 +99,7 @@ template <typename T, size_t NDim, typename Cls>
 auto container_array(void *first, const size_t (&shape)[NDim], Cls &self, std::optional<bool> copy) {
     if (copy.has_value() && copy.value() == true)
         return elem_view<T>(first, shape).cast(nb::rv_policy::copy);
-    return elem_view<T>(first, shape, export_view(&self, nb::find(&self))).cast(nb::rv_policy::reference);
+    return elem_view<T>(first, shape, export_view(&self, nanocct::find_existing(&self))).cast(nb::rv_policy::reference);
 }
 
 // R-OWNER (Binding-Rules.md): elements whose OCAF owners are known (a TDF_Label, a handle of a TDF_Attribute -- nanocct::owners).
@@ -108,7 +108,7 @@ auto container_array(void *first, const size_t (&shape)[NDim], Cls &self, std::o
 // For every other element type these compile to nothing.
 template <typename C> PyObject *self_object(const C &self) {
     static_assert(!nanocct_is_handle<C>::value, "nb::find of a handle builds a new object");
-    nb::object py = nb::find(self);
+    nb::object py = nanocct::find_existing(self);
     if (!py.is_valid())
         throw std::runtime_error("nanocct R-OWNER: the container has no Python object");
     return py.ptr();                     // borrowed: Python holds the object for the duration of the call

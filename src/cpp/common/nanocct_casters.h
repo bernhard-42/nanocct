@@ -307,8 +307,10 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
         return false;
     }
 
-    // Documented nanobind API only (Toolchain.md 4.3): the object's existing Python object when it has one (nb::find, a
-    // cast with rv_policy::none), else a new one that does not own it -- nb::inst_reference for a type in the MI registry
+    // Documented nanobind API only (Toolchain.md 4.3): the object's existing Python object when it has one
+    // (nanocct::find_existing: nb::find, which casts with rv_policy::none, minus the object nanobind 3.1.0 creates when an
+    // unrelated object shares the address -- a member at offset 0, nanocct_common.h), else a new one that does not own
+    // it -- nb::inst_reference for a type in the MI registry
     // (a multiple-inheritance H-collection, a nanocct::Kept<T>, whose own typeid nanobind does not know), nb::cast with
     // rv_policy::reference otherwise (nanobind's automatic downcasting: the most-derived bound type). Only a new one gets
     // the heap handle that keeps the object alive; another thread creating it in between (free-threading) costs one more
@@ -333,7 +335,7 @@ template <typename T> struct type_caster<opencascade::handle<T>> {
             } else if constexpr (has_mi_traits<Td>::value) {
                 return handle();                        // an MI type is registered when it is bound (nanocct_register_mi)
             }
-            object existing = entry != nullptr ? steal(entry->find(stored)) : nb::find(*ptr);
+            object existing = entry != nullptr ? steal(entry->find(stored)) : nanocct::find_existing(*ptr);
             if (existing.is_valid())
                 return existing.release();
             result = entry != nullptr ? inst_reference(handle(entry->py_type), stored) : nb::cast(ptr, rv_policy::reference);
@@ -381,14 +383,14 @@ template <typename T> struct type_caster<NCollection_Handle<T>> {
         return true;
     }
 
-    // documented nanobind API only, as for opencascade::handle above: the existing Python object (nb::find), else a new one
-    // that does not own the object (rv_policy::reference) with the holder attached
+    // documented nanobind API only, as for opencascade::handle above: the existing Python object
+    // (nanocct::find_existing), else a new one that does not own the object (rv_policy::reference) with the holder attached
     static handle from_cpp(const Value &value, rv_policy, cleanup_list *) noexcept {
         if (value.IsNull()) return none().release();
         T *ptr = const_cast<T *>(value.get());
         object result;
         try {
-            object existing = nb::find(*ptr);
+            object existing = nanocct::find_existing(*ptr);
             if (existing.is_valid())
                 return existing.release();
             result = nb::cast(ptr, rv_policy::reference);

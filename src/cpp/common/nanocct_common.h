@@ -60,6 +60,26 @@
 
 namespace nb = nanobind;
 
+namespace nanocct {
+// nb::find that never creates an object. nanobind documents find() as "the Python object associated with the C++ instance,
+// or an invalid object". nanobind 3.1.0 (nb_type_put, nb_type.cpp) returns nothing only when no instance at all is
+// registered at the address; when one of an unrelated type is -- a member at offset 0 of an object nanobind holds by value,
+// as HLRBRep_Surface::Surface() returns its first member mySurf -- it falls through and creates a new instance with the
+// destruct flag set (nb_type_put_common: rv_policy::none is neither reference nor reference_internal). The member's C++
+// destructor then ran when that Python object went, and again with its owner: a double destruction that corrupted the heap
+// on Linux (2026-11-24). An object find() returns that existed before is held by someone else as well, so its reference
+// count is at least 2; one it has just made holds only the reference it returned. That one is disarmed (destruct cleared:
+// dropping it destroys nothing) and dropped, and the caller sees "not found", as documented.
+template <typename T> nb::object find_existing(const T &value) noexcept {
+    nb::object found = nb::find(value);
+    if (found.is_valid() && Py_REFCNT(found.ptr()) == 1) {
+        nb::inst_set_state(found, true, false);
+        return nb::object();
+    }
+    return found;
+}
+} // namespace nanocct
+
 // The parts, in this order (each relies on the ones before it; review M8, 2026-10-03):
 #include "nanocct_registry.h"
 #include "nanocct_lifetime.h"

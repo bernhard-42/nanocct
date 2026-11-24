@@ -58,7 +58,7 @@ template <typename T, bool View = false, typename Get> void nanocct_def_iter(nb:
         using Cursor = nanocct_iter_cursor<T, View, Get>;
         nb::object owner;
         if constexpr (View)
-            owner = nb::find(self);
+            owner = nanocct::find_existing(self);
         return nb::make_iterator<nb::rv_policy::move>(nb::type<T>(), "iterator", Cursor{&self, get, owner.ptr()},
                                                       Cursor{nullptr, get, nullptr});
     }, nb::keep_alive<0, 1>(),

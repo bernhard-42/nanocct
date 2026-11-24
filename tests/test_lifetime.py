@@ -236,6 +236,28 @@ def test_transient_reference_result_member_reverse():
     assert out == ["0.0 True True"]
 
 
+def test_transient_reference_result_member_at_offset_0():
+    """HLRBRep_Surface::Surface() returns its first member mySurf, a BRepAdaptor_Surface at the address of the
+    HLRBRep_Surface itself, which nanobind holds inside its Python object. nanobind 3.1.0's nb::find, asked for a
+    BRepAdaptor_Surface there, found the unrelated HLRBRep_Surface and created a new instance with its destruct flag set: the
+    result had no holder (count 1 instead of 2), and its release ran ~BRepAdaptor_Surface on the member of the living owner
+    -- the face's and the surface's references dropped -- and the owner's destructor ran it again, which corrupted the heap
+    on Linux (OCCT 8.0.2's HLRBRep_Surface GTest, 2026-11-24). nanocct::find_existing treats such an object as not found."""
+    out = _ok(_run("""
+        from nanocct import BRep, HLRBRep
+        owner = HLRBRep.HLRBRep_Surface()
+        owner.Surface(face)
+        surface = BRep.BRep_Tool.Surface_s(face)
+        before = (face.TShape().GetRefCount(), surface.GetRefCount())
+        result = owner.Surface()
+        print(result.GetRefCount(), result is owner.Surface())   # the permanent reference + this wrapper's handle
+        del result
+        collect()
+        print((face.TShape().GetRefCount(), surface.GetRefCount()) == before, owner.Surface().GetType())
+    """, BOX))
+    assert out == ["2 True", "True GeomAbs_SurfaceType.GeomAbs_Plane"]
+
+
 def test_transient_reference_result_allocator_storage_forward():
     """IntTools_Context::SurfaceAdaptor(face) returns a `BRepAdaptor_Surface&` placement-new'd into the context's own
     allocator (IntTools_Context.cxx:333-334): count 0, and never allocated on its own, like a member."""
