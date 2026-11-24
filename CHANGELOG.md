@@ -2,17 +2,26 @@
 
 ## v8.0.2.0 (unreleased)
 
+**Changed:**
+
 - Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, with fixes in fillets, lofts and pipes, Booleans, trimmed periodic geometry, meshing, hidden-line removal, BREP reading and STEP exchange ([release notes](https://github.com/Open-Cascade-SAS/OCCT/releases/tag/V8_0_2))
-- Fixed: an `NCollection_Shared<T>` passed or returned by reference or pointer reached the other side at the wrong address, giving wrong results and crashes, e.g. `BRepMesh_DataStructureOfDelaun.ElementsOfDomain()` and `BRepMesh_Delaun.AddVertices` (27 members, all but one in BRepMesh; R-MI-REF)
-- Changed: a file-like object passed to a reading member now moves on by what OCCT read, so consecutive reads continue where the last one stopped: two `GeomTools.GetReal_s(stream)` calls read two values. It was left at its end, so a second read found nothing (R-STREAM-IN)
-- New: members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
+- The OCCT version is set in one place, `TAG` in `deps/fetch-occt-src.sh`, and the install prefixes carry no version (`deps/occt`, `deps/occt-manylinux`)
+- Licensing: NOTICE and the wheels' `License-Expression` now also cover the third-party code inside OCCT's own sources (`Unicode-3.0`, `dtoa`, flex's `FlexLexer.h`, two `MIT` components, the Khronos OpenGL headers, `Bitstream-Vera`). It was in OCCT 8.0.1 too, and missing from the 8.0.1.x wheels
+
+
+**New features:**
+
+- Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - Now callable: `BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` return `bytes`, and `BinTools_ShapeReader.ReadLocation` takes a binary file-like (R-STREAM-WRAPPER)
-- New: `BRepMesh_VertexTool` and `BRepMesh_DataStructureOfDelaun.Data()` (R-NONCOPYABLE)
+- `BRepMesh_VertexTool`, the Delaunay mesher's vertex table, and `BRepMesh_DataStructureOfDelaun.Data()`, which returns it. 8.0.1.6 left both out because the class cannot be copied (R-NONCOPYABLE)
 - NCollection containers of handles take `None`, the null handle, for elements, keys and values, e.g. `NCollection_HArray1[Standard_Transient].SetValue(i, None)`
 - `ChFi3d_PerformElSpine` takes its guide and spine as inputs and returns both, as in C++ (R-INOUT)
-- Licensing: NOTICE and the wheels' `License-Expression` now also cover the third-party code inside OCCT's own sources (`Unicode-3.0`, `dtoa`, flex's `FlexLexer.h`, two `MIT` components, the Khronos OpenGL headers, `Bitstream-Vera`). It was in OCCT 8.0.1 too, and missing from the 8.0.1.x wheels
-- Build: the OCCT version is set in one place, `TAG` in `deps/fetch-occt-src.sh`, and the install prefixes carry no version (`deps/occt`, `deps/occt-manylinux`)
 
+**Fixes:**
+
+- An `NCollection_Shared<T>` passed or returned by reference or pointer reached the other side at the wrong address, giving wrong results and crashes, e.g. `BRepMesh_DataStructureOfDelaun.ElementsOfDomain()` and `BRepMesh_Delaun.AddVertices` (27 members, all but one in BRepMesh; R-MI-REF)
+- A crash when an element that is itself a container -- an edge's list of faces in an `IndexedDataMap` -- was overwritten in place (`Substitute`, or `Bind` or `m[k] = v` on a bound key, of a `DataMap` or `IndexedDataMap`) while an element of that inner list, taken with its `Iterator`'s `ChangeValue()`, was still held: the overwrite is now refused with `BufferError` until that element is released (`el = None`), as removing it already was (R-VIEW-GUARD)
+- A file-like object passed to a reading member was left at its end, so a second read found nothing. It now moves on by what OCCT read, as the C++ stream does: two `GeomTools.GetReal_s(stream)` calls read two values (R-STREAM-IN)
 
 ## v8.0.1.6 (2026-11-19)
 

@@ -1491,3 +1491,38 @@ def test_an_argument_that_owns_the_object_stays_kept_by_the_python_object():
             del scene, box
             collect()
     """))
+
+
+def test_overwriting_a_container_element_is_refused_while_its_elements_are_viewed():
+    """An element that is itself a container -- an edge's list of faces in an IndexedDataMap, a DataMap's list -- owns its
+    nodes; an overwrite in place (Substitute, Bind on a bound key, m[k] = v) destroys them. An element of that list held
+    from its Iterator's ChangeValue() then read freed memory: a segmentation fault in 8.0.1.6 (review
+    2026-11-24). Such an overwrite is refused while the inner list has views, and goes through once they are released;
+    an overwrite of a slot whose inner list is not viewed, and a write of a non-container element, are never refused."""
+    out = _ok(_run("""
+        from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+        from nanocct.NCollection import NCollection_Array1, NCollection_DataMap, NCollection_IndexedDataMap, NCollection_List
+        from nanocct.TopAbs import TopAbs_ShapeEnum as T
+        from nanocct.TopExp import TopExp
+        from nanocct.TopoDS import TopoDS_Shape
+        from nanocct.TopTools import TopTools_ShapeMapHasher
+        from nanocct.gp import gp_Pnt
+        box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+        L = NCollection_List[TopoDS_Shape]
+        ef = NCollection_IndexedDataMap[TopoDS_Shape, L, TopTools_ShapeMapHasher]()
+        TopExp.MapShapesAndAncestors_s(box, T.TopAbs_EDGE, T.TopAbs_FACE, ef)
+        el = L.Iterator(ef.ChangeFromIndex(1)).ChangeValue()          # a face of edge 1's list, the element itself
+        print(attempt(lambda: ef.Substitute(1, ef.FindKey(1), L())), el.ShapeType().name,
+              attempt(lambda: ef.Bind(ef.FindKey(1), L())), attempt(lambda: ef.Substitute(2, ef.FindKey(2), L())))
+        el = None
+        print(attempt(lambda: ef.Substitute(1, ef.FindKey(1), L())), ef.FindFromIndex(1).Extent())
+        dm = NCollection_DataMap[TopoDS_Shape, L, TopTools_ShapeMapHasher]()
+        dm.Bind(box, L())
+        dm.ChangeFind(box).Append(box)
+        it = L.Iterator(dm.ChangeFind(box))                            # an iterator of the inner list, no element view
+        print(attempt(lambda: dm.__setitem__(box, L())), attempt(lambda: it.More()))
+        a = NCollection_Array1[gp_Pnt](1, 2)
+        p = a.ChangeValue(1)
+        print(attempt(lambda: a.SetValue(1, gp_Pnt(1, 0, 0))), p.X())   # a point is no container: writing in place stays allowed
+    """, GUARD))
+    assert out == ["BufferError TopAbs_FACE BufferError done", "done 0", "done RuntimeError", "done 1.0"]

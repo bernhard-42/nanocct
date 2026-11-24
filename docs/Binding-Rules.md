@@ -2345,6 +2345,8 @@ See 3.1 (3) and 3.2.
 
     - Python objects are never const, so C++ itself would select the non-const overload on any Python-held object.
     - Header order would otherwise decide whether `arr[i].SetX()` edits the container (`reference_internal`) or a copy.
+    - **The hand-written NCollection binders (7a) bind OCCT's element access as copies**, as its usual by-value C++ use copies (`T x = a(i);`, `TopoDS_Shape s = l.First();`): `[]`, `()`, a `for` loop over the container or its `Iterator`, the values of `items()`, `First`/`Last`, `Value`, `At`, `Find`, `FindFromKey`, `FindFromIndex`, `Seek`. The element itself -- a view, which R-VIEW-GUARD counts -- comes only from the members whose name says so: `ChangeValue`, `ChangeAt`, `ChangeFirst`/`ChangeLast`, `ChangeFind`, `ChangeFromIndex`, `ChangeFromKey`, `ChangeSeek`, an `Iterator`'s `ChangeValue()`, and the inserting members that return the inserted element (`Append`, `Bound`, …).
+    - So `a[i].SetX(…)` and `for p in a: p.SetX(…)` edit a copy, which is thrown away. Edit with `a.ChangeValue(i).SetX(…)`, write back with `a[i] = p`, and in a `NCollection_List`, which has no index, through its `Iterator`'s `ChangeValue()`. Views for `[]` and the loops were built and dropped (2026-11-24): a view is the slot, so `a[1], a[2] = a[2], a[1]` and writing back a sorted list gave equal elements without an error -- C++ reference semantics, not those of a Python list -- and a loop over elements cost 110 ns per element against 30 to 40 ns for copies.
 
 - **Python**
 
@@ -4067,7 +4069,8 @@ The Python additions of Design.md, section 2.
     - A view would read freed memory after the container moved or freed what it points into: `a.ChangeValue(1)` after `a.Resize(…)`, `np.asarray(a)` after `Resize`, a Sequence's `ChangeValue` after `Remove`, a List's `Append` result after `Clear` (heap-use-after-free under ASan), and every iterator kind -- `List.Iterator`/`Sequence.Iterator` after `Clear`/`Remove`, a `DataMap.Iterator` and `for k in map` after an `Add`/`Bind` that grows the table, `iter(list)` after `Clear` (ASan).
     - OCCT changes containers passed in: `Graphic3d_Camera::FrustumPoints` resizes its array argument (Graphic3d_Camera.cxx:1743), `TopExp::MapShapes` adds to the map.
     - The check runs after argument conversion because a call policy's `precall` runs before it, and raising there would pre-empt another overload taking the same container `const` (`PLib::SetPoles`).
-    - **Element references and numpy arrays**, as for `bytearray`: a view still referenced blocks the call until it is released (`del point`).
+    - **Element references and numpy arrays**, as for `bytearray`: a view still referenced blocks the call until it is released (`point = None`).
+    - **An element that is itself a container** -- an edge's list of faces in an `IndexedDataMap` -- owns its nodes, which an overwrite in place destroys (`SetValue`, `a[i] = v`, `Init`, a same-size `Assign`, `CopyValues`, `Bind`/`m[k] = v`/`Bound` on a bound key, `Substitute`): the overwrite is refused while the old element has views (an element of the inner list from its `Iterator`'s `ChangeValue()`), and its iterators go stale. The map overwrites crashed the process in 8.0.1.6 (review 2026-11-24); in an array or sequence no bound element type reached it. Writing a point or a shape in place stays allowed: no view is counted at such an element.
     - **Iterators**, as Python's own collections (`dict`, `set`, `OrderedDict`, `deque`, measured on Python 3.14.7: none refuses a change of size while an iterator exists, a stale one raises on its next use): the call goes ahead and the container's iterators go stale; every later use of a stale iterator raises -- `More()` included, an exhausted one too (like `deque`), and `Reset()`, which restarts from the bucket array a map iterator cached (NCollection_BaseMap.hxx, `Reset` -> `findFirst`: a use-after-free otherwise) -- until `Init`/`Initialize` starts it again. Refusing the change instead blocked an exhausted `while it.More()` iterator that nobody would use again (until 2026-10-03).
     - A numpy view taken before an OCCT call that fills the array blocks that call -- take the view after it.
     - Measured: a view handed out +40 to +55 ns (`ChangeValue` 44 → 83-99 ns), the same view returned again +7 ns, `np.asarray` +70 ns, a `for` loop +75 ns, a checked call +2 to +3 ns while nothing is viewed and +6 to +8 ns otherwise. The staleness check (2026-10-03, against the wheel without it, median of 5 alternating runs): an iterator member +2 ns (`More`/`Value`/`Next` over a 10 000-key map 29 → 36 ns per element), a `for` step +1 ns (`for k in map` 12.8 → 13.6 ns), a `for` over an R-ITER class that iterates no container (`TopExp_Explorer`) +2 ns per element, a container call while nothing is viewed ±0.
@@ -4103,7 +4106,7 @@ The Python additions of Design.md, section 2.
     point = points.ChangeValue(1)                        # an element reference: a view
     assert not refuses(lambda: points.Resize(1, 3, True))   # the same length keeps the storage
     assert refuses(lambda: points.Resize(1, 5, True))       # a new buffer would leave `point` dangling
-    del point
+    point = None
     points.Resize(1, 5, True)                            # released: allowed
     assert points.Length() == 5
     ```

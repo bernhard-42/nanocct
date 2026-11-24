@@ -3,8 +3,8 @@
 **Table of contents**
 
 - [NCollections](#ncollections-support)
+- [numpy support](#numpy-support)
 - [Iterating over OCCT iterators](#iterating-over-occt-iterators)
-- [numpy zero-copy support in detail](#numpy-zero-copy-support-in-detail)
 - [Handling of primitive types passed by reference](#handling-of-primitive-types-passed-by-reference)
 - [Mutable primitive references](#mutable-primitive-references)
 - [Operators](#operators)
@@ -19,7 +19,7 @@
 
 ## NCollections support
 
-**Design: [3.1 Naming conventions](docs/Conventions.md#31-naming-conventions), [7a NCollection containers](docs/Binding-Rules.md#7a-ncollection-containers-hand-written-binders)**
+*Design: [3.1 Naming conventions](docs/Conventions.md#31-naming-conventions), [7a NCollection containers](docs/Binding-Rules.md#7a-ncollection-containers-hand-written-binders)*
 
 ### Generics support
 
@@ -79,22 +79,22 @@ b = NCollection_Array1[gp_Dir](1, 3)
 
    ```python
    In [8]: %timeit NCollection_Array1__gp_Dir(1, 3)
-   42.9 ns ± 0.575 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+   43.1 ns ± 0.166 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
 
    In [9]: %timeit NCollection_Array1[gp_Dir](1, 3)
-   79.2 ns ± 1.84 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+   78.8 ns ± 0.517 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
    ```
 
    | Statement                          | Timing             |
    | ---------------------------------- | ------------------ |
-   | `NCollection_Array1__gp_Dir(1, 3)` | 42.9 ns ± 0.575 ns |
-   | `NCollection_Array1[gp_Dir](1, 3)` | 79.2 ns ± 1.84 ns  |
+   | `NCollection_Array1__gp_Dir(1, 3)` | 43.1 ns ± 0.166 ns |
+   | `NCollection_Array1[gp_Dir](1, 3)` | 78.8 ns ± 0.517 ns  |
 
    Typically, the NCollections don't appear in large loops where the nanoseconds could pile up, but are created once and then filled in a loop. Since both statements create the same type at runtime, accessing the NCollections takes the same time.
 
 ### C++ scalar types
 
-A Python type stands for a C++ template argument: `float` for C++ `double`, `int`, `bool`, and `str` for `std::string`. Python has no own type for five more C++ scalars used in OCCT 8, so `nanocct.NCollection` exports a marker for each:
+A Python type stands for a C++ template argument: `float` for C++ `double`, `int` and `bool`. Python has no own type for five more C++ scalars used in OCCT 8, so `nanocct.NCollection` exports a marker for each:
 
 | Marker      | C++ type             |
 | ----------- | -------------------- |
@@ -104,7 +104,7 @@ A Python type stands for a C++ template argument: `float` for C++ `double`, `int
 | `ulong`     | `unsigned long`      |
 | `ulonglong` | `unsigned long long` |
 
-With them, every NCollection class of nanocct can be spelled generically:
+With them, the containers of nanocct can be spelled generically: `NCollection_Array1`, `Array2`, `HArray1`, `HArray2`, `Sequence`, `HSequence`, `List`, `Map`, `IndexedMap`, `DataMap`, `IndexedDataMap`, `DoubleMap`, `DynamicArray`, `LinearVector` and `Shared`. The other NCollection classes, such as `NCollection_Vec3` or `NCollection_Mat3`, have no generic spelling.
 
 ```python
 In [1]: from nanocct.NCollection import NCollection_Array1, NCollection_HArray1, float32, uchar
@@ -117,66 +117,56 @@ In [3]: NCollection_Array1[float].__name__
 Out[3]: 'NCollection_Array1__double'
 ```
 
-The markers are only keys. The values are plain Python floats and ints, and the C++ class does the conversion, e.g. the rounding to 32 bits:
+The markers are only keys: the elements are plain Python numbers (see [Editing array and list elements in place](#editing-array-and-list-elements-in-place)). An array spelled with a marker is the one OCCT takes, e.g. for the normals of a triangulation:
 
 ```python
 In [4]: normals = NCollection_HArray1[float32](1, 9, 0.0)   # 3 nodes, x y z each
-   ...: normals.SetValue(1, 0.1)
-   ...: normals.Value(1)
-Out[4]: 0.10000000149011612
-
-In [5]: tri = Poly_Triangulation(3, 1, False, False)
+   ...: tri = Poly_Triangulation(3, 1, False, False)
    ...: tri.SetNormals(normals)
    ...: tri.HasNormals()
-Out[5]: True
+Out[4]: True
 ```
 
 For type checkers the markers are aliases of `float` and `int`: precision is not a Python type, the same as for every other C++ `float` or `unsigned int` parameter of the bindings. So a type checker does not tell `NCollection_HArray1[float32]` from `NCollection_HArray1[float]`; handing the wrong one to OCCT fails at runtime with a `TypeError`.
 
-### numpy zero-copy support
+### numpy arrays
 
-The nanocct generator gives e.g. `NCollection_Array1` and `NCollection_Array2` numpy's array protocol, `__array__`, see [details](#numpy-zero-copy-support-in-detail).
+`NCollection_Array1` and `NCollection_Array2` of a packed element type (`float`, `int`, `gp_Pnt`, `gp_Vec`, …) support numpy's array protocol:
+- `np.asarray(a)` is a zero-copy view of OCCT's memory
+- `np.array(a)` is a copy
+- `np.copyto(np.asarray(a), pts)` fills an OCCT array from a numpy array or a Python list
 
-```python
-In [1]: from nanocct.NCollection import NCollection_Array1
-   ...: from nanocct.gp import gp_Vec
-   ...: import numpy as np
-   ...:
-   ...: a = NCollection_Array1[gp_Vec](1, 3)
-   ...:
-   ...: a.SetValue(1, gp_Vec(1, 0, 0))
-   ...: a.SetValue(2, gp_Vec(0, 1, 0))
-   ...: a.SetValue(3, gp_Vec(0, 0, 1))
-
-In [2]: np.asarray(a)
-Out[2]:
-array([[1., 0., 0.],
-       [0., 1., 0.],
-       [0., 0., 1.]])
-```
-
-This accesses the C++ values from Python without copying them (zero-copy access). A view, like an element reference from `ChangeValue()` or an iterator, points into the container's storage, which it keeps alive but cannot keep in place. So the container refuses every call that would move or free what a live view points to, as a `bytearray` does while a buffer is exported: a `Resize()` to another length, a `Remove()`, a `Clear()`, or an OCCT function that takes the container to fill it raises `BufferError`. Release the view first, or take it after the change:
-
-```python
-In [3]: v = np.asarray(a)
-   ...: try:
-   ...:     a.Resize(1, 5, True)
-   ...: except BufferError as e:
-   ...:     msg = str(e)
-   ...: msg
-Out[3]: 'Resize: 1 live view(s) of this container (element references, iterators or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a buffer is exported)'
-
-In [4]: del v
-   ...: a.Resize(1, 5, True)
-   ...: np.asarray(a).shape
-Out[4]: (5, 3)
-```
-
-A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 7a](docs/Binding-Rules.md#views-a-container-refuses-to-invalidate-r-view-guard).
+While a view lives, a call that would move or free the storage, such as a `Resize()` to another length, raises `BufferError`. See [numpy support](#numpy-support).
 
 ### Index access
 
-`a[i]` makes OCCT's item access available with OCCT's index, and nothing more: `NCollection_Array1` counts from `Lower()`, `NCollection_Sequence` and the indexed maps from 1, `NCollection_DynamicArray` and `NCollection_LinearVector` from 0. There are no negative indices and no slices, because a negative index is a real OCCT index for an array like `NCollection_Array1[float](-2, 2)`. For Python-style indexing, use a numpy view or a list:
+`a[i]` hands out a copy of the element at OCCT's index. Unlike in a Python list, that index need not start at 0: it is the index the C++ container uses. `NCollection_Array1` counts from `Lower()`, `NCollection_Sequence` and the indexed maps from 1, `NCollection_DynamicArray` and `NCollection_LinearVector` from 0. There are no negative indices and no slices, because a negative index is a real OCCT index for an array like `NCollection_Array1[float](-2, 2)`. `a(i)` and `At(i)` hand out copies too, and `a[i] = p` writes an element; to change one in place, see [Editing array and list elements in place](#editing-array-and-list-elements-in-place).
+
+The first index is the lower bound the array was created with; `At(i)` counts from 0 whatever it is:
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1
+   ...:
+   ...: a = NCollection_Array1[float](1, 3)    # starting from 1
+   ...: for i in range(1, 4):
+   ...:     a[i] = i * 10.0
+
+In [2]: a[1], a[3], a.At(0)
+Out[2]: (10.0, 30.0, 10.0)
+```
+
+```python
+In [1]: from nanocct.NCollection import NCollection_Array1
+   ...:
+   ...: a = NCollection_Array1[float](0, 2)    # starting from 0
+   ...: for i in range(3):
+   ...:     a[i] = (i + 1) * 10.0
+
+In [2]: a[0], a[2], a.At(0)
+Out[2]: (10.0, 30.0, 10.0)
+```
+
+For Python-style indexing, use a numpy view or a list:
 
 ```python
 In [1]: import numpy as np
@@ -184,7 +174,7 @@ In [1]: import numpy as np
    ...:
    ...: a = NCollection_Array1[float](1, 8)
    ...: for i in range(1, 9):
-   ...:     a.SetValue(i, i * 10.0)
+   ...:     a[i] = i * 10.0
 
 In [2]: a[1], a[3]
 Out[2]: (10.0, 30.0)
@@ -207,69 +197,268 @@ Timing
 
 ```python
 In [6]: %timeit a.Value(3)
-17 ns ± 0.0779 ns per loop (mean ± std. dev. of 7 runs, 100,000,000 loops each)
+16.9 ns ± 0.073 ns per loop (mean ± std. dev. of 7 runs, 100,000,000 loops each)
 
 In [7]: %timeit a[3]
-19.7 ns ± 0.257 ns per loop (mean ± std. dev. of 7 runs, 10,000,000 loops each)
+20 ns ± 0.103 ns per loop (mean ± std. dev. of 7 runs, 100,000,000 loops each)
 ```
 
 | Statement    | Timing             |
 | ------------ | ------------------ |
-| `a.Value(3)` | 17 ns ± 0.0779 ns  |
-| `a[3]`       | 19.7 ns ± 0.257 ns |
+| `a.Value(3)` | 16.9 ns ± 0.073 ns  |
+| `a[3]`       | 20 ns ± 0.103 ns |
 
-**Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks, a wrong index or an empty container raises an OCCT exception: `Value`/`ChangeValue`/`SetValue`/`At` of `NCollection_Array1`, `Array2`, `Sequence` and `LinearVector` raise `Standard_OutOfRange` (`a[0]` above), and `First()`/`Last()` of an empty `List` or `Sequence` raise `Standard_NoSuchObject` (of an empty `LinearVector` `Standard_OutOfRange`). Where OCCT does not check, it behaves as in C++ and can crash the Python interpreter:
+**Note:** nanocct keeps OCCT's C++ contract for index access and adds no checks of its own. Where OCCT checks, a wrong index or an empty container raises an OCCT exception: `Value`/`ChangeValue`/`SetValue` of `NCollection_Array1`, `Sequence` and `LinearVector`, and `At` of `Array1` and `Sequence`, raise `Standard_OutOfRange`, and `First()`/`Last()` of an empty `List` or `Sequence` raise `Standard_NoSuchObject` (of an empty `LinearVector` `Standard_OutOfRange`). `NCollection_Array2` checks the row and the column only in `At(row, col)`: its `Value`, `ChangeValue`, `SetValue`, `a[(row, col)]` and `a(row, col)` check only that the position lies in the storage, so a column past the end of a row reaches the next row (`a.Value(1, 3)` of a 2 × 2 array reads the element at (2, 1)). Where OCCT does not check, it behaves as in C++ and can crash the Python interpreter:
 
-- `First()`/`Last()` of an empty `NCollection_Array1` or `HArray1` (OCCT reads the first element of no storage; `ChangeFirst()` there returns `None` instead);
+- `First()`, `Last()`, `ChangeFirst()` and `ChangeLast()` of an empty `NCollection_Array1` or `HArray1`: OCCT reads an element of no storage, which, depending on the element type and the member, crashes, returns `None` or returns an object over no memory;
 - `Value()` of a default-constructed or exhausted OCCT `Iterator` (`NCollection_List[int].Iterator().Value()`);
-- `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]` past the end: within the first block they return whatever the memory holds (`d[3]` of a 3-element array is `0`), beyond it (`d[256]`) the process crashes; likewise `NCollection_Mat4.GetValue`;
+- `NCollection_DynamicArray`'s `Value`, `ChangeValue` and `d[i]` past the end: within the first block they return whatever the memory holds (`d[3]` of a 3-element array is `0`), beyond it (`d[256]`) the process crashes; `GetValue(row, col)` of `BVH_Mat4f`/`BVH_Mat4d` (OCCT's `NCollection_Mat4`) past its 4 × 4 elements returns whatever the memory holds;
 - a constructor whose upper bound lies below the lower one: `NCollection_Array1[float](5, 1)` constructs an array whose `Size()` is 18446744073709551613 (`len()` then raises `ValueError`, and `Init()` crashes), and `NCollection_Array2[float](3, 1, 1, 2).NbRows()` is `-1`.
 
 ### Iterating over NCollections
 
+Every NCollection is iterable, and `len()` gives its number of elements. What a `for` loop yields depends on the kind of container:
+
+| Container | `for x in c` yields | Also |
+| --------- | ------------------- | ---- |
+| `NCollection_Array1`, `Array2` | the elements | |
+| `NCollection_Sequence`, `NCollection_List` | the elements | `Iterator`; `List`: `in` |
+| `NCollection_Map`, `NCollection_IndexedMap` | the keys | `in`, `Iterator` |
+| `NCollection_DataMap`, `NCollection_IndexedDataMap` | the keys, as a `dict` does | `items()` yields `(key, value)` tuples; `in`, `Iterator`; no `keys()` or `values()` |
+
+```python
+In [1]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.NCollection import NCollection_Array1, NCollection_IndexedDataMap, NCollection_List
+   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
+   ...: from nanocct.TopExp import TopExp
+   ...: from nanocct.TopoDS import TopoDS_Shape
+   ...: from nanocct.TopTools import TopTools_ShapeMapHasher
+   ...:
+   ...: a = NCollection_Array1[float](1, 3)
+   ...: for i in range(1, 4):
+   ...:     a[i] = i * 10.0
+   ...: [x for x in a]
+Out[1]: [10.0, 20.0, 30.0]
+
+In [2]: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+   ...: edge_faces = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+   ...: TopExp.MapShapesAndAncestors_s(box, TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs_ShapeEnum.TopAbs_FACE, edge_faces)
+   ...: len(edge_faces), {edge.ShapeType().name for edge in edge_faces}
+Out[2]: (12, {'TopAbs_EDGE'})
+
+In [3]: {faces.Extent() for edge, faces in edge_faces.items()}
+Out[3]: {2}
+```
+
+A loop hands out copies, as `a[i]` does; to change elements while looping, see [Editing array and list elements in place](#editing-array-and-list-elements-in-place).
+
+A change of the container during the loop is not refused, but some changes end the loop: after a removal (`Remove`, `RemoveFirst`, `RemoveLast`, `Clear`), a `Resize` to another length, or an `Add` or `Bind` on a hashed map (`NCollection_Map`, `DataMap`), even of a key it already holds, the loop's next step raises `RuntimeError`, as a `dict`'s does after a change of size. An `Append` to a `Sequence` or `List`, an `Add` to an `IndexedMap` or `IndexedDataMap`, or writing `a[i] = x`, lets the loop go on, and it reaches the added elements. An `Iterator` kept in a variable goes stale in the same way, see [Iterating over OCCT iterators](#iterating-over-occt-iterators).
+
+`x in container` is OCCT's lookup where there is one: the maps (`IsBound`/`Contains` by key), and `NCollection_List` where the element type has `operator==` (`Contains`). Elsewhere Python falls back to iterating with its own `==`, which works for numbers and strings but is identity for a class without a value `==`: `gp_Pnt(1, 2, 3) in l` is `False` for a list holding an equal point. Compare explicitly there, `any(p.IsEqual(q, tol) for p in l)`.
+
+Timings:
+
 - 100 `float` element `NCollection`
 
   ```python
-  In [1]: import numpy as np
+  In [4]: import numpy as np
      ...: from nanocct.NCollection import NCollection_Array1
      ...:
      ...: N = 100
      ...: a = NCollection_Array1[float](1, N)
      ...: for i in range(1, N+1):
-     ...:     a.SetValue(i, i * 10.0)
+     ...:     a[i] = i * 10.0
      ...:
 
-  In [2]: %timeit [a.Value(i) for i in range(1, N + 1)]
-  2.06 μs ± 14.9 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
+  In [5]: %timeit [a.Value(i) for i in range(1, N + 1)]
+  2.08 μs ± 9.8 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)
 
-  In [3]: %timeit list(a)
-  1.17 μs ± 11.2 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  In [6]: %timeit list(a)
+  1.42 μs ± 7.23 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
   ```
 
 - 10 `float` element `NCollection`
 
   ```python
-  In [4]: N = 10
+  In [7]: N = 10
      ...: a = NCollection_Array1[float](1, N)
      ...: for i in range(1, N+1):
-     ...:     a.SetValue(i, i * 10.0)
+     ...:     a[i] = i * 10.0
      ...:
 
-  In [5]: %timeit [a.Value(i) for i in range(1, N + 1)]
-  248 ns ± 2.55 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  In [8]: %timeit [a.Value(i) for i in range(1, N + 1)]
+  236 ns ± 3.9 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
-  In [6]: %timeit list(a)
-  221 ns ± 2.69 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+  In [9]: %timeit list(a)
+  366 ns ± 2.75 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
   ```
 
 | Statement                               | 100 elements      | 10 elements      |
 | --------------------------------------- | ----------------- | ---------------- |
-| `[a.Value(i) for i in range(1, N + 1)]` | 2.06 μs ± 14.9 ns | 248 ns ± 2.55 ns |
-| `list(a)`                               | 1.17 μs ± 11.2 ns | 221 ns ± 2.69 ns |
+| `[a.Value(i) for i in range(1, N + 1)]` | 2.08 μs ± 9.8 ns | 236 ns ± 3.9 ns |
+| `list(a)`                               | 1.42 μs ± 7.23 ns | 366 ns ± 2.75 ns |
 
-Below 7 or 8 elements, `list(a)` gets slightly slower due to the creating the iterator.
+Below about 25 elements, `list(a)` is slower than the `Value()` loop, because creating the iterator costs about 190 ns.
 
-`x in container` is OCCT's lookup where there is one: the maps (`IsBound`/`Contains` by key), and `NCollection_List` where the element type has `operator==` (`Contains`). Elsewhere Python falls back to iterating with its own `==`, which works for numbers and strings but is identity for a class without a value `==`: `gp_Pnt(1, 2, 3) in l` is `False` for a list holding an equal point. Compare explicitly there, `any(p.IsEqual(q, tol) for p in l)`.
+### Editing array and list elements in place
+
+*Binding rule: R-CONST-TWIN ([Binding rules](docs/Binding-Rules.md#r-const-twin))*
+
+Edit an element in place with the member whose name says so, or change a copy and write it back with `a[i] = p`:
+
+- **`Change…` members** hand out the element itself: `ChangeValue(i)`, `ChangeAt(i)`, `ChangeFirst()`, `ChangeLast()` of `NCollection_Array1`, `Array2` and `Sequence`; `ChangeValue(i)`, `ChangeFirst()` and `ChangeLast()` of `NCollection_DynamicArray` and `NCollection_LinearVector`; `ChangeFind(k)` and `ChangeSeek(k)` of `NCollection_DataMap`; `ChangeFromIndex(i)`, `ChangeFromKey(k)` and `ChangeSeek(k)` of `NCollection_IndexedDataMap`; with their `H` variants.
+- **`NCollection_List`** has no index and no `Change…` member of its own: edit through its `Iterator`'s `ChangeValue()`.
+- **Write back** with `a[i] = p` or `SetValue(i, p)`.
+
+Examples:
+
+- Arrays of C++ scalars (`NCollection_Array1[float]`, `NCollection_HArray1[float32]`, …)
+
+  An element is a plain Python number: reading it gives the number, and changing that number leaves the array as it is. Scalar elements have no `Change…` member, so they are written with `a[i] = x` (or `SetValue(i, x)`) only. C++ converts the value on the way in, e.g. rounds it to 32 bits:
+
+  ```python
+  In [1]: from nanocct.NCollection import NCollection_HArray1, float32
+     ...:
+     ...: normals = NCollection_HArray1[float32](1, 9, 0.0)
+     ...: normals[1] = 0.1
+     ...: normals[1]
+  Out[1]: 0.10000000149011612
+  ```
+
+- Arrays of C++ objects (`NCollection_Array1[gp_Pnt]`, …)
+
+  `a[i]` is a copy, so an edit goes through `ChangeValue(i)` or writes a changed copy back with `a[i] = p`:
+
+  ```python
+  In [2]: from nanocct.NCollection import NCollection_Array1, NCollection_List
+     ...: from nanocct.gp import gp_Pnt
+     ...:
+     ...: a = NCollection_Array1[gp_Pnt](1, 3)
+     ...: a.ChangeValue(1).SetX(1.0)         # edits the first element of a
+     ...: p = a[2]                           # p is a copy (!) of the second element of a
+     ...: p.SetX(2.0)                        # edits the copy (!)
+     ...: a[2] = p                           # writes the copy back
+     ...: for i in range(1, a.Length() + 1):
+     ...:     a.ChangeValue(i).SetZ(5.0)     # explicitly asks for the element, not a copy
+
+  In [3]: [(a.Value(i).X(), a.Value(i).Z()) for i in range(1, 4)]
+  Out[3]: [(1.0, 5.0), (2.0, 5.0), (0.0, 5.0)]
+  ```
+
+- Linked lists (`NCollection_List`)
+
+  Python has no counterpart of a linked list that stores its values in its nodes, so an element is edited in place through OCCT's own `Iterator`, stepping with `More()` and `Next()`:
+
+  ```python
+  In [4]: lp = NCollection_List[gp_Pnt]()
+     ...: lp.Append(gp_Pnt(1, 0, 0))
+     ...: lp.Append(gp_Pnt(2, 0, 0))
+     ...:
+     ...: it = NCollection_List[gp_Pnt].Iterator(lp)
+     ...: while it.More():
+     ...:     it.ChangeValue().SetZ(5.0)     # the element itself
+     ...:     it.Next()
+     ...: [p.Z() for p in lp]
+  Out[4]: [5.0, 5.0]
+  ```
+
+  A `for` loop over the `Iterator` yields copies, as `for p in lp` does.
+
+### Editing map values in place
+
+*Binding rule: R-CONST-TWIN ([Binding rules](docs/Binding-Rules.md#r-const-twin))*
+
+Map values are edited the same way: with `ChangeFromIndex(i)` in an `NCollection_IndexedDataMap`, whose `m[i]` is by index, or `ChangeFind(k)` in an `NCollection_DataMap`. The values a map's `items()` hands out are copies, so `faces.Append(box)` in `for edge, faces in edge_faces.items()` changes nothing.
+
+```python
+In [5]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.NCollection import NCollection_IndexedDataMap
+   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
+   ...: from nanocct.TopExp import TopExp
+   ...: from nanocct.TopoDS import TopoDS_Shape
+   ...: from nanocct.TopTools import TopTools_ShapeMapHasher
+   ...:
+   ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+   ...: edge_faces = NCollection_IndexedDataMap[TopoDS_Shape, NCollection_List[TopoDS_Shape], TopTools_ShapeMapHasher]()
+   ...: TopExp.MapShapesAndAncestors_s(box, TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs_ShapeEnum.TopAbs_FACE, edge_faces)
+   ...: for i in range(1, edge_faces.Extent() + 1):
+   ...:     edge_faces.ChangeFromIndex(i).Append(box)
+   ...: edge_faces[1].Extent()
+Out[5]: 3
+```
+
+### Copies and assignments
+
+*Binding rule: R-CONST-TWIN ([Binding rules](docs/Binding-Rules.md#r-const-twin))*
+
+Every read other than through a `Change…` member hands out a copy, as the usual C++ `gp_Pnt p = a(i);` does: `a[i]`, `a(i)`, a `for` loop, the values of a map's `items()`, `First()`/`Last()`, `Value()`, `At()` and the `Find…()` members. A copy can be kept, sorted and swapped like any Python object, and editing it without writing it back leaves the container unchanged:
+
+```python
+In [6]: a[1], a[2] = a[2], a[1]          # swaps, as in a Python list
+   ...: a.Value(1).X(), a.Value(2).X()
+Out[6]: (2.0, 1.0)
+```
+
+A subscript on the left of `=` is no read: `a[1] = x` calls `a.__setitem__(1, x)`, which is `SetValue(1, x)`, a write into the array. Every other `a[i]` -- on the right of `=`, or in an expression such as `a[i].SetX(1.0)` -- calls `__getitem__` and hands out a copy. So the swap first reads two copies and then writes them, and `a[i] += x` reads a copy and writes the result back.
+
+**Note for C++ readers:** in C++, `a(i).SetX(1.0)`, `a[i].SetX(1.0)` and `l.First().SetX(1.0)` edit the element, because the non-const overloads return a reference. Python has no const, so nanocct cannot tell which overload a caller means, and binds OCCT's usual by-value use (`gp_Pnt p = a(i);`, `TopoDS_Shape s = l.First();`). In Python these calls edit a copy. An element handed out as a reference for `[]` and the loops would be the slot itself, with C++ reference semantics: `a[1], a[2] = a[2], a[1]` would give two equal elements without an error, and so would writing back a sorted list.
+
+### Holding an element
+
+*Binding rule: R-VIEW-GUARD ([Binding rules](docs/Binding-Rules.md#r-view-guard))*
+
+An element from a `Change…` member is a view into the container's storage, as a numpy view is. A name bound to it -- `faces = edge_faces.ChangeFromIndex(1)` -- holds it as long as the name lives, and while it does, the container refuses a call that would free or move the element with `BufferError`, as `bytearray` refuses to resize while a `memoryview` of it exists. In C++ that reference would be left dangling. Release the name with `faces = None`:
+
+```python
+In [7]: faces = edge_faces.ChangeFromIndex(1)
+   ...: try:
+   ...:     edge_faces.Clear()
+   ...: except BufferError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[7]: 'Clear: 1 live view(s) of this container (element references or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a buffer is exported)'
+
+In [8]: faces = None
+   ...: edge_faces.Clear()
+   ...: edge_faces.Extent()
+Out[8]: 0
+```
+
+Which calls refuse while a `Change…` element is held, measured:
+
+| Container | Refused while an element is held | Goes through |
+| --------- | -------------------------------- | ------------ |
+| `Array1` | `Resize` to another length, `Assign` of another size | `SetValue`, `a[i] = v`, `Init`, `Assign` of the same size, `Resize` to the same length |
+| `Sequence` | `Remove`, `Clear` | `Append`, `Prepend`, `InsertAfter`, `SetValue`, `Exchange`, `Reverse` |
+| `List` (an element from `Iterator.ChangeValue()`) | `RemoveFirst`, `Remove`, `Clear` | `Append`, `Prepend`, `Reverse` |
+| `IndexedDataMap` | `RemoveLast`, `Clear`, an OCCT function that takes the map to fill it (`TopExp.MapShapesAndAncestors`) | `Add`, `Substitute`, `Swap` |
+
+The full list per container is in [Design 7a](docs/Binding-Rules.md#calls-that-invalidate-a-containers-views-r-view-guard). A `Remove` of another element of a `Sequence` or `List` is refused too, although C++ keeps the other elements valid: the check counts the views per container, not per element.
+
+An element that is itself a container, such as an edge's list of faces, is also protected against being overwritten: while an element of that inner list is held, `Substitute`, `Bind` or `m[k] = v` on its key, and `SetValue` or `a[i] = v` of its slot are refused, because the overwrite destroys the inner list's elements:
+
+```python
+In [9]: TopExp.MapShapesAndAncestors_s(box, TopAbs_ShapeEnum.TopAbs_EDGE, TopAbs_ShapeEnum.TopAbs_FACE, edge_faces)
+   ...: face = NCollection_List[TopoDS_Shape].Iterator(edge_faces.ChangeFromIndex(1)).ChangeValue()
+   ...: try:
+   ...:     edge_faces.Substitute(1, edge_faces.FindKey(1), NCollection_List[TopoDS_Shape]())
+   ...: except BufferError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[9]: 'Substitute: 1 live view(s) of this container (element references or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a buffer is exported)'
+
+In [10]: face = None
+    ...: edge_faces.Substitute(1, edge_faces.FindKey(1), NCollection_List[TopoDS_Shape]())
+    ...: edge_faces.FindFromIndex(1).Extent()
+Out[10]: 0
+```
+
+Patterns that never run into it:
+
+- **Edit through an expression**, not a name: `a.ChangeValue(i).SetX(1.0)`, `m.ChangeFromIndex(i).Append(shape)`. The element is released at the end of the statement, also in a loop over the indices.
+- **Put the loop into a function**: its variables are released when it returns.
+- **Release the name** before a `Clear()`, `Remove()` or `Resize()`: `faces = None`.
+- **Instead of a `Resize()`** while elements are held, release them and take them again afterwards -- a C++ reference into the array does not survive its `Resize` either.
 
 ### Uninitialised values
 
@@ -291,129 +480,13 @@ In [3]: [v.Coord() for v in NCollection_Array1[gp_Vec](1, 2)]
 Out[3]: [(0.0, 0.0, 0.0), (0.0, 0.0, 0.0)]
 ```
 
-## Iterating over OCCT iterators
+## numpy support
 
-**Binding rule: R-ITER ([Design 2, Python additions](docs/Design.md#python-additions))**
+*Binding rule: R-VIEW ([Design 2, Python additions](docs/Design.md#python-additions))*
 
-Every OCCT class with `More()`, `Next()` and a `Current()` or `Value()` is a Python iterable: `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer` and the other OCCT iterators, and the `Iterator` classes of the NCollections. A `for` loop runs OCCT's own `More()`/`Next()` loop and yields `Current()` (or `Value()`).
+### Viewing an OCCT array with numpy zero-copy support
 
-```python
-In [1]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
-   ...: from nanocct.TopExp import TopExp, TopExp_Explorer
-   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
-   ...: from nanocct.TopoDS import TopoDS_Iterator, TopoDS_Shape
-   ...: from nanocct.TopTools import TopTools_ShapeMapHasher
-   ...: from nanocct.NCollection import NCollection_IndexedMap
-   ...:
-   ...: FACE, EDGE = TopAbs_ShapeEnum.TopAbs_FACE, TopAbs_ShapeEnum.TopAbs_EDGE
-   ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
-
-In [2]: [f.ShapeType().name for f in TopExp_Explorer(box, FACE)]
-Out[2]: ['TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE']
-
-In [3]: [c.ShapeType().name for c in TopoDS_Iterator(box)]
-Out[3]: ['TopAbs_SHELL']
-```
-
-The loop advances the iterator object itself, so it is used up afterwards, like a file. OCCT's `ReInit()` starts it again:
-
-```python
-In [4]: ex = TopExp_Explorer(box, FACE)
-   ...: len(list(ex)), len(list(ex))
-Out[4]: (6, 0)
-
-In [5]: ex.ReInit()
-   ...: len(list(ex))
-Out[5]: 6
-```
-
-An explorer visits a shared sub-shape once for every shape it belongs to: each edge of a box is part of two faces. `TopExp.MapShapes` collects each sub-shape once (OCCT's shape maps compare with `IsSame`):
-
-```python
-In [6]: edges = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
-   ...: TopExp.MapShapes_s(box, EDGE, edges)
-   ...: len(list(TopExp_Explorer(box, EDGE))), edges.Size()
-Out[6]: (24, 12)
-```
-
-An iterator over an NCollection holds a position inside it. While the iterator is referenced, the container refuses what would free that position -- a `Clear()`, a `Remove()`, and for a hashed map (`NCollection_Map`, `DataMap`, `DoubleMap`) an insert, which can grow the table -- with `BufferError`, like the views [above](#numpy-zero-copy-support). In a `for` loop that is the loop itself; an `Iterator` kept in a variable blocks until it is deleted. Removing through the iterator itself, OCCT's own removal loop, stays allowed:
-
-```python
-In [7]: from nanocct.NCollection import NCollection_List
-   ...: l = NCollection_List[int]()
-   ...: for i in range(4):
-   ...:     l.Append(i)
-   ...: it = NCollection_List[int].Iterator(l)
-   ...: while it.More():
-   ...:     if it.Value() % 2 == 1:
-   ...:         l.Remove(it)
-   ...:     else:
-   ...:         it.Next()
-   ...: list(l)
-Out[7]: [0, 2]
-
-In [8]: try:
-   ...:     l.Clear()
-   ...: except BufferError as e:
-   ...:     err = type(e).__name__
-   ...: err
-Out[8]: 'BufferError'
-
-In [9]: del it
-   ...: l.Clear()
-   ...: l.Size()
-Out[9]: 0
-```
-
-### Timings
-
-A compound of 100 boxes (600 faces, 2400 edge visits, 1200 distinct edges):
-
-```python
-In [7]: from nanocct.BRep import BRep_Builder
-   ...: from nanocct.TopoDS import TopoDS_Compound
-   ...:
-   ...: builder, comp = BRep_Builder(), TopoDS_Compound()
-   ...: builder.MakeCompound(comp)
-   ...: for i in range(100):
-   ...:     builder.Add(comp, BRepPrimAPI_MakeBox(1, 1, 1).Shape())
-
-In [8]: %%timeit
-   ...: ex, out = TopExp_Explorer(comp, EDGE), []
-   ...: while ex.More():
-   ...:     out.append(ex.Current())
-   ...:     ex.Next()
-155 μs ± 929 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-
-In [9]: %timeit [e for e in TopExp_Explorer(comp, EDGE)]
-122 μs ± 781 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-
-In [10]: %timeit list(TopExp_Explorer(comp, EDGE))
-114 μs ± 616 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-
-In [11]: %%timeit
-    ...: m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
-    ...: TopExp.MapShapes_s(comp, EDGE, m)
-    ...: list(m)
-106 μs ± 735 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
-```
-
-| Statement                                                                                                         | Timing                              |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
-| `ex, out = TopExp_Explorer(comp, EDGE), []; while ex.More(): out.append(ex.Current()); ex.Next()`                 | 155&nbsp;μs&nbsp;±&nbsp;929&nbsp;ns |
-| `[e for e in TopExp_Explorer(comp, EDGE)]`                                                                        | 122&nbsp;μs&nbsp;±&nbsp;781&nbsp;ns |
-| `list(TopExp_Explorer(comp, EDGE))`                                                                               | 114&nbsp;μs&nbsp;±&nbsp;616&nbsp;ns |
-| `m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher](); TopExp.MapShapes_s(comp, EDGE, m); list(m)` | 106&nbsp;μs&nbsp;±&nbsp;735&nbsp;ns |
-
-A `for` loop or `list()` is about 20–25 % faster than a hand-written `More()`/`Next()` loop. `TopExp.MapShapes` is the fastest here, although it also removes the duplicates: the traversal runs in one C++ call, and it returns 1 200 instead of 2 400 shapes.
-
-## numpy zero-copy support in detail
-
-**Binding rule: R-VIEW ([Design 2, Python additions](docs/Design.md#python-additions))**
-
-### Support for the numpy array protocol
-
-The nanocct generator gives `NCollection_Array1` and `NCollection_Array2` (and their `HArray1`/`HArray2` variants) numpy's array protocol, `__array__`, for every element type that is a packed run of numpy scalars: the C++ scalars `double`, `float`, `int`, `bool`, `unsigned char`, `gp_Pnt`, `gp_Vec`, `gp_Dir`, `gp_XYZ`, their 2d counterparts, `Poly_Triangle` and the `NCollection_Vec2/3/4` types. `Poly_ArrayOfNodes`, `Poly_ArrayOfUVNodes`, `Image_PixMap` and `NCollection_Buffer` have it too. This allows to access large C++ arrays from Python with zero-copy:
+The nanocct generator gives `NCollection_Array1` and `NCollection_Array2` (and their `HArray1`/`HArray2` variants) numpy's array protocol, `__array__`, for every element type that is a packed run of numpy scalars: the C++ scalars `double`, `float`, `int`, `bool`, `unsigned char`, `gp_Pnt`, `gp_Vec`, `gp_Dir`, `gp_XYZ`, `gp_Pnt2d`, `gp_Vec2d`, `gp_XY`, `Poly_Triangle` and the `NCollection_Vec2/3/4` types. `Poly_ArrayOfNodes`, `Poly_ArrayOfUVNodes`, `Image_PixMap` and `NCollection_Buffer` have it too. This allows to access large C++ arrays from Python with zero-copy:
 
 - `np.asarray(a)` is a view of OCCT's own memory: no copy, and writes go straight into the OCCT array.
 - `np.array(a)` is an independent copy.
@@ -432,11 +505,10 @@ In [1]: from nanocct.NCollection import NCollection_Array1
    ...: a.SetValue(3, gp_Vec(0, 0, 1))
 
 In [2]: v = np.asarray(a)
-   ...: v
-Out[2]:
-array([[1., 0., 0.],
-       [0., 1., 0.],
-       [0., 0., 1.]])
+   ...: print(v)
+[[1. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]]
 
 In [3]: v[0, 0] = 42.0
    ...: a.Value(1).X()
@@ -447,6 +519,44 @@ In [4]: c = np.array(a)
    ...: a.Value(1).X()
 Out[4]: 42.0
 ```
+
+A view -- a numpy view, or an element itself as `ChangeValue()` hands it out (see [Holding an element](#holding-an-element)) -- points into the container's storage, which it keeps alive but cannot keep in place. So the container refuses every call that would move or free what a live view points to, as a `bytearray` does while a buffer is exported: a `Resize()` to another length, a `Remove()`, a `Clear()`, or an OCCT function that takes the container to fill it raises `BufferError`. Release the view first, or take it after the change:
+
+```python
+In [5]: try:
+   ...:     a.Resize(1, 5, True)                 # v is still a view
+   ...: except BufferError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[5]: 'Resize: 1 live view(s) of this container (element references or numpy arrays) would be invalidated by this call; release them first (BufferError, as bytearray raises while a buffer is exported)'
+
+In [6]: v = None
+   ...: a.Resize(1, 5, True)
+   ...: np.asarray(a).shape
+Out[6]: (5, 3)
+```
+
+In IPython or Jupyter, a view shown as a cell's result stays referenced by the output history (`Out`, `_`) and blocks these calls too: show views with `print()`, as In [2] does.
+
+A call that keeps the storage in place goes through while a view lives: `SetValue()`, a `Resize()` to the same length, an `Assign()` of an array of the same size. Which call refuses for which container is listed in [Design 7a](docs/Binding-Rules.md#calls-that-invalidate-a-containers-views-r-view-guard).
+
+### Copying numpy data into an OCCT array
+
+A numpy array or a Python list of points goes into an OCCT array with one copy: create the array with OCCT's bounds and copy into its view. The view is a temporary, so it blocks nothing afterwards:
+
+```python
+In [7]: from nanocct.gp import gp_Pnt
+   ...:
+   ...: pts = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0, 0.0]]
+   ...: b = NCollection_Array1[gp_Pnt](1, len(pts))
+   ...: np.copyto(np.asarray(b), pts)  # copyto needs b's numpy view: np.asarray (np.array would be a copy)
+   ...: b.Value(2).X(), b.Value(3).Y()
+Out[7]: (1.0, 1.0)
+```
+
+numpy checks the shape (`ValueError: could not broadcast input array from shape (3,3) into shape (2,3)`) and converts the values, e.g. `int` to `float`. The view of an array of `gp_Dir` is read-only (`ValueError: assignment destination is read-only`), because a raw write could store a direction that is not of unit length: write those with `a[i] = gp_Dir(…)`.
+
+### numpy timings
 
 Let's make a little benchmark
 
@@ -467,20 +577,20 @@ To access the vectors as python tuples, one uses:
 
 ```python
 In [2]: %timeit [a.Value(i).Coord() for i in range(1, N + 1)]
-99.9 ms ± 2.47 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
+99.9 ms ± 917 μs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 
 In [3]: %timeit np.asarray(a)  # zero copy
-233 ns ± 1.91 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
+313 ns ± 1.97 ns per loop (mean ± std. dev. of 7 runs, 1,000,000 loops each)
 
 In [4]: %timeit np.array(a)
-328 μs ± 6.35 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
+333 μs ± 2.02 μs per loop (mean ± std. dev. of 7 runs, 1,000 loops each)
 ```
 
 | Statement                                       | Timing            |
 | ----------------------------------------------- | ----------------- |
-| `[a.Value(i).Coord() for i in range(1, N + 1)]` | 99.9 ms ± 2.47 ms |
-| `np.array(a)`                                   | 328 μs ± 6.35 μs  |
-| `np.asarray(a)` (zero copy)                     | 233 ns ± 1.91 ns  |
+| `[a.Value(i).Coord() for i in range(1, N + 1)]` | 99.9 ms ± 917 μs |
+| `np.array(a)`                                   | 333 μs ± 2.02 μs  |
+| `np.asarray(a)` (zero copy)                     | 313 ns ± 1.97 ns  |
 
 `np.asarray(a)` only creates the view, so its time does not depend on the size of the array; `np.array(a)` copies all 24 MB.
 
@@ -577,9 +687,124 @@ In [10]: view = np.asarray(tri.InternalTriangles())
 Out[10]: (1, 1, 1)
 ```
 
+## Iterating over OCCT iterators
+
+*Binding rule: R-ITER ([Design 2, Python additions](docs/Design.md#python-additions))*
+
+Every OCCT class with `More()`, `Next()` and a `Current()` or `Value()` is a Python iterable: `TopExp_Explorer`, `TopoDS_Iterator`, `BRepTools_WireExplorer` and the other OCCT iterators, and the `Iterator` classes of the NCollections. A `for` loop runs OCCT's own `More()`/`Next()` loop and yields `Current()` (or `Value()`).
+
+```python
+In [1]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.TopExp import TopExp, TopExp_Explorer
+   ...: from nanocct.TopAbs import TopAbs_ShapeEnum
+   ...: from nanocct.TopoDS import TopoDS_Iterator, TopoDS_Shape
+   ...: from nanocct.TopTools import TopTools_ShapeMapHasher
+   ...: from nanocct.NCollection import NCollection_IndexedMap
+   ...:
+   ...: FACE, EDGE = TopAbs_ShapeEnum.TopAbs_FACE, TopAbs_ShapeEnum.TopAbs_EDGE
+   ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+
+In [2]: [f.ShapeType().name for f in TopExp_Explorer(box, FACE)]
+Out[2]: ['TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE', 'TopAbs_FACE']
+
+In [3]: [c.ShapeType().name for c in TopoDS_Iterator(box)]
+Out[3]: ['TopAbs_SHELL']
+```
+
+The loop advances the iterator object itself, so it is used up afterwards, like a file. OCCT's `ReInit()` starts it again:
+
+```python
+In [4]: ex = TopExp_Explorer(box, FACE)
+   ...: len(list(ex)), len(list(ex))
+Out[4]: (6, 0)
+
+In [5]: ex.ReInit()
+   ...: len(list(ex))
+Out[5]: 6
+```
+
+An explorer visits a shared sub-shape once for every shape it belongs to: each edge of a box is part of two faces. `TopExp.MapShapes` collects each sub-shape once (OCCT's shape maps compare with `IsSame`):
+
+```python
+In [6]: edges = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+   ...: TopExp.MapShapes_s(box, EDGE, edges)
+   ...: len(list(TopExp_Explorer(box, EDGE))), edges.Size()
+Out[6]: (24, 12)
+```
+
+An iterator over an NCollection holds a position inside it. A call that would free that position -- a `Clear()`, a `Remove()`, and for a hashed map (`NCollection_Map`, `DataMap`, `DoubleMap`) an insert, which can grow the table -- goes ahead, and the iterator then raises `RuntimeError` on its next use, as a `dict` iterator does after a change of size. The iterator of a `List`, `Map`, `DataMap` or `DoubleMap` starts again with `Initialize()`; one of a `Sequence`, `IndexedMap` or `IndexedDataMap` has no `Initialize()` and is made anew. Removing through the iterator itself, OCCT's own removal loop, keeps it valid.
+
+```python
+In [7]: from nanocct.NCollection import NCollection_List
+   ...: l = NCollection_List[int]()
+   ...: for i in range(4):
+   ...:     l.Append(i)
+   ...: it = NCollection_List[int].Iterator(l)
+   ...: while it.More():
+   ...:     if it.Value() % 2 == 1:
+   ...:         l.Remove(it)
+   ...:     else:
+   ...:         it.Next()
+   ...: list(l)
+Out[7]: [0, 2]
+
+In [8]: l.Clear()                    # goes ahead
+   ...: l.Size()
+Out[8]: 0
+
+In [9]: try:
+   ...:     it.More()
+   ...: except RuntimeError as e:
+   ...:     msg = str(e)
+   ...: msg
+Out[9]: 'Iterator.More: the container changed during iteration; initialise the iterator again (RuntimeError, as dict raises after a change of size during iteration)'
+```
+
+### Timings
+
+A compound of 100 boxes (600 faces, 2400 edge visits, 1200 distinct edges):
+
+```python
+In [10]: from nanocct.BRep import BRep_Builder
+    ...: from nanocct.TopoDS import TopoDS_Compound
+    ...:
+    ...: builder, comp = BRep_Builder(), TopoDS_Compound()
+    ...: builder.MakeCompound(comp)
+    ...: for i in range(100):
+    ...:     builder.Add(comp, BRepPrimAPI_MakeBox(1, 1, 1).Shape())
+
+In [11]: %%timeit
+    ...: ex, out = TopExp_Explorer(comp, EDGE), []
+    ...: while ex.More():
+    ...:     out.append(ex.Current())
+    ...:     ex.Next()
+157 μs ± 355 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [12]: %timeit [e for e in TopExp_Explorer(comp, EDGE)]
+132 μs ± 1.61 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [13]: %timeit list(TopExp_Explorer(comp, EDGE))
+124 μs ± 2.31 μs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+
+In [14]: %%timeit
+    ...: m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher]()
+    ...: TopExp.MapShapes_s(comp, EDGE, m)
+    ...: list(m)
+110 μs ± 554 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+```
+
+| Statement                                                                                                         | Timing                              |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `ex, out = TopExp_Explorer(comp, EDGE), []; while ex.More(): out.append(ex.Current()); ex.Next()`                 | 157&nbsp;μs&nbsp;±&nbsp;355&nbsp;ns |
+| `[e for e in TopExp_Explorer(comp, EDGE)]`                                                                        | 132&nbsp;μs&nbsp;±&nbsp;1.61&nbsp;μs |
+| `list(TopExp_Explorer(comp, EDGE))`                                                                               | 124&nbsp;μs&nbsp;±&nbsp;2.31&nbsp;μs |
+| `m = NCollection_IndexedMap[TopoDS_Shape, TopTools_ShapeMapHasher](); TopExp.MapShapes_s(comp, EDGE, m); list(m)` | 110&nbsp;μs&nbsp;±&nbsp;554&nbsp;ns |
+
+A `for` loop or `list()` is about 15–20 % faster than a hand-written `More()`/`Next()` loop. `TopExp.MapShapes` is the fastest here, although it also removes the duplicates: the traversal runs in one C++ call, and it returns 1 200 instead of 2 400 shapes.
+
 ## Handling of primitive types passed by reference
 
-**Binding rules: R-OUT, R-COLLISION ([Design 3.1](docs/Conventions.md#31-naming-conventions)), R-INOUT ([Design 7](docs/Binding-Rules.md))**
+*Binding rules: R-OUT, R-COLLISION ([Design 3.1](docs/Conventions.md#31-naming-conventions)), R-INOUT ([Design 7](docs/Binding-Rules.md))*
 
 A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an output in OCCT: nanocct drops it from the parameters and returns it, after the C++ return value if there is one. A reference to a class (`gp_Pnt&`) stays a parameter and is filled in place.
 
@@ -594,7 +819,7 @@ A non-const reference to a number, a `bool`, an enum or a `handle<T>` is an outp
 
 ## Mutable primitive references
 
-**Binding rule: R-REF-PRIMITIVE ([Design 2, Python additions](docs/Design.md#python-additions))**
+*Binding rule: R-REF-PRIMITIVE ([Design 2, Python additions](docs/Design.md#python-additions))*
 
 Many OCCT settings are a method that returns a writable reference to a number, e.g. `int& ShapeFix_Face::FixWireMode()`. In C++ the value is set by assigning to the result, `face.FixWireMode() = 0;`. Python has no references to numbers, so nanocct keeps the getter under its OCCT name and adds a setter: `Set<Name>`, with a `Change` prefix dropped (`ChangeValue` → `SetValue`), unless OCCT already has a method of that name. Its docstring starts with "Python addition".
 
@@ -628,7 +853,7 @@ Out[4]: (7.0, 7.0)
 
 ## Operators
 
-**Binding rules: R-OPERATOR, R-IOP, R-FREE-OP, R-STR ([Design 2, Python additions](docs/Design.md#python-additions))**
+*Binding rules: R-OPERATOR, R-IOP, R-FREE-OP, R-STR ([Design 2, Python additions](docs/Design.md#python-additions))*
 
 C++ operators become the matching Python special methods, and they keep OCCT's meaning:
 
@@ -741,7 +966,7 @@ So a dict finds `g` if `g == f`, and an OCCT map finds it if `g.IsSame(f)`: a re
 | ------------------------ | ------------------------------------------------------------------------------------ |
 | `gp_Pnt.IsEqual(p, tol)` | distance ≤ `tol`                                                                     |
 | `std::equal_to<gp_Pnt>`  | each coordinate within `Epsilon(x)`, about one unit in the last place (`gp_Pnt.hxx`) |
-| `std::hash<gp_Pnt>`      | the exact bits of the three doubles                                                  |
+| `std::hash<gp_Pnt>`      | the bits of the three doubles, summed lossily from their 32-bit halves (`gp_Pnt.hxx`) |
 
 
 ## Strings
@@ -790,7 +1015,7 @@ Out[8]: 'ö'
 
 ## Handling of istream and ostream
 
-**Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 7](docs/Binding-Rules.md))**
+*Binding rules: R-STREAM-OUT, R-STREAM-IN ([Design 7](docs/Binding-Rules.md))*
 
 ```python
 In [1]: import json
@@ -898,47 +1123,130 @@ Curve2ds 24
 ...
 ```
 
+### Precision of written text
+
+*Binding rule: R-STREAM-OUT ([Binding rules](docs/Binding-Rules.md#r-stream-out))*
+
+A C++ caller sets the precision of the stream it hands to a writer, `stream.precision(17)`. The returned text has no stream to set, so every member that writes text takes the keyword-only `precision_hint`, the precision the binding's stream starts with. The default is 6, the precision of a new C++ stream, so the text is what C++ writes into a new stream:
+
+```python
+In [7]: import io
+   ...: from nanocct.Geom import Geom_Circle, Geom_TrimmedCurve
+   ...: from nanocct.GeomTools import GeomTools
+   ...: from nanocct.gp import gp_Ax2, gp_Dir, gp_Pnt
+   ...:
+   ...: arc = Geom_TrimmedCurve(Geom_Circle(gp_Ax2(gp_Pnt(3, 0, 0), gp_Dir(0, 0, 1)), 2), 18, 23, False, False)
+   ...: GeomTools.Write_s(arc).split()[:2], GeomTools.Write_s(arc, precision_hint=17).split()[:2]
+Out[7]: (['8', '-16.7168'], ['8', '-16.716814692820414'])
+
+In [8]: def read_back(text):
+   ...:     return GeomTools.Read_s__Geom_Curve(io.StringIO(text)).FirstParameter() == arc.FirstParameter()
+   ...:
+   ...: read_back(GeomTools.Write_s(arc)), read_back(GeomTools.Write_s(arc, precision_hint=17))
+Out[8]: (False, True)
+```
+
+It is a hint, not a guarantee: a writer that sets its own precision overrides it, exactly as it overrides a C++ caller's. The BREP writer and OCCT's geometry sets always write 15 or 17 digits, whatever the hint says, while `GeomTools.Write_s` above and `DumpJson` use it (`gp_Pnt(0.1, 0, 0).DumpJson(precision_hint=17)` writes `0.10000000000000001`). Python cannot tell which kind a member is, and neither can the binding, so every docstring with the keyword contains a line saying so:
+
+```python
+In [9]: from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
+   ...: from nanocct.BRepTools import BRepTools
+   ...:
+   ...: box = BRepPrimAPI_MakeBox(1, 2, 3).Shape()
+   ...: BRepTools.Write_s(box, precision_hint=3) == BRepTools.Write_s(box)
+Out[9]: True
+
+In [10]: GeomTools.Write_s.__doc__.splitlines()[-1]
+Out[10]: "precision_hint: the precision the stream this binding writes into starts with (std::ostream::precision). A writer that sets its own, such as the BREP and geometry-set writers (15 or 17 digits), overrides it, as it does a C++ caller's stream (nanocct R-STREAM-OUT)."
+```
+
 ### Reading from memory
 
 A stream parameter takes a text file-like object, so text in memory is wrapped in `io.StringIO`. A plain `str` in its place is taken as a file name: it selects the file-path overload, which finds no such file and returns `False`.
 
 ```python
-In [7]: import io
-   ...: from nanocct.BRep import BRep_Builder
-   ...: from nanocct.TopoDS import TopoDS_Shape
-   ...:
-   ...: text = BRepTools.Write_s(s)
-   ...: back = TopoDS_Shape()
-   ...: BRepTools.Read_s(back, io.StringIO(text), BRep_Builder())
-   ...: back.ShapeType()
-Out[7]: TopAbs_ShapeEnum.TopAbs_SOLID
+In [11]: import io
+    ...: from nanocct.BRep import BRep_Builder
+    ...: from nanocct.TopoDS import TopoDS_Shape
+    ...:
+    ...: text = BRepTools.Write_s(s)
+    ...: back = TopoDS_Shape()
+    ...: BRepTools.Read_s(back, io.StringIO(text), BRep_Builder())
+    ...: back.ShapeType()
+Out[11]: TopAbs_ShapeEnum.TopAbs_SOLID
 
-In [8]: BRepTools.Read_s(TopoDS_Shape(), text, BRep_Builder())
-Out[8]: False
+In [12]: BRepTools.Read_s(TopoDS_Shape(), text, BRep_Builder())
+Out[12]: False
 ```
+
+### Reading in steps
+
+*Binding rule: R-STREAM-IN ([Binding rules](docs/Binding-Rules.md#r-stream-in))*
+
+A file-like object moves on by what OCCT read from it, as a C++ stream does: a member that reads one value leaves the object right after that value, so the next call continues there, and what OCCT did not read is still in the object:
+
+```python
+In [13]: import io
+    ...: from nanocct.GeomTools import GeomTools
+    ...:
+    ...: stream = io.StringIO("1.25 7 tail")
+    ...: GeomTools.GetReal_s(stream), GeomTools.GetReal_s(stream)
+Out[13]: (1.25, 7.0)
+
+In [14]: stream.read()
+Out[14]: ' tail'
+```
+
+The same holds for a file opened for reading and for binary objects (`io.BytesIO`, a file opened `"rb"`). Three details:
+
+- The binding reads the whole object into a C++ stream for the call and puts it back where it was before; after the call it moves it on by what OCCT read. So a call that fails -- an OCCT exception, or arguments that select another overload -- leaves the object where it was.
+- An object that cannot seek (a pipe, anything with only a `read()`) cannot be put back: it is read to its end.
+- The C++ stream's own state, `fail()` or `width()`, does not exist in Python and ends with the call.
 
 ### Binary formats
 
 The packages whose streams carry a binary format use `bytes` instead of `str`: `BinTools` (the binary BRep format) and the OCAF document streams (`PCDM`, `CDF`, the `Bin*` and `Xml*` drivers, `DE`), listed in `generator/overrides.toml` `[stream] binary_packages`. The written data is returned as `bytes`, and a binary file-like object such as `io.BytesIO` is read.
 
 ```python
-In [9]: from nanocct.BinTools import BinTools
-   ...:
-   ...: data = BinTools.Write_s(s)
-   ...: len(data), data[:24]
-Out[9]: (4494, b'\nOpen CASCADE Topology V')
+In [15]: from nanocct.BinTools import BinTools
+    ...:
+    ...: data = BinTools.Write_s(s)
+    ...: len(data), data[:24]
+Out[15]: (4494, b'\nOpen CASCADE Topology V')
 
-In [10]: back = TopoDS_Shape()
+In [16]: back = TopoDS_Shape()
     ...: BinTools.Read_s(back, io.BytesIO(data))
     ...: back.ShapeType()
-Out[10]: TopAbs_ShapeEnum.TopAbs_SOLID
+Out[16]: TopAbs_ShapeEnum.TopAbs_SOLID
+```
+
+### Binary curves and surfaces
+
+*Binding rule: R-STREAM-WRAPPER ([Binding rules](docs/Binding-Rules.md#r-stream-wrapper))*
+
+`BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` write one curve or surface in the binary format and return its `bytes`; `BinTools_ShapeReader.ReadLocation` takes a binary file-like object. (In C++ these take a `BinTools_OStream`/`BinTools_IStream`, a class that only wraps a stream; the binding makes it on its own stream.) Together with reading in steps, several records can go one after the other:
+
+```python
+In [17]: import io
+    ...: from nanocct.BinTools import BinTools_CurveSet
+    ...: from nanocct.Geom import Geom_Circle, Geom_TrimmedCurve
+    ...: from nanocct.gp import gp_Ax2
+    ...:
+    ...: arcs = [Geom_TrimmedCurve(Geom_Circle(gp_Ax2(), r), 0.5, 2.5) for r in (1.0, 2.0)]
+    ...: data = b"".join(BinTools_CurveSet.WriteCurve_s(c) for c in arcs)
+    ...: type(data).__name__, len(data)
+Out[17]: ('bytes', 244)
+
+In [18]: stream = io.BytesIO(data)
+    ...: [BinTools_CurveSet.ReadCurve_s(stream).BasisCurve().Radius() for _ in arcs], stream.read()
+Out[18]: ([1.0, 2.0], b'')
 ```
 
 ## Enums
 
-**Binding rules: R-ENUM, R-ANON-ENUM ([Design 2, Python additions](docs/Design.md#python-additions))**
+*Binding rules: [R-ENUM](docs/Binding-Rules.md#r-enum), [R-ANON-ENUM](docs/Binding-Rules.md#r-anon-enum)*
 
-OCCT's enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), and they are integers. As in C++, the conversion goes one way only: an OCCT parameter of an enum type takes its enumerators, not an `int` or a `bool` (`TypeError`); `TopAbs_ShapeEnum(4)` turns an `int` into the enumerator. An `enum class` stays nested in its class (`gp_Dir.D.NZ`).
+OCCT's unscoped enums are Python `enum.IntEnum` classes. As in C++, the enumerators of an unscoped enum are also names in the module (`TopAbs.TopAbs_FACE`), and they are integers. As in C++, the conversion goes one way only: an OCCT parameter of an enum type takes its enumerators, not an `int` or a `bool` (`TypeError`); `TopAbs_ShapeEnum(4)` turns an `int` into the enumerator. An `enum class` stays nested in its class and is a plain `enum.Enum`, as in C++ no integer: `gp_Dir.D.NZ == 5` is `False`. An anonymous enum (`enum { … }`) has no type of its own: its enumerators are plain `int` attributes of the module or class (`BVH.BVH_Constants_MaxTreeDepth` is `32`).
 
 ```python
 In [1]: from nanocct.TopAbs import TopAbs_ShapeEnum, TopAbs_FACE
@@ -963,7 +1271,7 @@ Out[5]: (True, False)
 
 ## Exceptions
 
-**Design: [5.2](docs/Runtime.md#52-three-kinds-of-c-types)**
+*Design: [5.2](docs/Runtime.md#52-three-kinds-of-c-types)*
 
 OCCT's C++ exceptions arrive in Python as exception classes with the same names and the same hierarchy as in C++, with OCCT's own message. `Standard_Failure` is the root of all of them and derives from Python's `RuntimeError`. They are not mapped to Python's built-in categories: `Standard_OutOfRange` is not an `IndexError`, so catch OCCT's classes (or `Standard_Failure`).
 
@@ -1001,7 +1309,7 @@ Out[5]: 'gce_MakeLin::Value() - no result'
 
 ### Null handles
 
-A handle that OCCT returns can be null, and nanocct turns a null handle into `None`. The type stubs do not say so: a handle result is typed as its class, not as `X | None`, because OCCT's headers do not say which methods can return a null handle -- most never do (`BRepBuilderAPI_MakeEdge.Edge()`), and `| None` on all of them would make a type checker demand a `None` check after every call. A type checker therefore accepts `curve.Value(0.5)` for a `curve` that is `None` at runtime. Where OCCT documents a null result, check it:
+A handle that OCCT returns can be null, and nanocct turns a null handle into `None`. The type stubs do not say so: a handle result is typed as its class, not as `X | None`, because OCCT's headers do not say which methods can return a null handle -- most never do, and `| None` on all of them would make a type checker demand a `None` check after every call. A type checker therefore accepts `curve.Value(0.5)` for a `curve` that is `None` at runtime. Where OCCT documents a null result, check it:
 
 ```python
 In [1]: from nanocct.BRep import BRep_Builder, BRep_Tool
@@ -1073,8 +1381,8 @@ Current thread 0x00000001ef4061c0 (most recent call first):
 
 Current thread's C stack trace (most recent call first):
   ...
-  Binary file ".../nanocct/.dylibs/libTKTopAlgo.8.0.1.dylib", at _ZN16BRepLib_MakeEdgeC1ERKN11opencascade6handleI10Geom_CurveEE+0x54
-  Binary file ".../nanocct/_TKTopAlgo.abi3.so", at PyInit__TKTopAlgo+0x8db8
+  Binary file ".../nanocct/.dylibs/libTKTopAlgo.8.0.2.dylib", at _ZN16BRepLib_MakeEdgeC1ERKN11opencascade6handleI10Geom_CurveEE+0x54
+  Binary file ".../nanocct/_TKTopAlgo.abi3.so", at PyInit__TKTopAlgo+0x8da4
 ```
 
 `_ZN16BRepLib_MakeEdgeC1ERKN11opencascade6handleI10Geom_CurveEE` is `BRepLib_MakeEdge::BRepLib_MakeEdge(const opencascade::handle<Geom_Curve>&)`, the constructor that got the null curve.
@@ -1084,7 +1392,9 @@ Current thread's C stack trace (most recent call first):
 The nanocct generator copies the C++ `//!` documentation strings as Python docstrings
 
 ```python
-In [14]: TopExp.MapShapes_s?
+In [1]: from nanocct.TopExp import TopExp
+
+In [2]: TopExp.MapShapes_s?
 
 Signature:   TopExp.MapShapes_s(*args, **kwargs)
 Type:        nb_func
@@ -1125,7 +1435,7 @@ each sub-shape the transformation that is associated with S.
 
 ## AddOns
 
-**Binding rule: R-ADDON ([Design 2, Python additions](docs/Design.md#python-additions))**
+*Binding rule: R-ADDON ([Design 2, Python additions](docs/Design.md#python-additions))*
 
 `nanocct.AddOns` is the one package that is not OCCT. Everything under an OCCT package name is a 1:1 binding; what nanocct adds of its own lives here, so that the 1:1 rule holds everywhere else. There are two reasons for an AddOn: a computation where a loop over OCCT calls in Python would dominate (`AddOns.Tessellator`), and a workaround for an OCCT bug that is reported upstream and not fixed yet (`AddOns.ShapeClean`).
 
@@ -1162,7 +1472,7 @@ Out[3]: ((24000, 3), (12000,), 12000)
 
 The uv values have to be clamped to the face's bounds first: a mesh node can sit one unit in the last place outside them at a singularity of the surface, where the normal flips.
 
-#### Tessellator timings
+Tessellator timings:
 
 For comparison, the same two computations written in Python with OCCT's own calls; they produce identical results.
 
@@ -1226,26 +1536,26 @@ def edge_segments_py(shape):
 
 ```python
 In [4]: %timeit AddOns.Tessellator.NormalsFromSurface(face, uv)
-82.9 μs ± 898 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
+85.4 μs ± 625 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 In [5]: %timeit normals_py(face, uv)
-2.32 ms ± 36.6 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+2.26 ms ± 12.1 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 In [6]: %timeit AddOns.Tessellator.EdgeSegments(boxes)
-3.32 ms ± 140 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+3.42 ms ± 179 μs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 
 In [7]: %timeit edge_segments_py(boxes)
-50.8 ms ± 551 μs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+53.5 ms ± 455 μs per loop (mean ± std. dev. of 7 runs, 10 loops each)
 ```
 
 | Function                         | AddOn (C++)                          | Python with OCCT calls                | Factor |
 | -------------------------------- | ------------------------------------ | ------------------------------------- | ------ |
-| `NormalsFromSurface`, 5153 nodes | 82.9&nbsp;μs&nbsp;±&nbsp;898&nbsp;ns | 2.32&nbsp;ms&nbsp;±&nbsp;36.6&nbsp;μs | 28×    |
-| `EdgeSegments`, 12000 edges      | 3.32&nbsp;ms&nbsp;±&nbsp;140&nbsp;μs | 50.8&nbsp;ms&nbsp;±&nbsp;551&nbsp;μs  | 15×    |
+| `NormalsFromSurface`, 5153 nodes | 85.4&nbsp;μs&nbsp;±&nbsp;625&nbsp;ns | 2.26&nbsp;ms&nbsp;±&nbsp;12.1&nbsp;μs | 26×    |
+| `EdgeSegments`, 12000 edges      | 3.42&nbsp;ms&nbsp;±&nbsp;179&nbsp;μs | 53.5&nbsp;ms&nbsp;±&nbsp;455&nbsp;μs  | 16×    |
 
 ### ShapeClean
 
-`AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around OCCT issue #1541: when OCCT's `ShapeUpgrade_UnifySameDomain` merges a full circle made of two or more arcs on a curved face, it concatenates the curves in the face's parameter space from the wrong end, and the resulting shape is invalid. It also puts back an edge whose curve in the face's parameter space OCCT, after merging the edge from several pieces, recomputes one period away on a periodic face (a hole through a cylindrical face across its period line), which leaves the face invalid too, and it repairs the merge of a face with its mirror image, which OCCT builds as two faces or leaves half done. The AddOn has OCCT's class name and signatures, so switching between the two is an import change. It is removed once OCCT fixes the bug; a test signals that moment. What it does, step by step: [docs/AddOns.md](docs/AddOns.md).
+`AddOns.ShapeClean.ShapeUpgrade_UnifySameDomain` works around OCCT issue #1541: when OCCT's `ShapeUpgrade_UnifySameDomain` merges a full circle made of two or more arcs on a curved face, it concatenates the curves in the face's parameter space from the wrong end, and the resulting shape is invalid. It also puts back an edge whose curve in the face's parameter space OCCT, after merging the edge from several pieces, recomputes one period away on a periodic face (a hole through a cylindrical face across its period line), which leaves the face invalid too, and it repairs the merge of a face with its mirror image, which OCCT builds as two faces or leaves half done. The AddOn has OCCT's class name and the same signatures for the members it has (the constructor with the shape and the flags, `AllowInternalEdges`, `Build`, `Shape`, `History`), so for code that uses these, switching between the two is an import change. It is removed once OCCT fixes the bug; a test signals that moment. What it does, step by step: [docs/AddOns.md](docs/AddOns.md).
 
 ```python
 In [8]: from nanocct import BRepAlgoAPI, BRepCheck, ShapeUpgrade
