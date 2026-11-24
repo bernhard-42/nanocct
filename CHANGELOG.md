@@ -12,6 +12,7 @@
 
 **New features:**
 
+- `Standard.Atof` and `OCCT_Version_String`, `OCCT_Version_Double`, `OCCT_Version_String_Complete`, `OCCT_Version_String_Extended`, `OCCT_DevelopmentVersion`: they are declared inside `extern "C"`, which the generator skipped without a report line (R-NAMESPACE)
 - Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - Now callable: `BinTools_CurveSet.WriteCurve_s`, `BinTools_Curve2dSet.WriteCurve2d_s` and `BinTools_SurfaceSet.WriteSurface_s` return `bytes`, and `BinTools_ShapeReader.ReadLocation` takes a binary file-like (R-STREAM-WRAPPER)
 - `Contained(key)` of `NCollection_Map`, `NCollection_DataMap` and `NCollection_IndexedMap`: a copy of the key, or a `(key, value)` tuple of copies, or `None` if the key is not in the map. `NCollection_IndexedDataMap.Contained` stays out: it does not compile in OCCT 8.0.2
@@ -21,6 +22,7 @@
 
 **Fixes:**
 
+- `BRepExtrema_ProximityDistTool.PrjState`'s four-argument constructor and `GetPrjState()` are no longer bound: their type `BVH_Tools<double, 3>::BVH_PrjStateInTriangle` has no Python type, and they raised `TypeError` on every call (R-UNBOUND-TYPE)
 - `NCollection_OccAllocator`'s `allocate`, `deallocate`, `construct`, `destroy` and `address` are no longer bound: they take raw pointers, and `NCollection_OccAllocator__int().deallocate(5, 1)` aborted the interpreter (R-UNSUPPORTED)
 - `NCollection_LocalArray.ToArray1()` is a view the array guards: while it lives, a `Reallocate` or `Allocate` that would move the buffer raises `BufferError`. Before, the view read freed memory after such a call (R-VIEW-GUARD)
 - An `NCollection_Shared<T>` passed or returned by reference or pointer reached the other side at the wrong address, giving wrong results and crashes, e.g. `BRepMesh_DataStructureOfDelaun.ElementsOfDomain()` and `BRepMesh_Delaun.AddVertices` (27 members, all but one in BRepMesh; R-MI-REF)

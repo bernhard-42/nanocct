@@ -3283,6 +3283,10 @@ def parse_package(tree: OcctTree, pkg: Package, args: list[str] | None = None, k
                     continue
                 if cur.kind == K.NAMESPACE:
                     yield from top_level(cur, f"{ns}{cur.spelling}::")
+                elif cur.kind == K.LINKAGE_SPEC:
+                    # extern "C" { ... } (Standard_CString.hxx: Atof, Strtod, Printf; Standard_VersionInfo.hxx): its
+                    # declarations are file scope like any other -- skipped silently until 2026-11-24, unreported too
+                    yield from top_level(cur, ns)
                 else:
                     yield cur, ns
 

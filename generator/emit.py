@@ -215,7 +215,14 @@ class Emitter:
         if name == "" or "<" in name or name.split("::")[0] in self._template_names:
             # a template instantiation (or a class nested in one) is spelled here without its default arguments
             # (math_VectorBase<>, NCollection_FlatDataMap<K, V>) or bound under another name (NCollection_TListIterator<T> is
-            # the List binder's Iterator), so `known`/`templates` cannot answer for it: not judged, the binding stays
+            # the List binder's Iterator), so `known`/`templates` cannot answer for it: not judged, the binding stays --
+            # unless its class template is instantiated nowhere, which no spelling changes: `BVH_Tools<double, 3>::
+            # BVH_PrjStateInTriangle` (BRepExtrema_ProximityDistTool::PrjState) was bound and raised TypeError on every
+            # call (2026-11-24). The standard library's templates have nanobind's casters and stay unjudged.
+            template = name.split("<")[0]
+            if "<" in name and not template.startswith("std::") and template not in self._template_names \
+                    and template not in self.known and not any(k.startswith(template + "<") for k in self.templates):
+                return "is not bound (its class template is instantiated nowhere)"
             return None
         if name in self.skipped:
             return "is not bound (its class is skipped)"

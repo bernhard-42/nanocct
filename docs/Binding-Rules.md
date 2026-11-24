@@ -260,6 +260,7 @@ What a member, class or enumerator is called in Python (the user-facing summary 
 - **Rule**
 
     - OCCT 8 uses namespaces as packages-within-packages.
+    - A file-scope `extern "C" { ... }` block is read like the file scope around it (`parse.top_level`): `Standard_CString.hxx`'s `Atof`, `Strtod`, `Printf`, … and `Standard_VersionInfo.hxx`'s `OCCT_Version_*`. Until 2026-11-24 its declarations were skipped silently, without a report line; now the bindable ones are bound and the others reported (`Strtod`'s `char**`, the variadic `Printf`).
 
 - **Python**
 
@@ -283,6 +284,12 @@ What a member, class or enumerator is called in Python (the user-facing summary 
     assert result.IsDone() and abs(result.Solution.Value(1) - 2.0) < 1e-12
     assert nanocct.Geom2dGridEval.CurveD1.__name__ == "CurveD1"
     assert issubclass(desc.Full, desc.Base)                       # the submodule nanocct.Geom2dEval.Geom2dEval_RepCurveDesc
+
+    import nanocct.Standard
+
+    assert nanocct.Standard.Atof("1.5") == 1.5                    # extern "C" in Standard_CString.hxx
+    assert nanocct.Standard.OCCT_Version_String().startswith("8.0")  # extern "C" in Standard_VersionInfo.hxx
+    assert not hasattr(nanocct.Standard, "Printf")                # variadic: reported
     ```
 ### R-NESTED
 
@@ -2486,7 +2493,7 @@ See 3.1 (3) and 3.2.
     - Class names are judged against `known`.
     - An **NCollection binder instantiation** is judged by its registry key, which parse computes exactly as `_note_instance` records it (`parse._binder_key`; unbound when the registry has none -- raw-pointer elements, `NCollection_IndexedMap<Graphic3d_CStructure *>` -- or skipped it, or for a nested class other than a kind's `Iterator`, `DynamicArray<T>::DynamicIterator`).
     - Comparing spellings instead fails on default arguments (`math_VectorBase<>` vs `<double>`, dropped hashers): 841 members would be skipped wrongly.
-    - Other template instantiations (7c) are not judged; their stubs keep the quoted C++ name.
+    - Other template instantiations (7c) are not judged; their stubs keep the quoted C++ name -- except one of a **class template instantiated nowhere** (no registry key starts with it, no binder kind, not known): no spelling of its default arguments can make it registered. `BVH_Tools<double, 3>::BVH_PrjStateInTriangle`, an enum nested in such an instantiation, made `BRepExtrema_ProximityDistTool::PrjState`'s constructor and `GetPrjState()` raise TypeError on every call until 2026-11-24. Templates of the standard library (`std::`) have nanobind's casters and stay unjudged.
     - In a 7c walk the STL-style iterator types have no declaration, so they are recognised by name (`_STL_ITERATORS`, `::iterator`, `::DynamicIterator`): `NCollection_Iterator<Container>::ValueIter()` returns `typename Container::iterator` (R-ITERATOR).
     - R-DEFAULT-UNBOUND is the older special case for defaults.
     - A **standard-library enum** has no Python type either and makes the member unbindable already in the parse (`param '…': std::X (a standard-library enum, no Python type)`): libstdc++ spells `std::ios_base::openmode` as the enum `std::_Ios_Openmode` where libc++ and MSVC have an integer, so `OSD_OpenFileDescriptor(name, mode)` would be bound on Linux and raise `TypeError`.
@@ -2510,6 +2517,13 @@ See 3.1 (3) and 3.2.
     assert "aLabelNode" not in TDF_AttributeIterator.__init__.__doc__  # TDF_LabelNode*: the other constructors stay
     assert not hasattr(IntTools_Context, "FClass2d")                  # IntTools_FClass2d: only its wrapper is bound
     assert not hasattr(MoniTool_CaseData, "AddRaised")                # Standard_Failure is a Python exception type
+
+    from nanocct.BRepExtrema import BRepExtrema_ProximityDistTool
+
+    state = BRepExtrema_ProximityDistTool.PrjState()                   # BVH_Tools<double, 3> is instantiated nowhere:
+    assert not hasattr(state, "GetPrjState")                           # its nested enum has no Python type
+    assert "thePrjState" not in BRepExtrema_ProximityDistTool.PrjState.__init__.__doc__
+    assert state.GetTrgIdx() == 0                                      # the members without it stay
     ```
 ### R-OVERLOAD-ORDER
 
