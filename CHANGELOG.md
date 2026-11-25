@@ -1,6 +1,6 @@
 # Changelog
 
-## v8.0.2.0 (unreleased)
+## v8.0.2.0 (2026-11-25)
 
 Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, with fixes in fillets, lofts and pipes, Booleans, trimmed periodic geometry, meshing, hidden-line removal, BREP reading and STEP exchange ([release notes](https://github.com/Open-Cascade-SAS/OCCT/releases/tag/V8_0_2))
 
