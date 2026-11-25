@@ -14,10 +14,10 @@ from nanocct.BRepMesh import BRepMesh_IncrementalMesh
 from nanocct.BRepPrimAPI import BRepPrimAPI_MakeBox
 from nanocct.DEOBJ import DEOBJ_ConfigurationNode, DEOBJ_Provider
 from nanocct.Message import Message_ProgressRange
-from nanocct.NCollection import NCollection_IndexedDataMap, NCollection_Sequence
+from nanocct.NCollection import NCollection_DataMap, NCollection_IndexedDataMap, NCollection_Sequence
 from nanocct.Quantity import Quantity_Color, Quantity_NOC_RED
-from nanocct.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Reader, RWObj_SubMesh,
-                           RWObj_SubMeshReason, RWObj_TriangulationReader)
+from nanocct.RWObj import (RWObj, RWObj_CafReader, RWObj_CafWriter, RWObj_Material, RWObj_MtlReader, RWObj_Reader,
+                           RWObj_SubMesh, RWObj_SubMeshReason, RWObj_TriangulationReader)
 from nanocct.TCollection import TCollection_AsciiString, TCollection_ExtendedString
 from nanocct.TDF import TDF_Label
 from nanocct.TopAbs import TopAbs_COMPOUND, TopAbs_FACE
@@ -83,9 +83,12 @@ def test_the_colour_becomes_an_mtl_sidecar(tmp_path, document, quiet_messenger):
     assert "newmtl mat_1" in mtl
     assert "Kd 1.000000 0.000000 0.000000" in mtl                 # the diffuse colour is the red of the document
 
-    # RWObj_MtlReader would read it back, but its destructor is declared and never exported, so nanobind cannot bind
-    # the class on Windows and it is skipped everywhere to keep the API platform-identical (overrides.toml [skip]).
-    # The writer's output is asserted above instead; RWObj_CafReader covers the reading path.
+    # RWObj_MtlReader reads it back. Its destructor has no Standard_EXPORT; the Windows DLL exports it through
+    # deps/occt-windows-exports.txt, so the class is bound on every platform.
+    materials = NCollection_DataMap[TCollection_AsciiString, RWObj_Material]()
+    assert RWObj_MtlReader(materials).Read(TCollection_AsciiString(f"{tmp_path}/"), TCollection_AsciiString("box.mtl"))
+    red = materials.Find(TCollection_AsciiString("mat_1")).DiffuseColor
+    assert (red.Red(), red.Green(), red.Blue()) == (1.0, 0.0, 0.0)
 
 
 def test_a_document_round_trips(tmp_path, document, quiet_messenger):
@@ -167,9 +170,10 @@ def test_report_is_the_expected_portable_lines():
     declaration without a symbol."""
     lines = [line for line in REPORT.read_text().splitlines() if not line.startswith("#")]
     _, lines, undefined, _ = report("TKDEOBJ")
-    assert len(lines) == 6        # 3 until RWObj_MtlReader was skipped (overrides.toml, 2026-09-23); 4 until R-COPY
-    # R-COPY (2026-10-02): both hold a FILE* their destructor closes
-    assert [line.split("\t")[2].split(":")[0] for line in lines if line.startswith("copy")] == ["RWObj_ObjMaterialMap", "RWObj_ObjWriterContext"]
+    assert len(lines) == 6        # RWObj_MtlReader's R-COPY line took the place of its overrides.toml skip line
+    # R-COPY (2026-10-02): all three hold a FILE* their destructor closes
+    assert [line.split("\t")[2].split(":")[0] for line in lines if line.startswith("copy")] == \
+        ["RWObj_MtlReader", "RWObj_ObjMaterialMap", "RWObj_ObjWriterContext"]
     assert all("RWObj_Reader::RWObj_Reader()" in line for line in undefined)
     assert sum(line.startswith("raw-pointer") and "reference to pointer" in line for line in lines) == 2
     assert any("RWObj_CafReader: non-public base RWObj_IShapeReceiver dropped; its members are not bound" in line

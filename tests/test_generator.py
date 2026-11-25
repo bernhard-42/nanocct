@@ -2531,7 +2531,7 @@ def test_every_skip_entry_still_skips_something():
 
     unmatched = (
         [f"methods: {e}" for e in skip["methods"] if other_size_t not in e and not method(e)]
-        + [f"constructors: {e}" for e in skip["constructors"]
+        + [f"constructors: {e}" for e in skip.get("constructors", [])    # read as generator/parse.py does: optional
            if not any(m.startswith(f"{e}: overrides.toml [skip] constructors") for m in lines)]
         + [f"classes: {e}" for e in skip["classes"]
            if not any(re.search(rf"(^|: ){re.escape(e)}: skipped \(overrides\.toml \[skip\]", m) for m in lines)]

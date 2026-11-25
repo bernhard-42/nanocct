@@ -5,6 +5,7 @@
 # build-ml on Linux (in the container); on Windows the batch file deps/build-nanocct-windows.sh writes for each build
 build/
 build-win/
+build-win-exportall/
 build-ml/
 /_build_nanocct.bat
 __pycache__/
@@ -16,6 +17,9 @@ deps/occt-src/
 deps/occt-build/
 deps/occt/
 deps/occt-build.log
+# `make occt-exports` only (Windows): OCCT with every function exported
+deps/occt-exportall/
+deps/occt-exportall-build/
 deps/occt-build-ml/
 deps/occt-manylinux/
 deps/freetype-src/

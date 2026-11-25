@@ -198,17 +198,15 @@ def test_print_operator_is_str():
 
 
 def test_print_operator_where_there_was_no_text_method():
-    """IntRes2d_Transition has no Dump or Print, so its operator<< would be its only text form. The operator carries no
-    Standard_EXPORT (IntRes2d_Transition.lxx:19): the Windows DLL does not export it, R-UNDEFINED dropped it there (measured
-    on gauss 2026-09-25), and macOS and Linux bound it. So it is skipped on every platform (overrides.toml [skip] methods,
-    2026-10-03), as is CDM_MetaData's member operator<< for the same reason: the API is the same everywhere."""
-    from conftest import report
+    """IntRes2d_Transition has no Dump or Print, so its operator<< is its only text form. The operator carries no
+    Standard_EXPORT (IntRes2d_Transition.lxx:19), nor does CDM_MetaData's member operator<<: the Windows DLLs export
+    both through deps/occt-windows-exports.txt, so every platform binds them as __str__ (from 2026-10-03 until then they
+    were skipped everywhere, because Windows could not link them)."""
     from nanocct.CDM import CDM_MetaData
     from nanocct.IntRes2d import IntRes2d_Transition
 
-    assert "__str__" not in vars(IntRes2d_Transition) and "__str__" not in vars(CDM_MetaData)
-    assert any("operator<<(std::ostream &, IntRes2d_Transition &): overrides.toml [skip] methods" in line
-               for line in report("TKGeomAlgo")[1])   # a portable line now, not an undefined one
+    assert "__str__" in vars(IntRes2d_Transition) and "__str__" in vars(CDM_MetaData)
+    assert str(IntRes2d_Transition()) == "   Position : Milieu\n   Type de transition : Indeterminee\n\n"  # OCCT's
 
 
 def test_operators_that_are_not_print_me_stay_unbound():

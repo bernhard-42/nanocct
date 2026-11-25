@@ -9,16 +9,50 @@
 # Prerequisites, all of which windows-latest already has: Visual Studio (or Build Tools) with the C++ workload, CMake,
 # Ninja, Git. Sources: deps/occt-src (deps/fetch-occt-src.sh), deps/freetype-src, and deps/rapidjson from
 # deps/fetch-rapidjson.sh. Build FreeType first with deps/build-freetype-windows.sh.
+#
+# Two builds come out of this script:
+# - the one that ships (default): BUILD_OPT_PROFILE=Production into deps/occt, plus the exports of
+#   deps/occt-windows-exports.txt, which deps/occt-windows-exports.cmake adds to the toolkits it names
+#   (Standard_EXPORT is __declspec(dllexport) on Windows and empty elsewhere, so members OCCT defines without it would
+#   otherwise be missing from the DLLs on Windows only). The
+#   list is made for one OCCT version, named in its first line; another TAG stops the build here.
+# - NANOCCT_OCCT_EXPORT_ALL=1, for `make occt-exports` only: every function exported (CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS)
+#   into deps/occt-exportall, the build the bindings are linked against to find what they call. Default profile, because
+#   CMake's export-all reads the object files and cannot read Production's /GL ones ("unrecognized file format").
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TAG="$(sed -n 's/^TAG=//p' "$HERE/fetch-occt-src.sh")"
+[ "$TAG" != "" ] || { echo "no TAG= line in $HERE/fetch-occt-src.sh" >&2; exit 1; }
 
 for d in occt-src freetype freeimage rapidjson; do
   [ -d "$HERE/$d" ] || { echo "missing $HERE/$d (see the header of this script)" >&2; exit 1; }
 done
 
+EXPORTS="$HERE/occt-windows-exports.txt"
+case "${NANOCCT_OCCT_EXPORT_ALL:-0}" in
+  0)
+    NAME=occt PROFILE=Production
+    [ -f "$EXPORTS" ] || { echo "missing $EXPORTS" >&2; exit 1; }
+    made_for="$(head -n 1 "$EXPORTS")"
+    case "$made_for" in
+      "# OCCT $TAG "*) ;;
+      *) echo "$EXPORTS was made for another OCCT ('$made_for'), this is $TAG -- run 'make occt-exports'" >&2; exit 1 ;;
+    esac
+    # absolute: OCCT sets cmake_minimum_required(3.10) and no policies, so target_sources resolves a relative path
+    # against each toolkit's own directory (CMP0076 OLD)
+    HOOK="$(cygpath -m "$HERE/occt-windows-exports.cmake")"
+    EXTRA="-D CMAKE_PROJECT_INCLUDE=\"$HOOK\" -D NANOCCT_OCCT_WINDOWS_EXPORTS=\"$(cygpath -m "$EXPORTS")\""
+    ;;
+  1)
+    NAME=occt-exportall PROFILE=Default
+    EXTRA="-D CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+    ;;
+  *) echo "NANOCCT_OCCT_EXPORT_ALL is '$NANOCCT_OCCT_EXPORT_ALL': 1 or unset" >&2; exit 1 ;;
+esac
+
 W_SRC="$(cygpath -w "$HERE/occt-src")"
-W_BUILD="$(cygpath -w "$HERE/occt-build")"
-W_PREFIX="$(cygpath -w "$HERE/occt")"
+W_BUILD="$(cygpath -w "$HERE/$NAME-build")"
+W_PREFIX="$(cygpath -w "$HERE/$NAME")"
 W_FT="$(cygpath -w "$HERE/freetype")"
 W_FI="$(cygpath -w "$HERE/freeimage")"
 W_RJ="$(cygpath -w "$HERE/rapidjson")"
@@ -54,7 +88,8 @@ cmake -S "$W_SRC" -B "$W_BUILD" -G Ninja ^
   -D BUILD_RELEASE_DISABLE_EXCEPTIONS=OFF ^
   -D BUILD_MODULE_Draw=OFF ^
   -D BUILD_GTEST=OFF ^
-  -D BUILD_OPT_PROFILE=Production || exit /b 1
+  $EXTRA ^
+  -D BUILD_OPT_PROFILE=$PROFILE || exit /b 1
 ninja -C "$W_BUILD" install || exit /b 1
 echo BUILD_OK
 BAT
@@ -63,4 +98,4 @@ echo "--- generated $BAT ---"
 cat "$BAT"
 echo "----------------------"
 cmd //c "$(cygpath -w "$BAT")"
-echo "OCCT installed to $HERE/occt"
+echo "OCCT installed to $HERE/$NAME"

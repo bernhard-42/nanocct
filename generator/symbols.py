@@ -12,7 +12,7 @@ import subprocess
 from pathlib import Path
 
 
-def _dumpbin() -> str | None:
+def dumpbin_path() -> str | None:
     """MSVC's dumpbin, located through vswhere so the generator does not need a vcvars environment (it runs from Git
     Bash). dumpbin itself starts fine without vcvars -- only its arguments must not be mangled, which subprocess
     avoids by not going through a shell."""
@@ -41,7 +41,7 @@ def unavailable_reason(install: Path, toolkit: str) -> str:
     """Why defined_symbols() returned None -- the causes are different and the message used to claim the first
     for all (a Linux box with only the OCCT *headers* staged said "nm unavailable", 2026-09-23)."""
     if platform.system() == "Windows":
-        if _dumpbin() is None:
+        if dumpbin_path() is None:
             return "dumpbin not found (no Visual Studio installation reported by vswhere)"
         return f"{toolkit}.lib not found in {install / 'win64'}"
     if shutil.which("nm") is None:
@@ -72,7 +72,7 @@ def destructor_defined(mangled: str, symbols: set[str]) -> bool:
 def defined_symbols(install: Path, toolkit: str) -> set[str] | None:
     """Mangled names with a definition in lib<toolkit>; None if unavailable."""
     if platform.system() == "Windows":
-        dumpbin, lib = _dumpbin(), _windows_library(install, toolkit)
+        dumpbin, lib = dumpbin_path(), _windows_library(install, toolkit)
         if dumpbin is None or lib is None:
             return None
         out = subprocess.run([dumpbin, "/EXPORTS", str(lib)], capture_output=True, text=True, check=True).stdout

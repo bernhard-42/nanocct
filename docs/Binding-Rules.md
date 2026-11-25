@@ -1982,7 +1982,7 @@ How arguments go in and results come out (the user-facing summary is 3.2).
 - **Python**
 
     - Native Python objects via nanobind's STL casters.
-    - A **non-const reference** to one (`BRepMesh_ConeRangeSplitter::GetSplitSteps(…, std::pair<int, int>&)`) is an out-parameter like `double&` (R-OUT; suffix type `tuple`/`list`/`dict`/`str`) because the caster hands the callee a temporary. It is the only one in OCCT 8.0.2, and its header does not export it (no `Standard_EXPORT`): bound on macOS and Linux, skipped on Windows (R-UNDEFINED).
+    - A **non-const reference** to one (`BRepMesh_ConeRangeSplitter::GetSplitSteps(…, std::pair<int, int>&)`) is an out-parameter like `double&` (R-OUT; suffix type `tuple`/`list`/`dict`/`str`) because the caster hands the callee a temporary. It is the only one in OCCT 8.0.2, and its header does not export it (no `Standard_EXPORT`); the Windows build exports it through `deps/occt-windows-exports.txt` (Toolchain.md 4.1), so all three platforms bind it.
 
 - **Python examples**
 
@@ -2475,7 +2475,7 @@ See 3.1 (3) and 3.2.
 
 - **OCCT examples**
 
-    Bound nowhere: `FILE*` from `OSD_OpenFile`, `rapidjson::ParseErrorCode`, internal classes such as `Storage_BucketOfPersistent`, `TDF_LabelNode`, the nested `BRepGraph_CacheMesh::*Entry`; bound only through its R-NONCOPYABLE wrapper: `IntTools_FClass2d&`, whose typeid is not the wrapper's; a `Standard_Failure` descendant: `MoniTool_CaseData::AddRaised(const Standard_Failure&, …)`:
+    Bound nowhere: `FILE*` from `OSD_OpenFile`, `rapidjson::ParseErrorCode`, internal classes such as `TDF_LabelNode`, the nested `BRepGraph_CacheMesh::*Entry`; bound only through its R-NONCOPYABLE wrapper: `IntTools_FClass2d&`, whose typeid is not the wrapper's; a `Standard_Failure` descendant: `MoniTool_CaseData::AddRaised(const Standard_Failure&, …)`:
 
     - `FILE* OSD_OpenFile(const TCollection_ExtendedString& theName, const char* theMode)`
     - `static const char* RWGltf_GltfJsonParser::FormatParseError(rapidjson::ParseErrorCode theCode)`
@@ -2767,7 +2767,7 @@ The Python additions of Design.md, section 2.
     - The stream is the *first* operand, so neither R-FREE-OP nor R-STREAM-OUT reached it.
     - The filter is not decoration: `BinTools_ShapeSetBase.hxx` declares `operator<<(Standard_OStream&, const gp_Pnt&)`, which writes three binary doubles (`BinTools_ShapeSetBase.cxx:29`), and `BinObjMgt_Persistent`'s is its binary `Write` — a blanket rule would have given `gp_Pnt` a `__str__` returning bytes.
     - `repr()` is not touched: a 30-line `math_Matrix` dump is not a representation.
-    - **No platform difference:** `IntRes2d_Transition`'s free operator and `CDM_MetaData`'s member one carry no `Standard_EXPORT`, so Windows cannot link them (R-UNDEFINED dropped them there, while macOS and Linux bound them); both are skipped on every platform (`overrides.toml [skip] methods`), and all three bind the same `__str__` (counted per platform in `tests/test_counts.py`, `str-ops`). BinTools' two carry none either; they are binary and bound nowhere.
+    - **No platform difference:** `IntRes2d_Transition`'s free operator and `CDM_MetaData`'s member one carry no `Standard_EXPORT`; the Windows build exports them through `deps/occt-windows-exports.txt` (Toolchain.md 4.1), so all three platforms bind them as `__str__` (counted per platform in `tests/test_counts.py`, `str-ops`). BinTools' two carry none either; they are binary and bound nowhere.
 
 - **Python**
 
@@ -4400,7 +4400,7 @@ The Python additions of Design.md, section 2.
 
     - A **read-only static property** returning the value: `cls.def_prop_ro_static("X", [](nb::handle) { return static_cast<std::remove_cv_t<decltype(C::X)>>(C::X); })` (a plain class attribute would be replaced by any assignment).
     - An enum type no binding registers is reported (R-UNBOUND-TYPE), as are arrays (`TopTools_ShapeSet::THE_ASCII_VERSIONS`) and non-`const` statics.
-    - A static whose value is not in the header (`static const double X;`, defined in the `.cxx`) is read through its symbol, so R-UNDEFINED checks it against the library (`symbols.defined_symbols` counts data symbols too) -- `IntPatch_WLineTool::myMaxConcatAngle` has no `Standard_EXPORT` and would be `LNK2019` on Windows.
+    - A static whose value is not in the header (`static const double X;`, defined in the `.cxx`) is read through its symbol, so R-UNDEFINED checks it against the library (`symbols.defined_symbols` counts data symbols too) -- `IntPatch_WLineTool::myMaxConcatAngle` has no `Standard_EXPORT` and would be `LNK2019` on Windows, where it is the one member R-UNDEFINED drops that Linux binds: `deps/occt-windows-exports.txt` exports functions only, as a module-definition file cannot make a data symbol importable under its plain name.
 
 - **Python examples**
 
@@ -4618,6 +4618,7 @@ The Python additions of Design.md, section 2.
     - `generator/symbols.py`: `nm` on the toolkit library vs. libclang's `Cursor.mangled_name` of every method/constructor without an inline definition (bodies are parsed so `get_definition()` sees out-of-class inline definitions; pure virtuals excluded).
     - Mangled names make the check exact and overload-aware; the platform mangling matches `nm` on macOS (leading underscore included, verified) and Linux.
     - **Windows uses `dumpbin /EXPORTS` on `<install>/win64/<vcNN>/lib/<TK>.lib`**: `Standard_EXPORT` is `__declspec(dllexport)`, so the import library's export list answers the same question, and `dumpbin` is located through `vswhere -products *` so no vcvars environment is needed.
+    - **What OCCT defines but does not mark `Standard_EXPORT` is exported on Windows too**, through `deps/occt-windows-exports.txt` (Toolchain.md 4.1): the names the bindings import, so R-UNDEFINED drops on Windows what it drops on Linux, plus the one static data member a module-definition file cannot export. Its `[undefined]` section holds what the Windows generation still drops; `tests/test_occt_exports.py` fails there when a binding starts to need a name the list lacks.
     - It is *stricter* than the macOS check in one way and cleaner in another: the trailing `Summary` block of a `.lib` dump is indented like the exports and has to be stopped at explicitly, and MSVC has no C1/C2 constructor split. An abstract class's constructors are not checked at all: they are never bound, and macOS's clang emits only the base-object constructor (C2) for such a class, so the check reported 34 false "no definition" lines on macOS only until 2026-11-24 (`undefined-lines`, counted per platform in `tests/test_counts.py`).
 
 - **Python**

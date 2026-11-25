@@ -40,6 +40,14 @@ The OCCT version used is pinned in `deps/fetch-occt-src.sh` (tag V8_0_2) and its
 complete corresponding source is available from
 https://github.com/Open-Cascade-SAS/OCCT at that tag.
 
+The Windows libraries are built from those sources with additional exports.
+OCCT marks in its header files what a Windows DLL exports, and some of the
+functions it defines are not marked; the build exports them as well, through a
+module-definition file per library that deps/occt-windows-exports.cmake writes
+from the list in deps/occt-windows-exports.txt. OCCT's sources and build files
+are not changed. A library replacing a bundled Windows one has to export those
+names too, which a build of the same sources with these two files does.
+
 
 Third-party code inside OCCT
 ----------------------------

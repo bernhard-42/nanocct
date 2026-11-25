@@ -1,0 +1,333 @@
+# OCCT V8_0_2 -- written by tools/occt_exports.py (make occt-exports), do not edit
+# [exports]: <toolkit> <decorated name>; deps/occt-windows-exports.cmake exports them from that DLL.
+# [undefined]: what R-UNDEFINED still drops on Windows with these exports; tests/test_occt_exports.py.
+[exports]
+TKBRep ??0BRepGraph_CopyRemap@@QEAA@AEBVBRepGraph@@AEAV1@AEBV?$NCollection_FlatDataMap@VBRepGraph_ItemId@@V1@U?$NCollection_DefaultHasher@VBRepGraph_ItemId@@@@@@W4Mode@0@@Z
+TKBRep ??0BRepGraph_CopyRemap@@QEAA@AEBVBRepGraph@@AEAV1@W4MappingKind@0@W4Mode@0@@Z
+TKBRep ??0Cache@BRepGraphInc_Reconstruct@@QEAA@XZ
+TKBRep ??0TempScope@Cache@BRepGraphInc_Reconstruct@@QEAA@AEAU12@@Z
+TKBRep ??1TempScope@Cache@BRepGraphInc_Reconstruct@@QEAA@XZ
+TKBRep ?HashCode@BRepGraph_UsagePath@@QEBA_KXZ
+TKBRep ?IsEqual@BRepGraph_UsagePath@@QEBA_NAEBV1@@Z
+TKBRep ?ModifiedShape@BRepTools_PurgeLocations@@QEBA?AVTopoDS_Shape@@AEBV2@@Z
+TKBRep ?WriteShape@BinTools_ShapeWriter@@EEAAXAEAVBinTools_OStream@@AEBVTopoDS_Shape@@@Z
+TKCDF ??0LDOMString@@AEAA@AEBVLDOMBasicString@@AEBV?$handle@VLDOM_MemManager@@@opencascade@@@Z
+TKCDF ??0LDOM_XmlReader@@QEAA@AEBV?$handle@VLDOM_MemManager@@@opencascade@@AEAVTCollection_AsciiString@@_N@Z
+TKCDF ??6CDM_MetaData@@QEAAAEAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AEAV12@@Z
+TKCDF ?CompareStrings@LDOM_MemManager@@SA_NPEBDH0@Z
+TKCDF ?Create@LDOM_BasicElement@@SAAEAV1@PEBDHAEBV?$handle@VLDOM_MemManager@@@opencascade@@@Z
+TKCDF ?CreateElement@LDOM_XmlReader@@QEAAXPEBDH@Z
+TKCDF ?Hash@HashTable@LDOM_MemManager@@CAHPEBDH@Z
+TKCDF ?HashedAllocate@LDOM_MemManager@@QEAAPEBDPEBDHAEAH@Z
+TKCDF ?HashedAllocate@LDOM_MemManager@@QEAAXPEBDHAEAVLDOMBasicString@@@Z
+TKCDF ?ReadRecord@LDOM_XmlReader@@QEAA?AW4RecordType@1@AEAV?$basic_istream@DU?$char_traits@D@std@@@std@@AEAVLDOM_OSStream@@AEA_N@Z
+TKCDF ?SetEndElementName@PCDM_DOMHeaderParser@@QEAAXAEBVTCollection_AsciiString@@@Z
+TKCDF ?SetStartElementName@PCDM_DOMHeaderParser@@QEAAXAEBVTCollection_AsciiString@@@Z
+TKCDF ?endElement@PCDM_DOMHeaderParser@@UEAA_NXZ
+TKCDF ?getInteger@LDOM_XmlReader@@SA_NAEAVLDOMBasicString@@PEBD1@Z
+TKCDF ?startElement@PCDM_DOMHeaderParser@@UEAA_NXZ
+TKDEOBJ ??0RWObj_MtlReader@@QEAA@AEAV?$NCollection_DataMap@VTCollection_AsciiString@@URWObj_Material@@U?$NCollection_DefaultHasher@VTCollection_AsciiString@@@@@@@Z
+TKDEOBJ ??1RWObj_MtlReader@@QEAA@XZ
+TKDEOBJ ?Read@RWObj_MtlReader@@QEAA_NAEBVTCollection_AsciiString@@0@Z
+TKDESTEP ??0StepFile_ReadData@@QEAA@XZ
+TKDESTEP ?AddError@StepFile_ReadData@@QEAAXPEBD@Z
+TKDESTEP ?AddNewScope@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?ClearRecorder@StepFile_ReadData@@QEAAXH@Z
+TKDESTEP ?CreateErrorArg@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?CreateNewArg@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?CreateNewText@StepFile_ReadData@@QEAAXPEBDH@Z
+TKDESTEP ?ErrorHandle@StepFile_ReadData@@QEBA_NAEBV?$handle@VInterface_Check@@@opencascade@@@Z
+TKDESTEP ?FinalOfHead@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?FinalOfScope@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?GetLastError@StepFile_ReadData@@QEBAPEBDXZ
+TKDESTEP ?GetModePrint@StepFile_ReadData@@QEBAHXZ
+TKDESTEP ?GetNbRecord@StepFile_ReadData@@QEBAHXZ
+TKDESTEP ?NextRecord@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?PrepareNewArg@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?PrintCurrentRecord@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?RecordIdent@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?RecordListStart@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?RecordNewEntity@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?RecordType@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?RecordTypeText@StepFile_ReadData@@QEAAXXZ
+TKDESTEP ?SetModePrint@StepFile_ReadData@@QEAAXH@Z
+TKDESTEP ?SetTypeArg@StepFile_ReadData@@QEAAXW4Interface_ParamType@@@Z
+TKDESTEP ?StepFile_Interrupt@@YAXPEBD_N@Z
+TKFillet ??0FilletPoint@@QEAA@N@Z
+TKFillet ?ChFi3d_AngleEdge@@YANAEBVTopoDS_Vertex@@AEBVTopoDS_Edge@@1@Z
+TKFillet ?ChFi3d_ApproxByC2@@YA?AV?$handle@VGeom_BSplineCurve@@@opencascade@@AEBV?$handle@VGeom_Curve@@@2@@Z
+TKFillet ?ChFi3d_Boite@@YAXAEBVgp_Pnt2d@@000AEAN11111@Z
+TKFillet ?ChFi3d_Boite@@YAXAEBVgp_Pnt2d@@0AEAN111@Z
+TKFillet ?ChFi3d_BoundFac@@YAXAEAVBRepAdaptor_Surface@@NNNN_N@Z
+TKFillet ?ChFi3d_BoundSrf@@YAXAEAVGeomAdaptor_Surface@@NNNN_N@Z
+TKFillet ?ChFi3d_BoundSurf@@YA?AV?$handle@VGeomAdaptor_Surface@@@opencascade@@AEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@2@AEBH2@Z
+TKFillet ?ChFi3d_BuildPCurve@@YA?AV?$handle@VGeom2d_Curve@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEBVgp_Pnt2d@@AEBVgp_Vec2d@@12_N@Z
+TKFillet ?ChFi3d_BuildPCurve@@YA?AV?$handle@VGeom2d_Curve@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEBVgp_Pnt2d@@AEBVgp_Vec@@12_N@Z
+TKFillet ?ChFi3d_BuildPCurve@@YA?AV?$handle@VGeom2d_Curve@@@opencascade@@AEBVgp_Pnt2d@@AEAVgp_Dir2d@@01_N@Z
+TKFillet ?ChFi3d_CheckSameParameter@@YA_NAEBV?$handle@VAdaptor3d_Curve@@@opencascade@@AEAV?$handle@VGeom2d_Curve@@@2@AEBV?$handle@VAdaptor3d_Surface@@@2@NAEAN@Z
+TKFillet ?ChFi3d_ChercheBordsLibres@@YAXAEBVChFiDS_Map@@AEBVTopoDS_Vertex@@AEA_NAEAVTopoDS_Edge@@3@Z
+TKFillet ?ChFi3d_CircularSpine@@YA?AV?$handle@VGeom_Circle@@@opencascade@@AEAN0AEBVgp_Pnt@@AEBVgp_Vec@@12N@Z
+TKFillet ?ChFi3d_Coefficient@@YAXAEBVgp_Vec@@00AEAN1@Z
+TKFillet ?ChFi3d_ComputeArete@@YAXAEBVChFiDS_CommonPoint@@AEBVgp_Pnt2d@@01AEBV?$handle@VGeom_Surface@@@opencascade@@AEAV?$handle@VGeom_Curve@@@4@AEAV?$handle@VGeom2d_Curve@@@4@AEAN5NN5H@Z
+TKFillet ?ChFi3d_ComputeCurves@@YA_NAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@0AEBV?$NCollection_Array1@N@@1AEAV?$handle@VGeom_Curve@@@2@AEAV?$handle@VGeom2d_Curve@@@2@3NNAEAN_N@Z
+TKFillet ?ChFi3d_ComputePCurv@@YAXAEBV?$handle@VAdaptor3d_Curve@@@opencascade@@AEBVgp_Pnt2d@@1AEAV?$handle@VGeom2d_Curve@@@2@AEBV?$handle@VAdaptor3d_Surface@@@2@NNNAEAN_N@Z
+TKFillet ?ChFi3d_ComputePCurv@@YAXAEBV?$handle@VGeom_Curve@@@opencascade@@AEBVgp_Pnt2d@@1AEAV?$handle@VGeom2d_Curve@@@2@AEBV?$handle@VGeom_Surface@@@2@NNNAEAN_N@Z
+TKFillet ?ChFi3d_ComputePCurv@@YAXAEBVgp_Pnt2d@@0AEAV?$handle@VGeom2d_Curve@@@opencascade@@NN_N@Z
+TKFillet ?ChFi3d_ComputesIntPC@@YAXAEBVChFiDS_FaceInterference@@0AEBV?$handle@VGeomAdaptor_Surface@@@opencascade@@1AEAN2@Z
+TKFillet ?ChFi3d_ComputesIntPC@@YAXAEBVChFiDS_FaceInterference@@0AEBV?$handle@VGeomAdaptor_Surface@@@opencascade@@1AEAN2AEAVgp_Pnt@@@Z
+TKFillet ?ChFi3d_ConvTol2dToTol3d@@YANAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@N@Z
+TKFillet ?ChFi3d_Couture@@YAXAEBVTopoDS_Face@@AEA_NAEAVTopoDS_Edge@@@Z
+TKFillet ?ChFi3d_CoutureOnVertex@@YAXAEBVTopoDS_Face@@AEBVTopoDS_Vertex@@AEA_NAEAVTopoDS_Edge@@@Z
+TKFillet ?ChFi3d_EdgeFromV1@@YA?AVTopoDS_Edge@@AEBVTopoDS_Vertex@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@AEAH@Z
+TKFillet ?ChFi3d_EdgeState@@YA?AW4ChFiDS_State@@PEAVTopoDS_Edge@@AEBVChFiDS_Map@@@Z
+TKFillet ?ChFi3d_EnlargeBox@@YAXAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@AEBV?$handle@VChFiDS_SurfData@@@3@AEAVBnd_Box@@3_N@Z
+TKFillet ?ChFi3d_EnlargeBox@@YAXAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@AEBV?$handle@VGeom2d_Curve@@@2@NNAEAVBnd_Box@@2@Z
+TKFillet ?ChFi3d_EnlargeBox@@YAXAEBV?$handle@VGeom_Curve@@@opencascade@@NNAEAVBnd_Box@@1@Z
+TKFillet ?ChFi3d_EnlargeBox@@YAXAEBVTopoDS_Edge@@AEBV?$NCollection_List@VTopoDS_Shape@@@@NAEAVBnd_Box@@@Z
+TKFillet ?ChFi3d_EvalTolReached@@YANAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@AEBV?$handle@VGeom2d_Curve@@@2@01AEBV?$handle@VGeom_Curve@@@2@@Z
+TKFillet ?ChFi3d_ExtrSpineCarac@@YAXAEBVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@HNHHAEAVgp_Pnt@@AEAVgp_Vec@@AEAN@Z
+TKFillet ?ChFi3d_FilCurveInDS@@YA?AV?$handle@VTopOpeBRepDS_SurfaceCurveInterference@@@opencascade@@HHAEBV?$handle@VGeom2d_Curve@@@2@W4TopAbs_Orientation@@@Z
+TKFillet ?ChFi3d_FilDS@@YAXHAEBV?$handle@VChFiDS_Stripe@@@opencascade@@AEAVTopOpeBRepDS_DataStructure@@AEAV?$NCollection_List@VChFiDS_Regul@@@@NN@Z
+TKFillet ?ChFi3d_FilPointInDS@@YA?AV?$handle@VTopOpeBRepDS_CurvePointInterference@@@opencascade@@W4TopAbs_Orientation@@HHN_N@Z
+TKFillet ?ChFi3d_FilVertexInDS@@YA?AV?$handle@VTopOpeBRepDS_CurvePointInterference@@@opencascade@@W4TopAbs_Orientation@@HHN@Z
+TKFillet ?ChFi3d_InPeriod@@YANNNNN@Z
+TKFillet ?ChFi3d_IndexOfSurfData@@YAHAEBVTopoDS_Vertex@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@AEAH@Z
+TKFillet ?ChFi3d_IndexPointInDS@@YAHAEBVChFiDS_CommonPoint@@AEAVTopOpeBRepDS_DataStructure@@@Z
+TKFillet ?ChFi3d_IntCS@@YA_NAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@AEBV?$handle@VAdaptor3d_Curve@@@2@AEAVgp_Pnt2d@@AEAN@Z
+TKFillet ?ChFi3d_IntTraces@@YA_NAEBV?$handle@VChFiDS_SurfData@@@opencascade@@NAEANHH0N1HHAEBVgp_Pnt2d@@_N3@Z
+TKFillet ?ChFi3d_InterPlaneEdge@@YA_NAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@AEBV?$handle@VAdaptor3d_Curve@@@2@AEAN_NN@Z
+TKFillet ?ChFi3d_IsInFront@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@1HHHHAEAN2AEAVTopoDS_Face@@AEA_NAEAH54AEBVTopoDS_Vertex@@_N7@Z
+TKFillet ?ChFi3d_IsPseudoSeam@@YA_NAEBVTopoDS_Edge@@AEBVTopoDS_Face@@@Z
+TKFillet ?ChFi3d_IsSmooth@@YA_NAEBV?$handle@VGeom_Curve@@@opencascade@@@Z
+TKFillet ?ChFi3d_KParticular@@YA_NAEBV?$handle@VChFiDS_Spine@@@opencascade@@HAEBVBRepAdaptor_Surface@@1@Z
+TKFillet ?ChFi3d_NbNotDegeneratedEdges@@YAHAEBVTopoDS_Vertex@@AEBVChFiDS_Map@@@Z
+TKFillet ?ChFi3d_NumberOfEdges@@YAHAEBVTopoDS_Vertex@@AEBVChFiDS_Map@@@Z
+TKFillet ?ChFi3d_NumberOfSharpEdges@@YAHAEBVTopoDS_Vertex@@AEBVChFiDS_Map@@1@Z
+TKFillet ?ChFi3d_Parameters@@YAXAEBV?$handle@VGeom_Surface@@@opencascade@@AEBVgp_Pnt@@AEAN2@Z
+TKFillet ?ChFi3d_ProjectPCurv@@YAXAEBV?$handle@VAdaptor3d_Curve@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEAV?$handle@VGeom2d_Curve@@@2@NAEAN@Z
+TKFillet ?ChFi3d_ReparamPcurv@@YAXNNAEAV?$handle@VGeom2d_Curve@@@opencascade@@@Z
+TKFillet ?ChFi3d_SameParameter@@YA_NAEBV?$handle@VAdaptor3d_Curve@@@opencascade@@AEAV?$handle@VGeom2d_Curve@@@2@AEBV?$handle@VAdaptor3d_Surface@@@2@NAEAN@Z
+TKFillet ?ChFi3d_SameParameter@@YA_NAEBV?$handle@VGeom_Curve@@@opencascade@@AEAV?$handle@VGeom2d_Curve@@@2@AEBV?$handle@VGeom_Surface@@@2@NNNAEAN@Z
+TKFillet ?ChFi3d_SearchFD@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_Stripe@@@opencascade@@1HHAEAH2AEAN3HHAEAVTopoDS_Face@@AEA_N22@Z
+TKFillet ?ChFi3d_SetPointTolerance@@YAXAEAVTopOpeBRepDS_DataStructure@@AEBVBnd_Box@@H@Z
+TKFillet ?ChFi3d_SolidIndex@@YAHAEBV?$handle@VChFiDS_Spine@@@opencascade@@AEAVTopOpeBRepDS_DataStructure@@AEAVChFiDS_Map@@2@Z
+TKFillet ?ChFi3d_Spine@@YA?AV?$handle@VGeom_BezierCurve@@@opencascade@@AEBVgp_Pnt@@AEAVgp_Vec@@01N@Z
+TKFillet ?ChFi3d_StripeEdgeInter@@YAXAEBV?$handle@VChFiDS_Stripe@@@opencascade@@0AEAVTopOpeBRepDS_DataStructure@@N@Z
+TKFillet ?ChFi3d_TrimCurve@@YAXAEBV?$handle@VGeom_Curve@@@opencascade@@AEBVgp_Pnt@@1AEAV?$handle@VGeom_TrimmedCurve@@@2@@Z
+TKFillet ?ChFi3d_TrsfTrans@@YA?AW4TopAbs_Orientation@@W4IntSurf_TypeTrans@@@Z
+TKFillet ?ChFi3d_cherche_edge@@YAXAEBVTopoDS_Vertex@@AEBV?$NCollection_Array1@VTopoDS_Shape@@@@AEBVTopoDS_Face@@AEAVTopoDS_Edge@@AEAV1@@Z
+TKFillet ?ChFi3d_cherche_element@@YAXAEBVTopoDS_Vertex@@AEBVTopoDS_Edge@@AEBVTopoDS_Face@@AEAV2@AEAV1@@Z
+TKFillet ?ChFi3d_cherche_face1@@YAXAEBV?$NCollection_List@VTopoDS_Shape@@@@AEBVTopoDS_Face@@AEAV2@@Z
+TKFillet ?ChFi3d_cherche_vertex@@YAXAEBVTopoDS_Edge@@0AEAVTopoDS_Vertex@@AEA_N@Z
+TKFillet ?ChFi3d_conexfaces@@YAXAEBVTopoDS_Edge@@AEAVTopoDS_Face@@1AEBVChFiDS_Map@@@Z
+TKFillet ?ChFi3d_edge_common_faces@@YAXAEBV?$NCollection_List@VTopoDS_Shape@@@@AEAVTopoDS_Face@@1@Z
+TKFillet ?ChFi3d_evalconti@@YA?AW4GeomAbs_Shape@@AEBVTopoDS_Edge@@AEBVTopoDS_Face@@1@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEAV?$handle@VGeom2d_Curve@@@2@AEBVgp_Pnt2d@@2NN_N@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEAV?$handle@VGeom2d_Curve@@@2@HAEBVgp_Pnt2d@@AEAVgp_Vec@@H23NN@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEAV?$handle@VGeom2d_Curve@@@2@HAEBVgp_Pnt2d@@AEBVgp_Vec2d@@H23NN@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEBV?$handle@VGeom2d_Curve@@@2@NN_N@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@2@AEBVgp_Pnt2d@@1NN_N@Z
+TKFillet ?ChFi3d_mkbound@@YA?AV?$handle@VGeomFill_Boundary@@@opencascade@@AEBV?$handle@VGeom_Surface@@@2@AEBVgp_Pnt2d@@1NN_N@Z
+TKFillet ?ChFi3d_nbface@@YAHAEBV?$NCollection_List@VTopoDS_Shape@@@@@Z
+TKFillet ?ChFiKPart_CornerSpine@@YAXAEBV?$handle@VAdaptor3d_Surface@@@opencascade@@0AEBVgp_Pnt2d@@111NAEAVgp_Cylinder@@AEAVgp_Circ@@AEAN4@Z
+TKFillet ?ChFiKPart_InPeriod@@YANNNNN@Z
+TKFillet ?ChFiKPart_MakeChAsym@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@2W4TopAbs_Orientation@@3NNAEBVgp_Lin@@N3_N@Z
+TKFillet ?ChFiKPart_MakeChAsym@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cone@@NNW4TopAbs_Orientation@@4NNAEBVgp_Circ@@N4_N6@Z
+TKFillet ?ChFiKPart_MakeChAsym@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@4NNAEBVgp_Circ@@N4_N6@Z
+TKFillet ?ChFiKPart_MakeChAsym@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@4NNAEBVgp_Lin@@N4_N6@Z
+TKFillet ?ChFiKPart_MakeChamfer@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@W4ChFiDS_ChamfMode@@AEBVgp_Pln@@3W4TopAbs_Orientation@@4NNAEBVgp_Lin@@N4@Z
+TKFillet ?ChFiKPart_MakeChamfer@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@W4ChFiDS_ChamfMode@@AEBVgp_Pln@@AEBVgp_Cone@@NNW4TopAbs_Orientation@@5NNAEBVgp_Circ@@N5_N@Z
+TKFillet ?ChFiKPart_MakeChamfer@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@W4ChFiDS_ChamfMode@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@5NNAEBVgp_Circ@@N5_N@Z
+TKFillet ?ChFiKPart_MakeChamfer@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@W4ChFiDS_ChamfMode@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@5NNAEBVgp_Lin@@N5_N@Z
+TKFillet ?ChFiKPart_MakeFillet@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@2W4TopAbs_Orientation@@3NAEBVgp_Lin@@N3@Z
+TKFillet ?ChFiKPart_MakeFillet@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cone@@NNW4TopAbs_Orientation@@4NAEBVgp_Circ@@N4_N@Z
+TKFillet ?ChFiKPart_MakeFillet@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@4NAEBVgp_Circ@@N4_N@Z
+TKFillet ?ChFiKPart_MakeFillet@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@AEBVgp_Cylinder@@NNW4TopAbs_Orientation@@4NAEBVgp_Lin@@N4_N@Z
+TKFillet ?ChFiKPart_MakeRotule@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBVgp_Pln@@22W4TopAbs_Orientation@@33N3@Z
+TKFillet ?ChFiKPart_PCurve@@YA?AV?$handle@VGeom2d_BSplineCurve@@@opencascade@@AEBVgp_Pnt2d@@0NN@Z
+TKFillet ?ChFiKPart_ProjPC@@YAXAEBVGeomAdaptor_Curve@@AEBVGeomAdaptor_Surface@@AEAV?$handle@VGeom2d_Curve@@@opencascade@@@Z
+TKFillet ?ChFiKPart_Sphere@@YA_NAEAVTopOpeBRepDS_DataStructure@@AEBV?$handle@VChFiDS_SurfData@@@opencascade@@AEBV?$handle@VAdaptor3d_Surface@@@3@2W4TopAbs_Orientation@@333NAEBVgp_Pnt2d@@44@Z
+TKFillet ?Copy@FilletPoint@@QEAAPEAV1@XZ
+TKFillet ?FilterPoints@FilletPoint@@QEAAXPEAV1@@Z
+TKFillet ?appendValue@FilletPoint@@QEAAXN_N@Z
+TKFillet ?calculateDiff@FilletPoint@@QEAA_NPEAV1@@Z
+TKFillet ?hasSolution@FilletPoint@@QEAAHN@Z
+TKFillet ?remove@FilletPoint@@QEAAXH@Z
+TKGeomAlgo ??0Interval@@QEAA@AEBVIntRes2d_Domain@@@Z
+TKGeomAlgo ??0Interval@@QEAA@NN@Z
+TKGeomAlgo ??0Interval@@QEAA@N_NN0@Z
+TKGeomAlgo ??0Interval@@QEAA@XZ
+TKGeomAlgo ??6@YAAEAV?$basic_ostream@DU?$char_traits@D@std@@@std@@AEAV01@AEAVIntRes2d_Transition@@@Z
+TKGeomAlgo ?Determine_Position@@YAXAEAW4IntRes2d_Position@@AEBVIntRes2d_Domain@@AEBVgp_Pnt2d@@N@Z
+TKGeomAlgo ?Determine_Transition@@YAXW4IntRes2d_Position@@AEAVgp_Vec2d@@AEBV2@AEAVIntRes2d_Transition@@0123N@Z
+TKGeomAlgo ?Determine_Transition_LC@@YAXW4IntRes2d_Position@@AEAVgp_Vec2d@@AEBV2@AEAVIntRes2d_Transition@@0123N@Z
+TKGeomAlgo ?FillInitialVectorOfSolution@GeomInt_TheImpPrmSvSurfacesOfWLApprox@@QEAA_NNNNNNNNNAEAV?$math_VectorBase@N@@AEAN1@Z
+TKGeomAlgo ?FirstIntersection@PeriodicInterval@@QEAA?AV1@AEAV1@@Z
+TKGeomAlgo ?IntersectionWithBounded@Interval@@QEAA?AV1@AEBV1@@Z
+TKGeomAlgo ?Length@Interval@@QEAANXZ
+TKGeomAlgo ?NormalizeOnCircleDomain@@YANNAEBVIntRes2d_Domain@@@Z
+TKGeomAlgo ?NormalizeOnDomain@@YANAEANAEBVIntRes2d_Domain@@@Z
+TKGeomAlgo ?SecondIntersection@PeriodicInterval@@QEAA?AV1@AEAV1@@Z
+TKGeomBase ??0MyDirectPolynomialRoots@@QEAA@NNN@Z
+TKGeomBase ??0MyDirectPolynomialRoots@@QEAA@NNNNN@Z
+TKGeomBase ?Coord_Ancien_Repere@@YAXAEAN0AEBVgp_Ax2d@@@Z
+TKGeomBase ?Points_Confondus@@YA_NNNNN@Z
+TKGeomBase ?Traitement_Points_Confondus@@YAXAEAHPEAVIntAna2d_IntPoint@@@Z
+TKMath ?BuildPolynomialCosAndSin@@YAXNNHAEAV?$NCollection_Array1@N@@00@Z
+TKMesh ?DumpTriangles@BRepMesh_MeshTool@@QEAAXQEBDPEAV?$NCollection_Shared@V?$NCollection_PackedMap@H@@X@@@Z
+TKMesh ?EraseTriangles@BRepMesh_MeshTool@@QEAAXAEBV?$NCollection_Shared@V?$NCollection_PackedMap@H@@X@@AEAV?$NCollection_Shared@V?$NCollection_DataMap@H_NU?$NCollection_DefaultHasher@H@@@@X@@@Z
+TKMesh ?GetSplitSteps@BRepMesh_ConeRangeSplitter@@QEBA?AU?$pair@NN@std@@AEBUIMeshTools_Parameters@@AEAU?$pair@HH@3@@Z
+TKMesh ?frontierAdjust@BRepMesh_Delaun@@AEAAXXZ
+TKMesh ?getEdgesByType@BRepMesh_Delaun@@AEBA?AV?$handle@V?$NCollection_Shared@V?$NCollection_PackedMap@H@@X@@@opencascade@@W4BRepMesh_DegreeOfFreedom@@@Z
+TKMesh ?insertInternalEdges@BRepMesh_Delaun@@AEAAXXZ
+TKMesh ?perform@BRepMesh_FaceChecker@@AEBAXH@Z
+TKMesh ?process@BRepMesh_EdgeDiscret@@AEBAXH@Z
+TKMesh ?process@BRepMesh_ModelHealer@@AEBAXAEBV?$handle@VIMeshData_Face@@@opencascade@@@Z
+TKOffset ?GetSafeOffset@BRepOffset_MakeSimpleOffset@@QEAANN@Z
+TKOpenGl ??0OpenGl_ShadowMap@@QEAA@XZ
+TKOpenGl ??0OpenGl_VariableSetterSelector@@QEAA@XZ
+TKOpenGl ??1Axis@OpenGl_GraduatedTrihedron@@QEAA@XZ
+TKOpenGl ??1OpenGl_VariableSetterSelector@@QEAA@XZ
+TKOpenGl ?AddZFitBounds@OpenGl_ShaderGrid@@QEBAXAEAVBnd_Box@@AEBV?$handle@VGraphic3d_Camera@@@opencascade@@@Z
+TKOpenGl ?BindFontProgram@OpenGl_ShaderManager@@QEAA_NAEBV?$handle@VOpenGl_ShaderProgram@@@opencascade@@@Z
+TKOpenGl ?Box@OpenGl_TriangleSet@@UEBA?AV?$BVH_Box@M$02@@XZ
+TKOpenGl ?BufferDump@OpenGl_Workspace@@QEAA_NAEBV?$handle@VOpenGl_FrameBuffer@@@opencascade@@AEAVImage_PixMap@@AEBW4Graphic3d_BufferType@@@Z
+TKOpenGl ?Display@OpenGl_ShaderGrid@@QEAA_NAEBVAspect_GridParams@@AEBVgp_Ax3@@AEBV?$handle@VGraphic3d_Camera@@@opencascade@@AEBV?$handle@VOpenGl_Context@@@5@@Z
+TKOpenGl ?DrawWorldView@OpenGl_ShaderGrid@@QEBA?AV?$NCollection_Mat4@M@@AEBV2@@Z
+TKOpenGl ?Echo@OpenGl_ShaderGrid@@QEBA_NAEBV?$handle@VGraphic3d_Camera@@@opencascade@@HHHHAEAVGraphic3d_Vertex@@1@Z
+TKOpenGl ?Erase@OpenGl_ShaderGrid@@QEAAXXZ
+TKOpenGl ?Init@OpenGl_Material@@QEAAXAEBVOpenGl_Context@@AEBVGraphic3d_MaterialAspect@@AEBVQuantity_Color@@12@Z
+TKOpenGl ?IsRaytracable@OpenGl_Structure@@QEBA_NXZ
+TKOpenGl ?ResetAppliedAspect@OpenGl_Workspace@@QEAAXXZ
+TKOpenGl ?Set@OpenGl_VariableSetterSelector@@QEBAXAEBV?$handle@VOpenGl_Context@@@opencascade@@AEBV?$handle@VGraphic3d_ShaderVariable@@@3@PEAVOpenGl_ShaderProgram@@@Z
+TKOpenGl ?SetUniforms@OpenGl_ShaderGrid@@QEBAXAEBV?$handle@VOpenGl_Context@@@opencascade@@AEBV?$handle@VOpenGl_ShaderProgram@@@3@AEBV?$handle@VGraphic3d_Camera@@@3@AEBV?$NCollection_Mat4@M@@@Z
+TKOpenGl ?ShouldRender@OpenGl_Workspace@@QEAA_NPEBVOpenGl_Element@@PEBVOpenGl_Group@@@Z
+TKOpenGl ?SnapPoint@OpenGl_ShaderGrid@@QEBA_NAEBV?$handle@VGraphic3d_Camera@@@opencascade@@AEBVGraphic3d_Vertex@@AEAV4@@Z
+TKShHealing ?Accept@ShapeAnalysis_BoxBndTreeSelector@@UEAA_NAEBH@Z
+TKShHealing ?Reject@ShapeAnalysis_BoxBndTreeSelector@@UEBA_NAEBVBnd_Box@@@Z
+TKTopAlgo ??0BRepExtrema_OverlapTool@@QEAA@AEBV?$handle@VBRepExtrema_TriangleSet@@@opencascade@@0@Z
+TKTopAlgo ??0BRepExtrema_OverlapTool@@QEAA@XZ
+TKTopAlgo ?Accept@BRepClass3d_BndBoxTreeSelectorLine@@UEAA_NAEBH@Z
+TKTopAlgo ?Accept@BRepClass3d_BndBoxTreeSelectorPoint@@UEAA_NAEBH@Z
+TKTopAlgo ?FillInitialVectorOfSolution@BRepApprox_TheImpPrmSvSurfacesOfApprox@@QEAA_NNNNNNNNNAEAV?$math_VectorBase@N@@AEAN1@Z
+TKTopAlgo ?LoadAdditionalPointsFirstSet@BRepExtrema_ProximityDistTool@@QEAAXAEBV?$NCollection_LinearVector@V?$NCollection_Vec3@N@@@@AEBV?$NCollection_DynamicArray@W4ProxPnt_Status@BRepExtrema_ProximityDistTool@@@@@Z
+TKTopAlgo ?LoadTriangleSets@BRepExtrema_OverlapTool@@QEAAXAEBV?$handle@VBRepExtrema_TriangleSet@@@opencascade@@0@Z
+TKTopAlgo ?Perform@BRepExtrema_OverlapTool@@QEAAXN@Z
+TKTopAlgo ?SetExitIfToleranceExceeded@BRepLib_ValidateEdge@@QEAAXN@Z
+TKV3d ??0SelectMgr_TriangularFrustumSet@@QEAA@XZ
+TKV3d ?CreateFiller@SelectMgr_SelectionImageFiller@@SA?AV?$handle@VSelectMgr_SelectionImageFiller@@@opencascade@@AEAVImage_PixMap@@PEAVSelectMgr_ViewerSelector@@W4StdSelect_TypeOfSelectionImage@@@Z
+TKernel ??0Storage_BucketIterator@@QEAA@PEAVStorage_BucketOfPersistent@@@Z
+TKernel ??0Storage_BucketOfPersistent@@QEAA@HH@Z
+TKernel ??1Storage_Bucket@@QEAA@XZ
+TKernel ??1Storage_BucketOfPersistent@@QEAA@XZ
+TKernel ?Append@Storage_BucketOfPersistent@@QEAAXAEBV?$handle@VStandard_Persistent@@@opencascade@@@Z
+TKernel ?Clear@Storage_Bucket@@QEAAXXZ
+TKernel ?Clear@Storage_BucketOfPersistent@@QEAAXXZ
+TKernel ?Init@Storage_BucketIterator@@QEAAXPEAVStorage_BucketOfPersistent@@@Z
+TKernel ?Next@Storage_BucketIterator@@QEAAXXZ
+TKernel ?Reset@Storage_BucketIterator@@QEAAXXZ
+TKernel ?Value@Storage_BucketOfPersistent@@QEAAPEAVStandard_Persistent@@H@Z
+[undefined]
+AppDef_MultiLine::SetParameter(const int, const double): declared in the header, no definition in libTKGeomBase
+AppDef_ResConstraintOfMyGradientOfCompute::Error(): declared in the header, no definition in libTKGeomBase
+AppDef_ResConstraintOfMyGradientbisOfBSplineCompute::Error(): declared in the header, no definition in libTKGeomBase
+AppDef_ResConstraintOfTheGradient::Error(): declared in the header, no definition in libTKGeomBase
+AppDef_TheResol::Error(): declared in the header, no definition in libTKGeomBase
+BOPAlgo_PaveFiller::Iterator(): declared in the header, no definition in libTKBO
+BRepApprox_Approx::Perform(): declared in the header, no definition in libTKTopAlgo
+BRepApprox_ResConstraintOfMyGradientOfTheComputeLineBezierOfApprox::Error(): declared in the header, no definition in libTKTopAlgo
+BRepApprox_ResConstraintOfMyGradientbisOfTheComputeLineOfApprox::Error(): declared in the header, no definition in libTKTopAlgo
+BRepBlend_CSWalking::IsDone(): declared in the header, no definition in libTKFillet
+BRepBlend_CSWalking::Line(): declared in the header, no definition in libTKFillet
+BRepFeat::IsInOut(const BRepTopAdaptor_FClass2d &, const Geom2dAdaptor_Curve &): declared in the header, no definition in libTKFeat
+BRepFeat_MakeLinearForm::TransformShapeFU(const int): declared in the header, no definition in libTKFeat
+BRepGProp_VinertGK::GetAbsolutError(): declared in the header, no definition in libTKTopAlgo
+BRepOffsetAPI_FindContigousEdges::NbEdges(): declared in the header, no definition in libTKOffset
+BRepOffset_MakeOffset::GetAnalyse(): declared in the header, no definition in libTKOffset
+BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt2d> &, const NCollection_Array1<double> &, gp_Pnt2d &, gp_Vec2d &): declared in the header, no definition in libTKMath
+BSplCLib::DN(const double, const int, const NCollection_Array1<gp_Pnt> &, const NCollection_Array1<double> &, gp_Pnt &, gp_Vec &): declared in the header, no definition in libTKMath
+BinTools_Curve2dSet::Dump(Standard_OStream &): declared in the header, no definition in libTKBRep
+BlendFunc::Knots(const BlendFunc_SectionShape, NCollection_Array1<double> &): declared in the header, no definition in libTKFillet
+BlendFunc::Mults(const BlendFunc_SectionShape, NCollection_Array1<int> &): declared in the header, no definition in libTKFillet
+CDF_DirectoryIterator::CDF_DirectoryIterator(): declared in the header, no definition in libTKCDF
+CDM_Document::operator<<(Standard_OStream &): declared in the header, no definition in libTKCDF
+ChFi3d_EnlargeFace(const occ::handle<ChFiDS_Spine> &, const occ::handle<BRepAdaptor_Surface> &, const double): declared in the header, no definition in libTKFillet
+DsgPrs_RadiusPresentation::Add(const occ::handle<Graphic3d_Structure> &, const occ::handle<Prs3d_Drawer> &, const TCollection_ExtendedString &, const gp_Pnt &, const gp_Circ &, const double, const double, const DsgPrs_ArrowSide, const bool, const bool): declared in the header, no definition in libTKV3d
+FDSSDM_s1s2makesordor(const NCollection_List<TopoDS_Shape> &, const NCollection_List<TopoDS_Shape> &, const TopoDS_Shape &, NCollection_List<TopoDS_Shape> &, NCollection_List<TopoDS_Shape> &): declared in the header, no definition in libTKBool
+FUN_scanloi(const NCollection_List<opencascade::handle<TopOpeBRepDS_Interference>> &, NCollection_List<opencascade::handle<TopOpeBRepDS_Interference>> &, int &, NCollection_List<opencascade::handle<TopOpeBRepDS_Interference>> &, int &, NCollection_List<opencascade::handle<TopOpeBRepDS_Interference>> &, int &): declared in the header, no definition in libTKBool
+GCPnts_DistFunction2d: copy constructor declared in the header, no definition in libTKGeomBase -> class skipped
+GCPnts_DistFunction: copy constructor declared in the header, no definition in libTKGeomBase -> class skipped
+Geom2dAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
+Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const Geom2dAdaptor_Curve &, const gp_Pnt2d &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Circ2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+Geom2dGcc_FunctionTanCuCuCu::Geom2dGcc_FunctionTanCuCuCu(const gp_Lin2d &, const Geom2dAdaptor_Curve &, const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+Geom2dGcc_Lin2dTanObl::IsParallel2(): declared in the header, no definition in libTKGeomAlgo
+Geom2dHatch_Hatcher::IsDone(): declared in the header, no definition in libTKGeomAlgo
+Geom2dInt_Geom2dCurveTool::IsComposite(const Adaptor2d_Curve2d &): declared in the header, no definition in libTKGeomAlgo
+GeomAPI_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
+GeomFill_FunctionGuide::Deriv2T(const gp_XYZ &, const gp_XYZ &, math_Vector &, math_Vector &): declared in the header, no definition in libTKGeomAlgo
+GeomFill_SweepSectionGenerator::GeomFill_SweepSectionGenerator(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double): declared in the header, no definition in libTKGeomAlgo
+GeomFill_SweepSectionGenerator::Init(const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const occ::handle<Geom_Curve> &, const double): declared in the header, no definition in libTKGeomAlgo
+GeomInt_IntSS::SetTolFixTangents(const double, const double): declared in the header, no definition in libTKGeomAlgo
+GeomInt_IntSS::TolFixTangents(double &, double &): declared in the header, no definition in libTKGeomAlgo
+GeomInt_ResConstraintOfMyGradientOfTheComputeLineBezierOfWLApprox::Error(): declared in the header, no definition in libTKGeomAlgo
+GeomInt_ResConstraintOfMyGradientbisOfTheComputeLineOfWLApprox::Error(): declared in the header, no definition in libTKGeomAlgo
+GeomInt_WLApprox::Perform(): declared in the header, no definition in libTKGeomAlgo
+HLRBRep_BSurfaceTool::Axis(const BRepAdaptor_Surface &): declared in the header, no definition in libTKHLR
+HLRBRep_Surface::UIntervalContinuity(): declared in the header, no definition in libTKHLR
+HLRBRep_Surface::VIntervalContinuity(): declared in the header, no definition in libTKHLR
+IFSelect_ContextModif::Search(const occ::handle<Standard_Transient> &, occ::handle<Standard_Transient> &): declared in the header, no definition in libTKXSBase
+IFSelect_EditForm::NbTouched(): declared in the header, no definition in libTKXSBase
+IFSelect_IntParam::StaticName(): declared in the header, no definition in libTKXSBase
+IGESSelect_SelectBasicGeom::CurvesOnly(): declared in the header, no definition in libTKDEIGES
+IGESToBRep_TopoSurface::TransferPlaneSurface(const occ::handle<IGESSolid_PlaneSurface> &): declared in the header, no definition in libTKDEIGES
+IntImpParGen_ImpTool::D1(const double, gp_Pnt2d &, gp_Vec2d &): declared in the header, no definition in libTKGeomAlgo
+IntImpParGen_ImpTool::D2(const double, gp_Pnt2d &, gp_Vec2d &, gp_Vec2d &): declared in the header, no definition in libTKGeomAlgo
+IntImpParGen_ImpTool::Distance(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+IntImpParGen_ImpTool::FindParameter(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+IntImpParGen_ImpTool::GradDistance(const gp_Pnt2d &): declared in the header, no definition in libTKGeomAlgo
+IntImpParGen_ImpTool::Value(const double): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::HasUMaxSingularity(): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::HasUMinSingularity(): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::HasVMaxSingularity(): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::HasVMinSingularity(): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::Perform(const occ::handle<Adaptor3d_Surface> &, const int, const int): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::UMaxSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::UMinSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::VMaxSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+IntPatch_Polyhedron::VMinSingularity(const bool): declared in the header, no definition in libTKGeomAlgo
+IntPatch_RLine::SetParamOnS1(const double, const double): declared in the header, no definition in libTKGeomAlgo
+IntPatch_RLine::SetParamOnS2(double &, double &): declared in the header, no definition in libTKGeomAlgo
+IntPatch_WLineTool::myMaxConcatAngle: static data member declared in the header, no definition in libTKGeomAlgo
+IntPolyh_MaillageAffinage::GetFinTE(const int): declared in the header, no definition in libTKGeomAlgo
+IntPolyh_MaillageAffinage::GetFinTT(const int): declared in the header, no definition in libTKGeomAlgo
+IntTools_PntOnFace::IsValid(): declared in the header, no definition in libTKBO
+Law_Interpolate::ClearTangents(): declared in the header, no definition in libTKGeomAlgo
+LocOpe_Revol::LocOpe_Revol(const TopoDS_Shape &, const gp_Ax1 &, const double): declared in the header, no definition in libTKFeat
+LocOpe_Revol::LocOpe_Revol(const TopoDS_Shape &, const gp_Ax1 &, const double, const double): declared in the header, no definition in libTKFeat
+LocOpe_RevolutionForm::LocOpe_RevolutionForm(const TopoDS_Shape &, const gp_Ax1 &, const double): declared in the header, no definition in libTKFeat
+MAT2d_CutCurve::Perform(const occ::handle<Geom2d_Curve> &, const MAT_Side): declared in the header, no definition in libTKTopAlgo
+MAT2d_CutCurve::PerformInf(const occ::handle<Geom2d_Curve> &): declared in the header, no definition in libTKTopAlgo
+OSD_Path::LocateExecFile(OSD_Path &): declared in the header, no definition in libTKernel
+OpenGl_ShaderProgram::compileShaderVerbose(const occ::handle<OpenGl_Context> &, const occ::handle<OpenGl_ShaderObject> &, const TCollection_AsciiString &, bool): declared in the header, no definition in libTKOpenGl
+OpenGl_View::SetBackgroundGradient(const Quantity_Color &, const Quantity_Color &, const Aspect_GradientFillMethod): declared in the header, no definition in libTKOpenGl
+OpenGl_View::SetBackgroundGradientType(const Aspect_GradientFillMethod): declared in the header, no definition in libTKOpenGl
+OpenGl_View::SetBackgroundTextureStyle(const Aspect_FillMethod): declared in the header, no definition in libTKOpenGl
+OpenGl_View::SetTextureEnv(const occ::handle<OpenGl_Context> &, const occ::handle<Graphic3d_TextureEnv> &): declared in the header, no definition in libTKOpenGl
+STEPSelections_Counter::POP(): declared in the header, no definition in libTKDESTEP
+STEPSelections_Counter::POP2(): declared in the header, no definition in libTKDESTEP
+SelectMgr_BVHThreadPool::Sentry: copy constructor declared in the header, no definition in libTKV3d -> class skipped
+ShapeFix_WireSegment::ShapeFix_WireSegment(const TopoDS_Wire &, const TopAbs_Orientation): declared in the header, no definition in libTKShHealing
+StepData_FreeFormEntity::StepData_FreeFormEntity(): declared in the header, no definition in libTKDESTEP
+StepData_UndefinedEntity::Super(): declared in the header, no definition in libTKDESTEP
+StepFEA_SymmetricTensor43d::SetFeaIsotropicSymmetricTensor43d(const occ::handle<NCollection_HArray1<double>> &): declared in the header, no definition in libTKDESTEP
+TCollection_AsciiString::IsEqual(const TCollection_AsciiString &, const char *const): declared in the header, no definition in libTKernel
+TopOpeBRepBuild_Builder1::GFillSplitsPVS(const TopoDS_Shape &, const TopOpeBRepBuild_GTopo &, TopOpeBRepBuild_PaveSet &): declared in the header, no definition in libTKBool
+TransferBRep::BRepCheck(const TopoDS_Shape &, const int): declared in the header, no definition in libTKXSBase
+VrmlData_IndexedFaceSet::GetNormal(const int, const int): declared in the header, no definition in libTKDEVRML
+XCAFDoc_GeomTolerance::XCAFDoc_GeomTolerance(const occ::handle<XCAFDoc_GeomTolerance> &): declared in the header, no definition in libTKXCAF
+math_NewtonFunctionSetRoot::StateNumber(): declared in the header, no definition in libTKMath
+math_NewtonMinimum::IsConvex(): declared in the header, no definition in libTKMath
+operator<<(Standard_OStream &, const gp_Pnt &): declared in the header, no definition in libTKBRep
+operator<<(Standard_OStream &, const gp_Trsf &): declared in the header, no definition in libTKBRep
+operator==(const occ::handle<Units_Unit> &, const char *const): declared in the header, no definition in libTKernel

@@ -14,6 +14,7 @@ Built against OCCT 8.0.2, OCCT's second maintenance release of the 8.0 series, w
 
 **New features:**
 
+- Windows binds what macOS and Linux bind: its OCCT DLLs also export the functions OCCT defines without `Standard_EXPORT` that the bindings call (`deps/occt-windows-exports.txt`). 178 members were missing on Windows, e.g. `BRepMesh_MeshTool.DumpTriangles`, and 29 classes and members left out on every platform for Windows' sake are bound everywhere, e.g. `RWObj_MtlReader`, `StepFile_ReadData` and `str()` of `IntRes2d_Transition`
 - Members that write text take a keyword-only `precision_hint` (default 6, so the output is unchanged): `GeomTools.Write_s(curve, precision_hint=17)` writes a curve that reads back exactly. Writers that set their own precision, such as the BREP and geometry-set writers, override it, as in C++ (R-STREAM-OUT)
 - `GeomBndLib_Curve` and `GeomBndLib_Curve2d` (the bounding boxes of any curve type), `GeomBndLib_Line` and `GeomBndLib_Line2d`. OCCT 8.0.2 does not install `GeomBndLib_InfiniteHelpers.pxx`, which their headers include; the generator now takes such private headers from the OCCT sources (R-PRIVATE-HEADER)
 - `Standard.Atof` and `OCCT_Version_String`, `OCCT_Version_Double`, `OCCT_Version_String_Complete`, `OCCT_Version_String_Extended`, `OCCT_DevelopmentVersion`: they are declared inside `extern "C"`, which the generator skipped without a report line (R-NAMESPACE)

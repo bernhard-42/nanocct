@@ -128,7 +128,8 @@ else
 endif
 
 .PHONY: wheels env deps sources occt freetype freeimage rapidjson generate check-parallel compile stubs wheel delocate test \
-        asan clean_occt clean_freetype clean_rapidjson clean_deps clean_gen clean_dist clean_asan help
+        asan occt-exports occt-exports-undefined clean_occt clean_occt_exportall clean_freetype clean_rapidjson clean_deps \
+        clean_gen clean_dist clean_asan help
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -138,7 +139,8 @@ endif
 help:
 	@echo "targets: env | deps (sources rapidjson freetype freeimage occt) | generate compile stubs wheel delocate test | wheels | asan"
 	@echo "         check-parallel (after a change to the generator's parse or emit phase)"
-	@echo "         clean_deps clean_occt clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist clean_asan"
+	@echo "         occt-exports occt-exports-undefined (Windows, per OCCT release: deps/occt-windows-exports.txt)"
+	@echo "         clean_deps clean_occt clean_occt_exportall clean_freetype clean_freeimage clean_rapidjson clean_gen clean_dist clean_asan"
 	@echo "platform: $(PLATFORM)"
 
 
@@ -196,7 +198,10 @@ clean_freeimage:
 clean_rapidjson:
 	rm -rf $(DEPS)/rapidjson $(DEPS)/rapidjson-src $(DEPS)/rapidjson-1.1.0.tar.gz
 
-clean_deps: clean_occt clean_freetype clean_freeimage clean_rapidjson
+clean_occt_exportall:
+	rm -rf $(DEPS)/occt-exportall-build $(DEPS)/occt-exportall $(ROOT)/build-win-exportall
+
+clean_deps: clean_occt clean_occt_exportall clean_freetype clean_freeimage clean_rapidjson
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
@@ -257,6 +262,40 @@ else
 endif
 
 deps: clean_deps rapidjson freetype freeimage occt
+
+# deps/occt-windows-exports.txt, the names the Windows DLLs export beyond Standard_EXPORT
+# (deps/occt-windows-exports.cmake): on Windows, once per OCCT release and when the bindings need a name the list lacks
+# (tests/test_occt_exports.py says so). Never in CI: it builds OCCT once more, with every function exported
+# (deps/occt-exportall), and the modules against it (build-win-exportall), and reads what they import
+# (tools/occt_exports.py). It regenerates src/ against that OCCT, so the tree is not the shipping generation afterwards.
+# Then, as their own steps:
+#     make occt generate          Production with the new list, and the generation against it
+#     make occt-exports-undefined what that generation still drops, into the list's [undefined] section
+#     make compile stubs wheel delocate test
+occt-exports:
+ifeq ($(PLATFORM),windows)
+	$(MAKE) clean_occt_exportall
+	@test -d $(DEPS)/rapidjson || { echo "run 'make rapidjson' first"; exit 1; }
+	@test -d $(DEPS)/freetype || { echo "run 'make freetype' first"; exit 1; }
+	@test -d $(DEPS)/freeimage || { echo "run 'make freeimage' first"; exit 1; }
+	$(RUN_SH) $(DEPS)/fetch-occt-src.sh
+	NANOCCT_OCCT_EXPORT_ALL=1 $(RUN_SH) $(DEPS)/build-occt-windows.sh
+	$(MAKE) clean_gen
+	cd $(ROOT) && "$(WIN_PY)" -m generator --occt $(DEPS)/occt-exportall $(TK_FLAGS)
+	cd $(ROOT) && NANOCCT_OCCT_DIR=$(DEPS)/occt-exportall NANOCCT_BUILD_DIR=$(ROOT)/build-win-exportall \
+	    $(RUN_SH) ./deps/build-nanocct-windows.sh
+	cd $(ROOT) && "$(WIN_PY)" tools/occt_exports.py exports $(DEPS)/occt-exportall-build $(ROOT)/build-win-exportall \
+	    $(DEPS)/occt-windows-exports.txt
+else
+	@echo "occt-exports reads Windows binaries: run it on Windows"; exit 1
+endif
+
+occt-exports-undefined:
+ifeq ($(PLATFORM),windows)
+	cd $(ROOT) && "$(WIN_PY)" tools/occt_exports.py undefined $(ROOT)/src/cpp $(DEPS)/occt-windows-exports.txt
+else
+	@echo "occt-exports-undefined reads a Windows generation: run it on Windows"; exit 1
+endif
 
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =

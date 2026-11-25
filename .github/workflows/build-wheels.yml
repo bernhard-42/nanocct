@@ -74,7 +74,8 @@ jobs:
                                   "deps/build-occt-manylinux.sh", "deps/*.map", "deps/manylinux.Dockerfile",
                                   "deps/run-manylinux.sh"])
           keys_windows = "\n".join([fetch, "deps/build-freetype-windows.sh", "deps/build-freeimage-windows.sh",
-                                    "deps/build-occt-windows.sh"])
+                                    "deps/build-occt-windows.sh", "deps/occt-windows-exports.txt",
+                                    "deps/occt-windows-exports.cmake"])
           table = [
               ("MACOS_ARM64",   "macos-arm64",   "macos-15",         native, keys_macos),
               ("MACOS_X86_64",  "macos-x86_64",  "macos-15-intel",   native, keys_macos),

@@ -187,16 +187,18 @@ def test_the_entity_classes_of_the_schema():
 
 def test_report_categories():
     all_lines, lines, undefined, counts = report("TKDESTEP")
-    # raw-pointer fell from 12 to 9 and override rose to 4 on 2026-09-23, when StepFile_ReadData was skipped: its
-    # inline destructor calls the unexported ClearRecorder, so the class does not link on Windows (overrides.toml)
     # raw-pointer 9 -> 1 and unbound-type 2 -> 0 on 2026-09-30: NCollection_Handle<T> is a caster now (R-NCHANDLE), not a
     # class template the 7c walk tried and failed to bind (its get()/operator-> and its handle<Standard_Transient> base)
-    assert counts == {"raw-pointer": 1, "rvalue": 3, "override": 4, "template": 2,
+    # raw-pointer 1 -> 4, copy 1 -> 2 and override 4 -> 3 when StepFile_ReadData came back (it was skipped from
+    # 2026-09-23 until deps/occt-windows-exports.txt: its inline destructor calls ClearRecorder, which has no
+    # Standard_EXPORT)
+    assert counts == {"raw-pointer": 4, "rvalue": 3, "override": 3, "template": 2,
                       "header": 1, "stream": 1,
                       "overload-collision": 3,    # StepToTopoDS_Builder::Init, derived class first (R-OVERLOAD-ORDER)
                       "null-bool": 1,             # StepData_SelectType (R-NULL-BOOL, 2026-09-30)
-                      "copy": 1}                  # STEPCAFControl_Reader: its destructor frees what it points to (R-COPY, 2026-10-02)
-    assert len(lines) == 17
+                      # STEPCAFControl_Reader, StepFile_ReadData: their destructors free what they point to (R-COPY)
+                      "copy": 2}
+    assert len(lines) == 20
     # which members R-UNDEFINED reports is the platform's business (macOS names four entities, Windows others), so
     # only the package is asserted here; the portable categories above are what this test is really about
     assert all(line.split("\t")[1].lower().startswith(("step", "rwstep", "apiheadersection")) for line in undefined)                                       # 1 040 classes, 7 688 methods bound

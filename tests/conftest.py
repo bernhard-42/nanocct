@@ -2,9 +2,10 @@
 
 A toolkit's report.txt is not the same on every platform, and it cannot be: the `undefined` category comes from
 R-UNDEFINED, which compares each member against the symbols the OCCT library of *this* platform actually exports.
-Unix exports everything a header declares, while Windows exports only what carries Standard_EXPORT, so the same
-toolkit reports e.g. 3 undefined lines on macOS and 0 on Linux (TKRWMesh), or 8 against 5 (TKOpenGl). Asserting a
-total line count therefore turns every report test into a macOS test.
+Unix exports everything a header declares; Windows exports what carries Standard_EXPORT plus the names of
+deps/occt-windows-exports.txt, which covers what the bindings call but not, e.g., a static data member. The same toolkit
+reports e.g. 3 undefined lines on macOS and 0 on Linux (TKRWMesh), or 8 against 5 (TKOpenGl). Asserting a total line
+count therefore turns every report test into a macOS test.
 
 So the tests assert exact counts over the *portable* lines -- every category except `undefined` -- and check the
 undefined ones by content instead: whatever a platform reports there must be one of the known entries.

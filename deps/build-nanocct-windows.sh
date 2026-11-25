@@ -5,22 +5,27 @@
 #
 # Run this from a real session. Launched from an ssh command, cl.exe fails sporadically with 0xC0000142
 # (STATUS_DLL_INIT_FAILED) -- a process-start failure with no error C#### in the log.
+#
+# NANOCCT_OCCT_DIR and NANOCCT_BUILD_DIR (default deps/occt, build-win) let `make occt-exports` build the modules
+# against the export-all OCCT into a build dir of their own, to read what they import.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 W_ROOT="$(cygpath -w "$ROOT")"
+W_OCCT="$(cygpath -w "${NANOCCT_OCCT_DIR:-$ROOT/deps/occt}")"
+W_BUILD="$(cygpath -w "${NANOCCT_BUILD_DIR:-$ROOT/build-win}")"
 BAT="$ROOT/_build_nanocct.bat"
 cat > "$BAT" <<BAT
 @echo off
 for /f "usebackq delims=" %%i in (\`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath\`) do set "VS_PATH=%%i"
 if not defined VS_PATH echo no Visual Studio found & exit /b 1
 call "%VS_PATH%\VC\Auxiliary\Build\vcvars64.bat" >nul || exit /b 1
-cmake -S "$W_ROOT" -B "$W_ROOT\build-win" -G Ninja ^
+cmake -S "$W_ROOT" -B "$W_BUILD" -G Ninja ^
   -D CMAKE_BUILD_TYPE=Release ^
   -D Python_EXECUTABLE="$W_ROOT\.venv\Scripts\python.exe" ^
-  -D NANOCCT_OCCT_DIR="$W_ROOT\deps\occt" ^
+  -D NANOCCT_OCCT_DIR="$W_OCCT" ^
   -D NANOCCT_RAPIDJSON_DIR="$W_ROOT\deps\rapidjson\include" || exit /b 1
-ninja -k 0 ${NINJA_JOBS:+-j $NINJA_JOBS} -C "$W_ROOT\build-win" || exit /b 1
+ninja -k 0 ${NINJA_JOBS:+-j $NINJA_JOBS} -C "$W_BUILD" || exit /b 1
 echo BUILD_OK
 BAT
 cmd //c "$(cygpath -w "$BAT")"
