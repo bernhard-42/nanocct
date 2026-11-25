@@ -29,7 +29,8 @@ Numbers from a fresh generator run of the six toolkits (`python -m generator --t
 
 ## Usability check
 
-- Bound members whose signature names a type nanobind does not know (grep of quoted annotations in the stubs): 52, down from 275 before the gap audit — STL iterator overloads, `char32_t`/`wchar_t` hashers, `NCollection_FlatDataMap`/`FlatMap` internals of BRepGraph, members of two skipped classes. (`BVH_Box/Set/Tree<double, 3>` were on this list until R-TEMPLATE-BASE, 2026-09-21.)
+- Bound members whose signature names a type nanobind does not know (quoted annotations in the `def` lines of the stubs): 2 in 8.0.2.0, down from 275 before the gap audit — `Aspect_VKeySet.Mutex()` (`std::shared_mutex`) and `BOPTools_BoxPairSelector.Pairs()` (`NCollection_LinearVector<BOPTools_PairSelector<3>::PairIDs>`). Both raise `TypeError` on every call. (`BVH_Box/Set/Tree<double, 3>` were on this list until R-TEMPLATE-BASE, 2026-09-21.)
+- The 29 `VrmlData` members that take a `VrmlData_InBuffer` cannot be called either: the class is bound with its copy constructor only, its stream constructor is excluded ([Excluded](Excluded.md)), so Python cannot make a first one.
 - Everything else that is bound is callable.
 
 ## Carried forward
